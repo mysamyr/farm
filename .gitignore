@@ -1,0 +1,27 @@
+# Node
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# TypeScript
+/dist
+/*.tsbuildinfo
+
+# Local env config
+.env
+
+# IDEs
+.vscode/
+.idea/
+
+# macOS
+.DS_Store
+
+# Custom
+assets/
+logs/
+
+# Client
+public/script.js
+public/script.js.map
+public/styles.css

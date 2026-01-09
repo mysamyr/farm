@@ -1,0 +1,8 @@
+node_modules
+.husky
+.idea
+.git
+/assets
+/dist
+/public
+package-lock.json
