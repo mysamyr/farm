@@ -1,0 +1,58 @@
+{
+  "name": "board-socket-server",
+  "version": "0.1.0",
+  "description": "Board game socket server with rooms and configurable rules",
+  "main": "dist/server.js",
+  "types": "dist/index.d.ts",
+  "type": "commonjs",
+  "private": true,
+  "engines": {
+    "node": ">=23"
+  },
+  "scripts": {
+    "start": "node dist/server.js",
+    "server:dev": "tsx watch --inspect server/server.ts",
+    "server:build": "tsc -p server/tsconfig.json",
+    "client:build": "esbuild client/main.ts --bundle --sourcemap --outfile=public/script.js",
+    "client:dev": "esbuild client/main.ts --bundle --sourcemap --outfile=public/script.js --watch",
+    "typecheck": "tsc --noEmit -project server/tsconfig.json && tsc --noEmit -project client/tsconfig.json",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "prepare": "husky"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.7.2",
+    "socket.io-client": "^4.8.3"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.2",
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.0.3",
+    "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-import-resolver-typescript": "^4.4.4",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-n": "^17.23.1",
+    "globals": "^16.5.0",
+    "husky": "^9.1.7",
+    "jiti": "^2.6.1",
+    "lint-staged": "^16.2.7",
+    "prettier": "^3.7.4",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.51.0",
+    "esbuild": "^0.27.2"
+  },
+  "lint-staged": {
+    "*.ts": [
+      "eslint --fix"
+    ],
+    "*.{ts,json,md,yaml}": [
+      "prettier --write"
+    ]
+  }
+}
