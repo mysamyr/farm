@@ -1,0 +1,84 @@
+{
+  "name": "farm-game",
+  "version": "0.1.0",
+  "description": "Board game socket server with rooms and configurable rules",
+  "main": "dist/server.js",
+  "types": "dist/index.d.ts",
+  "type": "commonjs",
+  "private": true,
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node dist/server.js",
+    "clean": "rimraf dist public/script.js public/script.js.map public/styles.css",
+    "server:dev": "tsx watch --inspect server/server.ts",
+    "client:dev": "node client/esbuild.dev.mjs --watch",
+    "build:server:dev": "tsc -p server/tsconfig.json",
+    "build:client:dev": "node client/esbuild.dev.mjs",
+    "build:dev": "npm run clean && npm run build:client:dev && npm run build:server:dev",
+    "build:client:prod": "node client/esbuild.prod.mjs",
+    "build:server:prod": "node server/esbuild.prod.mjs",
+    "build:prod": "npm run clean && npm run build:client:prod && npm run build:server:prod",
+    "package": "npm run build:prod && npx pkg package.json --out-path assets",
+    "typecheck": "tsc --noEmit -project server/tsconfig.json && tsc --noEmit -project client/tsconfig.json",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "prepare": "husky"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "qrcode": "^1.5.4",
+    "socket.io": "^4.7.2",
+    "socket.io-client": "^4.8.3"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.0.3",
+    "@types/qrcode": "^1.5.6",
+    "esbuild": "^0.27.2",
+    "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-import-resolver-typescript": "^4.4.4",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-n": "^17.23.1",
+    "globals": "^16.5.0",
+    "husky": "^9.1.7",
+    "jiti": "^2.6.1",
+    "lint-staged": "^16.2.7",
+    "prettier": "^3.7.4",
+    "rimraf": "^6.1.2",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.51.0"
+  },
+  "bin": {
+    "farm-game": "dist/server.js"
+  },
+  "pkg": {
+    "assets": [
+      "node_modules/socket.io/client-dist/**/*",
+      "public/**/*"
+    ],
+    "scripts": [
+      "dist/**/*.js"
+    ],
+    "targets": [
+      "node18-macos-x64",
+      "node18-linux-x64",
+      "node18-win-x64"
+    ],
+    "outputPath": "assets"
+  },
+  "lint-staged": {
+    "*.ts": [
+      "eslint --fix"
+    ],
+    "*.{ts,mjs,css,json,md,yaml}": [
+      "prettier --write"
+    ]
+  }
+}
