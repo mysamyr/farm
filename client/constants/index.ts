@@ -1,3 +1,5 @@
+import type { TradableAnimals } from '../../server/features/game/game.types';
+
 export const DEFAULT_CONFIG = {
   maxPlayers: 4,
   minPlayers: 2,
@@ -79,3 +81,13 @@ export const ANIMALS_ICONS_CONFIG: Record<
   [ANIMALS.SMALL_DOG]: { label: 'Sm. Dog', icon: '🐕' },
   [ANIMALS.BIG_DOG]: { label: 'Big Dog', icon: '🐕‍🦺' },
 };
+
+export const ANIMALS_DEFAULT_QUANTITY: Record<TradableAnimals, number> = {
+  [ANIMALS.DUCK]: 60,
+  [ANIMALS.GOAT]: 24,
+  [ANIMALS.PIG]: 20,
+  [ANIMALS.HORSE]: 12,
+  [ANIMALS.COW]: 8,
+  [ANIMALS.SMALL_DOG]: 4,
+  [ANIMALS.BIG_DOG]: 2,
+} as const;

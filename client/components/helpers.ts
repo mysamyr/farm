@@ -89,7 +89,8 @@ export const applyFocus = (el: HTMLElement, focus?: boolean): void => {
 
 export const applyChildren = (
   el: HTMLElement,
-  children?: HTMLElement[]
+  children?: Array<HTMLElement | null>
 ): void => {
-  if (children && children.length) el.append(...children);
+  if (children && children.length)
+    el.append(...(children.filter(Boolean) as HTMLElement[]));
 };
