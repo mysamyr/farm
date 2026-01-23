@@ -16,13 +16,19 @@ import type { AriaAttrs, ClassValue, DataAttrs } from './types';
 
 export { default as Slider } from './Slider';
 
+export const NoEl = (): HTMLDivElement => {
+  const div = document.createElement('div');
+  div.hidden = true;
+  return div;
+};
+
 export const Div = (props?: {
   className?: ClassValue;
   text?: string;
   id?: string;
   title?: string;
   onClick?: (this: HTMLDivElement, ev: MouseEvent) => void;
-  children?: HTMLElement[];
+  children?: Array<HTMLElement | null>;
   data?: DataAttrs;
   aria?: AriaAttrs;
   role?: string;
@@ -49,7 +55,7 @@ export const Form = (props?: {
   text?: string;
   id?: string;
   onSubmit?: (this: HTMLFormElement, ev: SubmitEvent) => void;
-  children?: HTMLElement[];
+  children?: Array<HTMLElement | null>;
   data?: DataAttrs;
   aria?: AriaAttrs;
   role?: string;
@@ -77,7 +83,7 @@ export const Header = (
     text?: string;
     id?: string;
     onClick?: (this: HTMLHeadingElement, ev: MouseEvent) => void;
-    children?: HTMLElement[];
+    children?: Array<HTMLElement | null>;
     data?: DataAttrs;
     aria?: AriaAttrs;
     role?: string;
@@ -103,7 +109,7 @@ export const Paragraph = (props?: {
   text?: string;
   id?: string;
   onClick?: (this: HTMLParagraphElement, ev: MouseEvent) => void;
-  children?: HTMLElement[];
+  children?: Array<HTMLElement | null>;
   data?: DataAttrs;
   aria?: AriaAttrs;
   role?: string;
@@ -129,7 +135,7 @@ export const Span = (props?: {
   text?: string;
   id?: string;
   onClick?: (this: HTMLSpanElement, ev: MouseEvent) => void;
-  children?: HTMLElement[];
+  children?: Array<HTMLElement | null>;
   data?: DataAttrs;
   aria?: AriaAttrs;
   role?: string;
@@ -211,7 +217,7 @@ export const Label = (props?: {
   text?: string;
   id?: string;
   htmlFor?: string;
-  children?: HTMLElement[];
+  children?: Array<HTMLElement | null>;
   onClick?: (this: HTMLLabelElement, ev: MouseEvent) => void;
   data?: DataAttrs;
   aria?: AriaAttrs;
@@ -269,7 +275,7 @@ export const Select = (props?: {
   required?: boolean;
   disabled?: boolean;
   onChange?: (this: HTMLSelectElement, ev: Event) => void;
-  children?: HTMLElement[];
+  children?: Array<HTMLElement | null>;
   data?: DataAttrs;
   aria?: AriaAttrs;
   role?: string;
@@ -298,7 +304,7 @@ export const Pre = (props?: {
   className?: ClassValue;
   text?: string;
   id?: string;
-  children?: HTMLElement[];
+  children?: Array<HTMLElement | null>;
   onClick?: (this: HTMLPreElement, ev: MouseEvent) => void;
   data?: DataAttrs;
   aria?: AriaAttrs;
@@ -325,7 +331,7 @@ export const ListItem = (props?: {
   id?: string;
   text?: string;
   onClick?: (this: HTMLLIElement, ev: MouseEvent) => void;
-  children?: HTMLElement[];
+  children?: Array<HTMLElement | null>;
   data?: DataAttrs;
   aria?: AriaAttrs;
   role?: string;
@@ -349,7 +355,7 @@ export const ListItem = (props?: {
 export const UList = (props?: {
   className?: ClassValue;
   id?: string;
-  children?: HTMLElement[];
+  children?: Array<HTMLElement | null>;
   onClick?: (this: HTMLUListElement, ev: MouseEvent) => void;
   data?: DataAttrs;
   aria?: AriaAttrs;
@@ -373,7 +379,7 @@ export const UList = (props?: {
 export const OList = (props?: {
   className?: ClassValue;
   id?: string;
-  children?: HTMLElement[];
+  children?: Array<HTMLElement | null>;
   onClick?: (this: HTMLOListElement, ev: MouseEvent) => void;
   data?: DataAttrs;
   aria?: AriaAttrs;
@@ -444,7 +450,7 @@ export const Link = (props?: {
   rel?: string;
   className?: ClassValue;
   onClick?: (this: HTMLAnchorElement, ev: MouseEvent) => void;
-  children?: HTMLElement[];
+  children?: Array<HTMLElement | null>;
   data?: DataAttrs;
   aria?: AriaAttrs;
   role?: string;
@@ -503,7 +509,7 @@ export const Image = (props?: {
 export const TableHeader = (props?: {
   id?: string;
   className?: ClassValue;
-  children?: HTMLElement[];
+  children?: Array<HTMLElement | null>;
   onClick?: (this: HTMLTableSectionElement, ev: MouseEvent) => void;
   data?: DataAttrs;
   aria?: AriaAttrs;
@@ -527,7 +533,7 @@ export const TableHeader = (props?: {
 export const TableBody = (props?: {
   id?: string;
   className?: ClassValue;
-  children?: HTMLElement[];
+  children?: Array<HTMLElement | null>;
   onClick?: (this: HTMLTableSectionElement, ev: MouseEvent) => void;
   data?: DataAttrs;
   aria?: AriaAttrs;
@@ -552,7 +558,7 @@ export const TableHeaderCell = (props?: {
   id?: string;
   className?: ClassValue;
   text?: string;
-  children?: HTMLElement[];
+  children?: Array<HTMLElement | null>;
   onClick?: (this: HTMLTableCellElement, ev: MouseEvent) => void;
   data?: DataAttrs;
   aria?: AriaAttrs;
@@ -577,7 +583,7 @@ export const TableHeaderCell = (props?: {
 export const TableRow = (props?: {
   id?: string;
   className?: ClassValue;
-  children?: HTMLElement[];
+  children?: Array<HTMLElement | null>;
   onClick?: (this: HTMLTableRowElement, ev: MouseEvent) => void;
   data?: DataAttrs;
   aria?: AriaAttrs;
@@ -602,7 +608,7 @@ export const TableData = (props?: {
   id?: string;
   className?: ClassValue;
   text?: string;
-  children?: HTMLElement[];
+  children?: Array<HTMLElement | null>;
   onClick?: (this: HTMLTableCellElement, ev: MouseEvent) => void;
   data?: DataAttrs;
   aria?: AriaAttrs;
@@ -629,7 +635,7 @@ export const Button = (props?: {
   id?: string;
   text?: string;
   title?: string;
-  children?: HTMLElement[];
+  children?: Array<HTMLElement | null>;
   disabled?: boolean;
   onClick?: (this: HTMLButtonElement, ev: MouseEvent) => void;
   data?: DataAttrs;

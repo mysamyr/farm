@@ -22,6 +22,7 @@ export function registerConnection(io: Server): void {
 
     socket.on('disconnect', (): void => {
       log('info', 'socket:disconnected', { socketId: socket.id });
+      // TODO: If game is in progress, keep the player in the room (probably disconnect after some time)
       removePlayerFromAllRooms(io, socket);
     });
   });

@@ -9,10 +9,10 @@ import { navTo } from '../../utils/navigation';
 import {
   getCurrentPlayerTurnId,
   getDiceIcon,
-  getPlayerCard,
+  getSortedPlayersByTurn,
   isWildAnimal,
 } from './helpers';
-import { renderExchangeGrid } from './render';
+import { getExchangeGrid, getPlayerCard, getLeftCardsSection } from './render';
 
 import type { DiceAnimals } from '../../types';
 
@@ -108,10 +108,11 @@ export default function (app: HTMLDivElement): void {
         }),
       ],
     }),
+    getLeftCardsSection(room),
     Div({
       className: 'players-container',
       id: 'players-wrapper',
-      children: room.players.map(getPlayerCard),
+      children: getSortedPlayersByTurn(room).map(getPlayerCard),
     }),
     Div({
       className: 'exchange-section',
@@ -119,10 +120,8 @@ export default function (app: HTMLDivElement): void {
         Header(2, {
           text: getLanguageConfig().gameboard.exchangeAnimalsHeader,
         }),
-        Div({ id: 'exchange-grid', className: 'exchange-grid' }),
+        getExchangeGrid(isYourTurn),
       ],
     })
   );
-
-  renderExchangeGrid(isYourTurn);
 }

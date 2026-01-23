@@ -1,5 +1,7 @@
 :root {
+  --white: #ffffff;
   --bg-color: #f4f7f6;
+  --border: #dfe6e9;
   --card-bg: #ffffff;
   --primary: #6c5ce7;
   --primary-hover: #5a4ad1;
@@ -26,6 +28,9 @@ body {
 }
 
 #app {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
@@ -36,7 +41,6 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
   padding: 10px;
 }
 
@@ -48,7 +52,6 @@ body {
   padding: 10px;
   border-radius: var(--border-radius);
   box-shadow: var(--shadow);
-  margin-bottom: 10px;
   flex-wrap: wrap;
   gap: 15px;
 }
@@ -101,7 +104,7 @@ ul {
 
 .input-group input {
   padding: 8px 12px;
-  border: 1px solid #dfe6e9;
+  border: 1px solid var(--border);
   border-radius: 6px;
   font-size: 1rem;
   color: var(--text-dark);
@@ -131,7 +134,7 @@ img {
 .dashboard-grid {
   display: grid;
   grid-template-columns: 1fr 350px; /* List takes available space, Panel is fixed width */
-  gap: 30px;
+  gap: 20px;
   align-items: start;
 }
 
@@ -139,7 +142,7 @@ img {
 .header-action {
   width: 40px;
   height: 40px;
-  background-color: #dfe6e9;
+  background-color: var(--border);
   border-radius: 12px;
   display: flex;
   justify-content: center;
@@ -211,7 +214,7 @@ img {
   flex-direction: column;
   gap: 1rem;
   background: var(--card-bg);
-  padding: 25px;
+  padding: 15px;
   border-radius: var(--border-radius);
   box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1); /* Slightly deeper shadow for prominence */
   border-top: 5px solid var(--primary);
@@ -231,7 +234,7 @@ img {
   padding: 8px;
   font-size: 1.1rem;
   font-weight: bold;
-  border: 1px solid #dfe6e9;
+  border: 1px solid var(--border);
   border-radius: 6px;
 }
 
@@ -260,7 +263,7 @@ img {
 }
 
 .rule-tag {
-  background: #dfe6e9;
+  background: var(--border);
   color: var(--text-light);
   font-size: 0.75rem;
   padding: 2px 8px;
@@ -312,7 +315,7 @@ img {
 }
 
 .btn-secondary {
-  background-color: #dfe6e9;
+  background-color: var(--border);
   color: var(--text-dark);
 }
 
@@ -377,7 +380,6 @@ img {
   flex-direction: column;
   align-items: center;
   gap: 15px;
-  margin-bottom: 30px;
   padding: 20px;
   background: var(--card-bg);
   border-radius: var(--border-radius);
@@ -392,7 +394,7 @@ img {
 .dice {
   width: 60px;
   height: 60px;
-  background-color: #dfe6e9;
+  background-color: var(--border);
   border-radius: 12px;
   display: flex;
   justify-content: center;
@@ -405,12 +407,22 @@ img {
   background-color: var(--danger-bg);
 }
 
-/* --- Players Grid (Responsive) --- */
+/* --- Active Card Section --- */
+.active-card-section {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px;
+  background: var(--border);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+}
+
+/* --- Players Grid --- */
 .players-container {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 20px;
-  margin-bottom: 30px;
 }
 
 .player-card {
@@ -425,7 +437,7 @@ img {
 /* Highlight the active player */
 .player-card.active-turn {
   border-color: var(--accent);
-  background-color: #f0fdf4; /* Very light green */
+  background-color: #f0fdf4;
   transform: translateY(-2px);
 }
 
@@ -451,7 +463,7 @@ img {
 /* Animal Inventory Grid */
 .animal-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr); /* 4 cols for animals */
+  grid-template-columns: repeat(5, 1fr);
   gap: 10px;
 }
 
@@ -459,9 +471,7 @@ img {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: #f8f9fa;
   padding: 6px;
-  border-radius: 8px;
 }
 
 .animal-icon {
@@ -470,7 +480,6 @@ img {
 
 .animal-count {
   font-weight: bold;
-  margin-top: 4px;
   color: var(--text-dark);
 }
 
@@ -496,7 +505,7 @@ img {
 
 .trade-btn {
   background: white;
-  border: 1px solid #dfe6e9;
+  border: 1px solid var(--border);
   padding: 8px 12px;
   border-radius: 6px;
   cursor: pointer;
@@ -527,7 +536,7 @@ img {
   align-items: center;
   justify-content: center;
   background: var(--success);
-  color: #fff;
+  color: var(--white);
   padding: 4px;
   border-radius: 4px;
   overflow: hidden;

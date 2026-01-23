@@ -1,17 +1,24 @@
-import { Button } from '../../components';
+import { Button, Div, NoEl, Span } from '../../components';
 import {
   ANIMALS,
+  ANIMALS_DEFAULT_QUANTITY,
   ANIMALS_ICONS_CONFIG,
   EVENTS,
   GAME_RULES,
 } from '../../constants';
+import { getLanguageConfig } from '../../features/language';
 import Snackbar from '../../features/snackbar';
 import { emitEvent, getSocketId } from '../../socket/client';
 import { state } from '../../state/store';
 
-import { canExchange } from './helpers';
+import {
+  canExchange,
+  getActivePlayerId,
+  getUsedAnimalCards,
+  isLimitedCardsRule,
+} from './helpers';
 
-import type { TradableAnimals } from '../../types';
+import type { Player, Room, TradableAnimals } from '../../types';
 
 type Pair = {
   left: TradableAnimals;
@@ -27,16 +34,82 @@ function label(pair: Pair): string {
   return `${pair.leftCount} ${leftIcon} → ${pair.rightCount} ${rightIcon}`;
 }
 
-export function renderExchangeGrid(isYourTurn: boolean): void {
-  const container = document.getElementById('exchange-grid');
-  if (!container) return;
-  container.innerHTML = '';
+export function getLeftCardsSection(room: Room): HTMLDivElement {
+  if (!isLimitedCardsRule(room)) {
+    return NoEl();
+  }
+  const animalGridItems = Object.entries(ANIMALS_ICONS_CONFIG)
+    .filter(
+      ([animalKey]) =>
+        ![ANIMALS.FOX, ANIMALS.BEAR].includes(animalKey as ANIMALS)
+    )
+    .map(([animalKey, animalData]) => {
+      const count = getUsedAnimalCards(room, animalKey as TradableAnimals);
+      const cardsLeft =
+        ANIMALS_DEFAULT_QUANTITY[animalKey as TradableAnimals] - count;
+      return Div({
+        className: 'animal-item',
+        children: [
+          Div({ className: 'animal-icon', text: animalData.icon }),
+          Div({ className: 'animal-count', text: cardsLeft.toString() }),
+        ],
+      });
+    });
 
-  const room = state.currentRoom;
-  if (!room) return;
+  return Div({
+    className: 'active-card-section',
+    children: animalGridItems,
+  });
+}
 
-  const me = room.players.find(p => p.id === getSocketId());
-  if (!me) return;
+export function getPlayerCard(player: Player): HTMLDivElement {
+  const isActive: boolean = player.id === getActivePlayerId();
+  const isWinner: boolean = player.id === state.currentRoom?.winner;
+
+  const animalGridItems = Object.entries(ANIMALS_ICONS_CONFIG)
+    .filter(
+      ([animalKey]) =>
+        ![ANIMALS.FOX, ANIMALS.BEAR].includes(animalKey as ANIMALS)
+    )
+    .map(([animalKey, animalData]) => {
+      const count = player.animals[animalKey as TradableAnimals] || 0;
+      return Div({
+        className: 'animal-item',
+        children: [
+          Div({ className: 'animal-icon', text: animalData.icon }),
+          Div({ className: 'animal-count', text: count.toString() }),
+        ],
+      });
+    });
+
+  return Div({
+    className: `player-card ${isActive || isWinner ? 'active-turn' : ''}`,
+    children: [
+      Div({
+        className: 'player-header',
+        children: [
+          Span({ className: 'player-name', text: player.name }),
+          Span({
+            className: 'turn-indicator',
+            text: isWinner
+              ? getLanguageConfig().gameboard.winner
+              : isActive
+                ? getLanguageConfig().gameboard.yourTurn
+                : '',
+          }),
+        ],
+      }),
+      Div({
+        className: 'animal-grid',
+        children: animalGridItems,
+      }),
+    ],
+  });
+}
+
+export function getExchangeGrid(isYourTurn: boolean): HTMLDivElement {
+  const room = state.currentRoom!;
+  const me = room.players.find(p => p.id === getSocketId())!;
 
   const isActionForbidden =
     room.rules[GAME_RULES.ONE_EXCHANGE] && me.exchangedThisTurn;
@@ -109,5 +182,5 @@ export function renderExchangeGrid(isYourTurn: boolean): void {
     });
   });
 
-  container.append(...exchangeBtns);
+  return Div({ className: 'exchange-grid', children: exchangeBtns });
 }
