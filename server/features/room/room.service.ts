@@ -105,3 +105,10 @@ export function removePlayerFromAllRooms(io: Server, socket: Socket) {
     }
   }
 }
+
+export function getActiveRoom(playerId: string): Room | null {
+  for (const room of rooms.values()) {
+    if (room.players.has(playerId)) return room;
+  }
+  return null;
+}

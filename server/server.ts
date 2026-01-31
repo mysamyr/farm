@@ -14,10 +14,9 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: { origin: '*' },
-  pingInterval: 25000,
-  pingTimeout: 120000,
+  pingTimeout: 60 * 1000,
   connectionStateRecovery: {
-    maxDisconnectionDuration: 5 * 60 * 1000,
+    maxDisconnectionDuration: 60 * 1000,
   },
 });
 
