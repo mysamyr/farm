@@ -13,6 +13,7 @@ export const LOCAL_STORAGE_KEY = {
 export const SELECTORS = {
   inputs: {
     userName: 'username',
+    roomName: 'room-name-input',
   },
   containers: {
     roomsList: 'rooms-list',

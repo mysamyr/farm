@@ -1,6 +1,7 @@
 node_modules
 .husky
 .idea
+.vscode
 .git
 /assets
 /dist
