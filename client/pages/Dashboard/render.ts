@@ -29,8 +29,13 @@ export function renderRooms(): void {
 }
 
 export function renderCurrentRoomSection(): void {
-  const container = document.getElementById(SELECTORS.containers.currentRoom);
+  const container = document.getElementById(
+    SELECTORS.containers.currentRoom
+  ) as HTMLDivElement;
   if (!container) return;
+  const roomNameInput = document.getElementById(
+    SELECTORS.inputs.roomName
+  ) as HTMLInputElement;
   container.innerHTML = '';
   const room = state.currentRoom;
   if (!room) {
@@ -41,7 +46,7 @@ export function renderCurrentRoomSection(): void {
   }
 
   container.append(
-    getRoomHeader(room),
+    getRoomHeader(room, roomNameInput),
     getPlayersList(room),
     getGameRules(room),
     getActionsPanel(room)

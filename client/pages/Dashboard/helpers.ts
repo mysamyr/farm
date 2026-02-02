@@ -158,40 +158,46 @@ export function getRoomCard(room: Room): HTMLDivElement {
   });
 }
 
-export function getRoomHeader(room: Room): HTMLDivElement {
+export function getRoomHeader(
+  room: Room,
+  roomNameInput: HTMLInputElement
+): HTMLDivElement {
   const isOwner: boolean = room.ownerId === getSocketId();
 
   const LabelComponent = isOwner ? Label : Span;
 
-  const roomName = isOwner
-    ? Input({
-        className: 'room-name-input',
-        value: room.name,
-        type: 'text',
-        onChange: (e: Event): void => {
-          const input = e.target as HTMLInputElement;
-          const name = input.value.trim();
-          if (!name) {
-            input.value = room.name;
-            Snackbar.displayMsg(
-              getLanguageConfig().dashboard.errors.noRoomName
-            );
-            return;
-          }
-          if (name === room.name) return;
-          input.classList.remove('input-error');
-          emitEvent(
-            EVENTS.ROOM_UPDATE,
-            { roomId: room.id, name },
-            (res: { ok: boolean; error?: string }): void => {
-              if (!res.ok) {
-                Snackbar.displayMsg(res.error as string);
-              }
+  const roomName = roomNameInput
+    ? roomNameInput
+    : isOwner
+      ? Input({
+          id: 'room-name-input',
+          className: 'room-name-input',
+          value: room.name,
+          type: 'text',
+          onChange: (e: Event): void => {
+            const input = e.target as HTMLInputElement;
+            const name = input.value.trim();
+            if (!name) {
+              input.value = room.name;
+              Snackbar.displayMsg(
+                getLanguageConfig().dashboard.errors.noRoomName
+              );
+              return;
             }
-          );
-        },
-      })
-    : Header(3, { text: room.name });
+            if (name === room.name) return;
+            input.classList.remove('input-error');
+            emitEvent(
+              EVENTS.ROOM_UPDATE,
+              { roomId: room.id, name },
+              (res: { ok: boolean; error?: string }): void => {
+                if (!res.ok) {
+                  Snackbar.displayMsg(res.error as string);
+                }
+              }
+            );
+          },
+        })
+      : Header(3, { text: room.name });
 
   return Div({
     children: [

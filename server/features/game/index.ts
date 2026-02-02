@@ -104,10 +104,11 @@ const rollDiceHandler =
     const winner = checkWinner(player);
     if (winner) {
       winnerHandler(io, room, player);
+    } else {
+      setNextTurn(room);
     }
 
     room.dice = dice;
-    setNextTurn(room);
     io.to(room.id).emit(EVENTS.GAME_UPDATE, {
       room: serializeRoom(room),
       dice,
