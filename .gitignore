@@ -8,7 +8,7 @@ yarn-error.log*
 /*.tsbuildinfo
 
 # Local env config
-.env
+assets/.env
 
 # IDEs
 .vscode/

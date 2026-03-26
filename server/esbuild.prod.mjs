@@ -7,7 +7,6 @@ esbuild.build({
   target: ['node18'],
   minify: true,
   sourcemap: false,
-  define: { 'process.env.NODE_ENV': '"production"' },
   external: ['socket.io', 'socket.io-client'],
   outfile: 'dist/server.js',
 });

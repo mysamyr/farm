@@ -1,0 +1,8 @@
+version: '3.8'
+
+services:
+  farm:
+    build: .
+    ports:
+      - '3211:3211'
+    restart: unless-stopped

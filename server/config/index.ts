@@ -1,13 +1,11 @@
-import { join } from 'node:path';
 import { loadEnvFile } from 'node:process';
 
-import { log } from '../services/logger';
-
 try {
-  loadEnvFile(join(__dirname, '..', '..', '.env'));
+  loadEnvFile('.env');
 } catch (e: unknown) {
   if ((e as NodeJS.ErrnoException).code === 'ENOENT')
-    log('warn', 'No .env file found or could not be loaded.');
+    // eslint-disable-next-line no-console
+    console.warn('No .env file found or could not be loaded.');
 }
 
 export default {

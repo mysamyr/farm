@@ -1,0 +1,16 @@
+/.husky
+/.idea
+/.vscode
+/assets
+/dist
+/node_modules
+.dockerignore
+assets/.env
+.git
+.gitignore
+.prettierignore
+.prettierrc
+eslint.config.ts
+README.md
+rules.md
+/public/script.js.map
