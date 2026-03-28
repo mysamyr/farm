@@ -31,7 +31,7 @@ server.listen(config.PORT, (): void => {
   log('info', `Server started: http://localhost:${config.PORT}`, {
     port: config.PORT,
   });
-  if (config.ENV === 'production') {
+  if (config.ENV === 'compile') {
     openUrlInBrowser(`http://localhost:${config.PORT}`);
   }
 });

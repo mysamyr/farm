@@ -8,7 +8,6 @@ esbuild.build({
   target: ['es2018'],
   minify: true,
   sourcemap: false,
-  define: { 'process.env.NODE_ENV': '"production"' },
   legalComments: 'none',
   outfile: 'public/script.js',
 });
