@@ -29,13 +29,11 @@ FROM node:24-alpine AS runner
 WORKDIR /app
 USER node
 
-ENV PORT=3211
+ENV NODE_ENV=production
 
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/package.json ./package.json
 COPY --from=prod-deps /app/node_modules ./node_modules
-
-EXPOSE 3211
 
 CMD ["node", "dist/server.js"]

@@ -10,8 +10,11 @@ try {
 
 export default {
   ENV:
-    (process.env.NODE_ENV as 'development' | 'production' | 'test') ||
-    'development',
+    (process.env.NODE_ENV as
+      | 'development'
+      | 'production'
+      | 'compile'
+      | 'test') || 'development',
   PORT: process.env.PORT || 3000,
   LOG_LEVEL:
     (process.env.LOG_LEVEL as 'debug' | 'info' | 'warn' | 'error') || 'info',
