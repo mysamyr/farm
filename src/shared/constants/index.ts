@@ -27,7 +27,6 @@ export const EVENTS = {
   ROOM_CLOSED: 'room:closed',
   GAME_STARTED: 'game:started',
   GAME_UPDATE: 'game:update',
-  GAME_FINISHED: 'game:finished',
 
   NOTIFICATION: 'notification',
 } as const;

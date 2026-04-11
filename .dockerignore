@@ -5,7 +5,6 @@
 /dist
 /node_modules
 .dockerignore
-assets/.env
 .git
 .gitignore
 .prettierignore
