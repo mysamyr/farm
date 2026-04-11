@@ -1,4 +1,4 @@
-import { EVENTS } from '@shared/constants';
+import { FARM_EVENTS } from '@shared/constants/farm';
 
 import { Button, Div, Header, Input, Label } from '../../components';
 import { LOCAL_STORAGE_KEY, SELECTORS } from '../../constants';
@@ -28,7 +28,7 @@ export default function (app: HTMLDivElement): void {
       const name = input.value.trim();
       if (name) {
         input.classList.remove('input-error');
-        emitEvent(EVENTS.PLAYER_RENAME, { name });
+        emitEvent(FARM_EVENTS.PLAYER_RENAME, { name });
         setValue(LOCAL_STORAGE_KEY.USERNAME, name);
         renderRooms();
       }
@@ -56,7 +56,7 @@ export default function (app: HTMLDivElement): void {
       return;
     }
     emitEvent(
-      EVENTS.ROOM_CREATE,
+      FARM_EVENTS.ROOM_CREATE,
       null,
       (res: { ok: boolean; error?: string }): void => {
         if (!res.ok) {

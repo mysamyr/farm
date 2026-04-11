@@ -1,11 +1,11 @@
-import { ANIMALS_DEFAULT_QUANTITY, GAME_RULES } from '@shared/constants';
+import { ANIMALS_DEFAULT_QUANTITY, GAME_RULES } from '@shared/constants/farm';
 
 import {
   ANIMALS_WAGES,
   BLUE_DICE,
   FARM_ANIMALS,
   ORANGE_DICE,
-} from '../../constants';
+} from './constants';
 
 import type {
   DiceAnimals,
@@ -13,7 +13,7 @@ import type {
   Rules,
   Room,
   TradableAnimals,
-} from '@shared/types';
+} from '@shared/types/farm';
 
 export function rollDice(): [DiceAnimals, DiceAnimals] {
   return [

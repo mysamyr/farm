@@ -1,16 +1,30 @@
-import {
-  ANIMALS,
-  ROOM_STATES,
-  EVENTS,
-  NOTIFICATION_TYPES,
-} from '@shared/constants';
+import { ROOM_STATES, EVENTS, NOTIFICATION_TYPES } from '@shared/constants';
+import { ANIMALS, GAME_RULES } from '@shared/constants/farm';
 
-import { ANIMALS_WAGES, TURN_START_INDEX } from '../../constants';
+import { ANIMALS_WAGES, TURN_START_INDEX } from './constants';
+import { getAddedAnimalsCount, shuffleArray } from './helpers';
 
-import { getAddedAnimalsCount, shuffleArray } from './game.helpers';
-
-import type { DiceAnimals, TradableAnimals, Player, Room } from '@shared/types';
+import type {
+  DiceAnimals,
+  TradableAnimals,
+  Player,
+  Room,
+} from '@shared/types/farm';
 import type { Server } from 'socket.io';
+
+export function addRoomFields(): Pick<Room, 'rules' | 'order' | 'turn'> {
+  return {
+    rules: Object.values(GAME_RULES).reduce(
+      (acc, rule) => {
+        acc[rule] = false;
+        return acc;
+      },
+      {} as Record<GAME_RULES, boolean>
+    ),
+    order: [],
+    turn: TURN_START_INDEX,
+  };
+}
 
 export function winnerHandler(io: Server, room: Room, player: Player): void {
   room.state = ROOM_STATES.FINISHED;

@@ -3,7 +3,7 @@ import os from 'node:os';
 import express from 'express';
 import qrcode from 'qrcode';
 
-import config from '../../config';
+import config from '../../../config';
 
 const router = express.Router();
 

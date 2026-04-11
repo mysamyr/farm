@@ -1,9 +1,9 @@
+import { ROOM_STATES } from '@shared/constants';
 import {
-  DEFAULT_CONFIG,
-  EVENTS,
   GAME_RULES,
-  ROOM_STATES,
-} from '@shared/constants';
+  DEFAULT_CONFIG,
+  FARM_EVENTS,
+} from '@shared/constants/farm';
 
 import {
   Button,
@@ -22,7 +22,7 @@ import Snackbar from '../../features/snackbar';
 import { emitEvent, getSocketId } from '../../socket/client';
 import { state } from '../../state/store';
 
-import type { Room, Rules } from '@shared/types';
+import type { Room, Rules } from '@shared/types/farm';
 
 function getRoomStateLabel(room: Room): HTMLSpanElement {
   return Span({
@@ -140,7 +140,7 @@ export function getRoomCard(room: Room): HTMLDivElement {
             return;
           }
           emitEvent(
-            EVENTS.ROOM_JOIN,
+            FARM_EVENTS.ROOM_JOIN,
             { roomId: room.id },
             (res: { ok: boolean; error?: string }): void => {
               if (!userName) {
@@ -188,7 +188,7 @@ export function getRoomHeader(
             if (name === room.name) return;
             input.classList.remove('input-error');
             emitEvent(
-              EVENTS.ROOM_UPDATE,
+              FARM_EVENTS.ROOM_UPDATE,
               { roomId: room.id, name },
               (res: { ok: boolean; error?: string }): void => {
                 if (!res.ok) {
@@ -260,7 +260,7 @@ export function getGameRules(room: Room): HTMLDivElement {
             checked: room.rules[ruleKey],
             onChange: (e: Event): void => {
               emitEvent(
-                EVENTS.ROOM_UPDATE,
+                FARM_EVENTS.ROOM_UPDATE,
                 {
                   roomId: room.id,
                   rules: {
@@ -320,7 +320,7 @@ export function getActionsPanel(room: Room): HTMLDivElement {
               );
               return;
             }
-            emitEvent(EVENTS.GAME_START, { roomId: room.id });
+            emitEvent(FARM_EVENTS.GAME_START, { roomId: room.id });
           },
         }),
         Button({
@@ -328,7 +328,7 @@ export function getActionsPanel(room: Room): HTMLDivElement {
           text: getLanguageConfig().roomButton.closeRoom,
           onClick: (): void => {
             emitEvent(
-              EVENTS.ROOM_CLOSE,
+              FARM_EVENTS.ROOM_CLOSE,
               {
                 roomId: room.id,
               },
@@ -346,7 +346,7 @@ export function getActionsPanel(room: Room): HTMLDivElement {
           className: ['btn', 'btn-danger-outline', 'full-width'],
           text: getLanguageConfig().roomButton.leaveRoom,
           onClick: (): void => {
-            emitEvent(EVENTS.ROOM_LEAVE, {
+            emitEvent(FARM_EVENTS.ROOM_LEAVE, {
               roomId: room.id,
             });
           },

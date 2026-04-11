@@ -5,6 +5,7 @@ import {
   NOTIFICATION_TYPES,
 } from '@shared/constants';
 
+import { LogLevel } from '../../../constants';
 import { log } from '../../services/logger';
 import { checkIfPlayerAlreadyInRoom } from '../player/player.helpers';
 
@@ -24,14 +25,14 @@ import type {
   LeaveRoomReq,
   UpdateRoomReq,
 } from './room.types';
-import type { AckFunc } from '../../types';
+import type { AckFunc } from '../../../types';
 import type { Room } from '@shared/types';
 import type { Server, Socket } from 'socket.io';
 
 const createRoomHandler =
   (io: Server, socket: Socket) =>
   (_req: null, ack?: AckFunc): void => {
-    log('debug', 'event:room:create', {
+    log(LogLevel.DEBUG, 'event:room:create', {
       socketId: socket.id,
     });
 
@@ -54,9 +55,7 @@ const createRoomHandler =
       return;
     }
 
-    const room: Room = createRoom({
-      ownerId: socket.id,
-    });
+    const room: Room = createRoom(socket.id);
     room.players.push(socket.data.player);
     socket.join(room.id);
     updateRoomsList(io);
@@ -66,7 +65,7 @@ const createRoomHandler =
 const updateRoomHandler =
   (io: Server, socket: Socket) =>
   (req: UpdateRoomReq, ack?: AckFunc): void => {
-    log('debug', 'event:room:update', {
+    log(LogLevel.DEBUG, 'event:room:update', {
       socketId: socket.id,
       ...req,
     });
@@ -97,7 +96,7 @@ const updateRoomHandler =
 const joinRoomHandler =
   (io: Server, socket: Socket) =>
   (req: JoinRoomReq, ack?: AckFunc): void => {
-    log('debug', 'event:room:join', {
+    log(LogLevel.DEBUG, 'event:room:join', {
       socketId: socket.id,
       roomId: req.roomId,
     });
@@ -131,7 +130,7 @@ const joinRoomHandler =
     updateRoomsList(io);
     if (ack) ack({ ok: true });
 
-    log('info', 'room:joined', {
+    log(LogLevel.INFO, 'room:joined', {
       roomId: req.roomId,
       socketId: socket.id,
       playerName: socket.data.player.name,
@@ -141,7 +140,7 @@ const joinRoomHandler =
 const leaveRoomHandler =
   (io: Server, socket: Socket) =>
   (req: LeaveRoomReq, ack?: AckFunc): void => {
-    log('debug', 'event:room:leave', {
+    log(LogLevel.DEBUG, 'event:room:leave', {
       socketId: socket.id,
       roomId: req.roomId,
     });
@@ -165,7 +164,7 @@ const leaveRoomHandler =
 const closeRoomHandler =
   (io: Server, socket: Socket) =>
   (req: CloseRoomReq, ack?: AckFunc): void => {
-    log('debug', 'event:room:close', {
+    log(LogLevel.DEBUG, 'event:room:close', {
       socketId: socket.id,
       roomId: req.roomId,
     });
@@ -199,7 +198,7 @@ const closeRoomHandler =
     updateRoomsList(io);
     if (ack) ack({ ok: true });
 
-    log('info', 'room:closed', { roomId: req.roomId });
+    log(LogLevel.INFO, 'room:closed', { roomId: req.roomId });
   };
 
 export function registerRoomFeature(io: Server): void {

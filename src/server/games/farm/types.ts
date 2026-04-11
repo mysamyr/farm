@@ -1,4 +1,4 @@
-import type { TradableAnimals } from '@shared/types';
+import type { TradableAnimals } from '@shared/types/farm';
 
 export type StartGameReq = { roomId: string };
 

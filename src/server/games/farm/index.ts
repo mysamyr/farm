@@ -1,8 +1,13 @@
-import { ANIMALS, EVENTS, ROOM_STATES } from '@shared/constants';
+import { ROOM_STATES } from '@shared/constants';
+import { ANIMALS, FARM_EVENTS } from '@shared/constants/farm';
 
-import { log } from '../../services/logger';
-import { canStartGame } from '../room/room.helpers';
-import { getRoomById, updateRoomsList } from '../room/room.service';
+import { LogLevel } from '../../constants';
+import { canStartGame } from '../../core/features/room/room.helpers';
+import {
+  getRoomById,
+  updateRoomsList,
+} from '../../core/features/room/room.service';
+import { log } from '../../core/services/logger';
 
 import {
   isEnoughCardsToExchange,
@@ -12,28 +17,29 @@ import {
   isExchangeForbidden,
   rollDice,
   areLimitedCards,
-} from './game.helpers';
+} from './helpers';
 import {
   applyDiceResult,
   applyExchange,
   setNextTurn,
   setOrder,
   winnerHandler,
-} from './game.service';
+} from './service';
 
-import type { ExchangeReq, RollDiceReq, StartGameReq } from './game.types';
+import type { ExchangeReq, RollDiceReq, StartGameReq } from './types';
 import type { AckFunc } from '../../types';
+import type { Room } from '@shared/types/farm';
 import type { Server, Socket } from 'socket.io';
 
 const startGameHandler =
   (io: Server, socket: Socket) =>
   (req: StartGameReq, ack?: AckFunc): void => {
-    log('debug', 'event:game:start', {
+    log(LogLevel.DEBUG, 'event:game:start', {
       socketId: socket.id,
       roomId: req.roomId,
     });
 
-    const room = getRoomById(req.roomId);
+    const room = getRoomById(req.roomId) as Room;
     if (!room) {
       ack?.({ ok: false, error: 'ROOM_NOT_FOUND' });
       return;
@@ -63,20 +69,20 @@ const startGameHandler =
     });
 
     updateRoomsList(io);
-    io.to(room.id).emit(EVENTS.GAME_STARTED, { room });
+    io.to(room.id).emit(FARM_EVENTS.GAME_STARTED, { room });
     ack?.({ ok: true });
-    log('info', 'game:started', { room });
+    log(LogLevel.INFO, 'game:started', { room });
   };
 
 const rollDiceHandler =
   (io: Server, socket: Socket) =>
   (req: RollDiceReq, ack?: AckFunc): void => {
-    log('debug', 'event:game:rollDice', {
+    log(LogLevel.DEBUG, 'event:game:rollDice', {
       socketId: socket.id,
       roomId: req.roomId,
     });
 
-    const room = getRoomById(req.roomId);
+    const room = getRoomById(req.roomId) as Room;
     if (!room) {
       ack?.({ ok: false, error: 'ROOM_NOT_FOUND' });
       return;
@@ -109,7 +115,7 @@ const rollDiceHandler =
     }
 
     room.dice = dice;
-    io.to(room.id).emit(EVENTS.GAME_UPDATE, {
+    io.to(room.id).emit(FARM_EVENTS.GAME_UPDATE, {
       room,
       dice,
     });
@@ -120,12 +126,12 @@ const exchangeHandler =
   (io: Server, socket: Socket) =>
   (req: ExchangeReq, ack?: AckFunc): void => {
     const { roomId, from, to } = req;
-    log('debug', 'event:game:exchange', {
+    log(LogLevel.DEBUG, 'event:game:exchange', {
       socketId: socket.id,
       ...req,
     });
 
-    const room = getRoomById(roomId);
+    const room = getRoomById(roomId) as Room;
     if (!room) {
       ack?.({ ok: false, error: 'ROOM_NOT_FOUND' });
       return;
@@ -167,14 +173,14 @@ const exchangeHandler =
       winnerHandler(io, room, player);
     }
 
-    io.to(room.id).emit(EVENTS.GAME_UPDATE, { room });
+    io.to(room.id).emit(FARM_EVENTS.GAME_UPDATE, { room });
     ack?.({ ok: true });
   };
 
 export function registerGameFeature(io: Server): void {
-  io.on(EVENTS.CONNECTION, (socket: Socket): void => {
-    socket.on(EVENTS.GAME_START, startGameHandler(io, socket));
-    socket.on(EVENTS.GAME_ROLL_DICE, rollDiceHandler(io, socket));
-    socket.on(EVENTS.GAME_EXCHANGE, exchangeHandler(io, socket));
+  io.on(FARM_EVENTS.CONNECTION, (socket: Socket): void => {
+    socket.on(FARM_EVENTS.GAME_START, startGameHandler(io, socket));
+    socket.on(FARM_EVENTS.GAME_ROLL_DICE, rollDiceHandler(io, socket));
+    socket.on(FARM_EVENTS.GAME_EXCHANGE, exchangeHandler(io, socket));
   });
 }

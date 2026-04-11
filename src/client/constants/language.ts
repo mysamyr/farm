@@ -1,4 +1,4 @@
-import { GAME_RULES } from '@shared/constants';
+import { GAME_RULES } from '@shared/constants/farm';
 
 import type { Language, Translation } from '../types/language';
 

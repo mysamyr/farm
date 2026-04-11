@@ -1,4 +1,5 @@
-import { EVENTS, NOTIFICATION_TYPES } from '@shared/constants';
+import { NOTIFICATION_TYPES } from '@shared/constants';
+import { FARM_EVENTS } from '@shared/constants/farm';
 
 import { LOCAL_STORAGE_KEY, PATHS } from './constants';
 import { getLanguageConfig } from './features/language';
@@ -15,16 +16,16 @@ import { state } from './state/store';
 import { navTo, parseHash } from './utils/navigation';
 import { setupUnloadWarning } from './utils/unload';
 
-import type { Room } from '@shared/types';
+import type { Room } from '@shared/types/farm';
 
 function setupSocket(): void {
-  subscribe(EVENTS.CONNECT, (): void => {
+  subscribe(FARM_EVENTS.CONNECT, (): void => {
     console.log('Connected:', getSocketId());
     const name = localStorage.getItem(LOCAL_STORAGE_KEY.USERNAME);
-    if (name) emitEvent(EVENTS.PLAYER_RENAME, { name });
+    if (name) emitEvent(FARM_EVENTS.PLAYER_RENAME, { name });
   });
 
-  subscribe<Room[]>(EVENTS.ROOMS_LIST, (rooms: Room[]): void => {
+  subscribe<Room[]>(FARM_EVENTS.ROOMS_LIST, (rooms: Room[]): void => {
     // TODO: make a better comparison
     const roomsHaveChanged: boolean =
       JSON.stringify(state.rooms) !== JSON.stringify(rooms);
@@ -45,12 +46,12 @@ function setupSocket(): void {
     renderCurrentRoomSection();
   });
 
-  subscribe(EVENTS.ROOM_CLOSE, (): void => {
+  subscribe(FARM_EVENTS.ROOM_CLOSE, (): void => {
     state.currentRoom = null;
   });
 
   subscribe<{ room: Room }>(
-    EVENTS.GAME_STARTED,
+    FARM_EVENTS.GAME_STARTED,
     ({ room }: { room: Room }): void => {
       state.currentRoom = room;
       navTo(PATHS.GAME_BOARD + `?roomId=${room.id}`);
@@ -58,7 +59,7 @@ function setupSocket(): void {
   );
 
   subscribe<{ room: Room }>(
-    EVENTS.GAME_UPDATE,
+    FARM_EVENTS.GAME_UPDATE,
     ({ room }: { room: Room }): void => {
       state.currentRoom = room;
       renderGameBoard(app);
@@ -66,7 +67,7 @@ function setupSocket(): void {
   );
 
   subscribe<{ type: NOTIFICATION_TYPES; data: string }>(
-    EVENTS.NOTIFICATION,
+    FARM_EVENTS.NOTIFICATION,
     ({ type, data }): void => {
       const name = localStorage.getItem(LOCAL_STORAGE_KEY.USERNAME);
       const isCurrentUser = name === data;

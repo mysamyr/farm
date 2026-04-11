@@ -1,4 +1,4 @@
-import { ANIMALS } from '@shared/constants';
+import { ANIMALS } from '@shared/constants/farm';
 
 export const LOCAL_STORAGE_KEY = {
   LANGUAGE: 'farm:language',

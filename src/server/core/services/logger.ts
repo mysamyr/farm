@@ -1,13 +1,13 @@
-import config from '../config';
+import config from '../../config';
+import { LogLevel } from '../../constants';
 
 import type { Request, Response, NextFunction } from 'express';
 
-export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 const levels: Record<LogLevel, number> = {
-  debug: 10,
-  info: 20,
-  warn: 30,
-  error: 40,
+  [LogLevel.DEBUG]: 10,
+  [LogLevel.INFO]: 20,
+  [LogLevel.WARN]: 30,
+  [LogLevel.ERROR]: 40,
 };
 
 export function log(
@@ -26,7 +26,7 @@ export function httpLogger(req: Request, res: Response, next: NextFunction) {
   const start = Date.now();
   res.on('finish', () => {
     const ms = Date.now() - start;
-    log('debug', 'http', {
+    log(LogLevel.DEBUG, 'http', {
       method: req.method,
       url: req.url,
       status: res.statusCode,
