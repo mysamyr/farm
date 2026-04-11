@@ -119,7 +119,7 @@ export default function (app: HTMLDivElement): void {
     Div({
       className: 'exchange-section',
       children: [
-        Header(2, {
+        Header(3, {
           text: getLanguageConfig().gameboard.exchangeAnimalsHeader,
         }),
         getExchangeGrid(isYourTurn),

@@ -3,6 +3,7 @@ import { EVENTS, NOTIFICATION_TYPES } from '@shared/constants';
 import { LOCAL_STORAGE_KEY, PATHS } from './constants';
 import { getLanguageConfig } from './features/language';
 import Snackbar from './features/snackbar';
+import WinningAnimation from './features/winning-animation';
 import renderDashboard from './pages/Dashboard';
 import {
   renderCurrentRoomSection,
@@ -36,6 +37,7 @@ function setupSocket(): void {
 
     const { path } = parseHash();
     if (path === PATHS.GAME_BOARD) {
+      // If we're already on the game board, just update it instead of re-rendering the dashboard
       renderGameBoard(app);
       return;
     }
@@ -69,31 +71,33 @@ function setupSocket(): void {
       const name = localStorage.getItem(LOCAL_STORAGE_KEY.USERNAME);
       const isCurrentUser = name === data;
 
-      if (isCurrentUser) return; // Don't show notifications about the current user's own actions
-
-      switch (type) {
-        case NOTIFICATION_TYPES.PLAYER_JOINED:
-          Snackbar.displayMsg(
-            getLanguageConfig().notifications.playerJoined(data)
-          );
-          break;
-        case NOTIFICATION_TYPES.PLAYER_LEFT:
-          Snackbar.displayMsg(
-            getLanguageConfig().notifications.playerLeft(data)
-          );
-          break;
-        case NOTIFICATION_TYPES.CLOSE_ROOM:
-          Snackbar.displayMsg(
-            getLanguageConfig().notifications.roomClosed(data)
-          );
-          break;
-        case NOTIFICATION_TYPES.GAME_FINISHED:
-          Snackbar.displayMsg(
-            getLanguageConfig().notifications.gameFinished(data)
-          );
-          break;
-        default:
-          console.warn('Unknown notification type:', type);
+      if (!isCurrentUser) {
+        switch (type) {
+          case NOTIFICATION_TYPES.PLAYER_JOINED:
+            Snackbar.displayMsg(
+              getLanguageConfig().notifications.playerJoined(data)
+            );
+            break;
+          case NOTIFICATION_TYPES.PLAYER_LEFT:
+            Snackbar.displayMsg(
+              getLanguageConfig().notifications.playerLeft(data)
+            );
+            break;
+          case NOTIFICATION_TYPES.CLOSE_ROOM:
+            Snackbar.displayMsg(
+              getLanguageConfig().notifications.roomClosed(data)
+            );
+            break;
+          case NOTIFICATION_TYPES.GAME_FINISHED:
+            Snackbar.displayMsg(
+              getLanguageConfig().notifications.gameFinished(data)
+            );
+            break;
+          default:
+            console.warn('Unknown notification type:', type);
+        }
+      } else if (type === NOTIFICATION_TYPES.GAME_FINISHED) {
+        WinningAnimation.play();
       }
     }
   );

@@ -53,6 +53,7 @@ export type Translation = {
   };
   you: string;
   owner: string;
+  youWon: string;
   roomState: {
     idle: string;
     running: string;

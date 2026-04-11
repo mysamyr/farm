@@ -72,6 +72,7 @@ const translations: Record<LanguageCode, Translation> = {
     },
     you: 'You',
     owner: 'Owner',
+    youWon: "You've won the game!",
     help: {
       title: 'Game Goal',
       goal: 'Be the first to collect 1 animal of each species on your farm: Duck 🦆, Goat 🐐, Pig 🐖, Horse 🐎, Cow 🐄',
@@ -177,6 +178,7 @@ const translations: Record<LanguageCode, Translation> = {
     },
     you: 'Ви',
     owner: 'Власник',
+    youWon: 'Ви виграли!',
     help: {
       title: 'Мета гри',
       goal: 'Першим зібрати на своїй фермі по 1 тварині кожного виду: Качка 🦆, Коза 🐐, Свиня 🐖, Кінь 🐎, Корова 🐄',
