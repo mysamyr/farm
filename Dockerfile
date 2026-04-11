@@ -36,4 +36,4 @@ COPY --from=builder /app/public ./public
 COPY --from=builder /app/package.json ./package.json
 COPY --from=prod-deps /app/node_modules ./node_modules
 
-CMD ["node", "dist/server.js"]
+CMD ["node", "dist/server/server.js"]

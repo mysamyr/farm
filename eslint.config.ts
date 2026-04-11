@@ -11,7 +11,7 @@ export default defineConfig([
   importPlugin.flatConfigs.recommended,
   pluginN.configs['flat/recommended-module'],
   {
-    files: ['**/*.ts'],
+    files: ['src/**/*.ts'],
     languageOptions: {
       parser: tsEslint.parser,
       parserOptions: {
@@ -78,7 +78,7 @@ export default defineConfig([
     },
   },
   {
-    files: ['server/**/*.ts'],
+    files: ['src/server/**/*.ts'],
     languageOptions: {
       parser: tsEslint.parser,
       parserOptions: {
@@ -94,13 +94,13 @@ export default defineConfig([
         },
         typescript: {
           alwaysTryTypes: true,
-          project: ['./server/tsconfig.json'],
+          project: ['./src/server/tsconfig.json'],
         },
       },
     },
   },
   {
-    files: ['client/**/*.ts'],
+    files: ['src/client/**/*.ts'],
     languageOptions: {
       parser: tsEslint.parser,
       parserOptions: { ecmaVersion: 2023, sourceType: 'module' },
@@ -111,7 +111,7 @@ export default defineConfig([
         node: { extensions: ['.ts'] },
         typescript: {
           alwaysTryTypes: true,
-          project: ['./client/tsconfig.json'],
+          project: ['./src/client/tsconfig.json'],
         },
       },
     },

@@ -8,7 +8,11 @@
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "sourceMap": true,
-    "noUncheckedIndexedAccess": true
+    "noUncheckedIndexedAccess": true,
+    "baseUrl": "./",
+    "paths": {
+      "@shared/*": ["src/shared/*"]
+    }
   },
   "exclude": ["node_modules", "dist"]
 }
