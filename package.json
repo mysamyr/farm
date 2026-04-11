@@ -2,26 +2,25 @@
   "name": "farm-game",
   "version": "0.1.0",
   "description": "Board game socket server with rooms and configurable rules",
-  "main": "dist/server.js",
-  "types": "dist/index.d.ts",
+  "main": "dist/server/server.js",
   "type": "commonjs",
   "private": true,
   "engines": {
     "node": ">=22"
   },
   "scripts": {
-    "start": "node dist/server.js",
+    "start": "node dist/server/server.js",
     "clean": "rimraf dist public/script.js public/script.js.map public/styles.css",
-    "server:dev": "tsx watch --inspect server/server.ts",
-    "client:dev": "node client/esbuild.dev.mjs --watch",
-    "build:server:dev": "tsc -p server/tsconfig.json",
-    "build:client:dev": "node client/esbuild.dev.mjs",
+    "server:dev": "tsx watch --inspect src/server/server.ts",
+    "client:dev": "node src/client/esbuild.dev.mjs --watch",
+    "build:server:dev": "tsc -p src/server/tsconfig.json",
+    "build:client:dev": "node src/client/esbuild.dev.mjs",
     "build:dev": "npm run clean && npm run build:client:dev && npm run build:server:dev",
-    "build:client:prod": "node client/esbuild.prod.mjs",
-    "build:server:prod": "node server/esbuild.prod.mjs",
+    "build:client:prod": "node src/client/esbuild.prod.mjs",
+    "build:server:prod": "node src/server/esbuild.prod.mjs",
     "build:prod": "npm run clean && npm run build:client:prod && npm run build:server:prod",
     "package": "npm run build:prod && npx pkg package.json --out-path assets",
-    "typecheck": "tsc --noEmit -project server/tsconfig.json && tsc --noEmit -project client/tsconfig.json",
+    "typecheck": "tsc --noEmit -project src/server/tsconfig.json && tsc --noEmit -project src/client/tsconfig.json",
     "lint": "eslint .",
     "format": "prettier --write .",
     "prepare": "husky"
@@ -56,7 +55,7 @@
     "typescript-eslint": "^8.54.0"
   },
   "bin": {
-    "farm-game": "dist/server.js"
+    "farm-game": "dist/server/server.js"
   },
   "pkg": {
     "assets": [
