@@ -1,9 +1,9 @@
 import {
   ANIMALS,
   ANIMALS_DEFAULT_QUANTITY,
-  EVENTS,
+  FARM_EVENTS,
   GAME_RULES,
-} from '@shared/constants';
+} from '@shared/constants/farm';
 
 import { Button, Div, NoEl, Span } from '../../components';
 import { ANIMALS_ICONS_CONFIG } from '../../constants';
@@ -19,7 +19,7 @@ import {
   isLimitedCardsRule,
 } from './helpers';
 
-import type { Player, Room, TradableAnimals } from '@shared/types';
+import type { Player, Room, TradableAnimals } from '@shared/types/farm';
 
 type Pair = {
   left: TradableAnimals;
@@ -171,7 +171,7 @@ export function getExchangeGrid(isYourTurn: boolean): HTMLDivElement {
       onClick: (): void => {
         if (!enabled) return;
         emitEvent(
-          EVENTS.GAME_EXCHANGE,
+          FARM_EVENTS.GAME_EXCHANGE,
           { roomId: room.id, from: item.left, to: item.right },
           (res: { ok: boolean; error?: string }): void => {
             if (!res.ok) {

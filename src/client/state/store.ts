@@ -1,4 +1,4 @@
-import type { Room } from '@shared/types';
+import type { Room } from '@shared/types/farm';
 
 export const state: {
   currentRoom: Room | null;

@@ -1,5 +1,7 @@
 import { loadEnvFile } from 'node:process';
 
+import { Env, LogLevel } from '../constants';
+
 try {
   loadEnvFile('.env');
 } catch (e: unknown) {
@@ -9,13 +11,11 @@ try {
 }
 
 export default {
-  ENV:
-    (process.env.NODE_ENV as
-      | 'development'
-      | 'production'
-      | 'compile'
-      | 'test') || 'development',
-  PORT: process.env.PORT || 3000,
-  LOG_LEVEL:
-    (process.env.LOG_LEVEL as 'debug' | 'info' | 'warn' | 'error') || 'info',
+  ENV: (process.env.NODE_ENV as Env) || Env.DEVELOPMENT,
+  PORT: Number(process.env.PORT) || 3000,
+  LOG_LEVEL: (process.env.LOG_LEVEL as LogLevel) || LogLevel.INFO,
+} satisfies {
+  ENV: Env;
+  PORT: number;
+  LOG_LEVEL: LogLevel;
 };

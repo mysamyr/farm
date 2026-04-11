@@ -47,7 +47,7 @@ export function generateRoomName(rooms: Map<string, Room>): string {
   const adjective = adjectives[Math.floor(Math.random() * adjectives.length)];
   const noun = nouns[Math.floor(Math.random() * nouns.length)];
   const name = `${adjective} ${noun}`;
-  if ([...rooms.values()].some(room => room.name === name)) {
+  if (Array.from(rooms.values()).some(room => room.name === name)) {
     return generateRoomName(rooms);
   }
   return name;

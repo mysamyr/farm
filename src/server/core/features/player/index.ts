@@ -1,16 +1,17 @@
 import { EVENTS } from '@shared/constants';
 
+import { LogLevel } from '../../../constants';
 import { log } from '../../services/logger';
 import { updateRoomsList } from '../room/room.service';
 
 import type { RenamePlayerReq } from './player.types';
-import type { AckFunc } from '../../types';
+import type { AckFunc } from '../../../types';
 import type { Server, Socket } from 'socket.io';
 
 const renamePlayerHandler =
   (io: Server, socket: Socket) =>
   (payload: RenamePlayerReq, ack?: AckFunc): void => {
-    log('debug', 'event:player:rename', {
+    log(LogLevel.DEBUG, 'event:player:rename', {
       socketId: socket.id,
       name: payload.name,
     });

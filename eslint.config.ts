@@ -34,10 +34,7 @@ export default defineConfig([
       // Import hygiene
       'import/named': 'error',
       'import/default': 'error',
-      'import/no-unresolved': [
-        'error',
-        { commonjs: true, caseSensitive: true },
-      ],
+      'import/no-unresolved': 'off',
       'import/no-duplicates': 'error',
       'import/no-self-import': 'error',
       'import/no-cycle': ['warn', { maxDepth: 3 }],

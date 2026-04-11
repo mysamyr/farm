@@ -1,9 +1,14 @@
-import { ANIMALS, GAME_RULES } from '@shared/constants';
+import { ANIMALS, GAME_RULES } from '@shared/constants/farm';
 
 import { ANIMALS_ICONS_CONFIG } from '../../constants';
 import { state } from '../../state/store';
 
-import type { DiceAnimals, Player, Room, TradableAnimals } from '@shared/types';
+import type {
+  DiceAnimals,
+  Player,
+  Room,
+  TradableAnimals,
+} from '@shared/types/farm';
 
 export function isWildAnimal(animal: DiceAnimals): boolean {
   return [ANIMALS.FOX, ANIMALS.BEAR].includes(animal);

@@ -1,4 +1,5 @@
-import { EVENTS, ROOM_STATES } from '@shared/constants';
+import { ROOM_STATES } from '@shared/constants';
+import { FARM_EVENTS } from '@shared/constants/farm';
 
 import { Button, Div, Header, Span } from '../../components';
 import { PATHS } from '../../constants';
@@ -16,7 +17,7 @@ import {
 } from './helpers';
 import { getExchangeGrid, getPlayerCard, getLeftCardsSection } from './render';
 
-import type { DiceAnimals } from '@shared/types';
+import type { DiceAnimals } from '@shared/types/farm';
 
 export default function (app: HTMLDivElement): void {
   app.innerHTML = '';
@@ -57,7 +58,7 @@ export default function (app: HTMLDivElement): void {
               confirm(getLanguageConfig().gameboard.roomLeaveConfirmation)
             ) {
               emitEvent(
-                EVENTS.ROOM_LEAVE,
+                FARM_EVENTS.ROOM_LEAVE,
                 { roomId: room.id },
                 (res: { ok: boolean; error?: string }): void => {
                   if (!res.ok) {
@@ -98,7 +99,7 @@ export default function (app: HTMLDivElement): void {
           onClick: () => {
             if (!isYourTurn) return;
             emitEvent(
-              EVENTS.GAME_ROLL_DICE,
+              FARM_EVENTS.GAME_ROLL_DICE,
               { roomId: room.id },
               (res: { ok: boolean; error?: string }): void => {
                 if (!res.ok) {

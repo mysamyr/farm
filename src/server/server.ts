@@ -5,10 +5,11 @@ import express from 'express';
 import { Server } from 'socket.io';
 
 import config from './config';
-import qrRouter from './features/qr';
-import { httpLogger, log } from './services/logger';
-import { openUrlInBrowser } from './services/open';
-import { registerSocketHandlers } from './socket/handlers';
+import { Env, LogLevel } from './constants';
+import qrRouter from './core/features/qr';
+import { httpLogger, log } from './core/services/logger';
+import { openUrlInBrowser } from './core/services/open';
+import { registerSocketHandlers } from './core/socket/handlers';
 
 const app = express();
 const server = http.createServer(app);
@@ -28,10 +29,10 @@ app.use(express.static(path.join(__dirname, '..', '..', 'public')));
 registerSocketHandlers(io);
 
 server.listen(config.PORT, (): void => {
-  log('info', `Server started: http://localhost:${config.PORT}`, {
+  log(LogLevel.INFO, `Server started: http://localhost:${config.PORT}`, {
     port: config.PORT,
   });
-  if (config.ENV === 'compile') {
+  if (config.ENV === Env.COMPILE) {
     openUrlInBrowser(`http://localhost:${config.PORT}`);
   }
 });

@@ -1,14 +1,9 @@
-import {
-  GAME_RULES,
-  ROOM_STATES,
-  EVENTS,
-  NOTIFICATION_TYPES,
-} from '@shared/constants';
+import { ROOM_STATES, EVENTS, NOTIFICATION_TYPES } from '@shared/constants';
 
-import { TURN_START_INDEX } from '../../constants';
+import { LogLevel } from '../../../constants';
+import { getGameModule } from '../../../games';
 import { log } from '../../services/logger';
 import { uuid } from '../../utils/uuid';
-import { removePlayerFromOrder } from '../game/game.service';
 
 import { generateRoomName, shouldDeleteRoom } from './room.helpers';
 
@@ -27,30 +22,27 @@ export function listRooms(): Room[] {
 
 export function deleteRoom(roomId: string): void {
   if (rooms.delete(roomId)) {
-    log('info', 'room:delete', { roomId });
+    log(LogLevel.INFO, 'room:delete', { roomId });
   }
 }
 
-export function createRoom({ ownerId }: { ownerId: string }): Room {
+export function createRoom(ownerId: string): Room {
   const id = uuid();
+  const game: Room['game'] = 'farm';
+  const gameModule = getGameModule(game);
+  const roomFields = gameModule.addRoomFields();
   const room: Room = {
     id,
     name: generateRoomName(rooms),
     ownerId,
+    game,
     state: ROOM_STATES.IDLE,
     players: [],
-    rules: Object.values(GAME_RULES).reduce(
-      (acc, rule) => {
-        acc[rule] = false;
-        return acc;
-      },
-      {} as Record<GAME_RULES, boolean>
-    ),
-    order: [],
-    turn: TURN_START_INDEX,
+    ...roomFields,
+    rules: roomFields.rules,
   };
   rooms.set(id, room);
-  log('info', 'room:create', { roomId: id, ownerId, name: room.name });
+  log(LogLevel.INFO, 'room:create', { roomId: id, ownerId, name: room.name });
   return room;
 }
 
@@ -80,16 +72,20 @@ export function removePlayerFromRoom(
 
   room.players.splice(idx, 1);
   leaveRoom(io, room.id, socket.id);
-  removePlayerFromOrder(room, socket.id);
+  const gameModule = getGameModule(room.game);
+  gameModule.onPlayerRemoved?.(room, socket.id);
   if (shouldDeleteRoom(room, socket.id)) {
     deleteRoom(room.id);
-    log('info', 'room:deleted', { roomId: room.id, reason: 'playerLeft' });
+    log(LogLevel.INFO, 'room:deleted', {
+      roomId: room.id,
+      reason: 'playerLeft',
+    });
   } else if (room.ownerId === socket.id) {
     assignNewOwner(room);
   }
   updateRoomsList(io);
 
-  log('info', 'room:left', { roomId: room.id, socketId: socket.id });
+  log(LogLevel.INFO, 'room:left', { roomId: room.id, socketId: socket.id });
 }
 
 export function removePlayerFromAllRooms(io: Server, socket: Socket) {

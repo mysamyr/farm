@@ -1,5 +1,5 @@
 import type { LanguageCode } from '../constants/language';
-import type { GAME_RULES } from '@shared/constants';
+import type { GAME_RULES } from '@shared/constants/farm';
 
 export type Language = {
   name: string;
