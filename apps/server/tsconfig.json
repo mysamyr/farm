@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "types": ["node"],
+    "paths": {
+      "@game/shared/*": ["../../packages/shared/*"]
+    }
+  },
+  "include": ["src/**/*.ts"]
+}

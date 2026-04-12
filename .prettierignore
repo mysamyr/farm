@@ -4,6 +4,4 @@ node_modules
 .vscode
 .git
 /assets
-/dist
-/public
 package-lock.json

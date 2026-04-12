@@ -1,0 +1,16 @@
+{
+  "name": "@game/shared",
+  "version": "0.1.0",
+  "private": true,
+  "type": "commonjs",
+  "exports": {
+    "./constants": "./dist/constants/index.js",
+    "./constants/*": "./dist/constants/*.js",
+    "./types": "./dist/types/index.js",
+    "./types/*": "./dist/types/*.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  }
+}

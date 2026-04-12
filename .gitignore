@@ -4,11 +4,8 @@ npm-debug.log*
 yarn-error.log*
 
 # TypeScript
-/dist
+dist
 /*.tsbuildinfo
-
-# Local env config
-assets/.env
 
 # IDEs
 .vscode/
@@ -20,8 +17,3 @@ assets/.env
 # Custom
 assets/
 logs/
-
-# Client
-public/script.js
-public/script.js.map
-public/styles.css
