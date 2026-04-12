@@ -2,75 +2,48 @@
   "name": "farm-game",
   "version": "0.1.0",
   "description": "Board game socket server with rooms and configurable rules",
-  "main": "dist/server/server.js",
-  "type": "commonjs",
   "private": true,
+  "packageManager": "npm@11.0.0",
+  "workspaces": [
+    "apps/server",
+    "apps/client",
+    "packages/shared"
+  ],
   "engines": {
     "node": ">=22"
   },
   "scripts": {
-    "start": "node dist/server/server.js",
-    "clean": "rimraf dist public/script.js public/script.js.map public/styles.css",
-    "server:dev": "tsx watch --inspect src/server/server.ts",
-    "client:dev": "node src/client/esbuild.dev.mjs --watch",
-    "build:server:dev": "tsc -p src/server/tsconfig.json",
-    "build:client:dev": "node src/client/esbuild.dev.mjs",
-    "build:dev": "npm run clean && npm run build:client:dev && npm run build:server:dev",
-    "build:client:prod": "node src/client/esbuild.prod.mjs",
-    "build:server:prod": "node src/server/esbuild.prod.mjs",
-    "build:prod": "npm run clean && npm run build:client:prod && npm run build:server:prod",
-    "package": "npm run build:prod && npx pkg package.json --out-path assets",
-    "typecheck": "tsc --noEmit -project src/server/tsconfig.json && tsc --noEmit -project src/client/tsconfig.json",
+    "start": "node apps/server/dist/apps/server/src/index.js",
+    "clean": "rimraf apps/*/dist packages/*/dist",
+    "dev": "concurrently -n api,client -c cyan,magenta \"npm run dev:api\" \"npm run dev:client\"",
+    "dev:api": "npm -w @game/server run dev",
+    "dev:client": "npm -w @game/client run dev",
+    "build": "npm run build:shared && npm run build:api && npm run build:client",
+    "build:shared": "npm -w @game/shared run build",
+    "build:api": "npm -w @game/server run build",
+    "build:client": "npm -w @game/client run build",
+    "typecheck": "npm run typecheck:api && npm run typecheck:client",
+    "typecheck:api": "npm -w @game/server run typecheck",
+    "typecheck:client": "npm -w @game/client run typecheck",
     "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
     "format": "prettier --write .",
     "prepare": "husky"
   },
-  "keywords": [],
-  "author": "",
-  "license": "MIT",
-  "dependencies": {
-    "express": "^5.2.1",
-    "qrcode": "^1.5.4",
-    "socket.io": "^4.8.3",
-    "socket.io-client": "^4.8.3"
-  },
   "devDependencies": {
-    "@types/express": "^5.0.6",
-    "@types/node": "^25.2.0",
-    "@types/qrcode": "^1.5.6",
-    "esbuild": "^0.27.2",
-    "eslint": "^9.39.2",
+    "concurrently": "^9.2.1",
+    "eslint": "^9.39.4",
     "eslint-config-prettier": "^10.1.8",
     "eslint-import-resolver-typescript": "^4.4.4",
     "eslint-plugin-import": "^2.32.0",
-    "eslint-plugin-n": "^17.23.2",
     "globals": "^17.3.0",
     "husky": "^9.1.7",
     "jiti": "^2.6.1",
     "lint-staged": "^16.2.7",
     "prettier": "^3.8.1",
-    "rimraf": "^6.1.2",
-    "tsx": "^4.21.0",
+    "rimraf": "^6.0.1",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.54.0"
-  },
-  "bin": {
-    "farm-game": "dist/server/server.js"
-  },
-  "pkg": {
-    "assets": [
-      "node_modules/socket.io/client-dist/**/*",
-      "public/**/*"
-    ],
-    "scripts": [
-      "dist/**/*.js"
-    ],
-    "targets": [
-      "node18-macos-x64",
-      "node18-linux-x64",
-      "node18-win-x64"
-    ],
-    "outputPath": "assets"
   },
   "lint-staged": {
     "*.ts": [

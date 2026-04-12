@@ -1,18 +1,16 @@
 {
   "compilerOptions": {
-    "target": "es2023",
+    "target": "ES2023",
     "module": "CommonJS",
+    "moduleResolution": "Node",
+    "lib": ["ES2023", "DOM"],
     "strict": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
-    "sourceMap": true,
+    "allowSyntheticDefaultImports": true,
     "noUncheckedIndexedAccess": true,
-    "baseUrl": "./",
-    "paths": {
-      "@shared/*": ["src/shared/*"]
-    }
-  },
-  "exclude": ["node_modules", "dist"]
+    "rootDir": "."
+  }
 }

@@ -1,58 +1,51 @@
-import { defineConfig, globalIgnores } from 'eslint/config';
-import configPrettier from 'eslint-config-prettier';
+import { defineConfig } from 'eslint/config';
+import eslintConfigPrettier from 'eslint-config-prettier';
 import importPlugin from 'eslint-plugin-import';
-import pluginN from 'eslint-plugin-n';
 import globals from 'globals';
-import tsEslint from 'typescript-eslint';
+import tseslint from 'typescript-eslint';
 
-export default defineConfig([
-  globalIgnores(['node_modules/**', 'dist/**', 'assets/**', 'public/**']),
-  tsEslint.configs.recommended,
-  importPlugin.flatConfigs.recommended,
-  pluginN.configs['flat/recommended-module'],
+export default defineConfig(
   {
-    files: ['src/**/*.ts'],
+    ignores: ['**/dist/**', '**/node_modules/**', 'assets/**'],
+  },
+  // ...tseslint.configs.recommended,
+  {
+    files: ['**/*.{ts,tsx}'],
+    plugins: {
+      import: importPlugin,
+    },
+    settings: {
+      'import/resolver': {
+        typescript: {
+          alwaysTryTypes: true,
+          project: ['tsconfig.json', 'apps/*/tsconfig.json'],
+          noWarnOnMultipleProjects: true,
+        },
+        node: {
+          extensions: ['.ts', '.tsx', '.mjs'],
+        },
+      },
+      'import/extensions': ['.ts', '.tsx'],
+      'import/ignore': ['node_modules'],
+    },
+    extends: [...tseslint.configs.recommendedTypeChecked],
     languageOptions: {
-      parser: tsEslint.parser,
+      globals: {
+        ...globals.node,
+        ...globals.browser,
+      },
       parserOptions: {
-        ecmaVersion: 2023,
-        sourceType: 'module',
+        projectService: true,
+        tsconfigRootDir: __dirname,
       },
     },
     rules: {
-      'no-console': 'error',
       '@typescript-eslint/no-unused-vars': [
-        'warn',
+        'error',
         { argsIgnorePattern: '^_' },
       ],
-      '@typescript-eslint/no-require-imports': 'error',
-
-      // Prefer import-plugin resolution for TS files; disable plugin-n missing import
-      'n/no-missing-import': 'off',
-      'n/no-deprecated-api': 'warn',
-
-      // Import hygiene
-      'import/named': 'error',
-      'import/default': 'error',
-      'import/no-unresolved': 'off',
-      'import/no-duplicates': 'error',
-      'import/no-self-import': 'error',
-      'import/no-cycle': ['warn', { maxDepth: 3 }],
-      'import/no-deprecated': 'warn',
-      'import/no-useless-path-segments': ['warn', { noUselessIndex: true }],
-      'import/no-extraneous-dependencies': [
-        'error',
-        {
-          devDependencies: [
-            '**/*.test.ts',
-            '**/*.config.ts',
-            'eslint.config.ts',
-          ],
-        },
-      ],
-      'import/newline-after-import': 'warn',
       'import/order': [
-        'warn',
+        'error',
         {
           groups: [
             'builtin',
@@ -61,67 +54,37 @@ export default defineConfig([
             'parent',
             'sibling',
             'index',
-            'type',
           ],
-          'newlines-between': 'always',
-          alphabetize: { order: 'asc', caseInsensitive: true },
+          pathGroups: [
+            {
+              pattern: 'react',
+              group: 'external',
+              position: 'before',
+            },
+            {
+              pattern: 'react-dom',
+              group: 'external',
+              position: 'before',
+            },
+          ],
+          pathGroupsExcludedImportTypes: ['react', 'react-dom'],
+          alphabetize: {
+            order: 'asc',
+            caseInsensitive: true,
+          },
+          'newlines-between': 'always-and-inside-groups',
         },
       ],
-
-      '@typescript-eslint/consistent-type-imports': [
-        'warn',
-        { prefer: 'type-imports', fixStyle: 'inline-type-imports' },
-      ],
-    },
-  },
-  {
-    files: ['src/server/**/*.ts'],
-    languageOptions: {
-      parser: tsEslint.parser,
-      parserOptions: {
-        ecmaVersion: 2023,
-        sourceType: 'module',
-      },
-      globals: globals.node,
-    },
-    settings: {
-      'import/resolver': {
-        node: {
-          extensions: ['.ts'],
-        },
-        typescript: {
-          alwaysTryTypes: true,
-          project: ['./src/server/tsconfig.json'],
-        },
-      },
-    },
-  },
-  {
-    files: ['src/client/**/*.ts'],
-    languageOptions: {
-      parser: tsEslint.parser,
-      parserOptions: { ecmaVersion: 2023, sourceType: 'module' },
-      globals: globals.browser,
-    },
-    settings: {
-      'import/resolver': {
-        node: { extensions: ['.ts'] },
-        typescript: {
-          alwaysTryTypes: true,
-          project: ['./src/client/tsconfig.json'],
-        },
-      },
-    },
-    rules: {
-      'no-console': 'off',
-      'n/no-unsupported-features/node-builtins': 'off',
-    },
-  },
-  {
-    files: ['eslint.config.ts'],
-    rules: {
       'import/no-unresolved': 'off',
+      'import/no-cycle': 'warn',
+      'import/no-self-import': 'error',
     },
   },
-  configPrettier,
-]);
+  {
+    files: ['apps/server/**/*.ts'],
+    rules: {
+      'no-console': 'error',
+    },
+  },
+  eslintConfigPrettier
+);
