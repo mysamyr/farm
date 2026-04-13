@@ -1,13 +1,15 @@
-import { useContext } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
-import { RoomsContext } from '../contexts/roomsContext';
+import { useRoomsStore } from '../store';
 
 export function useRoom() {
-  const roomsContext = useContext(RoomsContext);
-
-  if (!roomsContext) {
-    throw new Error('useRoom must be used within RoomsProvider.');
-  }
-
-  return roomsContext;
+  return useRoomsStore(
+    useShallow(s => ({
+      rooms: s.rooms,
+      currentRoom: s.currentRoom,
+      setRooms: s.setRooms,
+      setCurrentRoom: s.setCurrentRoom,
+      clearCurrentRoom: s.clearCurrentRoom,
+    }))
+  );
 }

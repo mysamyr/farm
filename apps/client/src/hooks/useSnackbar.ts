@@ -1,13 +1,14 @@
-import { useContext } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
-import { SnackbarContext } from '../contexts/snackbarContext';
+import { useSnackbarStore } from '../store';
 
 export function useSnackbar() {
-  const snackbarContext = useContext(SnackbarContext);
-
-  if (!snackbarContext) {
-    throw new Error('useSnackbar must be used within SnackbarProvider.');
-  }
-
-  return snackbarContext;
+  return useSnackbarStore(
+    useShallow(s => ({
+      open: s.open,
+      message: s.message,
+      showSnackbar: s.showSnackbar,
+      closeSnackbar: s.closeSnackbar,
+    }))
+  );
 }

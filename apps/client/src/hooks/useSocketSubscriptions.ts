@@ -8,24 +8,23 @@ import { useNavigate } from 'react-router-dom';
 import { LOCAL_STORAGE_KEY, PATHS } from '../constants';
 import { emitEvent, getSocketId, subscribe } from '../socket/client';
 
+import { useConnection } from './useConnection';
 import { useLanguage } from './useLanguage';
 import { useRoom } from './useRoom';
+import { useSnackbar } from './useSnackbar';
 
 type UseSocketSubscriptionsArgs = {
-  pushSnackbar: (message: string) => void;
   onCurrentUserWon: () => void;
 };
 
 export function useSocketSubscriptions({
-  pushSnackbar,
   onCurrentUserWon,
 }: UseSocketSubscriptionsArgs): void {
   const navigate = useNavigate();
-  const roomsContext = useRoom();
-
+  const { setRooms, setCurrentRoom } = useRoom();
+  const { showSnackbar } = useSnackbar();
   const { translation } = useLanguage();
-
-  const { setRooms, setCurrentRoom } = roomsContext;
+  const { setOnline } = useConnection();
 
   useEffect(() => {
     subscribe(FARM_EVENTS.CONNECT, (): void => {
@@ -76,16 +75,16 @@ export function useSocketSubscriptions({
         if (!isCurrentUser) {
           switch (type) {
             case NOTIFICATION_TYPES.PLAYER_JOINED:
-              pushSnackbar(translation.notifications.playerJoined(data));
+              showSnackbar(translation.notifications.playerJoined(data));
               break;
             case NOTIFICATION_TYPES.PLAYER_LEFT:
-              pushSnackbar(translation.notifications.playerLeft(data));
+              showSnackbar(translation.notifications.playerLeft(data));
               break;
             case NOTIFICATION_TYPES.CLOSE_ROOM:
-              pushSnackbar(translation.notifications.roomClosed(data));
+              showSnackbar(translation.notifications.roomClosed(data));
               break;
             case NOTIFICATION_TYPES.GAME_FINISHED:
-              pushSnackbar(translation.notifications.gameFinished(data));
+              showSnackbar(translation.notifications.gameFinished(data));
               break;
             default:
               break;
@@ -98,5 +97,9 @@ export function useSocketSubscriptions({
         }
       }
     );
+
+    subscribe<number>(FARM_EVENTS.ONLINE_COUNT, (online: number): void => {
+      setOnline(online);
+    });
   }, []);
 }

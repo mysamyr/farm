@@ -6,6 +6,7 @@ import HelpModal from '../../components/modals/HelpModal';
 import QrModal from '../../components/modals/QrModal';
 import LanguageDropdown from '../../components/ui/LanguageDropdown';
 import { LOCAL_STORAGE_KEY } from '../../constants';
+import { useConnection } from '../../hooks/useConnection';
 import { useDebounceCallback } from '../../hooks/useDebounceCallback';
 import { useLanguage } from '../../hooks/useLanguage';
 import { useModal } from '../../hooks/useModal';
@@ -21,6 +22,7 @@ function Dashboard(): ReactElement {
   const { translation } = useLanguage();
   const { showModal } = useModal();
   const { showSnackbar } = useSnackbar();
+  const { online } = useConnection();
   const [usernameInput, setUsernameInput] = useState(
     window.localStorage.getItem(LOCAL_STORAGE_KEY.USERNAME) ?? ''
   );
@@ -73,6 +75,10 @@ function Dashboard(): ReactElement {
       <div className="top-bar">
         <div className="brand">
           <h1>{translation.dashboard.header}</h1>
+          <div className="online-indicator" title="Online players">
+            <span className="online-indicator-dot" aria-hidden="true" />
+            <span>{online}</span>
+          </div>
           <LanguageDropdown />
           <button
             type="button"

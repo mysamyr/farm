@@ -1,3 +1,4 @@
+import { EVENTS } from '@game/shared/constants';
 import type { Server } from 'socket.io';
 
 import { LogLevel } from '../../constants';
@@ -32,6 +33,7 @@ export function gracefulDisconnect(
     log(LogLevel.INFO, 'socket:grace-expired', { socketId: socket.id, ip });
     removePlayerFromAllRooms(io, socket);
     pendingDisconnects.delete(socket.id);
+    broadcastOnlineCount(io);
   }, 10000);
 
   pendingDisconnects.set(socket.id, { timeout });
@@ -42,4 +44,9 @@ export function assignPlayer(socket: AppSocket): void {
     id: socket.id,
     name: getDefaultPlayerName(socket),
   };
+}
+
+export function broadcastOnlineCount(io: Server): void {
+  const count = io.engine.clientsCount;
+  io.emit(EVENTS.ONLINE_COUNT, count);
 }

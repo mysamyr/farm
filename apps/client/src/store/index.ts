@@ -1,0 +1,111 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React from 'react';
+
+import type { Room } from '@game/shared/types/farm';
+import { create } from 'zustand';
+
+import languageMap, { LanguageCode } from '../constants/language';
+import type { Translation } from '../types/language';
+import {
+  getLanguage,
+  setLanguage as setLanguageStorage,
+} from '../utils/language';
+
+// ─── Language ────────────────────────────────────────────────────────────────
+
+interface LanguageSlice {
+  language: LanguageCode;
+  translation: Translation;
+  setLanguage: (nextLanguage: LanguageCode) => void;
+}
+
+export const useLanguageStore = create<LanguageSlice>((set, get) => ({
+  language: getLanguage(),
+  translation: languageMap[getLanguage()],
+  setLanguage: nextLanguage => {
+    if (nextLanguage === get().language) return;
+    setLanguageStorage(nextLanguage);
+    set({ language: nextLanguage, translation: languageMap[nextLanguage] });
+  },
+}));
+
+// ─── Rooms ───────────────────────────────────────────────────────────────────
+
+interface RoomsSlice {
+  rooms: Room[];
+  currentRoom: Room | null;
+  setRooms: React.Dispatch<React.SetStateAction<Room[]>>;
+  setCurrentRoom: React.Dispatch<React.SetStateAction<Room | null>>;
+  clearCurrentRoom: () => void;
+}
+
+export const useRoomsStore = create<RoomsSlice>((set, get) => ({
+  rooms: [],
+  currentRoom: null,
+  setRooms: value =>
+    set({
+      rooms: typeof value === 'function' ? value(get().rooms) : value,
+    }),
+  setCurrentRoom: value =>
+    set({
+      currentRoom:
+        typeof value === 'function' ? value(get().currentRoom) : value,
+    }),
+  clearCurrentRoom: () => set({ currentRoom: null }),
+}));
+
+// ─── Snackbar ─────────────────────────────────────────────────────────────────
+
+interface SnackbarSlice {
+  open: boolean;
+  message: string;
+  showSnackbar: (message: string, duration?: number) => void;
+  closeSnackbar: () => void;
+}
+
+let snackbarTimeout: ReturnType<typeof setTimeout> | null = null;
+
+export const useSnackbarStore = create<SnackbarSlice>(set => ({
+  open: false,
+  message: '',
+  showSnackbar: (msg, duration = 5000) => {
+    if (snackbarTimeout) clearTimeout(snackbarTimeout);
+    set({ open: true, message: msg });
+    snackbarTimeout = setTimeout(() => set({ open: false }), duration);
+  },
+  closeSnackbar: () => set({ open: false }),
+}));
+
+// ─── Modal ───────────────────────────────────────────────────────────────────
+
+interface ModalSlice {
+  open: boolean;
+  modalComponent: React.ComponentType<any> | null;
+  showModal: <T extends Record<string, any>>(
+    component: React.ComponentType<T>
+  ) => void;
+  closeModal: () => void;
+}
+
+export const useModalStore = create<ModalSlice>(set => ({
+  open: false,
+  modalComponent: null,
+  showModal: component =>
+    set({ open: true, modalComponent: component as React.ComponentType<any> }),
+  closeModal: () => {
+    set({ open: false });
+    setTimeout(() => set({ modalComponent: null }), 200);
+  },
+}));
+
+// ─── Connection ──────────────────────────────────────────────────────────────
+
+interface ConnectionSlice {
+  online: number;
+  setOnline: (online: number) => void;
+}
+
+export const useConnectionStore = create<ConnectionSlice>(set => ({
+  online: 0,
+  setOnline: online => set({ online: Math.max(online, 1) }),
+}));

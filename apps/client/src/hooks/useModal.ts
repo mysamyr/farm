@@ -1,13 +1,14 @@
-import { useContext } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
-import { ModalContext } from '../contexts/modalContext';
+import { useModalStore } from '../store';
 
 export function useModal() {
-  const modalContext = useContext(ModalContext);
-
-  if (!modalContext) {
-    throw new Error('useModal must be used within ModalProvider.');
-  }
-
-  return modalContext;
+  return useModalStore(
+    useShallow(s => ({
+      open: s.open,
+      modalComponent: s.modalComponent,
+      showModal: s.showModal,
+      closeModal: s.closeModal,
+    }))
+  );
 }

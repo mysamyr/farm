@@ -14,6 +14,7 @@ import {
 import { getIpAddress } from './connection.helper';
 import {
   assignPlayer,
+  broadcastOnlineCount,
   getPendingDisconnect,
   gracefulDisconnect,
   reconnect,
@@ -31,6 +32,8 @@ const disconnectHandler =
     }
 
     removePlayerFromAllRooms(io, socket);
+
+    broadcastOnlineCount(io);
   };
 
 export function registerConnection(io: Server): void {
@@ -49,6 +52,7 @@ export function registerConnection(io: Server): void {
     }
 
     assignPlayer(appSocket);
+    broadcastOnlineCount(io);
     updateRoomsList(io);
 
     socket.on(EVENTS.DISCONNECT, disconnectHandler(io, appSocket, ip));
