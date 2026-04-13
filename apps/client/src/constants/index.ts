@@ -24,3 +24,13 @@ export const ANIMALS_ICONS_CONFIG: Record<
   [ANIMALS.SMALL_DOG]: { label: 'Sm. Dog', icon: '🐕' },
   [ANIMALS.BIG_DOG]: { label: 'Big Dog', icon: '🐕‍🦺' },
 };
+
+export const BUTTON_VARIANT = {
+  PRIMARY: 'primary',
+  SECONDARY: 'secondary',
+  DANGER: 'danger',
+  SUCCESS: 'success',
+} as const;
+
+export type ButtonVariant =
+  (typeof BUTTON_VARIANT)[keyof typeof BUTTON_VARIANT];

@@ -1,0 +1,67 @@
+.activeRoom {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  background: var(--white);
+  padding: 20px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  border: 2px solid var(--purple-500);
+}
+
+.roomName {
+  font-size: 1.2rem;
+  font-weight: 700;
+  border: none;
+  border-bottom: 1px dashed var(--purple-500);
+  width: 100%;
+  margin-bottom: 5px;
+}
+
+.playersList {
+  background: var(--gray-100);
+  border-radius: 12px;
+  padding: 6px;
+}
+
+.playerItem {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.playerItem:last-child {
+  border-bottom: none;
+}
+
+.currentUser {
+  font-weight: 700;
+  color: var(--purple-500);
+}
+
+.rulesSection {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.rulesToggles {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.rulesTags {
+  display: flex;
+  gap: 5px;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.actions > * {
+  flex: 1 1 0;
+}

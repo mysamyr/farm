@@ -1,5 +1,7 @@
 import type { ReactElement } from 'react';
 
+import styles from './Snackbar.module.css';
+
 type SnackbarProps = {
   open: boolean;
   message: string;
@@ -13,12 +15,12 @@ export function Snackbar({
 }: SnackbarProps): ReactElement {
   return open ? (
     <div
-      className="snackbar-container"
+      className={styles.container}
       onMouseEnter={() => undefined}
       onMouseLeave={() => undefined}
     >
-      <div className="snackbar-label">{message}</div>
-      <div className="snackbar-dismiss" onClick={onClose}>
+      <div className={styles.label}>{message}</div>
+      <div className={styles.dismiss} onClick={onClose}>
         ×
       </div>
     </div>

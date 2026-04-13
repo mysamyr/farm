@@ -5,27 +5,27 @@ import { LANGUAGES_CONFIG } from '../../constants/language';
 import { useLanguage } from '../../hooks/useLanguage';
 import { Language } from '../../types/language';
 
+import IconButton from './IconButton';
+import styles from './LanguageDropdown.module.css';
+
 function LanguageDropdown(): ReactElement {
   const { setLanguage } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div style={{ position: 'relative', display: 'inline-block' }}>
-      <button
-        type="button"
-        className="header-action"
+    <div className={styles.container}>
+      <IconButton
+        icon="🌐"
         title="Change Language"
         onClick={() => setIsOpen(!isOpen)}
-      >
-        🌍
-      </button>
+      />
 
       {isOpen ? (
-        <div id="language-dropdown">
+        <div className={styles.dropdown}>
           {LANGUAGES_CONFIG.map((item: Language) => (
             <div
               key={item.code}
-              className="language-option"
+              className={styles.languageOption}
               onClick={() => {
                 setLanguage(item.code);
                 setIsOpen(false);

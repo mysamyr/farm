@@ -16,8 +16,6 @@ export type Translation = {
     openRoomsHeader: string;
     currentRoomHeader: string;
     noActiveRooms: string;
-    noCurrentRoom: string;
-    roomName: string;
     roomRules: string;
     players: string;
     errors: {
@@ -35,7 +33,6 @@ export type Translation = {
     };
   };
   gameboard: {
-    room: string;
     roomLeaveConfirmation: string;
     exchangeAnimalsHeader: string;
     winner: string;

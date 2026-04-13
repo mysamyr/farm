@@ -1,0 +1,28 @@
+.container {
+  position: fixed;
+  bottom: 5%;
+  right: 5%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--teal-500);
+  color: var(--white);
+  padding: 4px;
+  border-radius: 4px;
+  overflow: hidden;
+  animation: 300ms ease-out forwards slide-up;
+  z-index: 10;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.label {
+  padding: 12px 8px;
+}
+
+.dismiss {
+  color: var(--red-500);
+  font-weight: bold;
+  margin: 0 8px;
+  padding: 8px;
+}

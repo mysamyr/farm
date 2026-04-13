@@ -91,6 +91,12 @@ const updateRoomHandler =
     if (req.rules) {
       room.rules = { ...room.rules, ...req.rules };
     }
+    log(LogLevel.INFO, 'room:updated', {
+      roomId: req.roomId,
+      socketId: socket.id,
+      name: req.name,
+      rules: req.rules,
+    });
     updateRoomsList(io);
     if (ack) ack({ ok: true });
   };
