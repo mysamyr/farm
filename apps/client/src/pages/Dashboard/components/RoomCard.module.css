@@ -1,0 +1,60 @@
+.container {
+  background: var(--white);
+  padding: 20px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  border: 1px solid transparent;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.roomName {
+  font-size: 1.1rem;
+}
+
+.roomOwner {
+  font-size: 0.8rem;
+  color: var(--gray-600);
+}
+
+.badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.75rem;
+}
+
+.running {
+  background: var(--teal-50);
+  color: var(--teal-500);
+}
+
+.idle {
+  background: var(--orange-50);
+  color: var(--orange-500);
+}
+
+.finished {
+  background: var(--purple-200);
+  color: var(--purple-500);
+}
+
+.roomInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 0.9rem;
+  color: var(--gray-600);
+}
+
+.rules {
+  display: flex;
+  gap: 5px;
+}

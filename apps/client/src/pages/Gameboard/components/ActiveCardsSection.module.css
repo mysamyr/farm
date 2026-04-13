@@ -1,0 +1,25 @@
+.container {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 6px;
+  background: var(--gray-200);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+}
+
+.animalItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px;
+}
+
+.animalIcon {
+  font-size: 1.5rem;
+}
+
+.animalCount {
+  font-weight: 700;
+  color: var(--gray-800);
+}

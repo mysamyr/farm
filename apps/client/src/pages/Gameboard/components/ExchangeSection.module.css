@@ -1,0 +1,54 @@
+.container {
+  background: var(--white);
+  padding: 16px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+}
+
+.title {
+  margin-top: 0.25rem;
+  margin-bottom: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--gray-600);
+}
+
+.exchangeGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+.tradeButton {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: background 0.2s;
+}
+
+.tradeButton:hover {
+  background-color: var(--gray-100);
+}
+
+.tradeButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.special {
+  border-left: 3px solid var(--teal-500);
+}
+
+@media (max-width: 600px) {
+  .exchangeGrid {
+    flex-direction: column;
+  }
+
+  .tradeButton {
+    width: 100%;
+  }
+}

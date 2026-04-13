@@ -1,0 +1,66 @@
+.playersContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.playerCard {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: 12px;
+  box-shadow: var(--shadow);
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.activeTurn {
+  border-color: var(--teal-500);
+  background-color: var(--teal-50);
+  transform: translateY(-2px);
+}
+
+.playerHeader {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.playerName {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.turnIndicator {
+  font-size: 0.8rem;
+  color: var(--teal-500);
+  font-weight: 700;
+}
+
+.animalGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+}
+
+.animalItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px;
+}
+
+.animalIcon {
+  font-size: 1.5rem;
+}
+
+.animalCount {
+  font-weight: 700;
+  color: var(--gray-800);
+}
+
+@media (max-width: 600px) {
+  .playersContainer {
+    grid-template-columns: 1fr;
+  }
+}

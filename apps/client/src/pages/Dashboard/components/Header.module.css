@@ -1,0 +1,42 @@
+.container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--white);
+  padding: 15px 25px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--purple-500);
+}
+
+.onlineIndicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--gray-600);
+}
+
+.onlineIndicator .dot {
+  width: 8px;
+  height: 8px;
+  background: var(--green-500);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--green-500);
+}
+
+.headerTools {
+  display: flex;
+  gap: 10px;
+}
+
+@media (max-width: 900px) {
+  .logo {
+    font-size: 1.2rem;
+  }
+}

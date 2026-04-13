@@ -2,12 +2,18 @@ import type { ReactElement } from 'react';
 
 import { useLanguage } from '../../hooks/useLanguage';
 
+import { classNames } from '../../utils';
+import modalStyles from '../ui/Modal.module.css';
+
+import styles from './HelpModal.module.css';
+
 function HelpModal(): ReactElement {
   const { translation } = useLanguage();
+
   const help = translation.help;
 
   return (
-    <div className="modal-container help-modal-container">
+    <div className={classNames(modalStyles.container, styles.container)}>
       <h2>{help.title}</h2>
       <p>{help.goal}</p>
 

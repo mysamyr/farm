@@ -21,16 +21,14 @@ export const LANGUAGES_CONFIG: Language[] = [
 const translations: Record<LanguageCode, Translation> = {
   [LanguageCode.EN]: {
     dashboard: {
-      header: 'Farm Master 🎲',
+      header: 'Super Farm',
       usernameInputLabel: 'Your Name:',
       usernameInputPlaceholder: 'Enter nickname',
       createRoomBtn: 'Create Room',
       openRoomsHeader: 'Open Rooms',
       currentRoomHeader: 'Current Room',
       noActiveRooms: 'Create new room.',
-      noCurrentRoom: 'Create new room or join existing.',
-      roomName: 'Room Name',
-      roomRules: 'Room Rules',
+      roomRules: 'Rules',
       players: 'Players',
       errors: {
         cannotJoin: 'Cannot join.',
@@ -48,7 +46,6 @@ const translations: Record<LanguageCode, Translation> = {
       },
     },
     gameboard: {
-      room: 'Room',
       roomLeaveConfirmation: 'Are you sure you want to leave room?',
       exchangeAnimalsHeader: 'Exchange Animals',
       winner: 'WINNER',
@@ -71,7 +68,7 @@ const translations: Record<LanguageCode, Translation> = {
       finished: 'Finished',
     },
     you: 'You',
-    owner: 'Owner',
+    owner: 'by',
     youWon: "You've won the game!",
     help: {
       title: 'Game Goal',
@@ -128,15 +125,13 @@ const translations: Record<LanguageCode, Translation> = {
   },
   [LanguageCode.UK]: {
     dashboard: {
-      header: 'Весела Ферма 🎲',
+      header: 'Весела Ферма',
       usernameInputLabel: 'Ваше імʼя:',
       usernameInputPlaceholder: 'Введіть імʼя',
       createRoomBtn: 'Створити кімнату',
       openRoomsHeader: 'Відкриті кімнати',
       currentRoomHeader: 'Активна Кімната',
       noActiveRooms: 'Створіть нову кімнату.',
-      noCurrentRoom: 'Створіть нову кімнату чи приєднайтеся до наявної.',
-      roomName: 'Назва кімнати',
       roomRules: 'Правила',
       players: 'Гравців',
       errors: {
@@ -154,7 +149,6 @@ const translations: Record<LanguageCode, Translation> = {
       },
     },
     gameboard: {
-      room: 'Кімната',
       roomLeaveConfirmation: 'Ви впевнені, що хочете залишити кімнату?',
       exchangeAnimalsHeader: 'Обмін Тваринами',
       winner: 'ПЕРЕМОЖЕЦЬ',

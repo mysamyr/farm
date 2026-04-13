@@ -2,30 +2,32 @@ import type { ReactElement } from 'react';
 
 import { useWinningAnimation } from '../../hooks/useWinningAnimation';
 
+import { classNames } from '../../utils';
+
+import styles from './WinningAnimation.module.css';
+
 type WinningAnimationProps = {
   title: string;
 };
 
-function WinningAnimation({
-  title,
-}: WinningAnimationProps): ReactElement | null {
+export default function WinningAnimation({ title }: WinningAnimationProps): ReactElement {
   const { show, isExiting, confettiPieces, close } = useWinningAnimation();
 
   if (!show) {
-    return null;
+    return <></>;
   }
 
   return (
     <div
-      className={`winner-animation-container ${isExiting ? 'fade-out' : ''}`.trim()}
+      className={classNames(styles.container, isExiting && styles.fadeOut)}
       onClick={close}
     >
-      <div className="winner-title">🎉 {title} 🎉</div>
-      <div className="confetti-container">
+      <div className={styles.title}>🎉 {title} 🎉</div>
+      <div className={styles.confettiContainer}>
         {confettiPieces.map((piece, index) => (
           <div
             key={`${piece.left}-${piece.animationDelay}-${index}`}
-            className="confetti"
+            className={styles.confetti}
             style={{ left: piece.left, animationDelay: piece.animationDelay }}
           />
         ))}
@@ -33,5 +35,3 @@ function WinningAnimation({
     </div>
   );
 }
-
-export default WinningAnimation;
