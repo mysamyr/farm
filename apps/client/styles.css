@@ -72,6 +72,22 @@ body {
   gap: 1rem;
 }
 
+.online-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--gray-600);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.online-indicator-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--green-500);
+}
+
 h1 {
   font-size: 1.5rem;
   color: var(--purple-500);

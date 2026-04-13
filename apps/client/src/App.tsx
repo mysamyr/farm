@@ -6,10 +6,6 @@ import { Modal } from './components/ui/Modal';
 import { Snackbar } from './components/ui/Snackbar';
 import { PATHS } from './constants';
 import { GAME_WIN_EVENT } from './constants/events';
-import { LanguageProvider } from './contexts/languageContext';
-import { ModalProvider } from './contexts/modalContext';
-import { RoomsProvider } from './contexts/roomsContext';
-import { SnackbarProvider } from './contexts/snackbarContext';
 import { useModal } from './hooks/useModal';
 import { useRoom } from './hooks/useRoom';
 import { useSnackbar } from './hooks/useSnackbar';
@@ -20,16 +16,10 @@ import Gameboard from './pages/Gameboard';
 
 function AppContent() {
   const { open: modalOpen, modalComponent, closeModal } = useModal();
-  const {
-    open: snackbarOpen,
-    showSnackbar,
-    message,
-    closeSnackbar,
-  } = useSnackbar();
+  const { open: snackbarOpen, message, closeSnackbar } = useSnackbar();
   const { currentRoom } = useRoom();
 
   useSocketSubscriptions({
-    pushSnackbar: showSnackbar,
     onCurrentUserWon: () => {
       window.dispatchEvent(new CustomEvent(GAME_WIN_EVENT));
     },
@@ -60,15 +50,7 @@ function AppContent() {
 export default function App() {
   return (
     <BrowserRouter>
-      <LanguageProvider>
-        <SnackbarProvider>
-          <ModalProvider>
-            <RoomsProvider>
-              <AppContent />
-            </RoomsProvider>
-          </ModalProvider>
-        </SnackbarProvider>
-      </LanguageProvider>
+      <AppContent />
     </BrowserRouter>
   );
 }

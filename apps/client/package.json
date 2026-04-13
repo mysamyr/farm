@@ -15,12 +15,13 @@
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-router-dom": "^7.13.1",
-    "socket.io-client": "^4.8.3"
+    "socket.io-client": "^4.8.3",
+    "zustand": "^5.0.12"
   },
   "devDependencies": {
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
-    "vite": "^8.0.1",
-    "@vitejs/plugin-react": "^6.0.1"
+    "@vitejs/plugin-react": "^6.0.1",
+    "vite": "^8.0.1"
   }
 }

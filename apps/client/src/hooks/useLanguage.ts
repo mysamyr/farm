@@ -1,13 +1,13 @@
-import { useContext } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
-import { LanguageContext } from '../contexts/languageContext';
+import { useLanguageStore } from '../store';
 
 export function useLanguage() {
-  const languageContext = useContext(LanguageContext);
-
-  if (!languageContext) {
-    throw new Error('useLanguage must be used within LanguageProvider.');
-  }
-
-  return languageContext;
+  return useLanguageStore(
+    useShallow(s => ({
+      language: s.language,
+      translation: s.translation,
+      setLanguage: s.setLanguage,
+    }))
+  );
 }
