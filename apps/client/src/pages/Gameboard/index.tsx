@@ -12,6 +12,7 @@ import { getCurrentPlayerTurnId } from '../../utils/game';
 
 import ActiveCardsSection from './components/ActiveCardsSection';
 import DiceSection from './components/DiceSection';
+import EmoteFloatingContainer from './components/EmoteFloatingContainer';
 import ExchangeSection from './components/ExchangeSection';
 import Header from './components/Header';
 import PlayersSection from './components/PlayersSection';
@@ -50,6 +51,8 @@ export default function Gameboard(): React.ReactElement {
       <ExchangeSection isYourTurn={isYourTurn} />
 
       <WinningAnimation />
+
+      <EmoteFloatingContainer />
     </div>
   );
 }

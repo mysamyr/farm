@@ -31,3 +31,10 @@ export function subscribe<E extends keyof ServerToClientEvents>(
 ): void {
   socket.on(event, handler as never);
 }
+
+export function unsubscribe<E extends keyof ServerToClientEvents>(
+  event: E,
+  handler: (...args: Parameters<ServerToClientEvents[E]>) => void
+): void {
+  socket.off(event, handler as never);
+}

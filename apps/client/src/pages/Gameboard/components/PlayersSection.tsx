@@ -4,7 +4,6 @@ import { ANIMALS } from '@game/shared/constants/farm';
 import type { Player, TradableAnimals } from '@game/shared/types/farm';
 
 import { ANIMALS_ICONS_CONFIG } from '../../../constants';
-import { useLanguage } from '../../../hooks/useLanguage';
 import { useRoom } from '../../../hooks/useRoom';
 import { classNames } from '../../../utils';
 
@@ -19,7 +18,6 @@ export default function PlayersSection({
   currentPlayerId,
   winnerId,
 }: PlayersSectionProps): ReactElement {
-  const { translation } = useLanguage();
   const { currentRoom } = useRoom();
 
   const players = currentRoom!.order
@@ -27,6 +25,8 @@ export default function PlayersSection({
       currentRoom!.players.find(player => player.id === playerId)
     )
     .filter(Boolean) as Player[];
+
+  // TODO: remove active player after winner event (currently active player is still shown as active)
 
   return (
     <div className={styles.playersContainer}>
@@ -39,19 +39,11 @@ export default function PlayersSection({
             key={player.id}
             className={classNames(
               styles.playerCard,
-              (isActive || isWinner) && styles.activeTurn
+              isActive && styles.activeTurn,
+              isWinner && styles.winner
             )}
           >
-            <div className={styles.playerHeader}>
-              <span className={styles.playerName}>{player.name}</span>
-              <span className={styles.turnIndicator}>
-                {isWinner
-                  ? translation.gameboard.winner
-                  : isActive
-                    ? translation.gameboard.yourTurn
-                    : ''}
-              </span>
-            </div>
+            <div className={styles.playerHeader}>{player.name}</div>
 
             <div className={styles.animalGrid}>
               {Object.entries(ANIMALS_ICONS_CONFIG)

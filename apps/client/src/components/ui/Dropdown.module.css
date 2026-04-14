@@ -7,7 +7,6 @@
   position: absolute;
   top: calc(100% + 4px);
   left: 0;
-  min-width: 120px;
   background: var(--white);
   border: 1px solid var(--gray-600);
   box-shadow: var(--shadow);

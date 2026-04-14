@@ -25,8 +25,10 @@ type DropdownProps = {
   triggerTitle: string;
   items: DropdownItem[];
   triggerVariant?: ButtonVariant;
+  triggerClassName?: string;
   menuClassName?: string;
   align?: 'left' | 'right';
+  disabled?: boolean;
 };
 
 export default function Dropdown({
@@ -34,8 +36,10 @@ export default function Dropdown({
   triggerTitle,
   items,
   triggerVariant = BUTTON_VARIANT.PRIMARY,
+  triggerClassName,
   menuClassName,
   align = 'left',
+  disabled = false,
 }: DropdownProps): ReactElement {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -71,9 +75,11 @@ export default function Dropdown({
     <div ref={containerRef} className={styles.container}>
       <Button
         variant={triggerVariant}
+        className={triggerClassName}
         title={triggerTitle}
         aria-expanded={isOpen}
         aria-haspopup="menu"
+        disabled={disabled}
         onClick={() => setIsOpen(open => !open)}
       >
         {trigger}

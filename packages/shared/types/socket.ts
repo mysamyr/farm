@@ -1,7 +1,13 @@
 import { EVENTS, NOTIFICATION_TYPES } from '../constants';
 import { FARM_EVENTS } from '../constants/farm';
 
-import type { DiceAnimals, Room as FarmRoom, TradableAnimals } from './farm';
+import type {
+  DiceAnimals,
+  Room as FarmRoom,
+  TradableAnimals,
+  SendEmoteReq,
+  EmoteSentPayload,
+} from './farm';
 
 export type SocketAck = {
   ok: boolean;
@@ -58,6 +64,10 @@ export type ClientToServerEvents = {
     payload: { roomId: string; from: TradableAnimals; to: TradableAnimals },
     ack?: (response: SocketAck) => void
   ) => void;
+  [FARM_EVENTS.GAME_SEND_EMOTE]: (
+    payload: SendEmoteReq,
+    ack?: (response: SocketAck) => void
+  ) => void;
 };
 
 export type ServerToClientEvents = {
@@ -71,4 +81,5 @@ export type ServerToClientEvents = {
     room: FarmRoom;
     dice?: [DiceAnimals, DiceAnimals];
   }) => void;
+  [FARM_EVENTS.GAME_EMOTE_SENT]: (payload: EmoteSentPayload) => void;
 };

@@ -1,6 +1,6 @@
 import { ROOM_STATES } from '@game/shared/constants';
-import { ANIMALS, FARM_EVENTS } from '@game/shared/constants/farm';
-import type { Room } from '@game/shared/types/farm';
+import { ANIMALS, EMOTES, FARM_EVENTS } from '@game/shared/constants/farm';
+import type { Room, SendEmoteReq } from '@game/shared/types/farm';
 import type { RollDiceAck } from '@game/shared/types/socket';
 
 import { LogLevel } from '../../constants';
@@ -152,10 +152,63 @@ const exchangeHandler =
     ack?.({ ok: true });
   };
 
+const sendEmoteHandler =
+  (io: AppServer, socket: AppSocket) =>
+  (req: SendEmoteReq, ack?: AckFunc): void => {
+    const { roomId, emoteId } = req;
+    log(LogLevel.DEBUG, 'event:game:sendEmote', {
+      socketId: socket.id,
+      roomId,
+      emoteId,
+    });
+
+    const room = getRoomById(roomId) as Room;
+    if (!room) {
+      ack?.({ ok: false, error: 'ROOM_NOT_FOUND' });
+      return;
+    }
+
+    const player = room.players.find(p => p.id === socket.id);
+    if (!player) {
+      ack?.({ ok: false, error: 'PLAYER_NOT_FOUND' });
+      return;
+    }
+
+    const isKnownEmote = EMOTES.some(emote => emote.id === emoteId);
+    if (!isKnownEmote) {
+      ack?.({ ok: false, error: 'UNKNOWN_EMOTE' });
+      return;
+    }
+
+    const now = Date.now();
+    const lastEmoteSendTime = socket.data.lastEmoteSendTime || 0;
+    const timeSinceLastEmote = now - lastEmoteSendTime;
+
+    if (timeSinceLastEmote < 5000) {
+      ack?.({ ok: false, error: 'THROTTLED' });
+      return;
+    }
+
+    socket.data.lastEmoteSendTime = now;
+
+    io.to(room.id).emit(FARM_EVENTS.GAME_EMOTE_SENT, {
+      emoteId,
+      playerName: player.name,
+    });
+
+    ack?.({ ok: true });
+    log(LogLevel.DEBUG, 'game:emoteSent', {
+      roomId,
+      emoteId,
+      playerName: player.name,
+    });
+  };
+
 export function registerGameFeature(io: AppServer): void {
   io.on(FARM_EVENTS.CONNECTION, (socket: AppSocket): void => {
     socket.on(FARM_EVENTS.GAME_START, startGameHandler(io, socket));
     socket.on(FARM_EVENTS.GAME_ROLL_DICE, rollDiceHandler(io, socket));
     socket.on(FARM_EVENTS.GAME_EXCHANGE, exchangeHandler(io, socket));
+    socket.on(FARM_EVENTS.GAME_SEND_EMOTE, sendEmoteHandler(io, socket));
   });
 }
