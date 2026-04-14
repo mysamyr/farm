@@ -1,9 +1,10 @@
-const socket = (window as unknown as { io: () => unknown }).io() as {
-  id: string;
-  emit: (...args: unknown[]) => void;
-  on: (...args: unknown[]) => void;
-  connect: () => void;
-};
+import type {
+  ClientToServerEvents,
+  ServerToClientEvents,
+} from '@game/shared/types/socket';
+import { io, Socket } from 'socket.io-client';
+
+const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io();
 
 export function getSocketId(): string | null {
   return socket.id || null;
@@ -17,19 +18,16 @@ export function reconnectSocket(): void {
   }
 }
 
-export function emitEvent<T extends Record<string, unknown>>(
-  event: string,
-  payload: Record<string, unknown> | null,
-  cb?: (res: T) => void
+export function emitEvent<E extends keyof ClientToServerEvents>(
+  event: E,
+  ...args: Parameters<ClientToServerEvents[E]>
 ): void {
-  socket.emit(event, payload, cb || (() => {}));
+  socket.emit(event, ...args);
 }
 
-export function subscribe<T>(
-  event: string,
-  handler: (payload: T) => void
+export function subscribe<E extends keyof ServerToClientEvents>(
+  event: E,
+  handler: (...args: Parameters<ServerToClientEvents[E]>) => void
 ): void {
-  socket.on(event, (payload: T): void => {
-    handler(payload);
-  });
+  socket.on(event, handler as never);
 }

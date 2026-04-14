@@ -37,7 +37,7 @@ function AppContent() {
         <Route path="*" element={<Navigate to={PATHS.DASHBOARD} replace />} />
       </Routes>
 
-      <Snackbar open={snackbarOpen} message={message} onClose={closeSnackbar} />
+      {snackbarOpen && <Snackbar message={message} onClose={closeSnackbar} />}
       <Modal
         open={modalOpen}
         ModalComponent={modalComponent}

@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 
 import { useSnackbar } from '../../hooks/useSnackbar';
 import type { QRItem } from '../../types/app';
+
 import modalStyles from '../ui/Modal.module.css';
 
 import styles from './QrModal.module.css';

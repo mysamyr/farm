@@ -1,15 +1,29 @@
 import type { Player } from '@game/shared/types';
-import type { DefaultEventsMap, Socket } from 'socket.io';
+import type {
+  ClientToServerEvents,
+  SocketAck,
+  ServerToClientEvents,
+} from '@game/shared/types/socket';
+import type { DefaultEventsMap, Server, Socket } from 'socket.io';
 
-export type AckFunc = (...args: unknown[]) => void;
+export type AckFunc<TResponse extends SocketAck = SocketAck> = (
+  response: TResponse
+) => void;
 
 export type SocketSessionData = {
   player: Player;
 };
 
 export type AppSocket = Socket<
+  ClientToServerEvents,
+  ServerToClientEvents,
   DefaultEventsMap,
-  DefaultEventsMap,
+  SocketSessionData
+>;
+
+export type AppServer = Server<
+  ClientToServerEvents,
+  ServerToClientEvents,
   DefaultEventsMap,
   SocketSessionData
 >;

@@ -28,3 +28,11 @@ export interface BaseRoom<
 }
 
 export type Room = BaseRoom;
+
+export type {
+  ClientToServerEvents,
+  RollDiceAck,
+  ServerNotification,
+  ServerToClientEvents,
+  SocketAck,
+} from './socket';

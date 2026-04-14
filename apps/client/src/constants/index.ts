@@ -30,6 +30,7 @@ export const BUTTON_VARIANT = {
   SECONDARY: 'secondary',
   DANGER: 'danger',
   SUCCESS: 'success',
+  ICON: 'icon',
 } as const;
 
 export type ButtonVariant =

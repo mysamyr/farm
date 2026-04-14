@@ -5,13 +5,12 @@ import {
 } from '@game/shared/constants';
 
 import type { Room } from '@game/shared/types';
-
-import type { Server } from 'socket.io';
+import type { Room as FarmRoom } from '@game/shared/types/farm';
 
 import { LogLevel } from '../../constants';
 import { getGameModule } from '../../games';
 import { log } from '../../services/logger';
-import type { AppSocket } from '../../types';
+import type { AppServer, AppSocket } from '../../types';
 import { uuid } from '../../utils/uuid';
 
 import { generateRoomName, shouldDeleteRoom } from './room.helpers';
@@ -52,13 +51,17 @@ export function createRoom(ownerId: string): Room {
   return room;
 }
 
-export function leaveRoom(io: Server, roomId: string, socketId: string): void {
+export function leaveRoom(
+  io: AppServer,
+  roomId: string,
+  socketId: string
+): void {
   const s = io.sockets.sockets.get(socketId);
   if (s) void s.leave(roomId);
 }
 
-export function updateRoomsList(io: Server): void {
-  io.emit(EVENTS.ROOMS_LIST, listRooms());
+export function updateRoomsList(io: AppServer): void {
+  io.emit(EVENTS.ROOMS_LIST, listRooms() as FarmRoom[]);
 }
 
 export function assignNewOwner(room: Room): void {
@@ -69,7 +72,7 @@ export function assignNewOwner(room: Room): void {
 }
 
 export function removePlayerFromRoom(
-  io: Server,
+  io: AppServer,
   room: Room,
   socket: AppSocket
 ): void {
@@ -94,7 +97,7 @@ export function removePlayerFromRoom(
   log(LogLevel.INFO, 'room:left', { roomId: room.id, socketId: socket.id });
 }
 
-export function removePlayerFromAllRooms(io: Server, socket: AppSocket) {
+export function removePlayerFromAllRooms(io: AppServer, socket: AppSocket) {
   for (const room of rooms.values()) {
     if (room.players.some(p => p.id === socket.id)) {
       removePlayerFromRoom(io, room, socket);

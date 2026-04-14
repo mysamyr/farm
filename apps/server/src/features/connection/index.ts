@@ -1,10 +1,10 @@
 import { EVENTS, ROOM_STATES } from '@game/shared/constants';
 
-import type { DisconnectReason, Server } from 'socket.io';
+import type { DisconnectReason } from 'socket.io';
 
 import { LogLevel } from '../../constants';
 import { log } from '../../services/logger';
-import type { AppSocket } from '../../types';
+import type { AppServer, AppSocket } from '../../types';
 import {
   getActiveRoom,
   removePlayerFromAllRooms,
@@ -21,7 +21,7 @@ import {
 } from './connection.service';
 
 const disconnectHandler =
-  (io: Server, socket: AppSocket, ip: string) =>
+  (io: AppServer, socket: AppSocket, ip: string) =>
   (reason: DisconnectReason): void => {
     log(LogLevel.INFO, 'socket:disconnected', { socketId: socket.id, reason });
     const room = getActiveRoom(socket.id);
@@ -36,7 +36,7 @@ const disconnectHandler =
     broadcastOnlineCount(io);
   };
 
-export function registerConnection(io: Server): void {
+export function registerConnection(io: AppServer): void {
   io.on(EVENTS.CONNECTION, (socket: AppSocket): void => {
     const appSocket = socket;
     const ip = getIpAddress(socket);

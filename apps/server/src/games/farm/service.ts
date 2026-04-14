@@ -12,7 +12,7 @@ import type {
   Room,
 } from '@game/shared/types/farm';
 
-import type { Server } from 'socket.io';
+import type { AppServer } from '../../types';
 
 import { shuffleArray } from '../../utils';
 
@@ -33,7 +33,7 @@ export function addRoomFields(): Pick<Room, 'rules' | 'order' | 'turn'> {
   };
 }
 
-export function winnerHandler(io: Server, room: Room, player: Player): void {
+export function winnerHandler(io: AppServer, room: Room, player: Player): void {
   room.state = ROOM_STATES.FINISHED;
   room.winner = player.id;
   io.to(room.id).emit(EVENTS.NOTIFICATION, {

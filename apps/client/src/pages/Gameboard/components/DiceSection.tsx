@@ -31,7 +31,7 @@ export default function DiceSection({
 
     emitEvent(
       FARM_EVENTS.GAME_ROLL_DICE,
-      { roomId: currentRoom?.id },
+      { roomId: currentRoom!.id },
       (res: { ok: boolean; error?: string }): void => {
         if (!res.ok) {
           showSnackbar(res.error || translation.dashboard.errors.cannotStart);

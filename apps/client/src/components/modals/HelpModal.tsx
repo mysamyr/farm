@@ -3,6 +3,7 @@ import type { ReactElement } from 'react';
 import { useLanguage } from '../../hooks/useLanguage';
 
 import { classNames } from '../../utils';
+
 import modalStyles from '../ui/Modal.module.css';
 
 import styles from './HelpModal.module.css';

@@ -5,9 +5,7 @@ import { GAME_RULES } from '@game/shared/constants/farm';
 
 import { Navigate } from 'react-router-dom';
 
-import WinningAnimation from '../../components/ui/WinningAnimation';
 import { PATHS } from '../../constants';
-import { useLanguage } from '../../hooks/useLanguage';
 import { useRoom } from '../../hooks/useRoom';
 import { getSocketId } from '../../socket/client';
 import { getCurrentPlayerTurnId } from '../../utils/game';
@@ -17,12 +15,12 @@ import DiceSection from './components/DiceSection';
 import ExchangeSection from './components/ExchangeSection';
 import Header from './components/Header';
 import PlayersSection from './components/PlayersSection';
+import WinningAnimation from './components/WinningAnimation';
 
 import styles from './Gameboard.module.css';
 
 export default function Gameboard(): React.ReactElement {
   const { currentRoom: room } = useRoom();
-  const { translation } = useLanguage();
 
   if (!room) {
     return <Navigate to={PATHS.DASHBOARD} replace />;
@@ -51,7 +49,7 @@ export default function Gameboard(): React.ReactElement {
 
       <ExchangeSection isYourTurn={isYourTurn} />
 
-      <WinningAnimation title={translation.youWon} />
+      <WinningAnimation />
     </div>
   );
 }
