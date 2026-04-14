@@ -1,9 +1,8 @@
 import { EVENTS } from '@game/shared/constants';
-import type { Server } from 'socket.io';
 
 import { LogLevel } from '../../constants';
 import { log } from '../../services/logger';
-import type { AppSocket } from '../../types';
+import type { AppServer, AppSocket } from '../../types';
 import { getDefaultPlayerName } from '../player/player.helpers';
 import { removePlayerFromAllRooms } from '../room/room.service';
 
@@ -25,7 +24,7 @@ export function reconnect(socket: AppSocket, pending: PendingDisconnect): void {
 }
 
 export function gracefulDisconnect(
-  io: Server,
+  io: AppServer,
   socket: AppSocket,
   ip: string
 ): void {
@@ -46,7 +45,7 @@ export function assignPlayer(socket: AppSocket): void {
   };
 }
 
-export function broadcastOnlineCount(io: Server): void {
+export function broadcastOnlineCount(io: AppServer): void {
   const count = io.engine.clientsCount;
   io.emit(EVENTS.ONLINE_COUNT, count);
 }

@@ -1,16 +1,14 @@
 import { ROOM_STATES } from '@game/shared/constants';
 import { ANIMALS, FARM_EVENTS } from '@game/shared/constants/farm';
-
 import type { Room } from '@game/shared/types/farm';
-
-import type { Server } from 'socket.io';
+import type { RollDiceAck } from '@game/shared/types/socket';
 
 import { LogLevel } from '../../constants';
 import { canStartGame } from '../../features/room/room.helpers';
 import { getRoomById, updateRoomsList } from '../../features/room/room.service';
 import { log } from '../../services/logger';
 
-import type { AckFunc, AppSocket } from '../../types';
+import type { AckFunc, AppServer, AppSocket } from '../../types';
 
 import {
   isEnoughCardsToExchange,
@@ -32,7 +30,7 @@ import {
 import type { ExchangeReq, RollDiceReq, StartGameReq } from './types';
 
 const startGameHandler =
-  (io: Server, socket: AppSocket) =>
+  (io: AppServer, socket: AppSocket) =>
   (req: StartGameReq, ack?: AckFunc): void => {
     log(LogLevel.DEBUG, 'event:game:start', {
       socketId: socket.id,
@@ -75,8 +73,8 @@ const startGameHandler =
   };
 
 const rollDiceHandler =
-  (io: Server, socket: AppSocket) =>
-  (req: RollDiceReq, ack?: AckFunc): void => {
+  (io: AppServer, socket: AppSocket) =>
+  (req: RollDiceReq, ack?: AckFunc<RollDiceAck>): void => {
     const { roomId } = req;
     log(LogLevel.DEBUG, 'event:game:rollDice', {
       socketId: socket.id,
@@ -112,7 +110,7 @@ const rollDiceHandler =
   };
 
 const exchangeHandler =
-  (io: Server, socket: AppSocket) =>
+  (io: AppServer, socket: AppSocket) =>
   (req: ExchangeReq, ack?: AckFunc): void => {
     const { roomId, from, to } = req;
     log(LogLevel.DEBUG, 'event:game:exchange', {
@@ -154,7 +152,7 @@ const exchangeHandler =
     ack?.({ ok: true });
   };
 
-export function registerGameFeature(io: Server): void {
+export function registerGameFeature(io: AppServer): void {
   io.on(FARM_EVENTS.CONNECTION, (socket: AppSocket): void => {
     socket.on(FARM_EVENTS.GAME_START, startGameHandler(io, socket));
     socket.on(FARM_EVENTS.GAME_ROLL_DICE, rollDiceHandler(io, socket));

@@ -51,7 +51,7 @@ export type Translation = {
   };
   you: string;
   owner: string;
-  youWon: string;
+  youWin: string;
   roomState: {
     idle: string;
     running: string;

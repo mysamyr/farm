@@ -2,8 +2,8 @@ import type { Rules } from '@game/shared/types';
 
 export type UpdateRoomReq = {
   roomId: string;
-  rules: Rules;
-  name: string;
+  rules?: Rules;
+  name?: string;
 };
 
 export type JoinRoomReq = {

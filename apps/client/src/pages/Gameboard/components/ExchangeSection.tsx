@@ -20,6 +20,13 @@ type ExchangePair = {
   special?: boolean;
 };
 
+type ExchangeGroup = {
+  id: string;
+  leftTrade: ExchangePair;
+  rightTrade: ExchangePair;
+  special?: boolean;
+};
+
 type ExchangeSectionProps = {
   isYourTurn: boolean;
 };
@@ -36,50 +43,112 @@ export default function ExchangeSection({
   );
   const oneExchangeRuleEnabled = !!currentRoom?.rules[GAME_RULES.ONE_EXCHANGE];
 
-  const exchangePairs: ExchangePair[] = [
-    { left: ANIMALS.DUCK, right: ANIMALS.GOAT, leftCount: 6, rightCount: 1 },
-    { left: ANIMALS.GOAT, right: ANIMALS.DUCK, leftCount: 1, rightCount: 6 },
-    { left: ANIMALS.GOAT, right: ANIMALS.PIG, leftCount: 2, rightCount: 1 },
-    { left: ANIMALS.PIG, right: ANIMALS.GOAT, leftCount: 1, rightCount: 2 },
-    { left: ANIMALS.PIG, right: ANIMALS.HORSE, leftCount: 3, rightCount: 1 },
-    { left: ANIMALS.HORSE, right: ANIMALS.PIG, leftCount: 1, rightCount: 3 },
-    { left: ANIMALS.HORSE, right: ANIMALS.COW, leftCount: 2, rightCount: 1 },
-    { left: ANIMALS.COW, right: ANIMALS.HORSE, leftCount: 1, rightCount: 2 },
+  const exchangeGroups: ExchangeGroup[] = [
     {
-      left: ANIMALS.GOAT,
-      right: ANIMALS.SMALL_DOG,
-      leftCount: 1,
-      rightCount: 1,
+      id: 'duck-goat',
+      leftTrade: {
+        left: ANIMALS.DUCK,
+        right: ANIMALS.GOAT,
+        leftCount: 6,
+        rightCount: 1,
+      },
+      rightTrade: {
+        left: ANIMALS.GOAT,
+        right: ANIMALS.DUCK,
+        leftCount: 1,
+        rightCount: 6,
+      },
+    },
+    {
+      id: 'goat-pig',
+      leftTrade: {
+        left: ANIMALS.GOAT,
+        right: ANIMALS.PIG,
+        leftCount: 2,
+        rightCount: 1,
+      },
+      rightTrade: {
+        left: ANIMALS.PIG,
+        right: ANIMALS.GOAT,
+        leftCount: 1,
+        rightCount: 2,
+      },
+    },
+    {
+      id: 'pig-horse',
+      leftTrade: {
+        left: ANIMALS.PIG,
+        right: ANIMALS.HORSE,
+        leftCount: 3,
+        rightCount: 1,
+      },
+      rightTrade: {
+        left: ANIMALS.HORSE,
+        right: ANIMALS.PIG,
+        leftCount: 1,
+        rightCount: 3,
+      },
+    },
+    {
+      id: 'horse-cow',
+      leftTrade: {
+        left: ANIMALS.HORSE,
+        right: ANIMALS.COW,
+        leftCount: 2,
+        rightCount: 1,
+      },
+      rightTrade: {
+        left: ANIMALS.COW,
+        right: ANIMALS.HORSE,
+        leftCount: 1,
+        rightCount: 2,
+      },
+    },
+    {
+      id: 'goat-small-dog',
+      leftTrade: {
+        left: ANIMALS.GOAT,
+        right: ANIMALS.SMALL_DOG,
+        leftCount: 1,
+        rightCount: 1,
+      },
+      rightTrade: {
+        left: ANIMALS.SMALL_DOG,
+        right: ANIMALS.GOAT,
+        leftCount: 1,
+        rightCount: 1,
+      },
       special: true,
     },
     {
-      left: ANIMALS.SMALL_DOG,
-      right: ANIMALS.GOAT,
-      leftCount: 1,
-      rightCount: 1,
-      special: true,
-    },
-    {
-      left: ANIMALS.HORSE,
-      right: ANIMALS.BIG_DOG,
-      leftCount: 1,
-      rightCount: 1,
-      special: true,
-    },
-    {
-      left: ANIMALS.BIG_DOG,
-      right: ANIMALS.HORSE,
-      leftCount: 1,
-      rightCount: 1,
+      id: 'horse-big-dog',
+      leftTrade: {
+        left: ANIMALS.HORSE,
+        right: ANIMALS.BIG_DOG,
+        leftCount: 1,
+        rightCount: 1,
+      },
+      rightTrade: {
+        left: ANIMALS.BIG_DOG,
+        right: ANIMALS.HORSE,
+        leftCount: 1,
+        rightCount: 1,
+      },
       special: true,
     },
   ];
+
+  const isExchangeEnabled = (pair: ExchangePair): boolean =>
+    !!me &&
+    isYourTurn &&
+    (!oneExchangeRuleEnabled || !me.exchangedThisTurn) &&
+    canExchange(me.animals, pair.left, pair.leftCount);
 
   const onExchange = (pair: ExchangePair) => {
     emitEvent(
       FARM_EVENTS.GAME_EXCHANGE,
       {
-        roomId: currentRoom?.id,
+        roomId: currentRoom!.id,
         from: pair.left,
         to: pair.right,
       },
@@ -97,29 +166,57 @@ export default function ExchangeSection({
         {translation.gameboard.exchangeAnimalsHeader}
       </h3>
       <div className={styles.exchangeGrid}>
-        {exchangePairs.map(pair => {
-          const enabled =
-            !!me &&
-            isYourTurn &&
-            (!oneExchangeRuleEnabled || !me.exchangedThisTurn) &&
-            canExchange(me.animals, pair.left, pair.leftCount);
+        {exchangeGroups.map(group => {
+          const leftEnabled = isExchangeEnabled(group.rightTrade);
+          const rightEnabled = isExchangeEnabled(group.leftTrade);
 
           return (
-            <button
-              key={`${pair.left}-${pair.right}`}
-              type="button"
-              className={`${styles.tradeButton} ${pair.special ? styles.special : ''}`.trim()}
-              disabled={!enabled}
-              onClick={() => {
-                if (!enabled) {
-                  return;
-                }
-                onExchange(pair);
-              }}
+            <div
+              key={group.id}
+              className={`${styles.splitCard} ${group.special ? styles.special : ''}`.trim()}
             >
-              {pair.leftCount} {ANIMALS_ICONS_CONFIG[pair.left].icon}{' '}
-              {pair.rightCount} {ANIMALS_ICONS_CONFIG[pair.right].icon}
-            </button>
+              <button
+                type="button"
+                className={styles.tradeHalf}
+                disabled={!leftEnabled}
+                onClick={() => {
+                  if (!leftEnabled) {
+                    return;
+                  }
+                  onExchange(group.rightTrade);
+                }}
+                aria-label={`${group.rightTrade.leftCount} ${group.rightTrade.left} to ${group.rightTrade.rightCount} ${group.rightTrade.right}`}
+              >
+                <span className={styles.count}>
+                  {group.leftTrade.leftCount}
+                </span>
+                <span className={styles.emoji}>
+                  {ANIMALS_ICONS_CONFIG[group.leftTrade.left].icon}
+                </span>
+              </button>
+
+              <div className={styles.divider} />
+
+              <button
+                type="button"
+                className={styles.tradeHalf}
+                disabled={!rightEnabled}
+                onClick={() => {
+                  if (!rightEnabled) {
+                    return;
+                  }
+                  onExchange(group.leftTrade);
+                }}
+                aria-label={`${group.leftTrade.leftCount} ${group.leftTrade.left} to ${group.leftTrade.rightCount} ${group.leftTrade.right}`}
+              >
+                <span className={styles.count}>
+                  {group.rightTrade.leftCount}
+                </span>
+                <span className={styles.emoji}>
+                  {ANIMALS_ICONS_CONFIG[group.rightTrade.left].icon}
+                </span>
+              </button>
+            </div>
           );
         })}
       </div>

@@ -1,16 +1,14 @@
 import { EVENTS } from '@game/shared/constants';
 
-import type { Server } from 'socket.io';
-
 import { LogLevel } from '../../constants';
 import { log } from '../../services/logger';
-import type { AckFunc, AppSocket } from '../../types';
+import type { AckFunc, AppServer, AppSocket } from '../../types';
 import { updateRoomsList } from '../room/room.service';
 
 import type { RenamePlayerReq } from './player.types';
 
 const renamePlayerHandler =
-  (io: Server, socket: AppSocket) =>
+  (io: AppServer, socket: AppSocket) =>
   (payload: RenamePlayerReq, ack?: AckFunc): void => {
     log(LogLevel.DEBUG, 'event:player:rename', {
       socketId: socket.id,
@@ -24,7 +22,7 @@ const renamePlayerHandler =
     if (ack) ack({ ok: true });
   };
 
-export function registerPlayerFeature(io: Server): void {
+export function registerPlayerFeature(io: AppServer): void {
   io.on(EVENTS.CONNECTION, (socket: AppSocket): void => {
     socket.on(EVENTS.PLAYER_RENAME, renamePlayerHandler(io, socket));
   });

@@ -67,9 +67,21 @@ export function useWinningAnimation(): UseWinningAnimationResult {
       return [];
     }
 
+    const COLORS = [
+      '#ff4d4d',
+      '#ff9900',
+      '#ffdd00',
+      '#66ff66',
+      '#00ccff',
+      '#cc66ff',
+      '#ff66b2',
+      '#ffffff',
+    ];
+
     return Array.from({ length: CONFETTI_COUNT }).map(() => ({
       left: `${Math.random() * 100}%`,
       animationDelay: `${Math.random() * 0.5}s`,
+      color: COLORS[Math.floor(Math.random() * COLORS.length)]!,
     }));
   }, [show]);
 

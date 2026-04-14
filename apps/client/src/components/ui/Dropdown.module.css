@@ -5,21 +5,34 @@
 
 .dropdown {
   position: absolute;
-  top: 100%;
+  top: calc(100% + 4px);
   left: 0;
+  min-width: 120px;
   background: var(--white);
   border: 1px solid var(--gray-600);
-  z-index: 2;
-  min-width: 120px;
   box-shadow: var(--shadow);
-  margin-top: 4px;
+  z-index: 2;
 }
 
-.languageOption {
+.alignRight {
+  left: auto;
+  right: 0;
+}
+
+.item {
+  width: 100%;
+  border: none;
+  background: transparent;
+  text-align: left;
   padding: 8px 16px;
   cursor: pointer;
 }
 
-.languageOption:hover {
+.item:hover {
   background-color: var(--purple-200);
+}
+
+.item:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }

@@ -1,10 +1,13 @@
 import HelpModal from '../../../components/modals/HelpModal';
 import QrModal from '../../../components/modals/QrModal';
-import IconButton from '../../../components/ui/IconButton';
-import LanguageDropdown from '../../../components/ui/LanguageDropdown';
+import Button from '../../../components/ui/Button';
+import Dropdown from '../../../components/ui/Dropdown';
+import { BUTTON_VARIANT } from '../../../constants';
+import { LANGUAGES_CONFIG } from '../../../constants/language';
 import { useConnection } from '../../../hooks/useConnection';
 import { useLanguage } from '../../../hooks/useLanguage';
 import { useModal } from '../../../hooks/useModal';
+import { Language } from '../../../types/language';
 
 import styles from './Header.module.css';
 
@@ -12,6 +15,13 @@ export default function Header() {
   const { online } = useConnection();
   const { translation } = useLanguage();
   const { showModal } = useModal();
+  const { setLanguage } = useLanguage();
+
+  const languageItems = LANGUAGES_CONFIG.map((item: Language) => ({
+    key: item.code,
+    label: item.name,
+    onSelect: () => setLanguage(item.code),
+  }));
 
   return (
     <header className={styles.container}>
@@ -23,19 +33,30 @@ export default function Header() {
         </div>
       </div>
 
-      <nav className={styles.headerTools}>
-        <LanguageDropdown />
-        <IconButton
-          icon="📷"
+      <div className={styles.headerTools}>
+        <Dropdown
+          triggerVariant={BUTTON_VARIANT.ICON}
+          triggerTitle="Change Language"
+          trigger={'🌐'}
+          items={languageItems}
+        />
+
+        <Button
+          variant={BUTTON_VARIANT.ICON}
           title="Show QR Code"
           onClick={() => showModal(QrModal)}
-        />
-        <IconButton
-          icon="❓"
+        >
+          📷
+        </Button>
+
+        <Button
+          variant={BUTTON_VARIANT.ICON}
           title="Show Help"
           onClick={() => showModal(HelpModal)}
-        />
-      </nav>
+        >
+          ❓
+        </Button>
+      </div>
     </header>
   );
 }

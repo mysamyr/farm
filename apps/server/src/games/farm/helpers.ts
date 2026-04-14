@@ -26,7 +26,6 @@ export function rollDice(): [DiceAnimals, DiceAnimals] {
 }
 
 export function checkWinner(player: Player): boolean {
-  // return Math.random() < 0.9; // 90% chance to win, just for testing
   return FARM_ANIMALS.every(a => (player.animals[a] || 0) > 0);
 }
 

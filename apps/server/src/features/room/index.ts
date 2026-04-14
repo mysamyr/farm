@@ -7,11 +7,9 @@ import {
 
 import type { Room } from '@game/shared/types';
 
-import type { Server } from 'socket.io';
-
 import { LogLevel } from '../../constants';
 import { log } from '../../services/logger';
-import type { AckFunc, AppSocket } from '../../types';
+import type { AckFunc, AppServer, AppSocket } from '../../types';
 import { checkIfPlayerAlreadyInRoom } from '../player/player.helpers';
 
 import {
@@ -32,7 +30,7 @@ import type {
 } from './room.types';
 
 const createRoomHandler =
-  (io: Server, socket: AppSocket) =>
+  (io: AppServer, socket: AppSocket) =>
   (_req: null, ack?: AckFunc): void => {
     log(LogLevel.DEBUG, 'event:room:create', {
       socketId: socket.id,
@@ -65,7 +63,7 @@ const createRoomHandler =
   };
 
 const updateRoomHandler =
-  (io: Server, socket: AppSocket) =>
+  (io: AppServer, socket: AppSocket) =>
   (req: UpdateRoomReq, ack?: AckFunc): void => {
     log(LogLevel.DEBUG, 'event:room:update', {
       socketId: socket.id,
@@ -102,7 +100,7 @@ const updateRoomHandler =
   };
 
 const joinRoomHandler =
-  (io: Server, socket: AppSocket) =>
+  (io: AppServer, socket: AppSocket) =>
   (req: JoinRoomReq, ack?: AckFunc): void => {
     log(LogLevel.DEBUG, 'event:room:join', {
       socketId: socket.id,
@@ -146,7 +144,7 @@ const joinRoomHandler =
   };
 
 const leaveRoomHandler =
-  (io: Server, socket: AppSocket) =>
+  (io: AppServer, socket: AppSocket) =>
   (req: LeaveRoomReq, ack?: AckFunc): void => {
     log(LogLevel.DEBUG, 'event:room:leave', {
       socketId: socket.id,
@@ -170,7 +168,7 @@ const leaveRoomHandler =
   };
 
 const closeRoomHandler =
-  (io: Server, socket: AppSocket) =>
+  (io: AppServer, socket: AppSocket) =>
   (req: CloseRoomReq, ack?: AckFunc): void => {
     log(LogLevel.DEBUG, 'event:room:close', {
       socketId: socket.id,
@@ -209,7 +207,7 @@ const closeRoomHandler =
     log(LogLevel.INFO, 'room:closed', { roomId: req.roomId });
   };
 
-export function registerRoomFeature(io: Server): void {
+export function registerRoomFeature(io: AppServer): void {
   io.on(EVENTS.CONNECTION, (socket: AppSocket): void => {
     socket.on(EVENTS.ROOM_CREATE, createRoomHandler(io, socket));
     socket.on(EVENTS.ROOM_UPDATE, updateRoomHandler(io, socket));

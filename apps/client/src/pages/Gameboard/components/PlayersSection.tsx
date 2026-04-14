@@ -22,12 +22,10 @@ export default function PlayersSection({
   const { translation } = useLanguage();
   const { currentRoom } = useRoom();
 
-  if (!currentRoom) {
-    return <></>;
-  }
-
-  const players = currentRoom.order
-    .map(playerId => currentRoom.players.find(player => player.id === playerId))
+  const players = currentRoom!.order
+    .map(playerId =>
+      currentRoom!.players.find(player => player.id === playerId)
+    )
     .filter(Boolean) as Player[];
 
   return (

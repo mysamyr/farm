@@ -53,7 +53,9 @@ export default function RoomCard({
       <div className={styles.header}>
         <div>
           <h3 className={styles.roomName}>{room.name}</h3>
-          <p className={styles.roomOwner}>{translation.owner} {ownerLabel}</p>
+          <p className={styles.roomOwner}>
+            {translation.owner} {ownerLabel}
+          </p>
         </div>
         <span className={classNames(styles.badge, styles[room.state])}>
           {translation.roomState[room.state]}
@@ -61,9 +63,9 @@ export default function RoomCard({
       </div>
 
       <div className={styles.roomInfo}>
-          <span>
-            👥 {room.players.length}/{DEFAULT_CONFIG.maxPlayers}
-          </span>
+        <span>
+          👥 {room.players.length}/{DEFAULT_CONFIG.maxPlayers}
+        </span>
         <div className={styles.rules}>
           {Object.values(GAME_RULES)
             .filter(rule => room.rules[rule])
@@ -74,7 +76,9 @@ export default function RoomCard({
       </div>
 
       <Button
-        variant={isBtnDisabled ? BUTTON_VARIANT.SECONDARY : BUTTON_VARIANT.PRIMARY}
+        variant={
+          isBtnDisabled ? BUTTON_VARIANT.SECONDARY : BUTTON_VARIANT.PRIMARY
+        }
         disabled={isBtnDisabled}
         onClick={() => {
           if (isBtnDisabled) {

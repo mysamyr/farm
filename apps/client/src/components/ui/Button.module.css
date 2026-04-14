@@ -35,18 +35,10 @@
   box-shadow: 0 4px 10px var(--purple-shadow);
 }
 
-.primary:hover {
-  background-color: var(--purple-200);
-}
-
 .secondary {
   width: 100%;
   background-color: var(--gray-200);
   color: var(--gray-800);
-}
-
-.secondary:hover {
-  background-color: var(--gray-400);
 }
 
 .danger {
@@ -54,15 +46,28 @@
   color: var(--white);
 }
 
-.danger:hover {
-  background-color: var(--orange-500);
-}
-
 .success {
   background-color: var(--green-500);
   color: var(--white);
 }
 
-.success:hover {
-  background-color: var(--teal-500);
+.icon {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  background-color: var(--gray-200);
+  border-radius: var(--radius-lg);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5rem;
+}
+
+.icon:hover {
+  background-color: var(--gray-400);
+  transform: none;
+}
+
+.icon:active {
+  transform: none;
 }

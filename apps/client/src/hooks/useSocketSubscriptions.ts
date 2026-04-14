@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { NOTIFICATION_TYPES } from '@game/shared/constants';
 import { FARM_EVENTS } from '@game/shared/constants/farm';
 import type { Room } from '@game/shared/types/farm';
+import type { ServerNotification } from '@game/shared/types/socket';
 import { useNavigate } from 'react-router-dom';
 
 import { LOCAL_STORAGE_KEY, PATHS } from '../constants';
@@ -34,7 +35,7 @@ export function useSocketSubscriptions({
       }
     });
 
-    subscribe<Room[]>(FARM_EVENTS.ROOMS_LIST, (nextRooms: Room[]): void => {
+    subscribe(FARM_EVENTS.ROOMS_LIST, (nextRooms: Room[]): void => {
       setRooms(prevRooms => {
         const changed = JSON.stringify(prevRooms) !== JSON.stringify(nextRooms);
         return changed ? nextRooms : prevRooms;
@@ -47,28 +48,22 @@ export function useSocketSubscriptions({
       setCurrentRoom(updatedCurrentRoom);
     });
 
-    subscribe(FARM_EVENTS.ROOM_CLOSE, (): void => {
+    subscribe(FARM_EVENTS.ROOM_CLOSED, (): void => {
       setCurrentRoom(null);
     });
 
-    subscribe<{ room: Room }>(
-      FARM_EVENTS.GAME_STARTED,
-      ({ room }: { room: Room }): void => {
-        setCurrentRoom(room);
-        void navigate(`${PATHS.GAME_BOARD}?roomId=${room.id}`);
-      }
-    );
+    subscribe(FARM_EVENTS.GAME_STARTED, ({ room }: { room: Room }): void => {
+      setCurrentRoom(room);
+      void navigate(`${PATHS.GAME_BOARD}?roomId=${room.id}`);
+    });
 
-    subscribe<{ room: Room }>(
-      FARM_EVENTS.GAME_UPDATE,
-      ({ room }: { room: Room }): void => {
-        setCurrentRoom(room);
-      }
-    );
+    subscribe(FARM_EVENTS.GAME_UPDATE, ({ room }: { room: Room }): void => {
+      setCurrentRoom(room);
+    });
 
-    subscribe<{ type: NOTIFICATION_TYPES; data: string }>(
+    subscribe(
       FARM_EVENTS.NOTIFICATION,
-      ({ type, data }): void => {
+      ({ type, data }: ServerNotification): void => {
         const name = window.localStorage.getItem(LOCAL_STORAGE_KEY.USERNAME);
         const isCurrentUser = name === data;
 
@@ -98,7 +93,7 @@ export function useSocketSubscriptions({
       }
     );
 
-    subscribe<number>(FARM_EVENTS.ONLINE_COUNT, (online: number): void => {
+    subscribe(FARM_EVENTS.ONLINE_COUNT, (online: number): void => {
       setOnline(online);
     });
   }, []);

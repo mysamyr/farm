@@ -11,9 +11,11 @@ import { httpLogger, log } from './services/logger';
 import { openUrlInBrowser } from './services/open';
 import { registerSocketHandlers } from './socket/handlers';
 
+import type { AppServer } from './types';
+
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server, {
+const io: AppServer = new Server(server, {
   cors: { origin: '*' },
   pingTimeout: 60 * 1000,
   connectionStateRecovery: {
