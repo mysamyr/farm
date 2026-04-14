@@ -13,6 +13,8 @@ import { getDiceIcon, isWildAnimal } from '../../../utils/game';
 
 import styles from './DiceSection.module.css';
 
+import EmoteButton from './EmoteButton';
+
 type DiceSectionProps = {
   isYourTurn: boolean;
 };
@@ -63,13 +65,17 @@ export default function DiceSection({
         </div>
       </div>
 
-      <Button
-        variant={BUTTON_VARIANT.PRIMARY}
-        disabled={!isYourTurn}
-        onClick={onRoll}
-      >
-        {translation.gameboard.gameButton.throwDice}
-      </Button>
+      <div className={styles.actions}>
+        <Button
+          variant={BUTTON_VARIANT.PRIMARY}
+          disabled={!isYourTurn}
+          onClick={onRoll}
+        >
+          {translation.gameboard.gameButton.throwDice}
+        </Button>
+
+        <EmoteButton roomId={currentRoom!.id} />
+      </div>
     </div>
   );
 }

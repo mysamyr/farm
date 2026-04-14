@@ -10,9 +10,20 @@ export const FARM_EVENTS = {
   GAME_START: 'game:start',
   GAME_ROLL_DICE: 'game:rollDice',
   GAME_EXCHANGE: 'game:exchange',
+  GAME_SEND_EMOTE: 'game:sendEmote',
   GAME_STARTED: 'game:started',
   GAME_UPDATE: 'game:update',
+  GAME_EMOTE_SENT: 'game:emoteSent',
 } as const;
+
+export const EMOTES = [
+  { id: 'laugh', emoji: '😂' },
+  { id: 'love', emoji: '😍' },
+  { id: 'clap', emoji: '👏' },
+  { id: 'fire', emoji: '🔥' },
+  { id: 'hundred', emoji: '💯' },
+  { id: 'sad', emoji: '😢' },
+] as const;
 
 export enum ANIMALS {
   DUCK = 'DUCK',

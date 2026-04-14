@@ -1,0 +1,19 @@
+.container {
+  display: inline-flex;
+}
+
+.triggerButton {
+  min-width: 36px;
+  min-height: 30px;
+  padding: 4px 8px;
+  border-radius: 8px;
+}
+
+.emoteOnly {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.triggerDisabled {
+  opacity: 0.5;
+}
