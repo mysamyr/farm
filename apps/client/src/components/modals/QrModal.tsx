@@ -45,7 +45,7 @@ function QrModal(): ReactElement {
   } = useQuery<QRItem[], Error>({
     queryKey: ['qr-codes'],
     queryFn: async (): Promise<QRItem[]> => {
-      const response = await fetch('/api/qr');
+      const response = await fetch(`/api/qr?port=${window.location.port}`);
       if (!response.ok) {
         throw new Error('Failed to fetch QR codes');
       }
