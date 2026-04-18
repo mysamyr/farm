@@ -41,13 +41,15 @@ export default function Header() {
           items={languageItems}
         />
 
-        <Button
-          variant={BUTTON_VARIANT.ICON}
-          title="Show QR Code"
-          onClick={() => showModal(QrModal)}
-        >
-          📷
-        </Button>
+        {!import.meta.env.PROD && (
+          <Button
+            variant={BUTTON_VARIANT.ICON}
+            title="Show QR Code"
+            onClick={() => showModal(QrModal)}
+          >
+            📱
+          </Button>
+        )}
 
         <Button
           variant={BUTTON_VARIANT.ICON}

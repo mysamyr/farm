@@ -20,12 +20,13 @@ function getLocalIPv4Addresses(): string[] {
   return results;
 }
 
-router.get('/api/qr', async (_req, res) => {
+router.get('/api/qr', async (req, res) => {
   try {
+    const port = (req.query.port as string) || config.PORT;
     const ips = getLocalIPv4Addresses();
     const items = await Promise.all(
       ips.map(async ip => {
-        const url = `http://${ip}:${config.PORT}`;
+        const url = `http://${ip}:${port}`;
         const qr = await qrcode.toDataURL(url, {
           type: 'image/png',
           margin: 2,
