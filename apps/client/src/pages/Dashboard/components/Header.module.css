@@ -2,7 +2,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: var(--white);
+  background: var(--bg-card);
   padding: 15px 25px;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
@@ -11,7 +11,7 @@
 .logo {
   font-size: 1.5rem;
   font-weight: 800;
-  color: var(--purple-500);
+  color: var(--accent);
 }
 
 .onlineIndicator {
@@ -19,15 +19,15 @@
   align-items: center;
   gap: 8px;
   font-size: 0.85rem;
-  color: var(--gray-600);
+  color: var(--text-muted);
 }
 
 .onlineIndicator .dot {
   width: 8px;
   height: 8px;
-  background: var(--green-500);
+  background: var(--status-success);
   border-radius: 50%;
-  box-shadow: 0 0 8px var(--green-500);
+  box-shadow: 0 0 8px var(--status-success);
 }
 
 .headerTools {

@@ -8,21 +8,27 @@
 .usernameLabel {
   display: block;
   font-size: 0.8rem;
-  color: var(--gray-600);
+  color: var(--text-muted);
   margin-bottom: 5px;
 }
 
 .usernameInput {
   padding: 12px 15px;
   border-radius: 12px;
-  border: 2px solid var(--gray-400);
+  border: 2px solid var(--border-base);
   font-size: 1rem;
   outline: none;
   transition: border-color 0.2s;
+  background-color: var(--surface-input-bg);
+  color: var(--surface-input-text);
+}
+
+.usernameInput::placeholder {
+  color: var(--surface-input-placeholder);
 }
 
 .usernameInput:focus {
-  border-color: var(--purple-500);
+  border-color: var(--accent);
 }
 
 @media (max-width: 900px) {

@@ -1,6 +1,6 @@
 .tag {
   font-size: 0.7rem;
-  background: var(--gray-200);
+  background: var(--bg-surface-subtle);
   padding: 2px 8px;
   border-radius: 4px;
 }

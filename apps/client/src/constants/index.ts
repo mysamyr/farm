@@ -3,6 +3,7 @@ import { ANIMALS } from '@game/shared/constants/farm';
 export const LOCAL_STORAGE_KEY = {
   LANGUAGE: 'farm:language',
   USERNAME: 'farm:username',
+  THEME: 'farm:theme',
 } as const;
 
 export const PATHS = {
@@ -35,3 +36,12 @@ export const BUTTON_VARIANT = {
 
 export type ButtonVariant =
   (typeof BUTTON_VARIANT)[keyof typeof BUTTON_VARIANT];
+
+export const THEME = {
+  LIGHT: 'light',
+  DARK: 'dark',
+} as const;
+
+export type ThemeCode = (typeof THEME)[keyof typeof THEME];
+
+export const DEFAULT_THEME: ThemeCode = THEME.LIGHT;

@@ -1,24 +1,126 @@
 :root {
-  --white: #ffffff;
-  --gray-100: #f8f9fa;
-  --gray-200: #dfe6e9;
-  --gray-400: #b2bec3;
-  --gray-600: #636e72;
-  --gray-800: #2d3436;
-  --purple-200: #cdc9ff;
-  --purple-500: #6c5ce7;
-  --purple-shadow: #6c5ce74d;
-  --teal-50: #e6fffa;
-  --teal-500: #00b894;
-  --green-500: #4caf50;
-  --red-50: #ffe6e6;
-  --red-500: #ff5757;
-  --orange-50: #fff4e6;
-  --orange-500: #e17055;
-  --yellow-500: #f6e473;
+  /* Layer 1: Primitive color tokens */
+  --pc-white: #ffffff;
+  --pc-black: #0f1113;
+  --pc-gray-50: #f8f9fa;
+  --pc-gray-100: #dfe6e9;
+  --pc-gray-300: #b2bec3;
+  --pc-gray-500: #636e72;
+  --pc-gray-700: #2d3436;
+  --pc-gray-800: #1a1a1a;
+  --pc-gray-850: #2d2d2d;
+  --pc-gray-900: #3d3d3d;
+  --pc-purple-200: #cdc9ff;
+  --pc-purple-500: #6c5ce7;
+  --pc-purple-shadow: #6c5ce74d;
+  --pc-teal-50: #e6fffa;
+  --pc-teal-900: #1a3a38;
+  --pc-teal-500: #00b894;
+  --pc-green-500: #4caf50;
+  --pc-red-50: #ffe6e6;
+  --pc-red-900: #3a1a1a;
+  --pc-red-500: #ff5757;
+  --pc-orange-50: #fff4e6;
+  --pc-orange-900: #3a2a1a;
+  --pc-orange-500: #e17055;
+  --pc-yellow-500: #f6e473;
+
+  /* Non-color primitives */
   --radius-lg: 12px;
-  --backdrop: hsla(0, 0%, 0%, 0.5);
-  --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --elevation-1:
+    0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --elevation-1-strong:
+    0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+  --overlay-backdrop-soft: hsla(0, 0%, 0%, 0.5);
+  --overlay-backdrop-strong: hsla(0, 0%, 0%, 0.8);
+}
+
+/* Layer 2: Semantic Light (default + explicit light) */
+:root,
+:root[data-theme='light'] {
+  --bg-page: var(--pc-gray-50);
+  --bg-card: var(--pc-white);
+  --bg-surface-subtle: var(--pc-gray-100);
+  --text-main: var(--pc-gray-700);
+  --text-muted: var(--pc-gray-500);
+  --text-inverse: var(--pc-gray-800);
+  --border-base: var(--pc-gray-300);
+  --border-strong: var(--pc-purple-500);
+  --accent: var(--pc-purple-500);
+  --accent-soft: var(--pc-purple-200);
+  --accent-contrast: var(--pc-white);
+  --accent-shadow: var(--pc-purple-shadow);
+  --status-success: var(--pc-green-500);
+  --status-info: var(--pc-teal-500);
+  --status-info-soft: var(--pc-teal-50);
+  --status-error: var(--pc-red-500);
+  --status-error-soft: var(--pc-red-50);
+  --status-warning: var(--pc-orange-500);
+  --status-warning-soft: var(--pc-orange-50);
+  --status-highlight: var(--pc-yellow-500);
+  --surface-input-bg: var(--pc-white);
+  --surface-input-text: var(--pc-gray-700);
+  --surface-input-placeholder: var(--pc-gray-500);
+  --overlay-backdrop: var(--overlay-backdrop-soft);
+  --shadow-elevation: var(--elevation-1);
+  --shadow-hover-card: 0 8px 16px rgb(15 23 42 / 0.08);
+  --text-shadow-hero: 0 4px 12px rgb(0 0 0 / 0.8), 2px 2px 4px rgb(0 0 0 / 0.6);
+}
+
+/* Layer 3: Semantic Dark */
+:root[data-theme='dark'] {
+  --bg-page: var(--pc-gray-850);
+  --bg-card: var(--pc-gray-800);
+  --bg-surface-subtle: var(--pc-gray-900);
+  --text-main: #e8e8e8;
+  --text-muted: var(--pc-gray-300);
+  --text-inverse: var(--pc-white);
+  --border-base: #6d6d6d;
+  --border-strong: var(--pc-purple-500);
+  --accent: var(--pc-purple-500);
+  --accent-soft: #8b7fd4;
+  --accent-contrast: var(--pc-white);
+  --accent-shadow: var(--pc-purple-shadow);
+  --status-success: var(--pc-green-500);
+  --status-info: var(--pc-teal-500);
+  --status-info-soft: var(--pc-teal-900);
+  --status-error: var(--pc-red-500);
+  --status-error-soft: var(--pc-red-900);
+  --status-warning: var(--pc-orange-500);
+  --status-warning-soft: var(--pc-orange-900);
+  --status-highlight: var(--pc-yellow-500);
+  --surface-input-bg: var(--pc-gray-900);
+  --surface-input-text: #e8e8e8;
+  --surface-input-placeholder: #b2bec3;
+  --overlay-backdrop: var(--overlay-backdrop-strong);
+  --shadow-elevation: var(--elevation-1-strong);
+  --shadow-hover-card: 0 8px 16px rgb(0 0 0 / 0.35);
+  --text-shadow-hero:
+    0 4px 12px rgb(0 0 0 / 0.85), 2px 2px 4px rgb(0 0 0 / 0.7);
+}
+
+/* Compatibility aliases (legacy component tokens) */
+:root {
+  --white: var(--bg-card);
+  --gray-100: var(--bg-page);
+  --gray-200: var(--bg-surface-subtle);
+  --gray-400: var(--border-base);
+  --gray-600: var(--text-muted);
+  --gray-700: var(--text-main);
+  --gray-800: var(--text-main);
+  --purple-200: var(--accent-soft);
+  --purple-500: var(--accent);
+  --purple-shadow: var(--accent-shadow);
+  --teal-50: var(--status-info-soft);
+  --teal-500: var(--status-info);
+  --green-500: var(--status-success);
+  --red-50: var(--status-error-soft);
+  --red-500: var(--status-error);
+  --orange-50: var(--status-warning-soft);
+  --orange-500: var(--status-warning);
+  --yellow-500: var(--status-highlight);
+  --backdrop: var(--overlay-backdrop);
+  --shadow: var(--shadow-elevation);
 }
 
 * {
@@ -28,19 +130,19 @@
 
 body {
   font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  background-color: var(--gray-100);
-  color: var(--gray-800);
+  background-color: var(--bg-page);
+  color: var(--text-main);
   padding: 20px;
 }
 
 h2 {
-  color: var(--gray-600);
+  color: var(--text-muted);
   margin-top: 0.5rem;
   margin-bottom: 1rem;
 }
 
 h3 {
-  color: var(--gray-600);
+  color: var(--text-muted);
   margin-top: 0.25rem;
   margin-bottom: 0.6rem;
 }
@@ -49,8 +151,8 @@ h3 {
 dialog:modal {
   margin: auto;
   max-width: 80%;
-  color: var(--gray-800);
-  background-color: var(--white);
+  color: var(--text-main);
+  background-color: var(--bg-card);
 }
 
 dialog::backdrop {

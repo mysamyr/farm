@@ -1,5 +1,5 @@
 .container {
-  background: var(--white);
+  background: var(--bg-card);
   padding: 20px;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
@@ -21,7 +21,7 @@
 
 .roomOwner {
   font-size: 0.8rem;
-  color: var(--gray-600);
+  color: var(--text-muted);
 }
 
 .badge {
@@ -32,18 +32,18 @@
 }
 
 .running {
-  background: var(--teal-50);
-  color: var(--teal-500);
+  background: var(--status-info-soft);
+  color: var(--status-info);
 }
 
 .idle {
-  background: var(--orange-50);
-  color: var(--orange-500);
+  background: var(--status-warning-soft);
+  color: var(--status-warning);
 }
 
 .finished {
-  background: var(--purple-200);
-  color: var(--purple-500);
+  background: var(--accent-soft);
+  color: var(--accent);
 }
 
 .roomInfo {
@@ -51,7 +51,7 @@
   flex-direction: column;
   gap: 10px;
   font-size: 0.9rem;
-  color: var(--gray-600);
+  color: var(--text-muted);
 }
 
 .rules {

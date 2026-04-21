@@ -4,12 +4,14 @@ import React from 'react';
 import type { Room } from '@game/shared/types/farm';
 import { create } from 'zustand';
 
+import { type ThemeCode } from '../constants';
 import languageMap, { LanguageCode } from '../constants/language';
 import type { Translation } from '../types/language';
 import {
   getLanguage,
   setLanguage as setLanguageStorage,
 } from '../utils/language';
+import { getTheme, setTheme as setThemeStorage } from '../utils/theme';
 
 // ─── Language ────────────────────────────────────────────────────────────────
 
@@ -26,6 +28,22 @@ export const useLanguageStore = create<LanguageSlice>((set, get) => ({
     if (nextLanguage === get().language) return;
     setLanguageStorage(nextLanguage);
     set({ language: nextLanguage, translation: languageMap[nextLanguage] });
+  },
+}));
+
+// ─── Theme ──────────────────────────────────────────────────────────────────
+
+interface ThemeSlice {
+  theme: ThemeCode;
+  setTheme: (nextTheme: ThemeCode) => void;
+}
+
+export const useThemeStore = create<ThemeSlice>((set, get) => ({
+  theme: getTheme(),
+  setTheme: nextTheme => {
+    if (nextTheme === get().theme) return;
+    setThemeStorage(nextTheme);
+    set({ theme: nextTheme });
   },
 }));
 

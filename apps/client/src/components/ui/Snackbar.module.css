@@ -5,8 +5,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--teal-500);
-  color: var(--white);
+  background: var(--status-info);
+  color: var(--accent-contrast);
   padding: 4px;
   border-radius: 4px;
   overflow: hidden;
@@ -21,7 +21,7 @@
 }
 
 .dismiss {
-  color: var(--red-500);
+  color: var(--status-error);
   font-weight: bold;
   margin: 0 8px;
   padding: 8px;

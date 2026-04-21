@@ -21,7 +21,7 @@ export const EMOTES = [
   { id: 'love', emoji: '😍' },
   { id: 'clap', emoji: '👏' },
   { id: 'fire', emoji: '🔥' },
-  { id: 'hundred', emoji: '💯' },
+  { id: 'tongue', emoji: '😝' },
   { id: 'sad', emoji: '😢' },
 ] as const;
 

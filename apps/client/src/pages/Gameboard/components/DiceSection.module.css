@@ -4,7 +4,7 @@
   align-items: center;
   gap: 12px;
   padding: 10px;
-  background: var(--white);
+  background: var(--bg-card);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
 }
@@ -23,7 +23,7 @@
 .dice {
   width: 60px;
   height: 60px;
-  background-color: var(--gray-200);
+  background-color: var(--bg-surface-subtle);
   border-radius: var(--radius-lg);
   display: flex;
   justify-content: center;
@@ -33,5 +33,5 @@
 }
 
 .wildAnimal {
-  background-color: var(--red-50);
+  background-color: var(--status-error-soft);
 }

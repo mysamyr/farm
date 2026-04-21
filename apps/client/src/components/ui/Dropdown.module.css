@@ -7,8 +7,8 @@
   position: absolute;
   top: calc(100% + 4px);
   left: 0;
-  background: var(--white);
-  border: 1px solid var(--gray-600);
+  background: var(--bg-card);
+  border: 1px solid var(--text-muted);
   box-shadow: var(--shadow);
   z-index: 2;
 }
@@ -25,10 +25,11 @@
   text-align: left;
   padding: 8px 16px;
   cursor: pointer;
+  color: var(--text-main);
 }
 
 .item:hover {
-  background-color: var(--purple-200);
+  background-color: var(--accent-soft);
 }
 
 .item:disabled {

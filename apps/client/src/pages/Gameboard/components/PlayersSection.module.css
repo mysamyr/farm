@@ -5,7 +5,7 @@
 }
 
 .playerCard {
-  background: var(--white);
+  background: var(--bg-card);
   border-radius: var(--radius-lg);
   padding: 12px;
   box-shadow: var(--shadow);
@@ -14,12 +14,12 @@
 }
 
 .activeTurn {
-  border-color: var(--teal-500);
+  border-color: var(--status-info);
   transform: translateY(-2px);
 }
 
 .winner {
-  border-color: var(--yellow-500);
+  border-color: var(--status-highlight);
   border-width: 3px;
   transform: translateY(-2px);
 }
@@ -27,7 +27,7 @@
 .playerHeader {
   margin-bottom: 15px;
   padding-bottom: 10px;
-  border-bottom: 1px solid var(--gray-200);
+  border-bottom: 1px solid var(--bg-surface-subtle);
   font-size: 1.1rem;
   font-weight: 700;
 }
@@ -50,7 +50,7 @@
 
 .animalCount {
   font-weight: 700;
-  color: var(--gray-800);
+  color: var(--text-main);
 }
 
 @media (max-width: 600px) {

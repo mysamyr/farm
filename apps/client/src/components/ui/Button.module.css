@@ -18,7 +18,7 @@
 }
 
 .button:focus-visible {
-  outline: 2px solid var(--gray-600);
+  outline: 2px solid var(--text-muted);
   outline-offset: 2px;
 }
 
@@ -30,32 +30,32 @@
 
 .primary {
   padding: 12px 25px;
-  background-color: var(--purple-500);
-  color: var(--white);
-  box-shadow: 0 4px 10px var(--purple-shadow);
+  background-color: var(--accent);
+  color: var(--accent-contrast);
+  box-shadow: 0 4px 10px var(--accent-shadow);
 }
 
 .secondary {
   width: 100%;
-  background-color: var(--gray-200);
-  color: var(--gray-800);
+  background-color: var(--bg-surface-subtle);
+  color: var(--text-main);
 }
 
 .danger {
-  background-color: var(--red-500);
-  color: var(--white);
+  background-color: var(--status-error);
+  color: var(--accent-contrast);
 }
 
 .success {
-  background-color: var(--green-500);
-  color: var(--white);
+  background-color: var(--status-success);
+  color: var(--accent-contrast);
 }
 
 .icon {
   width: 40px;
   height: 40px;
   padding: 0;
-  background-color: var(--gray-200);
+  background-color: var(--bg-surface-subtle);
   border-radius: var(--radius-lg);
   display: flex;
   justify-content: center;
@@ -64,7 +64,7 @@
 }
 
 .icon:hover {
-  background-color: var(--gray-400);
+  background-color: var(--border-base);
   transform: none;
 }
 

@@ -1,5 +1,5 @@
 .container {
-  background: var(--white);
+  background: var(--bg-card);
   padding: 16px;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
@@ -18,8 +18,8 @@
 .splitCard {
   display: flex;
   align-items: stretch;
-  background: var(--white);
-  border: 2px solid var(--gray-200);
+  background: var(--bg-card);
+  border: 2px solid var(--bg-surface-subtle);
   border-radius: 16px;
   overflow: hidden;
   transition:
@@ -28,7 +28,7 @@
 }
 
 .splitCard:hover {
-  box-shadow: 0 8px 16px rgba(15, 23, 42, 0.08);
+  box-shadow: var(--shadow-hover-card);
   transform: translateY(-1px);
 }
 
@@ -47,29 +47,29 @@
 }
 
 .tradeHalf:not(:disabled):hover {
-  background-color: var(--gray-100);
+  background-color: var(--bg-page);
 }
 
 .tradeHalf:not(:disabled):active {
-  background-color: var(--gray-200);
+  background-color: var(--bg-surface-subtle);
 }
 
 .tradeHalf:disabled {
   cursor: not-allowed;
   opacity: 0.45;
   filter: grayscale(1);
-  background: #f8fafc;
+  background: var(--bg-page);
 }
 
 .divider {
   width: 2px;
-  background: var(--gray-200);
+  background: var(--bg-surface-subtle);
 }
 
 .count {
   font-size: 1.05rem;
   font-weight: 800;
-  color: var(--gray-700);
+  color: var(--text-main);
   line-height: 1;
   margin-bottom: 4px;
 }
@@ -80,11 +80,11 @@
 }
 
 .special {
-  border-color: var(--teal-500);
+  border-color: var(--status-info);
 }
 
 .special .divider {
-  background: var(--teal-500);
+  background: var(--status-info);
 }
 
 @media (max-width: 600px) {

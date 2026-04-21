@@ -6,7 +6,7 @@
 }
 
 .title {
-  color: var(--purple-500);
+  color: var(--accent);
   font-size: 1.5rem;
   font-weight: 600;
 }

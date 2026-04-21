@@ -2,11 +2,12 @@ import HelpModal from '../../../components/modals/HelpModal';
 import QrModal from '../../../components/modals/QrModal';
 import Button from '../../../components/ui/Button';
 import Dropdown from '../../../components/ui/Dropdown';
-import { BUTTON_VARIANT } from '../../../constants';
+import { BUTTON_VARIANT, THEME } from '../../../constants';
 import { LANGUAGES_CONFIG } from '../../../constants/language';
 import { useConnection } from '../../../hooks/useConnection';
 import { useLanguage } from '../../../hooks/useLanguage';
 import { useModal } from '../../../hooks/useModal';
+import { useTheme } from '../../../hooks/useTheme';
 import { Language } from '../../../types/language';
 
 import styles from './Header.module.css';
@@ -16,6 +17,7 @@ export default function Header() {
   const { translation } = useLanguage();
   const { showModal } = useModal();
   const { setLanguage } = useLanguage();
+  const { theme, setTheme } = useTheme();
 
   const languageItems = LANGUAGES_CONFIG.map((item: Language) => ({
     key: item.code,
@@ -40,6 +42,16 @@ export default function Header() {
           trigger={'🌐'}
           items={languageItems}
         />
+
+        <Button
+          variant={BUTTON_VARIANT.ICON}
+          title="Toggle Theme"
+          onClick={() =>
+            setTheme(theme === THEME.LIGHT ? THEME.DARK : THEME.LIGHT)
+          }
+        >
+          {theme === THEME.LIGHT ? '🌙' : '☀️'}
+        </Button>
 
         {!import.meta.env.PROD && (
           <Button

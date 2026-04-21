@@ -3,7 +3,7 @@
   justify-content: space-around;
   align-items: center;
   padding: 6px;
-  background: var(--gray-200);
+  background: var(--bg-surface-subtle);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
 }
@@ -20,5 +20,5 @@
 
 .animalCount {
   font-weight: 700;
-  color: var(--gray-800);
+  color: var(--text-main);
 }

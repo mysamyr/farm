@@ -2,24 +2,40 @@
   display: flex;
   flex-direction: column;
   gap: 15px;
-  background: var(--white);
+  background: var(--bg-card);
   padding: 20px;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
-  border: 2px solid var(--purple-500);
+  border: 2px solid var(--accent);
 }
 
 .roomName {
   font-size: 1.2rem;
   font-weight: 700;
-  border: none;
-  border-bottom: 1px dashed var(--purple-500);
   width: 100%;
   margin-bottom: 5px;
 }
 
+input.roomName {
+  border: none;
+  border-bottom: 1px dashed var(--accent);
+  background-color: var(--surface-input-bg);
+  color: var(--surface-input-text);
+  border-radius: 8px;
+  padding: 6px 8px;
+}
+
+input.roomName:focus {
+  outline: none;
+  border-bottom-color: var(--accent);
+}
+
+h3.roomName {
+  color: var(--text-main);
+}
+
 .playersList {
-  background: var(--gray-100);
+  background: var(--bg-page);
   border-radius: 12px;
   padding: 6px;
 }
@@ -28,7 +44,7 @@
   display: flex;
   justify-content: space-between;
   padding: 8px 0;
-  border-bottom: 1px solid var(--gray-200);
+  border-bottom: 1px solid var(--bg-surface-subtle);
 }
 
 .playerItem:last-child {
@@ -37,7 +53,7 @@
 
 .currentUser {
   font-weight: 700;
-  color: var(--purple-500);
+  color: var(--accent);
 }
 
 .rulesSection {
