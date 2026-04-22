@@ -17,6 +17,7 @@ import {
   broadcastOnlineCount,
   getPendingDisconnect,
   gracefulDisconnect,
+  PendingDisconnect,
   reconnect,
 } from './connection.service';
 
@@ -27,34 +28,57 @@ const disconnectHandler =
     const room = getActiveRoom(socket.id);
 
     if (room && room.state === ROOM_STATES.RUNNING) {
-      gracefulDisconnect(io, socket, ip);
-      return;
+      const userId = socket.data.userId;
+      if (userId) {
+        gracefulDisconnect(io, socket, userId, ip);
+        return;
+      }
     }
 
     removePlayerFromAllRooms(io, socket);
-
     broadcastOnlineCount(io);
   };
 
+const reconnectHandler = (
+  io: AppServer,
+  socket: AppSocket,
+  ip: string,
+  pending: PendingDisconnect,
+  userId: string
+) => {
+  log(LogLevel.INFO, 'socket:reconnected', {
+    socketId: socket.id,
+    userId,
+    oldSocketId: pending.oldSocketId,
+  });
+
+  reconnect(userId, socket, pending);
+  broadcastOnlineCount(io);
+  updateRoomsList(io);
+
+  socket.on(EVENTS.DISCONNECT, disconnectHandler(io, socket, ip));
+};
+
 export function registerConnection(io: AppServer): void {
   io.on(EVENTS.CONNECTION, (socket: AppSocket): void => {
-    const appSocket = socket;
     const ip = getIpAddress(socket);
-    log(LogLevel.INFO, 'socket:connected', {
-      socketId: socket.id,
-      ip,
-    });
+    const userId = (socket.handshake.auth as { userId?: string }).userId;
 
-    const pending = getPendingDisconnect(appSocket);
-    if (pending) {
-      reconnect(appSocket, pending);
-      return;
+    log(LogLevel.INFO, 'socket:connected', { socketId: socket.id, ip });
+
+    if (userId) {
+      const pending = getPendingDisconnect(userId);
+      if (pending) {
+        reconnectHandler(io, socket, ip, pending, userId);
+        return;
+      }
+      socket.data.userId = userId;
     }
 
-    assignPlayer(appSocket);
+    assignPlayer(socket);
     broadcastOnlineCount(io);
     updateRoomsList(io);
 
-    socket.on(EVENTS.DISCONNECT, disconnectHandler(io, appSocket, ip));
+    socket.on(EVENTS.DISCONNECT, disconnectHandler(io, socket, ip));
   });
 }

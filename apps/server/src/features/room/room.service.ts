@@ -7,13 +7,18 @@ import {
 import type { Room } from '@game/shared/types';
 import type { Room as FarmRoom } from '@game/shared/types/farm';
 
+import { uuid } from '@game/shared/utils';
+
 import { LogLevel } from '../../constants';
 import { getGameModule } from '../../games';
 import { log } from '../../services/logger';
 import type { AppServer, AppSocket } from '../../types';
-import { uuid } from '../../utils/uuid';
 
-import { generateRoomName, shouldDeleteRoom } from './room.helpers';
+import {
+  generateRoomName,
+  shouldAutowin,
+  shouldDeleteRoom,
+} from './room.helpers';
 
 const rooms: Map<string, Room> = new Map();
 
@@ -34,8 +39,7 @@ export function deleteRoom(roomId: string): void {
 export function createRoom(ownerId: string): Room {
   const id = uuid();
   const game: Room['game'] = 'farm';
-  const gameModule = getGameModule(game);
-  const roomFields = gameModule.addRoomFields();
+  const roomFields = getGameModule(game).addRoomFields();
   const room: Room = {
     id,
     name: generateRoomName(rooms),
@@ -83,7 +87,9 @@ export function removePlayerFromRoom(
   leaveRoom(io, room.id, socket.id);
   const gameModule = getGameModule(room.game);
   gameModule.onPlayerRemoved?.(room, socket.id);
-  if (shouldDeleteRoom(room, socket.id)) {
+  if (shouldAutowin(room)) {
+    gameModule.onPlayerWin?.(io, room, room.players[0]!);
+  } else if (shouldDeleteRoom(room, socket.id)) {
     deleteRoom(room.id);
     log(LogLevel.INFO, 'room:deleted', {
       roomId: room.id,
@@ -115,4 +121,35 @@ export function getActiveRoom(playerId: string): Room | null {
     if (room.players.some(p => p.id === playerId)) return room;
   }
   return null;
+}
+
+export function reassignPlayerInRooms(
+  oldSocketId: string,
+  newSocket: AppSocket
+): void {
+  for (const room of rooms.values()) {
+    const player = room.players.find(p => p.id === oldSocketId);
+    if (player) {
+      player.id = newSocket.id;
+      if (room.ownerId === oldSocketId) {
+        room.ownerId = newSocket.id;
+      }
+      room.players = room.players.map(p =>
+        p.id === oldSocketId ? { ...p, id: newSocket.id } : p
+      );
+      getGameModule(room.game).onPlayerReconnected?.(
+        room,
+        oldSocketId,
+        newSocket.id
+      );
+
+      void newSocket.join(room.id);
+
+      log(LogLevel.INFO, 'room:player-reassigned', {
+        roomId: room.id,
+        oldSocketId,
+        newSocketId: newSocket.id,
+      });
+    }
+  }
 }

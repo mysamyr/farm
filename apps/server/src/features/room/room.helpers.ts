@@ -13,10 +13,14 @@ export function canStartGame(room: Room): boolean {
 
 export function shouldDeleteRoom(room: Room, socketId: string): boolean {
   return (
-    (room.state === ROOM_STATES.RUNNING && room.players.length < 2) ||
+    (room.state === ROOM_STATES.RUNNING && !room.players.length) ||
     (room.state === ROOM_STATES.IDLE && room.ownerId === socketId) ||
     (room.state === ROOM_STATES.FINISHED && !room.players.length)
   );
+}
+
+export function shouldAutowin(room: Room): boolean {
+  return room.state === ROOM_STATES.RUNNING && room.players.length === 1;
 }
 
 export function generateRoomName(rooms: Map<string, Room>): string {

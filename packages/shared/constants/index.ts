@@ -17,6 +17,7 @@ export const EVENTS = {
   ROOM_JOIN: 'room:join',
   ROOM_LEAVE: 'room:leave',
   ROOM_CLOSE: 'room:close',
+  ROOM_REJOIN: 'room:rejoin',
   PLAYER_RENAME: 'player:rename',
   CONNECT: 'connect',
   ROOMS_LIST: 'room:list',

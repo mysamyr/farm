@@ -13,6 +13,7 @@ export type AckFunc<TResponse extends SocketAck = SocketAck> = (
 export type SocketSessionData = {
   player: Player;
   lastEmoteSendTime?: number;
+  userId?: string;
 };
 
 export type AppSocket = Socket<

@@ -31,6 +31,7 @@ export type Room = BaseRoom;
 
 export type {
   ClientToServerEvents,
+  RejoinRoomAck,
   RollDiceAck,
   ServerNotification,
   ServerToClientEvents,

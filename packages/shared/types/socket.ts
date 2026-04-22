@@ -18,12 +18,20 @@ export type RollDiceAck = SocketAck & {
   diceResult?: [DiceAnimals, DiceAnimals];
 };
 
+export type RejoinRoomAck = SocketAck & {
+  room?: FarmRoom;
+};
+
 export type ServerNotification = {
   type: NOTIFICATION_TYPES;
   data: string;
 };
 
 export type ClientToServerEvents = {
+  [EVENTS.ROOM_REJOIN]: (
+    payload: null,
+    ack?: (response: RejoinRoomAck) => void
+  ) => void;
   [EVENTS.ROOM_CREATE]: (
     payload: null,
     ack?: (response: SocketAck) => void

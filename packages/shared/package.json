@@ -7,7 +7,8 @@
     "./constants": "./dist/constants/index.js",
     "./constants/*": "./dist/constants/*.js",
     "./types": "./dist/types/index.js",
-    "./types/*": "./dist/types/*.js"
+    "./types/*": "./dist/types/*.js",
+    "./utils": "./dist/utils/index.js"
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",

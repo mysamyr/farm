@@ -4,6 +4,8 @@ export const LOCAL_STORAGE_KEY = {
   LANGUAGE: 'farm:language',
   USERNAME: 'farm:username',
   THEME: 'farm:theme',
+  USER_ID: 'farm:userId',
+  CURRENT_ROOM_ID: 'farm:currentRoomId',
 } as const;
 
 export const PATHS = {

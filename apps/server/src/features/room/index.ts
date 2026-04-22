@@ -6,6 +6,8 @@ import {
 } from '@game/shared/constants';
 
 import type { Room } from '@game/shared/types';
+import type { Room as FarmRoom } from '@game/shared/types/farm';
+import type { RejoinRoomAck } from '@game/shared/types/socket';
 
 import { LogLevel } from '../../constants';
 import { log } from '../../services/logger';
@@ -15,6 +17,7 @@ import { checkIfPlayerAlreadyInRoom } from '../player/player.helpers';
 import {
   createRoom,
   deleteRoom,
+  getActiveRoom,
   getRoomById,
   leaveRoom,
   listRooms,
@@ -207,6 +210,27 @@ const closeRoomHandler =
     log(LogLevel.INFO, 'room:closed', { roomId: req.roomId });
   };
 
+const rejoinRoomHandler =
+  (_io: AppServer, socket: AppSocket) =>
+  (_req: null, ack?: AckFunc<RejoinRoomAck>): void => {
+    log(LogLevel.DEBUG, 'event:room:rejoin', {
+      socketId: socket.id,
+    });
+
+    const room = getActiveRoom(socket.id);
+    if (!room) {
+      if (ack) ack({ ok: false, error: 'ROOM_NOT_FOUND' });
+      return;
+    }
+
+    log(LogLevel.INFO, 'room:rejoined', {
+      roomId: room.id,
+      socketId: socket.id,
+    });
+
+    if (ack) ack({ ok: true, room: room as FarmRoom });
+  };
+
 export function registerRoomFeature(io: AppServer): void {
   io.on(EVENTS.CONNECTION, (socket: AppSocket): void => {
     socket.on(EVENTS.ROOM_CREATE, createRoomHandler(io, socket));
@@ -214,5 +238,6 @@ export function registerRoomFeature(io: AppServer): void {
     socket.on(EVENTS.ROOM_JOIN, joinRoomHandler(io, socket));
     socket.on(EVENTS.ROOM_LEAVE, leaveRoomHandler(io, socket));
     socket.on(EVENTS.ROOM_CLOSE, closeRoomHandler(io, socket));
+    socket.on(EVENTS.ROOM_REJOIN, rejoinRoomHandler(io, socket));
   });
 }

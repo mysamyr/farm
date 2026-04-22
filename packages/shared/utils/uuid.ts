@@ -1,4 +1,4 @@
-export function uuid(): string {
+export default function uuid(): string {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(
     /[xy]/g,
     (c: string): string => {

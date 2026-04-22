@@ -12,6 +12,8 @@ import type {
   Room,
 } from '@game/shared/types/farm';
 
+import { LogLevel } from '../../constants';
+import { log } from '../../services/logger';
 import type { AppServer } from '../../types';
 
 import { shuffleArray } from '../../utils';
@@ -36,6 +38,13 @@ export function addRoomFields(): Pick<Room, 'rules' | 'order' | 'turn'> {
 export function winnerHandler(io: AppServer, room: Room, player: Player): void {
   room.state = ROOM_STATES.FINISHED;
   room.winner = player.id;
+
+  log(LogLevel.INFO, 'game:finished', {
+    roomId: room.id,
+    winnerId: player.id,
+    winnerName: player.name,
+  });
+
   io.to(room.id).emit(EVENTS.NOTIFICATION, {
     type: NOTIFICATION_TYPES.GAME_FINISHED,
     data: player.name,
@@ -155,4 +164,12 @@ export function checkPlayerAction(
     room,
     player,
   };
+}
+
+export function updateRoomOrderId(
+  room: Room,
+  oldId: string,
+  newId: string
+): void {
+  room.order = room.order.map(id => (id === oldId ? newId : id));
 }

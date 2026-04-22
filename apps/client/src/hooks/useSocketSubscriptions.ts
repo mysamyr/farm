@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 
 import { NOTIFICATION_TYPES } from '@game/shared/constants';
+import { EVENTS } from '@game/shared/constants';
 import { FARM_EVENTS } from '@game/shared/constants/farm';
 import type { Room } from '@game/shared/types/farm';
 import type { ServerNotification } from '@game/shared/types/socket';
@@ -33,6 +34,15 @@ export function useSocketSubscriptions({
       if (name) {
         emitEvent(FARM_EVENTS.PLAYER_RENAME, { name });
       }
+
+      emitEvent(EVENTS.ROOM_REJOIN, null, (response): void => {
+        if (response.ok && response.room) {
+          setCurrentRoom(response.room);
+          void navigate(`${PATHS.GAME_BOARD}?roomId=${response.room.id}`);
+        } else {
+          void navigate(PATHS.DASHBOARD);
+        }
+      });
     });
 
     subscribe(FARM_EVENTS.ROOMS_LIST, (nextRooms: Room[]): void => {
@@ -41,11 +51,15 @@ export function useSocketSubscriptions({
         return changed ? nextRooms : prevRooms;
       });
 
-      const updatedCurrentRoom =
-        nextRooms.find(room =>
-          room.players.some(player => player.id === getSocketId())
-        ) || null;
-      setCurrentRoom(updatedCurrentRoom);
+      const updatedCurrentRoom = nextRooms.find(room =>
+        room.players.some(player => player.id === getSocketId())
+      );
+
+      if (updatedCurrentRoom) {
+        setCurrentRoom(updatedCurrentRoom);
+      } else {
+        setCurrentRoom(null);
+      }
     });
 
     subscribe(FARM_EVENTS.ROOM_CLOSED, (): void => {

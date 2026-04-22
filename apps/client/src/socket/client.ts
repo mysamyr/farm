@@ -4,7 +4,11 @@ import type {
 } from '@game/shared/types/socket';
 import { io, Socket } from 'socket.io-client';
 
-const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io();
+import { getUserId } from '../utils/identity';
+
+const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io({
+  auth: { userId: getUserId() },
+});
 
 export function getSocketId(): string | null {
   return socket.id || null;
