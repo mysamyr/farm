@@ -1,10 +1,4 @@
-import React, {
-  ReactElement,
-  ReactNode,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import { ReactElement, ReactNode, useEffect, useRef, useState } from 'react';
 
 import { BUTTON_VARIANT, ButtonVariant } from '../../constants';
 import { classNames } from '../../utils';

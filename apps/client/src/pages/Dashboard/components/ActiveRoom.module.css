@@ -30,6 +30,11 @@ input.roomName:focus {
   border-bottom-color: var(--accent);
 }
 
+input.roomNameInvalid,
+input.roomNameInvalid:focus {
+  border-bottom-color: var(--error, #e53e3e);
+}
+
 h3.roomName {
   color: var(--text-main);
 }

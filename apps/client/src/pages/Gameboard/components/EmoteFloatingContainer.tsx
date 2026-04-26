@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, ReactElement } from 'react';
 
 import { FARM_EVENTS } from '@game/shared/constants/farm';
 
@@ -15,7 +15,7 @@ type ActiveEmote = {
   emoteId: EmoteId;
 };
 
-export default function EmoteFloatingContainer(): React.ReactElement {
+export default function EmoteFloatingContainer(): ReactElement {
   const [activeEmotes, setActiveEmotes] = useState<ActiveEmote[]>([]);
 
   const handleEmoteReceived = useCallback((payload: EmoteSentPayload): void => {

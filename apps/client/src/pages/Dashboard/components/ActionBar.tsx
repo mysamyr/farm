@@ -1,5 +1,6 @@
-import React, { useCallback } from 'react';
+import { type ChangeEvent, useCallback } from 'react';
 
+import { ERROR, VALIDATION } from '@game/shared/constants';
 import { FARM_EVENTS } from '@game/shared/constants/farm';
 
 import Button from '../../../components/ui/Button';
@@ -10,6 +11,7 @@ import { useRoom } from '../../../hooks/useRoom';
 import { useSnackbar } from '../../../hooks/useSnackbar';
 
 import { emitEvent } from '../../../socket/client';
+import { resolveErrorMessage } from '../../../utils/language';
 
 import styles from './ActionBar.module.css';
 
@@ -28,28 +30,33 @@ export default function ActionBar({
 
   const onRoomCreate = useCallback(() => {
     const name = usernameInput.trim();
+    const nameLength = [...name].length;
+
     if (!name) {
-      showSnackbar(translation.dashboard.errors.noUserNameOnCreateRoom);
+      showSnackbar(translation.errors[ERROR.NO_USERNAME]);
+      return;
+    }
+
+    if (nameLength < VALIDATION.USER_NAME.MIN_LENGTH) {
+      showSnackbar(translation.errors.userNameTooShort);
+      return;
+    }
+
+    if (nameLength > VALIDATION.USER_NAME.MAX_LENGTH) {
+      showSnackbar(translation.errors.userNameTooLong);
       return;
     }
 
     if (currentRoom) {
-      showSnackbar(translation.dashboard.errors.alreadyInRoom);
+      showSnackbar(translation.errors[ERROR.ALREADY_IN_ROOM]);
       return;
     }
 
-    emitEvent(
-      FARM_EVENTS.ROOM_CREATE,
-      null,
-      (res: { ok: boolean; error?: string }): void => {
-        if (!res.ok) {
-          showSnackbar(
-            translation.dashboard.errors.apiErrorOnCreatingRoom +
-              (res.error || '')
-          );
-        }
+    emitEvent(FARM_EVENTS.ROOM_CREATE, null, res => {
+      if (!res.ok) {
+        showSnackbar(resolveErrorMessage(res.error, translation));
       }
-    );
+    });
   }, [usernameInput, currentRoom, showSnackbar, translation]);
 
   const debouncedEmitRename = useDebounceCallback((newName: string) => {
@@ -57,17 +64,34 @@ export default function ActionBar({
   }, 500);
 
   const onUsernameChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      const trimmed = event.target.value.trim();
-      setUsernameInput(trimmed);
-      if (trimmed) {
-        debouncedEmitRename(trimmed);
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const value = event.target.value;
+      const normalized = value.trim();
+      const normalizedLength = [...normalized].length;
+      const isValidLength =
+        normalizedLength >= VALIDATION.USER_NAME.MIN_LENGTH &&
+        normalizedLength <= VALIDATION.USER_NAME.MAX_LENGTH;
 
-        window.localStorage.setItem(LOCAL_STORAGE_KEY.USERNAME, trimmed);
+      setUsernameInput(value);
+
+      if (isValidLength) {
+        debouncedEmitRename(normalized);
+        window.localStorage.setItem(LOCAL_STORAGE_KEY.USERNAME, normalized);
       }
     },
-    [showSnackbar, translation]
+    [setUsernameInput, debouncedEmitRename]
   );
+
+  const normalizedUsername = usernameInput.trim();
+  const usernameLength = [...normalizedUsername].length;
+  const usernameError =
+    normalizedUsername.length === 0
+      ? null
+      : usernameLength < VALIDATION.USER_NAME.MIN_LENGTH
+        ? translation.errors.userNameTooShort
+        : usernameLength > VALIDATION.USER_NAME.MAX_LENGTH
+          ? translation.errors.userNameTooLong
+          : null;
 
   return (
     <section className={styles.container}>
@@ -76,12 +100,13 @@ export default function ActionBar({
           {translation.dashboard.usernameInputLabel}
         </label>
         <input
-          className={styles.usernameInput}
+          className={`${styles.usernameInput}${usernameError ? ` ${styles.usernameInputError}` : ''}`}
           type="text"
           id="username"
           value={usernameInput}
           onChange={onUsernameChange}
         />
+        {usernameError && <p className={styles.inputError}>{usernameError}</p>}
       </div>
       <Button onClick={onRoomCreate}>
         {translation.dashboard.createRoomBtn}

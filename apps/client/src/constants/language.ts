@@ -1,10 +1,11 @@
+import { VALIDATION, ERROR } from '@game/shared/constants';
 import { GAME_RULES } from '@game/shared/constants/farm';
 
 import type { Language, Translation } from '../types/language';
 
 export enum LanguageCode {
   EN = 'en',
-  UK = 'uk',
+  UA = 'ua',
 }
 
 export const LANGUAGES_CONFIG: Language[] = [
@@ -14,12 +15,37 @@ export const LANGUAGES_CONFIG: Language[] = [
   },
   {
     name: 'Українська',
-    code: LanguageCode.UK,
+    code: LanguageCode.UA,
   },
 ];
 
 const translations: Record<LanguageCode, Translation> = {
   [LanguageCode.EN]: {
+    errors: {
+      [ERROR.NO_USERNAME]: 'Please enter your name before creating a room.',
+      [ERROR.NAME_TAKEN]: 'This name is already taken.',
+      [ERROR.INVALID_PLAYER_NAME_LENGTH]: 'Invalid name length.',
+      [ERROR.PLAYER_NOT_FOUND]: 'Player not found.',
+      [ERROR.ALREADY_IN_ROOM]: 'You are already in a room.',
+      [ERROR.ROOM_NOT_FOUND]: 'Room not found.',
+      [ERROR.ROOM_FULL]: 'Room is full.',
+      [ERROR.INVALID_ROOM_NAME]: 'Enter room name.',
+      [ERROR.NOT_OWNER]: 'You are not the room owner.',
+      [ERROR.CANNOT_START]: 'Cannot start the game.',
+      [ERROR.GAME_IN_PROGRESS]: 'Cannot join. Game is in progress.',
+      [ERROR.GAME_NOT_RUNNING]: 'Game is not running.',
+      [ERROR.NOT_YOUR_TURN]: 'It is not your turn.',
+      [ERROR.EXCHANGE_IS_FORBIDDEN]: 'Exchange is not allowed.',
+      [ERROR.NOT_ENOUGH_CARDS]: 'Not enough cards for this exchange.',
+      [ERROR.LIMITED_CARDS_EXCEEDED]: 'Card limit exceeded.',
+      [ERROR.UNKNOWN_EMOTE]: 'Unknown emote.',
+      [ERROR.THROTTLED]: 'Too many requests. Please try again later.',
+      // Client-only validations
+      userNameTooShort: `Name must be at least ${VALIDATION.USER_NAME.MIN_LENGTH} characters.`,
+      userNameTooLong: `Name must be at most ${VALIDATION.USER_NAME.MAX_LENGTH} characters.`,
+      cannotJoin: 'Cannot join.',
+      apiErrorOnCreatingRoom: 'Error creating room: ',
+    },
     dashboard: {
       header: 'Super Farm',
       usernameInputLabel: 'Your Name:',
@@ -30,15 +56,6 @@ const translations: Record<LanguageCode, Translation> = {
       noActiveRooms: 'Create new room.',
       roomRules: 'Rules',
       players: 'Players',
-      errors: {
-        cannotJoin: 'Cannot join.',
-        cannotStart: 'Cannot start the game.',
-        noRoomName: 'Enter room name.',
-        noUserNameOnCreateRoom:
-          'Please enter your name before creating a room.',
-        alreadyInRoom: 'You are already in a room.',
-        apiErrorOnCreatingRoom: 'Error creating room: ',
-      },
       rules: {
         [GAME_RULES.EXTRA_DUCK]: 'Extra duck on start',
         [GAME_RULES.ONE_EXCHANGE]: 'One exchange per turn',
@@ -123,7 +140,32 @@ const translations: Record<LanguageCode, Translation> = {
       gameFinished: (name: string): string => `Game over! Winner: ${name}`,
     },
   },
-  [LanguageCode.UK]: {
+  [LanguageCode.UA]: {
+    errors: {
+      [ERROR.NO_USERNAME]: 'Введіть ваше імʼя перед створенням кімнати.',
+      [ERROR.NAME_TAKEN]: "Це ім'я вже зайняте.",
+      [ERROR.INVALID_PLAYER_NAME_LENGTH]: 'Невірна довжина імені.',
+      [ERROR.PLAYER_NOT_FOUND]: 'Гравця не знайдено.',
+      [ERROR.ALREADY_IN_ROOM]: 'Ви вже в кімнаті.',
+      [ERROR.ROOM_NOT_FOUND]: 'Кімнату не знайдено.',
+      [ERROR.ROOM_FULL]: 'Кімната переповнена.',
+      [ERROR.INVALID_ROOM_NAME]: 'Введіть назву кімнати.',
+      [ERROR.NOT_OWNER]: 'Ви не власник кімнати.',
+      [ERROR.CANNOT_START]: 'Неможливо розпочати.',
+      [ERROR.GAME_IN_PROGRESS]: 'Неможливо приєднатися. Гра в процесі.',
+      [ERROR.GAME_NOT_RUNNING]: 'Гра не запущена.',
+      [ERROR.NOT_YOUR_TURN]: 'Це не ваша черга.',
+      [ERROR.EXCHANGE_IS_FORBIDDEN]: 'Обмін не дозволений.',
+      [ERROR.NOT_ENOUGH_CARDS]: 'Недостатньо карт для цього обміну.',
+      [ERROR.LIMITED_CARDS_EXCEEDED]: 'Ліміт карт перевищений.',
+      [ERROR.UNKNOWN_EMOTE]: 'Невідомий емодзі.',
+      [ERROR.THROTTLED]: 'Занадто багато запитів. Спробуйте пізніше.',
+      // Client-only validations
+      userNameTooShort: `Імʼя має містити щонайменше ${VALIDATION.USER_NAME.MIN_LENGTH} символи.`,
+      userNameTooLong: `Імʼя має містити щонайбільше ${VALIDATION.USER_NAME.MAX_LENGTH} символів.`,
+      cannotJoin: 'Неможливо приєднатися.',
+      apiErrorOnCreatingRoom: 'Помилка при створенні кімнати: ',
+    },
     dashboard: {
       header: 'Весела Ферма',
       usernameInputLabel: 'Ваше імʼя:',
@@ -134,14 +176,6 @@ const translations: Record<LanguageCode, Translation> = {
       noActiveRooms: 'Створіть нову кімнату.',
       roomRules: 'Правила',
       players: 'Гравців',
-      errors: {
-        cannotJoin: 'Неможливо приєднатися.',
-        cannotStart: 'Неможливо розпочати.',
-        noRoomName: 'Введіть назву кімнати.',
-        noUserNameOnCreateRoom: 'Введіть ваше імʼя перед створенням кімнати.',
-        alreadyInRoom: 'Ви вже в кімнаті.',
-        apiErrorOnCreatingRoom: 'Помилка при створенні кімнати: ',
-      },
       rules: {
         [GAME_RULES.EXTRA_DUCK]: 'Додаткова качка на старті',
         [GAME_RULES.ONE_EXCHANGE]: 'Один обмін за хід',

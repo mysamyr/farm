@@ -1,4 +1,4 @@
-import { ROOM_STATES } from '@game/shared/constants';
+import { ROOM_STATES, ERROR } from '@game/shared/constants';
 import { ANIMALS, EMOTES, FARM_EVENTS } from '@game/shared/constants/farm';
 import type { Room, SendEmoteReq } from '@game/shared/types/farm';
 import type { RollDiceAck } from '@game/shared/types/socket';
@@ -39,15 +39,15 @@ const startGameHandler =
 
     const room = getRoomById(req.roomId) as Room;
     if (!room) {
-      ack?.({ ok: false, error: 'ROOM_NOT_FOUND' });
+      ack?.({ ok: false, error: ERROR.ROOM_NOT_FOUND });
       return;
     }
     if (room.ownerId !== socket.id) {
-      ack?.({ ok: false, error: 'NOT_OWNER' });
+      ack?.({ ok: false, error: ERROR.NOT_OWNER });
       return;
     }
     if (!canStartGame(room)) {
-      ack?.({ ok: false, error: 'CANNOT_START' });
+      ack?.({ ok: false, error: ERROR.CANNOT_START });
       return;
     }
 
@@ -127,15 +127,15 @@ const exchangeHandler =
     const { room: activeRoom, player } = res;
 
     if (isExchangeForbidden(activeRoom, player)) {
-      ack?.({ ok: false, error: 'EXCHANGE_IS_FORBIDDEN' });
+      ack?.({ ok: false, error: ERROR.EXCHANGE_IS_FORBIDDEN });
       return;
     }
     if (!isEnoughCardsToExchange(player, from, to)) {
-      ack?.({ ok: false, error: 'NOT_ENOUGH_CARDS' });
+      ack?.({ ok: false, error: ERROR.NOT_ENOUGH_CARDS });
       return;
     }
     if (areLimitedCards(activeRoom, to)) {
-      ack?.({ ok: false, error: 'LIMITED_CARDS_EXCEEDED' });
+      ack?.({ ok: false, error: ERROR.LIMITED_CARDS_EXCEEDED });
       return;
     }
 
@@ -164,19 +164,19 @@ const sendEmoteHandler =
 
     const room = getRoomById(roomId) as Room;
     if (!room) {
-      ack?.({ ok: false, error: 'ROOM_NOT_FOUND' });
+      ack?.({ ok: false, error: ERROR.ROOM_NOT_FOUND });
       return;
     }
 
     const player = room.players.find(p => p.id === socket.id);
     if (!player) {
-      ack?.({ ok: false, error: 'PLAYER_NOT_FOUND' });
+      ack?.({ ok: false, error: ERROR.PLAYER_NOT_FOUND });
       return;
     }
 
     const isKnownEmote = EMOTES.some(emote => emote.id === emoteId);
     if (!isKnownEmote) {
-      ack?.({ ok: false, error: 'UNKNOWN_EMOTE' });
+      ack?.({ ok: false, error: ERROR.UNKNOWN_EMOTE });
       return;
     }
 
@@ -185,7 +185,7 @@ const sendEmoteHandler =
     const timeSinceLastEmote = now - lastEmoteSendTime;
 
     if (timeSinceLastEmote < 5000) {
-      ack?.({ ok: false, error: 'THROTTLED' });
+      ack?.({ ok: false, error: ERROR.THROTTLED });
       return;
     }
 

@@ -1,8 +1,8 @@
-import React, { ReactElement, useEffect, useRef } from 'react';
+import { ReactElement, useEffect, useRef, type ComponentType } from 'react';
 
 type ModalProps = {
   open: boolean;
-  ModalComponent: React.ComponentType | null;
+  ModalComponent: ComponentType | null;
   onClose: () => void;
 };
 

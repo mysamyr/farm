@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React from 'react';
+import { ComponentType, Dispatch, SetStateAction } from 'react';
 
 import type { Room } from '@game/shared/types/farm';
 import { create } from 'zustand';
@@ -52,8 +52,8 @@ export const useThemeStore = create<ThemeSlice>((set, get) => ({
 interface RoomsSlice {
   rooms: Room[];
   currentRoom: Room | null;
-  setRooms: React.Dispatch<React.SetStateAction<Room[]>>;
-  setCurrentRoom: React.Dispatch<React.SetStateAction<Room | null>>;
+  setRooms: Dispatch<SetStateAction<Room[]>>;
+  setCurrentRoom: Dispatch<SetStateAction<Room | null>>;
   clearCurrentRoom: () => void;
 }
 
@@ -98,9 +98,9 @@ export const useSnackbarStore = create<SnackbarSlice>(set => ({
 
 interface ModalSlice {
   open: boolean;
-  modalComponent: React.ComponentType<any> | null;
+  modalComponent: ComponentType<any> | null;
   showModal: <T extends Record<string, any>>(
-    component: React.ComponentType<T>
+    component: ComponentType<T>
   ) => void;
   closeModal: () => void;
 }
@@ -109,7 +109,7 @@ export const useModalStore = create<ModalSlice>(set => ({
   open: false,
   modalComponent: null,
   showModal: component =>
-    set({ open: true, modalComponent: component as React.ComponentType<any> }),
+    set({ open: true, modalComponent: component as ComponentType<any> }),
   closeModal: () => {
     set({ open: false });
     setTimeout(() => set({ modalComponent: null }), 200);

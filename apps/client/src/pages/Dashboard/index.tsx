@@ -1,4 +1,6 @@
-import React, { ReactElement, useState, useEffect } from 'react';
+import { ReactElement, useState, useEffect } from 'react';
+
+import { VALIDATION } from '@game/shared/constants';
 
 import { LOCAL_STORAGE_KEY } from '../../constants';
 import { useLanguage } from '../../hooks/useLanguage';
@@ -17,9 +19,11 @@ export default function Dashboard(): ReactElement {
   const { translation } = useLanguage();
   const { theme } = useTheme();
 
-  const [usernameInput, setUsernameInput] = useState(
-    window.localStorage.getItem(LOCAL_STORAGE_KEY.USERNAME) ?? ''
-  );
+  const [usernameInput, setUsernameInput] = useState(() => {
+    const stored =
+      window.localStorage.getItem(LOCAL_STORAGE_KEY.USERNAME) ?? '';
+    return [...stored].slice(0, VALIDATION.USER_NAME.MAX_LENGTH).join('');
+  });
 
   // Sync theme with DOM
   useEffect(() => {

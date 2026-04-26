@@ -10,6 +10,7 @@ import { useSnackbar } from '../../../hooks/useSnackbar';
 import { emitEvent } from '../../../socket/client';
 import { classNames } from '../../../utils';
 import { getDiceIcon, isWildAnimal } from '../../../utils/game';
+import { resolveErrorMessage } from '../../../utils/language';
 
 import styles from './DiceSection.module.css';
 
@@ -31,15 +32,11 @@ export default function DiceSection({
       return;
     }
 
-    emitEvent(
-      FARM_EVENTS.GAME_ROLL_DICE,
-      { roomId: currentRoom!.id },
-      (res: { ok: boolean; error?: string }): void => {
-        if (!res.ok) {
-          showSnackbar(res.error || translation.dashboard.errors.cannotStart);
-        }
+    emitEvent(FARM_EVENTS.GAME_ROLL_DICE, { roomId: currentRoom!.id }, res => {
+      if (!res.ok) {
+        showSnackbar(resolveErrorMessage(res.error, translation));
       }
-    );
+    });
   };
 
   const dice = currentRoom!.dice;

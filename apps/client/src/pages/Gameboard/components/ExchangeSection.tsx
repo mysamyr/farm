@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
 
 import { ANIMALS, FARM_EVENTS, GAME_RULES } from '@game/shared/constants/farm';
 import type { Player, TradableAnimals } from '@game/shared/types/farm';
@@ -9,6 +9,7 @@ import { useRoom } from '../../../hooks/useRoom';
 import { useSnackbar } from '../../../hooks/useSnackbar';
 import { emitEvent, getSocketId } from '../../../socket/client';
 import { canExchange } from '../../../utils/game';
+import { resolveErrorMessage } from '../../../utils/language';
 
 import styles from './ExchangeSection.module.css';
 
@@ -152,9 +153,9 @@ export default function ExchangeSection({
         from: pair.left,
         to: pair.right,
       },
-      (res: { ok: boolean; error?: string }): void => {
+      res => {
         if (!res.ok) {
-          showSnackbar(res.error || translation.dashboard.errors.cannotStart);
+          showSnackbar(resolveErrorMessage(res.error, translation));
         }
       }
     );

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef, type ReactElement } from 'react';
 
 import { EMOTES } from '@game/shared/constants/farm';
 import type { EmoteId } from '@game/shared/types/farm';
@@ -13,7 +13,7 @@ interface EmoteAnimationProps {
 export default function EmoteAnimation({
   emoteId,
   onAnimationEnd,
-}: EmoteAnimationProps): React.ReactElement {
+}: EmoteAnimationProps): ReactElement {
   const leftRef = useRef<number | null>(null);
 
   if (leftRef.current === null) {

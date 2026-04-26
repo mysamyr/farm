@@ -31,6 +31,20 @@
   border-color: var(--accent);
 }
 
+.usernameInputError {
+  border-color: var(--error, #e53e3e);
+}
+
+.usernameInputError:focus {
+  border-color: var(--error, #e53e3e);
+}
+
+.inputError {
+  margin-top: 4px;
+  font-size: 0.75rem;
+  color: var(--error, #e53e3e);
+}
+
 @media (max-width: 900px) {
   .container {
     flex-direction: column;

@@ -1,4 +1,4 @@
-import { EVENTS, NOTIFICATION_TYPES } from '../constants';
+import { ERROR, EVENTS, NOTIFICATION_TYPES } from '../constants';
 import { FARM_EVENTS } from '../constants/farm';
 
 import type {
@@ -11,7 +11,7 @@ import type {
 
 export type SocketAck = {
   ok: boolean;
-  error?: string;
+  error?: ERROR;
 };
 
 export type RollDiceAck = SocketAck & {

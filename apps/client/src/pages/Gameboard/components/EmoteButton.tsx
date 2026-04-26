@@ -1,4 +1,11 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  ReactElement,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 
 import { EMOTES, FARM_EVENTS } from '@game/shared/constants/farm';
 import type { EmoteId } from '@game/shared/types/farm';
@@ -11,7 +18,7 @@ import styles from './EmoteButton.module.css';
 
 type DropdownItemType = {
   key: string;
-  label: React.ReactNode;
+  label: ReactNode;
   onSelect: () => void;
   disabled?: boolean;
 };
@@ -22,7 +29,7 @@ interface EmoteButtonProps {
 
 export default function EmoteButton({
   roomId,
-}: EmoteButtonProps): React.ReactElement {
+}: EmoteButtonProps): ReactElement {
   const [lastEmoteSendTime, setLastEmoteSendTime] = useState<number | null>(
     null
   );
@@ -47,15 +54,11 @@ export default function EmoteButton({
         return;
       }
 
-      emitEvent(
-        FARM_EVENTS.GAME_SEND_EMOTE,
-        { roomId, emoteId },
-        (ack): void => {
-          if (ack.ok) {
-            setLastEmoteSendTime(Date.now());
-          }
+      emitEvent(FARM_EVENTS.GAME_SEND_EMOTE, { roomId, emoteId }, res => {
+        if (res.ok) {
+          setLastEmoteSendTime(Date.now());
         }
-      );
+      });
     },
     [isThrottled, roomId]
   );

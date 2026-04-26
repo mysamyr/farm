@@ -2,6 +2,7 @@ import {
   ROOM_STATES,
   EVENTS,
   NOTIFICATION_TYPES,
+  ERROR,
 } from '@game/shared/constants';
 import { ANIMALS, GAME_RULES } from '@game/shared/constants/farm';
 
@@ -137,7 +138,7 @@ export function checkPlayerAction(
 ):
   | {
       ok: false;
-      error: string;
+      error: (typeof ERROR)[keyof typeof ERROR];
     }
   | {
       ok: true;
@@ -145,18 +146,18 @@ export function checkPlayerAction(
       player: Player;
     } {
   if (!room) {
-    return { ok: false, error: 'ROOM_NOT_FOUND' };
+    return { ok: false, error: ERROR.ROOM_NOT_FOUND };
   }
   if (room.state !== ROOM_STATES.RUNNING) {
-    return { ok: false, error: 'GAME_NOT_RUNNING' };
+    return { ok: false, error: ERROR.GAME_NOT_RUNNING };
   }
   if (getCurrentPlayerTurnId(room) !== socketId) {
-    return { ok: false, error: 'NOT_YOUR_TURN' };
+    return { ok: false, error: ERROR.NOT_YOUR_TURN };
   }
 
   const player = room.players.find(p => p.id === socketId);
   if (!player) {
-    return { ok: false, error: 'PLAYER_NOT_FOUND' };
+    return { ok: false, error: ERROR.PLAYER_NOT_FOUND };
   }
 
   return {

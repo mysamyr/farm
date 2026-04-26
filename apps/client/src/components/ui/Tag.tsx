@@ -1,9 +1,9 @@
-import React, { ReactElement } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 
 import styles from './Tag.module.css';
 
 type TagProps = {
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
 export default function Tag({ children }: TagProps): ReactElement {

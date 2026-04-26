@@ -1,4 +1,4 @@
-import { EVENTS } from '@game/shared/constants';
+import { EVENTS, VALIDATION, ERROR } from '@game/shared/constants';
 
 import { LogLevel } from '../../constants';
 import { log } from '../../services/logger';
@@ -14,6 +14,15 @@ const renamePlayerHandler =
       socketId: socket.id,
       name: payload.name,
     });
+
+    const nameChars = [...(payload.name ?? '')];
+    if (
+      nameChars.length < VALIDATION.USER_NAME.MIN_LENGTH ||
+      nameChars.length > VALIDATION.USER_NAME.MAX_LENGTH
+    ) {
+      if (ack) ack({ ok: false, error: ERROR.INVALID_PLAYER_NAME_LENGTH });
+      return;
+    }
 
     if (payload.name) {
       socket.data.player.name = payload.name;

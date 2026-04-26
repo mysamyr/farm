@@ -35,10 +35,10 @@ export function useSocketSubscriptions({
         emitEvent(FARM_EVENTS.PLAYER_RENAME, { name });
       }
 
-      emitEvent(EVENTS.ROOM_REJOIN, null, (response): void => {
-        if (response.ok && response.room) {
-          setCurrentRoom(response.room);
-          void navigate(`${PATHS.GAME_BOARD}?roomId=${response.room.id}`);
+      emitEvent(EVENTS.ROOM_REJOIN, null, res => {
+        if (res.ok && res.room) {
+          setCurrentRoom(res.room);
+          void navigate(`${PATHS.GAME_BOARD}?roomId=${res.room.id}`);
         } else {
           void navigate(PATHS.DASHBOARD);
         }

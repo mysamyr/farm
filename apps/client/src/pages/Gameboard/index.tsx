@@ -1,4 +1,4 @@
-import React from 'react';
+import type { ReactElement } from 'react';
 
 import { ROOM_STATES } from '@game/shared/constants';
 import { GAME_RULES } from '@game/shared/constants/farm';
@@ -20,7 +20,7 @@ import WinningAnimation from './components/WinningAnimation';
 
 import styles from './Gameboard.module.css';
 
-export default function Gameboard(): React.ReactElement {
+export default function Gameboard(): ReactElement {
   const { currentRoom: room } = useRoom();
 
   if (!room) {

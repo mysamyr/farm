@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 
 import { ROOM_STATES } from '@game/shared/constants';
 import {
@@ -17,6 +17,7 @@ import { useSnackbar } from '../../../hooks/useSnackbar';
 import { emitEvent, getSocketId } from '../../../socket/client';
 import { classNames } from '../../../utils';
 import { getOwnerName, getRuleLabel } from '../../../utils/game';
+import { resolveErrorMessage } from '../../../utils/language';
 
 import styles from './RoomCard.module.css';
 
@@ -82,21 +83,15 @@ export default function RoomCard({
         disabled={isBtnDisabled}
         onClick={() => {
           if (isBtnDisabled) {
-            showSnackbar(translation.dashboard.errors.cannotJoin);
+            showSnackbar(translation.errors.cannotJoin);
             return;
           }
 
-          emitEvent(
-            FARM_EVENTS.ROOM_JOIN,
-            { roomId: room.id },
-            (res: { ok: boolean; error?: string }): void => {
-              if (!res.ok) {
-                showSnackbar(
-                  res.error || translation.dashboard.errors.cannotJoin
-                );
-              }
+          emitEvent(FARM_EVENTS.ROOM_JOIN, { roomId: room.id }, res => {
+            if (!res.ok) {
+              showSnackbar(resolveErrorMessage(res.error, translation));
             }
-          );
+          });
         }}
       >
         {isFull

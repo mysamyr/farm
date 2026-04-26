@@ -1,3 +1,4 @@
+import type { ERROR } from '@game/shared/constants';
 import type { GAME_RULES } from '@game/shared/constants/farm';
 
 import type { LanguageCode } from '../constants/language';
@@ -7,7 +8,21 @@ export type Language = {
   code: LanguageCode;
 };
 
+type ClientErrorKeys = {
+  cannotJoin: string;
+  userNameTooShort: string;
+  userNameTooLong: string;
+  apiErrorOnCreatingRoom: string;
+};
+
+// type ErrorMessages = ClientErrorKeys & Record<string, string>;
+// type ErrorMessages = ClientErrorKeys & {
+//   [ERROR]: string;
+// };
+type ErrorMessages = ClientErrorKeys & Record<ERROR, string>;
+
 export type Translation = {
+  errors: ErrorMessages;
   dashboard: {
     header: string;
     usernameInputLabel: string;
@@ -18,14 +33,6 @@ export type Translation = {
     noActiveRooms: string;
     roomRules: string;
     players: string;
-    errors: {
-      cannotJoin: string;
-      cannotStart: string;
-      noRoomName: string;
-      noUserNameOnCreateRoom: string;
-      alreadyInRoom: string;
-      apiErrorOnCreatingRoom: string;
-    };
     rules: {
       [GAME_RULES.EXTRA_DUCK]: string;
       [GAME_RULES.ONE_EXCHANGE]: string;

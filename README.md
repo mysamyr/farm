@@ -6,3 +6,4 @@
 
 review logging on server
 theme button - possibility to add new themes
+active room name is too wide

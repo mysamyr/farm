@@ -1,5 +1,9 @@
+import { ERROR } from '@game/shared/constants';
+
 import { LOCAL_STORAGE_KEY } from '../constants';
 import { LanguageCode } from '../constants/language';
+
+import type { Translation } from '../types/language';
 
 export function getLanguage(): LanguageCode {
   return (
@@ -10,4 +14,18 @@ export function getLanguage(): LanguageCode {
 
 export function setLanguage(language: LanguageCode): void {
   window.localStorage.setItem(LOCAL_STORAGE_KEY.LANGUAGE, language);
+}
+
+export function resolveErrorMessage(
+  error: string | ERROR | undefined,
+  translation: Translation
+): string {
+  if (!error) return '';
+
+  // If the error is a known ERROR enum value, return the corresponding translation
+  if (typeof error === 'number') {
+    return translation.errors[error] || `Unknown error: ${error}`;
+  }
+
+  return error;
 }

@@ -1,3 +1,5 @@
+export { ERROR } from './errors';
+
 export const DEFAULT_CONFIG = {
   maxPlayers: 4,
   minPlayers: 2,
@@ -32,3 +34,14 @@ export enum NOTIFICATION_TYPES {
   CLOSE_ROOM,
   GAME_FINISHED,
 }
+
+export const VALIDATION = {
+  ROOM_NAME: {
+    MAX_LENGTH: 25,
+    MIN_LENGTH: 3,
+  },
+  USER_NAME: {
+    MAX_LENGTH: 16,
+    MIN_LENGTH: 2,
+  },
+};

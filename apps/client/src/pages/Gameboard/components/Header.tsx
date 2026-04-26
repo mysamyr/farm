@@ -13,6 +13,7 @@ import { useRoom } from '../../../hooks/useRoom';
 
 import { useSnackbar } from '../../../hooks/useSnackbar';
 import { emitEvent } from '../../../socket/client';
+import { resolveErrorMessage } from '../../../utils/language';
 
 import styles from './Header.module.css';
 
@@ -27,17 +28,13 @@ export default function Header(): ReactElement {
   const shouldConfirmLeave = room.state === ROOM_STATES.RUNNING;
 
   const onLeave = useCallback(() => {
-    emitEvent(
-      FARM_EVENTS.ROOM_LEAVE,
-      { roomId: room.id },
-      (res: { ok: boolean; error?: string }): void => {
-        if (!res.ok) {
-          showSnackbar(res.error || translation.dashboard.errors.cannotJoin);
-        }
-        setCurrentRoom(null);
-        void navigate(PATHS.DASHBOARD);
+    emitEvent(FARM_EVENTS.ROOM_LEAVE, { roomId: room.id }, res => {
+      if (!res.ok) {
+        showSnackbar(resolveErrorMessage(res.error, translation));
       }
-    );
+      setCurrentRoom(null);
+      void navigate(PATHS.DASHBOARD);
+    });
   }, [room, showSnackbar, translation, setCurrentRoom, navigate]);
 
   return (

@@ -3,6 +3,8 @@ import {
   ROOM_STATES,
   EVENTS,
   NOTIFICATION_TYPES,
+  VALIDATION,
+  ERROR,
 } from '@game/shared/constants';
 
 import type { Room } from '@game/shared/types';
@@ -43,7 +45,7 @@ const createRoomHandler =
       if (ack)
         ack({
           ok: false,
-          error: 'Please enter your name before creating a room.',
+          error: ERROR.NO_USERNAME,
         });
       return;
     }
@@ -52,8 +54,7 @@ const createRoomHandler =
       if (ack)
         ack({
           ok: false,
-          error:
-            'You are already in a room. Please leave your current room before creating a new one.',
+          error: ERROR.ALREADY_IN_ROOM,
         });
       return;
     }
@@ -74,20 +75,30 @@ const updateRoomHandler =
     });
     const room = getRoomById(req.roomId);
     if (!room) {
-      if (ack) ack({ ok: false, error: 'ROOM_NOT_FOUND' });
+      if (ack) ack({ ok: false, error: ERROR.ROOM_NOT_FOUND });
       return;
     }
     if (room.state !== ROOM_STATES.IDLE) {
-      if (ack) ack({ ok: false, error: 'GAME_IN_PROGRESS' });
+      if (ack) ack({ ok: false, error: ERROR.GAME_IN_PROGRESS });
       return;
     }
     if (socket.id !== room.ownerId) {
-      if (ack) ack({ ok: false, error: 'NOT_OWNER' });
+      if (ack) ack({ ok: false, error: ERROR.NOT_OWNER });
       return;
     }
 
     if (req.name) {
-      room.name = req.name;
+      const nextName = req.name.trim();
+      const nextNameLength = [...nextName].length;
+      if (
+        nextNameLength < VALIDATION.ROOM_NAME.MIN_LENGTH ||
+        nextNameLength > VALIDATION.ROOM_NAME.MAX_LENGTH
+      ) {
+        if (ack) ack({ ok: false, error: ERROR.INVALID_ROOM_NAME });
+        return;
+      }
+
+      room.name = nextName;
     }
     if (req.rules) {
       room.rules = { ...room.rules, ...req.rules };
@@ -112,19 +123,19 @@ const joinRoomHandler =
 
     const room = getRoomById(req.roomId);
     if (!room) {
-      if (ack) ack({ ok: false, error: 'ROOM_NOT_FOUND' });
+      if (ack) ack({ ok: false, error: ERROR.ROOM_NOT_FOUND });
       return;
     }
     if (room.state !== ROOM_STATES.IDLE) {
-      if (ack) ack({ ok: false, error: 'GAME_IN_PROGRESS' });
+      if (ack) ack({ ok: false, error: ERROR.GAME_IN_PROGRESS });
       return;
     }
     if (room.players.length >= DEFAULT_CONFIG.maxPlayers) {
-      if (ack) ack({ ok: false, error: 'ROOM_FULL' });
+      if (ack) ack({ ok: false, error: ERROR.ROOM_FULL });
       return;
     }
     if (checkIfPlayerAlreadyInRoom(room, socket)) {
-      if (ack) ack({ ok: false, error: 'NAME_TAKEN' });
+      if (ack) ack({ ok: false, error: ERROR.NAME_TAKEN });
       return;
     }
 
@@ -156,7 +167,7 @@ const leaveRoomHandler =
 
     const room = getRoomById(req.roomId);
     if (!room) {
-      if (ack) ack({ ok: false, error: 'ROOM_NOT_FOUND' });
+      if (ack) ack({ ok: false, error: ERROR.ROOM_NOT_FOUND });
       return;
     }
 
@@ -180,15 +191,15 @@ const closeRoomHandler =
 
     const room = getRoomById(req.roomId);
     if (!room) {
-      if (ack) ack({ ok: false, error: 'ROOM_NOT_FOUND' });
+      if (ack) ack({ ok: false, error: ERROR.ROOM_NOT_FOUND });
       return;
     }
     if (room.ownerId !== socket.id) {
-      if (ack) ack({ ok: false, error: 'NOT_OWNER' });
+      if (ack) ack({ ok: false, error: ERROR.NOT_OWNER });
       return;
     }
     if (room.state === ROOM_STATES.RUNNING) {
-      if (ack) ack({ ok: false, error: 'GAME_IN_PROGRESS' });
+      if (ack) ack({ ok: false, error: ERROR.GAME_IN_PROGRESS });
       return;
     }
 
@@ -219,7 +230,7 @@ const rejoinRoomHandler =
 
     const room = getActiveRoom(socket.id);
     if (!room) {
-      if (ack) ack({ ok: false, error: 'ROOM_NOT_FOUND' });
+      if (ack) ack({ ok: false, error: ERROR.ROOM_NOT_FOUND });
       return;
     }
 

@@ -1,11 +1,11 @@
-import React, { ReactElement } from 'react';
+import type { ReactElement, ChangeEvent } from 'react';
 
 import styles from './Slider.module.css';
 
 type SliderProps = {
   label: string;
   checked: boolean;
-  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange: (event: ChangeEvent<HTMLInputElement>) => void;
 };
 
 export default function Slider({

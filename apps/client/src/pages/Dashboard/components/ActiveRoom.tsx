@@ -1,6 +1,6 @@
-import React, { ReactElement, useState } from 'react';
+import { ReactElement, useState } from 'react';
 
-import { ROOM_STATES } from '@game/shared/constants';
+import { ERROR, ROOM_STATES, VALIDATION } from '@game/shared/constants';
 import {
   DEFAULT_CONFIG,
   FARM_EVENTS,
@@ -19,6 +19,7 @@ import { emitEvent, getSocketId } from '../../../socket/client';
 
 import { classNames } from '../../../utils';
 import { getRuleLabel } from '../../../utils/game';
+import { resolveErrorMessage } from '../../../utils/language';
 
 import styles from './ActiveRoom.module.css';
 
@@ -40,25 +41,35 @@ export default function ActiveRoom(): ReactElement {
     currentRoom.players.length <= DEFAULT_CONFIG.maxPlayers &&
     currentRoom.state === ROOM_STATES.IDLE;
 
+  const trimmedRoomName = roomName.trim();
+  const roomNameLength = [...trimmedRoomName].length;
+  const isRoomNameInvalid =
+    roomNameLength < VALIDATION.ROOM_NAME.MIN_LENGTH ||
+    roomNameLength > VALIDATION.ROOM_NAME.MAX_LENGTH;
+
   return (
     <aside className={styles.activeRoom}>
       <div>
         {isOwner && (
           <input
             type="text"
-            className={styles.roomName}
+            className={`${styles.roomName}${isRoomNameInvalid ? ` ${styles.roomNameInvalid}` : ''}`}
             value={roomName}
             disabled={!isOwner}
+            maxLength={VALIDATION.ROOM_NAME.MAX_LENGTH}
             onChange={event => {
-              setRoomName(event.target.value);
-            }}
-            onBlur={() => {
-              const nextName = roomName.trim();
-              if (!nextName) {
-                setRoomName(currentRoom.name);
-                showSnackbar(translation.dashboard.errors.noRoomName);
+              const nextValue = event.target.value;
+              if ([...nextValue].length > VALIDATION.ROOM_NAME.MAX_LENGTH) {
                 return;
               }
+              setRoomName(nextValue);
+            }}
+            onBlur={() => {
+              if (isRoomNameInvalid) {
+                return;
+              }
+
+              const nextName = trimmedRoomName;
 
               if (nextName === currentRoom.name) {
                 return;
@@ -67,11 +78,9 @@ export default function ActiveRoom(): ReactElement {
               emitEvent(
                 FARM_EVENTS.ROOM_UPDATE,
                 { roomId: currentRoom.id, name: nextName },
-                (res: { ok: boolean; error?: string }): void => {
+                res => {
                   if (!res.ok) {
-                    showSnackbar(
-                      res.error || translation.dashboard.errors.noRoomName
-                    );
+                    showSnackbar(resolveErrorMessage(res.error, translation));
                   }
                 }
               );
@@ -126,10 +135,10 @@ export default function ActiveRoom(): ReactElement {
                         [rule]: event.target.checked,
                       },
                     },
-                    (res: { ok: boolean; error?: string }): void => {
+                    res => {
                       if (!res.ok) {
                         showSnackbar(
-                          res.error || translation.dashboard.errors.cannotStart
+                          resolveErrorMessage(res.error, translation)
                         );
                       }
                     }
@@ -156,17 +165,15 @@ export default function ActiveRoom(): ReactElement {
             disabled={!canStartGame}
             onClick={() => {
               if (!canStartGame) {
-                showSnackbar(translation.dashboard.errors.cannotStart);
+                showSnackbar(translation.errors[ERROR.CANNOT_START]);
                 return;
               }
               emitEvent(
                 FARM_EVENTS.GAME_START,
                 { roomId: currentRoom.id },
-                (res: { ok: boolean; error?: string }): void => {
+                res => {
                   if (!res.ok) {
-                    showSnackbar(
-                      res.error || translation.dashboard.errors.cannotStart
-                    );
+                    showSnackbar(resolveErrorMessage(res.error, translation));
                   }
                 }
               );
