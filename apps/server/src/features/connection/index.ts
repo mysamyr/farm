@@ -59,26 +59,24 @@ const reconnectHandler = (
   socket.on(EVENTS.DISCONNECT, disconnectHandler(io, socket, ip));
 };
 
-export function registerConnection(io: AppServer): void {
-  io.on(EVENTS.CONNECTION, (socket: AppSocket): void => {
-    const ip = getIpAddress(socket);
-    const userId = (socket.handshake.auth as { userId?: string }).userId;
+export function registerConnection(io: AppServer, socket: AppSocket): void {
+  const ip = getIpAddress(socket);
+  const userId = (socket.handshake.auth as { userId?: string }).userId;
 
-    log(LogLevel.INFO, 'socket:connected', { socketId: socket.id, ip });
+  log(LogLevel.INFO, 'socket:connected', { socketId: socket.id, ip });
 
-    if (userId) {
-      const pending = getPendingDisconnect(userId);
-      if (pending) {
-        reconnectHandler(io, socket, ip, pending, userId);
-        return;
-      }
-      socket.data.userId = userId;
+  if (userId) {
+    const pending = getPendingDisconnect(userId);
+    if (pending) {
+      reconnectHandler(io, socket, ip, pending, userId);
+      return;
     }
+    socket.data.userId = userId;
+  }
 
-    assignPlayer(socket);
-    broadcastOnlineCount(io);
-    updateRoomsList(io);
+  assignPlayer(socket);
+  broadcastOnlineCount(io);
+  updateRoomsList(io);
 
-    socket.on(EVENTS.DISCONNECT, disconnectHandler(io, socket, ip));
-  });
+  socket.on(EVENTS.DISCONNECT, disconnectHandler(io, socket, ip));
 }

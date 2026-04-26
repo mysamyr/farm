@@ -23,6 +23,8 @@ input.roomName {
   color: var(--surface-input-text);
   border-radius: 8px;
   padding: 6px 8px;
+  box-sizing: border-box;
+  display: block;
 }
 
 input.roomName:focus {

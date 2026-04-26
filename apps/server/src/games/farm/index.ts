@@ -1,7 +1,12 @@
 import { ROOM_STATES, ERROR } from '@game/shared/constants';
 import { ANIMALS, EMOTES, FARM_EVENTS } from '@game/shared/constants/farm';
-import type { Room, SendEmoteReq } from '@game/shared/types/farm';
-import type { RollDiceAck } from '@game/shared/types/socket';
+import {
+  GameExchangePayload,
+  RollDiceAck,
+  RoomIdPayload,
+  SendEmotePayload,
+} from '@game/shared/types';
+import type { Room } from '@game/shared/types/farm';
 
 import { LogLevel } from '../../constants';
 import { canStartGame } from '../../features/room/room.helpers';
@@ -27,11 +32,9 @@ import {
   winnerHandler,
 } from './service';
 
-import type { ExchangeReq, RollDiceReq, StartGameReq } from './types';
-
 const startGameHandler =
   (io: AppServer, socket: AppSocket) =>
-  (req: StartGameReq, ack?: AckFunc): void => {
+  (req: RoomIdPayload, ack?: AckFunc): void => {
     log(LogLevel.DEBUG, 'event:game:start', {
       socketId: socket.id,
       roomId: req.roomId,
@@ -74,7 +77,7 @@ const startGameHandler =
 
 const rollDiceHandler =
   (io: AppServer, socket: AppSocket) =>
-  (req: RollDiceReq, ack?: AckFunc<RollDiceAck>): void => {
+  (req: RoomIdPayload, ack?: AckFunc<RollDiceAck>): void => {
     const { roomId } = req;
     log(LogLevel.DEBUG, 'event:game:rollDice', {
       socketId: socket.id,
@@ -104,14 +107,13 @@ const rollDiceHandler =
     activeRoom.dice = dice;
     io.to(activeRoom.id).emit(FARM_EVENTS.GAME_UPDATE, {
       room: activeRoom,
-      dice,
     });
     ack?.({ ok: true, diceResult: dice });
   };
 
 const exchangeHandler =
   (io: AppServer, socket: AppSocket) =>
-  (req: ExchangeReq, ack?: AckFunc): void => {
+  (req: GameExchangePayload, ack?: AckFunc): void => {
     const { roomId, from, to } = req;
     log(LogLevel.DEBUG, 'event:game:exchange', {
       socketId: socket.id,
@@ -154,7 +156,7 @@ const exchangeHandler =
 
 const sendEmoteHandler =
   (io: AppServer, socket: AppSocket) =>
-  (req: SendEmoteReq, ack?: AckFunc): void => {
+  (req: SendEmotePayload, ack?: AckFunc): void => {
     const { roomId, emoteId } = req;
     log(LogLevel.DEBUG, 'event:game:sendEmote', {
       socketId: socket.id,
@@ -204,11 +206,9 @@ const sendEmoteHandler =
     });
   };
 
-export function registerGameFeature(io: AppServer): void {
-  io.on(FARM_EVENTS.CONNECTION, (socket: AppSocket): void => {
-    socket.on(FARM_EVENTS.GAME_START, startGameHandler(io, socket));
-    socket.on(FARM_EVENTS.GAME_ROLL_DICE, rollDiceHandler(io, socket));
-    socket.on(FARM_EVENTS.GAME_EXCHANGE, exchangeHandler(io, socket));
-    socket.on(FARM_EVENTS.GAME_SEND_EMOTE, sendEmoteHandler(io, socket));
-  });
+export function registerGameFeature(io: AppServer, socket: AppSocket): void {
+  socket.on(FARM_EVENTS.GAME_START, startGameHandler(io, socket));
+  socket.on(FARM_EVENTS.GAME_ROLL_DICE, rollDiceHandler(io, socket));
+  socket.on(FARM_EVENTS.GAME_EXCHANGE, exchangeHandler(io, socket));
+  socket.on(FARM_EVENTS.GAME_SEND_EMOTE, sendEmoteHandler(io, socket));
 }

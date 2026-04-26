@@ -4,16 +4,6 @@ import type { BasePlayer, BaseRoom } from './index';
 
 export type EmoteId = (typeof EMOTES)[number]['id'];
 
-export type SendEmoteReq = {
-  roomId: string;
-  emoteId: EmoteId;
-};
-
-export type EmoteSentPayload = {
-  emoteId: EmoteId;
-  playerName: string;
-};
-
 export type TradableAnimals =
   | ANIMALS.DUCK
   | ANIMALS.GOAT

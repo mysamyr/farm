@@ -8,8 +8,12 @@ import {
 } from '@game/shared/constants';
 
 import type { Room } from '@game/shared/types';
+import {
+  RejoinRoomAck,
+  RoomIdPayload,
+  RoomUpdatePayload,
+} from '@game/shared/types';
 import type { Room as FarmRoom } from '@game/shared/types/farm';
-import type { RejoinRoomAck } from '@game/shared/types/socket';
 
 import { LogLevel } from '../../constants';
 import { log } from '../../services/logger';
@@ -26,13 +30,6 @@ import {
   removePlayerFromRoom,
   updateRoomsList,
 } from './room.service';
-
-import type {
-  CloseRoomReq,
-  JoinRoomReq,
-  LeaveRoomReq,
-  UpdateRoomReq,
-} from './room.types';
 
 const createRoomHandler =
   (io: AppServer, socket: AppSocket) =>
@@ -68,7 +65,7 @@ const createRoomHandler =
 
 const updateRoomHandler =
   (io: AppServer, socket: AppSocket) =>
-  (req: UpdateRoomReq, ack?: AckFunc): void => {
+  (req: RoomUpdatePayload, ack?: AckFunc): void => {
     log(LogLevel.DEBUG, 'event:room:update', {
       socketId: socket.id,
       ...req,
@@ -115,7 +112,7 @@ const updateRoomHandler =
 
 const joinRoomHandler =
   (io: AppServer, socket: AppSocket) =>
-  (req: JoinRoomReq, ack?: AckFunc): void => {
+  (req: RoomIdPayload, ack?: AckFunc): void => {
     log(LogLevel.DEBUG, 'event:room:join', {
       socketId: socket.id,
       roomId: req.roomId,
@@ -159,7 +156,7 @@ const joinRoomHandler =
 
 const leaveRoomHandler =
   (io: AppServer, socket: AppSocket) =>
-  (req: LeaveRoomReq, ack?: AckFunc): void => {
+  (req: RoomIdPayload, ack?: AckFunc): void => {
     log(LogLevel.DEBUG, 'event:room:leave', {
       socketId: socket.id,
       roomId: req.roomId,
@@ -183,7 +180,7 @@ const leaveRoomHandler =
 
 const closeRoomHandler =
   (io: AppServer, socket: AppSocket) =>
-  (req: CloseRoomReq, ack?: AckFunc): void => {
+  (req: RoomIdPayload, ack?: AckFunc): void => {
     log(LogLevel.DEBUG, 'event:room:close', {
       socketId: socket.id,
       roomId: req.roomId,
@@ -207,7 +204,7 @@ const closeRoomHandler =
       type: NOTIFICATION_TYPES.CLOSE_ROOM,
       data: socket.data.player.name,
     });
-    io.to(room.id).emit(EVENTS.ROOM_CLOSED, { roomId: req.roomId });
+    io.to(room.id).emit(EVENTS.ROOM_CLOSED);
     const sockets = io.sockets.adapter.rooms.get(room.id);
     if (sockets) {
       for (const sid of sockets) {
@@ -242,13 +239,11 @@ const rejoinRoomHandler =
     if (ack) ack({ ok: true, room: room as FarmRoom });
   };
 
-export function registerRoomFeature(io: AppServer): void {
-  io.on(EVENTS.CONNECTION, (socket: AppSocket): void => {
-    socket.on(EVENTS.ROOM_CREATE, createRoomHandler(io, socket));
-    socket.on(EVENTS.ROOM_UPDATE, updateRoomHandler(io, socket));
-    socket.on(EVENTS.ROOM_JOIN, joinRoomHandler(io, socket));
-    socket.on(EVENTS.ROOM_LEAVE, leaveRoomHandler(io, socket));
-    socket.on(EVENTS.ROOM_CLOSE, closeRoomHandler(io, socket));
-    socket.on(EVENTS.ROOM_REJOIN, rejoinRoomHandler(io, socket));
-  });
+export function registerRoomFeature(io: AppServer, socket: AppSocket): void {
+  socket.on(EVENTS.ROOM_CREATE, createRoomHandler(io, socket));
+  socket.on(EVENTS.ROOM_UPDATE, updateRoomHandler(io, socket));
+  socket.on(EVENTS.ROOM_JOIN, joinRoomHandler(io, socket));
+  socket.on(EVENTS.ROOM_LEAVE, leaveRoomHandler(io, socket));
+  socket.on(EVENTS.ROOM_CLOSE, closeRoomHandler(io, socket));
+  socket.on(EVENTS.ROOM_REJOIN, rejoinRoomHandler(io, socket));
 }

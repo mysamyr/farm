@@ -29,11 +29,4 @@ export interface BaseRoom<
 
 export type Room = BaseRoom;
 
-export type {
-  ClientToServerEvents,
-  RejoinRoomAck,
-  RollDiceAck,
-  ServerNotification,
-  ServerToClientEvents,
-  SocketAck,
-} from './socket';
+export * from './socket';

@@ -3,10 +3,9 @@ import { FARM_EVENTS } from '../constants/farm';
 
 import type {
   DiceAnimals,
+  EmoteId,
   Room as FarmRoom,
   TradableAnimals,
-  SendEmoteReq,
-  EmoteSentPayload,
 } from './farm';
 
 export type SocketAck = {
@@ -27,6 +26,37 @@ export type ServerNotification = {
   data: string;
 };
 
+export type RoomIdPayload = {
+  roomId: string;
+};
+
+export type RoomPayload = {
+  room: FarmRoom;
+};
+
+export type RoomUpdatePayload = RoomIdPayload & {
+  name?: string;
+  rules?: Record<string, boolean>;
+};
+
+export type GameExchangePayload = RoomIdPayload & {
+  from: TradableAnimals;
+  to: TradableAnimals;
+};
+
+export type PlayerRenamePayload = {
+  name: string;
+};
+
+export type SendEmotePayload = RoomIdPayload & {
+  emoteId: EmoteId;
+};
+
+export type EmoteSentPayload = {
+  emoteId: EmoteId;
+  playerName: string;
+};
+
 export type ClientToServerEvents = {
   [EVENTS.ROOM_REJOIN]: (
     payload: null,
@@ -37,43 +67,39 @@ export type ClientToServerEvents = {
     ack?: (response: SocketAck) => void
   ) => void;
   [EVENTS.ROOM_UPDATE]: (
-    payload: {
-      roomId: string;
-      name?: string;
-      rules?: Record<string, boolean>;
-    },
+    payload: RoomUpdatePayload,
     ack?: (response: SocketAck) => void
   ) => void;
   [EVENTS.ROOM_JOIN]: (
-    payload: { roomId: string },
+    payload: RoomIdPayload,
     ack?: (response: SocketAck) => void
   ) => void;
   [EVENTS.ROOM_LEAVE]: (
-    payload: { roomId: string },
+    payload: RoomIdPayload,
     ack?: (response: SocketAck) => void
   ) => void;
   [EVENTS.ROOM_CLOSE]: (
-    payload: { roomId: string },
+    payload: RoomIdPayload,
     ack?: (response: SocketAck) => void
   ) => void;
   [EVENTS.PLAYER_RENAME]: (
-    payload: { name: string },
+    payload: PlayerRenamePayload,
     ack?: (response: SocketAck) => void
   ) => void;
   [FARM_EVENTS.GAME_START]: (
-    payload: { roomId: string },
+    payload: RoomIdPayload,
     ack?: (response: SocketAck) => void
   ) => void;
   [FARM_EVENTS.GAME_ROLL_DICE]: (
-    payload: { roomId: string },
+    payload: RoomIdPayload,
     ack?: (response: RollDiceAck) => void
   ) => void;
   [FARM_EVENTS.GAME_EXCHANGE]: (
-    payload: { roomId: string; from: TradableAnimals; to: TradableAnimals },
+    payload: GameExchangePayload,
     ack?: (response: SocketAck) => void
   ) => void;
   [FARM_EVENTS.GAME_SEND_EMOTE]: (
-    payload: SendEmoteReq,
+    payload: SendEmotePayload,
     ack?: (response: SocketAck) => void
   ) => void;
 };
@@ -81,13 +107,10 @@ export type ClientToServerEvents = {
 export type ServerToClientEvents = {
   [EVENTS.CONNECT]: () => void;
   [EVENTS.ROOMS_LIST]: (rooms: FarmRoom[]) => void;
-  [EVENTS.ROOM_CLOSED]: (payload: { roomId: string }) => void;
+  [EVENTS.ROOM_CLOSED]: () => void;
   [EVENTS.NOTIFICATION]: (payload: ServerNotification) => void;
   [EVENTS.ONLINE_COUNT]: (online: number) => void;
-  [FARM_EVENTS.GAME_STARTED]: (payload: { room: FarmRoom }) => void;
-  [FARM_EVENTS.GAME_UPDATE]: (payload: {
-    room: FarmRoom;
-    dice?: [DiceAnimals, DiceAnimals];
-  }) => void;
+  [FARM_EVENTS.GAME_STARTED]: (payload: RoomPayload) => void;
+  [FARM_EVENTS.GAME_UPDATE]: (payload: RoomPayload) => void;
   [FARM_EVENTS.GAME_EMOTE_SENT]: (payload: EmoteSentPayload) => void;
 };

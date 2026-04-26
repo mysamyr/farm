@@ -3,7 +3,7 @@ import type {
   ClientToServerEvents,
   SocketAck,
   ServerToClientEvents,
-} from '@game/shared/types/socket';
+} from '@game/shared/types';
 import type { DefaultEventsMap, Server, Socket } from 'socket.io';
 
 export type AckFunc<TResponse extends SocketAck = SocketAck> = (

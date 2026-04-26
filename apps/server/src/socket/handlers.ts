@@ -1,14 +1,18 @@
+import { EVENTS } from '@game/shared/constants';
+
 import { registerConnection } from '../features/connection';
 import { registerPlayerFeature } from '../features/player';
 import { registerRoomFeature } from '../features/room';
 import { registerGameFeature } from '../games/farm';
 
-import type { AppServer } from '../types';
+import type { AppServer, AppSocket } from '../types';
 
 export function registerSocketHandlers(io: AppServer): void {
-  registerConnection(io);
-  registerRoomFeature(io);
-  registerPlayerFeature(io);
+  io.on(EVENTS.CONNECTION, (socket: AppSocket) => {
+    registerConnection(io, socket);
+    registerRoomFeature(io, socket);
+    registerPlayerFeature(io, socket);
 
-  registerGameFeature(io);
+    registerGameFeature(io, socket);
+  });
 }

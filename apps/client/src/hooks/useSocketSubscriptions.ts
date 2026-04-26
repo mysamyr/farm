@@ -3,8 +3,8 @@ import { useEffect } from 'react';
 import { NOTIFICATION_TYPES } from '@game/shared/constants';
 import { EVENTS } from '@game/shared/constants';
 import { FARM_EVENTS } from '@game/shared/constants/farm';
+import type { RoomPayload, ServerNotification } from '@game/shared/types';
 import type { Room } from '@game/shared/types/farm';
-import type { ServerNotification } from '@game/shared/types/socket';
 import { useNavigate } from 'react-router-dom';
 
 import { LOCAL_STORAGE_KEY, PATHS } from '../constants';
@@ -66,12 +66,12 @@ export function useSocketSubscriptions({
       setCurrentRoom(null);
     });
 
-    subscribe(FARM_EVENTS.GAME_STARTED, ({ room }: { room: Room }): void => {
+    subscribe(FARM_EVENTS.GAME_STARTED, ({ room }: RoomPayload): void => {
       setCurrentRoom(room);
       void navigate(`${PATHS.GAME_BOARD}?roomId=${room.id}`);
     });
 
-    subscribe(FARM_EVENTS.GAME_UPDATE, ({ room }: { room: Room }): void => {
+    subscribe(FARM_EVENTS.GAME_UPDATE, ({ room }: RoomPayload): void => {
       setCurrentRoom(room);
     });
 
