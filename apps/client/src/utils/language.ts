@@ -1,14 +1,14 @@
 import { ERROR } from '@game/shared/constants';
 
 import { LOCAL_STORAGE_KEY } from '../constants';
-import { LanguageCode } from '../constants/language';
+import { DEFAULT_LANGUAGE, LanguageCode } from '../constants/language';
 
 import type { Translation } from '../types/language';
 
 export function getLanguage(): LanguageCode {
   return (
     (window.localStorage.getItem(LOCAL_STORAGE_KEY.LANGUAGE) as LanguageCode) ||
-    LanguageCode.EN
+    DEFAULT_LANGUAGE
   );
 }
 

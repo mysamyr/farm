@@ -4,20 +4,24 @@ import { Modal } from './components/ui/Modal';
 import { Snackbar } from './components/ui/Snackbar';
 import { PATHS } from './constants';
 import { GAME_WIN_EVENT } from './constants/events';
+import './games';
+import { getDefaultGameConfig } from './games/registry';
 import { useModal } from './hooks/useModal';
 import { useRoom } from './hooks/useRoom';
+import { useRoomSubscriptions } from './hooks/useRoomSubscriptions';
 import { useSnackbar } from './hooks/useSnackbar';
-import { useSocketSubscriptions } from './hooks/useSocketSubscriptions';
 import { useUnloadWarning } from './hooks/useUnloadWarning';
 import Dashboard from './pages/Dashboard';
-import Gameboard from './pages/Gameboard';
 
 function AppContent() {
   const { open: modalOpen, modalComponent, closeModal } = useModal();
   const { open: snackbarOpen, message, closeSnackbar } = useSnackbar();
   const { currentRoom } = useRoom();
 
-  useSocketSubscriptions({
+  const { GameboardPage, useGameSubscriptions } = getDefaultGameConfig();
+
+  useRoomSubscriptions();
+  useGameSubscriptions({
     onCurrentUserWon: () => {
       window.dispatchEvent(new CustomEvent(GAME_WIN_EVENT));
     },
@@ -30,7 +34,7 @@ function AppContent() {
       <Routes>
         <Route path={PATHS.DASHBOARD} element={<Dashboard />} />
         {currentRoom && (
-          <Route path={PATHS.GAME_BOARD} element={<Gameboard />} />
+          <Route path={PATHS.GAME_BOARD} element={<GameboardPage />} />
         )}
         <Route path="*" element={<Navigate to={PATHS.DASHBOARD} replace />} />
       </Routes>

@@ -1,15 +1,20 @@
 import type { ReactElement } from 'react';
 
 import { ANIMALS, FARM_EVENTS, GAME_RULES } from '@game/shared/constants/farm';
-import type { Player, TradableAnimals } from '@game/shared/types/farm';
+import type {
+  Room as FarmRoom,
+  Player,
+  TradableAnimals,
+} from '@game/shared/types/farm';
 
+import { useLanguage } from '../../../../../hooks/useLanguage';
+import { useRoom } from '../../../../../hooks/useRoom';
+import { useSnackbar } from '../../../../../hooks/useSnackbar';
+import { emitEvent, getSocketId } from '../../../../../socket/client';
+import { resolveErrorMessage } from '../../../../../utils/language';
 import { ANIMALS_ICONS_CONFIG } from '../../../constants';
-import { useLanguage } from '../../../hooks/useLanguage';
-import { useRoom } from '../../../hooks/useRoom';
-import { useSnackbar } from '../../../hooks/useSnackbar';
-import { emitEvent, getSocketId } from '../../../socket/client';
-import { canExchange } from '../../../utils/game';
-import { resolveErrorMessage } from '../../../utils/language';
+import { useFarmTranslation } from '../../../hooks/useFarmTranslation';
+import { canExchange } from '../../../utils';
 
 import styles from './ExchangeSection.module.css';
 
@@ -36,13 +41,15 @@ export default function ExchangeSection({
   isYourTurn,
 }: ExchangeSectionProps): ReactElement {
   const { currentRoom } = useRoom();
+  const room = currentRoom as FarmRoom;
   const { translation } = useLanguage();
+  const farmT = useFarmTranslation();
   const { showSnackbar } = useSnackbar();
 
-  const me = currentRoom?.players.find(
+  const me = room?.players.find(
     (player: Player) => player.id === getSocketId()
   );
-  const oneExchangeRuleEnabled = !!currentRoom?.rules[GAME_RULES.ONE_EXCHANGE];
+  const oneExchangeRuleEnabled = !!room?.rules[GAME_RULES.ONE_EXCHANGE];
 
   const exchangeGroups: ExchangeGroup[] = [
     {
@@ -149,7 +156,7 @@ export default function ExchangeSection({
     emitEvent(
       FARM_EVENTS.GAME_EXCHANGE,
       {
-        roomId: currentRoom!.id,
+        roomId: room.id,
         from: pair.left,
         to: pair.right,
       },
@@ -164,7 +171,7 @@ export default function ExchangeSection({
   return (
     <div className={styles.container}>
       <h3 className={styles.title}>
-        {translation.gameboard.exchangeAnimalsHeader}
+        {farmT.exchangeAnimalsHeader}
       </h3>
       <div className={styles.exchangeGrid}>
         {exchangeGroups.map(group => {

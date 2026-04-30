@@ -1,7 +1,6 @@
 export enum Env {
   DEVELOPMENT = 'development',
   PRODUCTION = 'production',
-  COMPILE = 'compile',
   TEST = 'test',
 }
 

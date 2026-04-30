@@ -1,16 +1,18 @@
 import type { ReactElement } from 'react';
 
 import { FARM_EVENTS } from '@game/shared/constants/farm';
+import type { Room as FarmRoom } from '@game/shared/types/farm';
 
-import Button from '../../../components/ui/Button';
-import { BUTTON_VARIANT } from '../../../constants';
-import { useLanguage } from '../../../hooks/useLanguage';
-import { useRoom } from '../../../hooks/useRoom';
-import { useSnackbar } from '../../../hooks/useSnackbar';
-import { emitEvent } from '../../../socket/client';
-import { classNames } from '../../../utils';
-import { getDiceIcon, isWildAnimal } from '../../../utils/game';
-import { resolveErrorMessage } from '../../../utils/language';
+import Button from '../../../../../components/ui/Button';
+import { BUTTON_VARIANT } from '../../../../../constants';
+import { useLanguage } from '../../../../../hooks/useLanguage';
+import { useRoom } from '../../../../../hooks/useRoom';
+import { useSnackbar } from '../../../../../hooks/useSnackbar';
+import { emitEvent } from '../../../../../socket/client';
+import { classNames } from '../../../../../utils';
+import { resolveErrorMessage } from '../../../../../utils/language';
+import { useFarmTranslation } from '../../../hooks/useFarmTranslation';
+import { getDiceIcon, isWildAnimal } from '../../../utils';
 
 import styles from './DiceSection.module.css';
 
@@ -23,23 +25,25 @@ type DiceSectionProps = {
 export default function DiceSection({
   isYourTurn,
 }: DiceSectionProps): ReactElement {
+  const farmT = useFarmTranslation();
   const { translation } = useLanguage();
   const { showSnackbar } = useSnackbar();
   const { currentRoom } = useRoom();
+  const room = currentRoom as FarmRoom;
 
   const onRoll = () => {
     if (!isYourTurn) {
       return;
     }
 
-    emitEvent(FARM_EVENTS.GAME_ROLL_DICE, { roomId: currentRoom!.id }, res => {
+    emitEvent(FARM_EVENTS.GAME_ROLL_DICE, { roomId: room.id }, res => {
       if (!res.ok) {
         showSnackbar(resolveErrorMessage(res.error, translation));
       }
     });
   };
 
-  const dice = currentRoom!.dice;
+  const dice = room.dice;
 
   return (
     <div className={styles.container}>
@@ -68,10 +72,10 @@ export default function DiceSection({
           disabled={!isYourTurn}
           onClick={onRoll}
         >
-          {translation.gameboard.gameButton.throwDice}
+          {farmT.gameButton.throwDice}
         </Button>
 
-        <EmoteButton roomId={currentRoom!.id} />
+        <EmoteButton roomId={room.id} />
       </div>
     </div>
   );

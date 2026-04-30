@@ -10,9 +10,9 @@ import {
 import { EMOTES, FARM_EVENTS } from '@game/shared/constants/farm';
 import type { EmoteId } from '@game/shared/types/farm';
 
-import Dropdown from '../../../components/ui/Dropdown';
-import { BUTTON_VARIANT } from '../../../constants';
-import { emitEvent } from '../../../socket/client';
+import Dropdown from '../../../../../components/ui/Dropdown';
+import { BUTTON_VARIANT } from '../../../../../constants';
+import { emitEvent } from '../../../../../socket/client';
 
 import styles from './EmoteButton.module.css';
 

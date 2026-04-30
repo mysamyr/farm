@@ -1,7 +1,6 @@
 import { type ChangeEvent, useCallback } from 'react';
 
-import { ERROR, VALIDATION } from '@game/shared/constants';
-import { FARM_EVENTS } from '@game/shared/constants/farm';
+import { ERROR, EVENTS, VALIDATION } from '@game/shared/constants';
 
 import Button from '../../../components/ui/Button';
 import { LOCAL_STORAGE_KEY } from '../../../constants';
@@ -52,7 +51,7 @@ export default function ActionBar({
       return;
     }
 
-    emitEvent(FARM_EVENTS.ROOM_CREATE, null, res => {
+    emitEvent(EVENTS.ROOM_CREATE, null, res => {
       if (!res.ok) {
         showSnackbar(resolveErrorMessage(res.error, translation));
       }
@@ -60,7 +59,7 @@ export default function ActionBar({
   }, [usernameInput, currentRoom, showSnackbar, translation]);
 
   const debouncedEmitRename = useDebounceCallback((newName: string) => {
-    emitEvent(FARM_EVENTS.PLAYER_RENAME, { name: newName });
+    emitEvent(EVENTS.PLAYER_RENAME, { name: newName });
   }, 500);
 
   const onUsernameChange = useCallback(

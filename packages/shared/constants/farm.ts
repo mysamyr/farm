@@ -7,11 +7,9 @@ export const DEFAULT_CONFIG = {
 
 export const FARM_EVENTS = {
   ...EVENTS,
-  GAME_START: 'game:start',
   GAME_ROLL_DICE: 'game:rollDice',
   GAME_EXCHANGE: 'game:exchange',
   GAME_SEND_EMOTE: 'game:sendEmote',
-  GAME_STARTED: 'game:started',
   GAME_UPDATE: 'game:update',
   GAME_EMOTE_SENT: 'game:emoteSent',
 } as const;

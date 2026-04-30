@@ -1,11 +1,10 @@
 import { useCallback, useEffect, useState, ReactElement } from 'react';
 
 import { FARM_EVENTS } from '@game/shared/constants/farm';
-
 import { EmoteSentPayload } from '@game/shared/types';
 import type { EmoteId } from '@game/shared/types/farm';
 
-import { subscribe, unsubscribe } from '../../../socket/client';
+import { subscribe, unsubscribe } from '../../../../../socket/client';
 
 import EmoteAnimation from './EmoteAnimation';
 

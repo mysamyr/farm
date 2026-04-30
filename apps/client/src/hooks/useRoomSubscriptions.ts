@@ -1,10 +1,8 @@
 import { useEffect } from 'react';
 
-import { NOTIFICATION_TYPES } from '@game/shared/constants';
-import { EVENTS } from '@game/shared/constants';
-import { FARM_EVENTS } from '@game/shared/constants/farm';
+import { EVENTS, NOTIFICATION_TYPES } from '@game/shared/constants';
 import type { RoomPayload, ServerNotification } from '@game/shared/types';
-import type { Room } from '@game/shared/types/farm';
+
 import { useNavigate } from 'react-router-dom';
 
 import { LOCAL_STORAGE_KEY, PATHS } from '../constants';
@@ -15,13 +13,7 @@ import { useLanguage } from './useLanguage';
 import { useRoom } from './useRoom';
 import { useSnackbar } from './useSnackbar';
 
-type UseSocketSubscriptionsArgs = {
-  onCurrentUserWon: () => void;
-};
-
-export function useSocketSubscriptions({
-  onCurrentUserWon,
-}: UseSocketSubscriptionsArgs): void {
+export function useRoomSubscriptions(): void {
   const navigate = useNavigate();
   const { setRooms, setCurrentRoom } = useRoom();
   const { showSnackbar } = useSnackbar();
@@ -29,10 +21,10 @@ export function useSocketSubscriptions({
   const { setOnline } = useConnection();
 
   useEffect(() => {
-    subscribe(FARM_EVENTS.CONNECT, (): void => {
+    subscribe(EVENTS.CONNECT, (): void => {
       const name = window.localStorage.getItem(LOCAL_STORAGE_KEY.USERNAME);
       if (name) {
-        emitEvent(FARM_EVENTS.PLAYER_RENAME, { name });
+        emitEvent(EVENTS.PLAYER_RENAME, { name });
       }
 
       emitEvent(EVENTS.ROOM_REJOIN, null, res => {
@@ -45,7 +37,7 @@ export function useSocketSubscriptions({
       });
     });
 
-    subscribe(FARM_EVENTS.ROOMS_LIST, (nextRooms: Room[]): void => {
+    subscribe(EVENTS.ROOMS_LIST, (nextRooms): void => {
       setRooms(prevRooms => {
         const changed = JSON.stringify(prevRooms) !== JSON.stringify(nextRooms);
         return changed ? nextRooms : prevRooms;
@@ -62,52 +54,40 @@ export function useSocketSubscriptions({
       }
     });
 
-    subscribe(FARM_EVENTS.ROOM_CLOSED, (): void => {
+    subscribe(EVENTS.ROOM_CLOSED, (): void => {
       setCurrentRoom(null);
     });
 
-    subscribe(FARM_EVENTS.GAME_STARTED, ({ room }: RoomPayload): void => {
+    subscribe(EVENTS.GAME_STARTED, ({ room }: RoomPayload): void => {
       setCurrentRoom(room);
       void navigate(`${PATHS.GAME_BOARD}?roomId=${room.id}`);
     });
 
-    subscribe(FARM_EVENTS.GAME_UPDATE, ({ room }: RoomPayload): void => {
-      setCurrentRoom(room);
-    });
-
     subscribe(
-      FARM_EVENTS.NOTIFICATION,
+      EVENTS.NOTIFICATION,
       ({ type, data }: ServerNotification): void => {
         const name = window.localStorage.getItem(LOCAL_STORAGE_KEY.USERNAME);
         const isCurrentUser = name === data;
 
-        if (!isCurrentUser) {
-          switch (type) {
-            case NOTIFICATION_TYPES.PLAYER_JOINED:
-              showSnackbar(translation.notifications.playerJoined(data));
-              break;
-            case NOTIFICATION_TYPES.PLAYER_LEFT:
-              showSnackbar(translation.notifications.playerLeft(data));
-              break;
-            case NOTIFICATION_TYPES.CLOSE_ROOM:
-              showSnackbar(translation.notifications.roomClosed(data));
-              break;
-            case NOTIFICATION_TYPES.GAME_FINISHED:
-              showSnackbar(translation.notifications.gameFinished(data));
-              break;
-            default:
-              break;
-          }
-          return;
-        }
+        if (isCurrentUser) return;
 
-        if (type === NOTIFICATION_TYPES.GAME_FINISHED) {
-          onCurrentUserWon();
+        switch (type) {
+          case NOTIFICATION_TYPES.PLAYER_JOINED:
+            showSnackbar(translation.notifications.playerJoined(data));
+            break;
+          case NOTIFICATION_TYPES.PLAYER_LEFT:
+            showSnackbar(translation.notifications.playerLeft(data));
+            break;
+          case NOTIFICATION_TYPES.CLOSE_ROOM:
+            showSnackbar(translation.notifications.roomClosed(data));
+            break;
+          default:
+            break;
         }
       }
     );
 
-    subscribe(FARM_EVENTS.ONLINE_COUNT, (online: number): void => {
+    subscribe(EVENTS.ONLINE_COUNT, (online: number): void => {
       setOnline(online);
     });
   }, []);

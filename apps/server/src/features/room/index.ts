@@ -13,12 +13,14 @@ import {
   RoomIdPayload,
   RoomUpdatePayload,
 } from '@game/shared/types';
-import type { Room as FarmRoom } from '@game/shared/types/farm';
 
 import { LogLevel } from '../../constants';
+import { getGameModule } from '../../games';
 import { log } from '../../services/logger';
 import type { AckFunc, AppServer, AppSocket } from '../../types';
 import { checkIfPlayerAlreadyInRoom } from '../player/player.helpers';
+
+import { canStartGame } from './room.helpers';
 
 import {
   createRoom,
@@ -236,7 +238,39 @@ const rejoinRoomHandler =
       socketId: socket.id,
     });
 
-    if (ack) ack({ ok: true, room: room as FarmRoom });
+    if (ack) ack({ ok: true, room });
+  };
+
+const startGameHandler =
+  (io: AppServer, socket: AppSocket) =>
+  (req: RoomIdPayload, ack?: AckFunc): void => {
+    log(LogLevel.DEBUG, 'event:game:start', {
+      socketId: socket.id,
+      roomId: req.roomId,
+    });
+
+    const room = getRoomById(req.roomId);
+    if (!room) {
+      ack?.({ ok: false, error: ERROR.ROOM_NOT_FOUND });
+      return;
+    }
+    if (room.ownerId !== socket.id) {
+      ack?.({ ok: false, error: ERROR.NOT_OWNER });
+      return;
+    }
+    if (!canStartGame(room)) {
+      ack?.({ ok: false, error: ERROR.CANNOT_START });
+      return;
+    }
+
+    room.state = ROOM_STATES.RUNNING;
+
+    getGameModule(room.game).onGameStart?.(io, room);
+
+    updateRoomsList(io);
+    io.to(room.id).emit(EVENTS.GAME_STARTED, { room });
+    ack?.({ ok: true });
+    log(LogLevel.INFO, 'game:started', { room });
   };
 
 export function registerRoomFeature(io: AppServer, socket: AppSocket): void {
@@ -246,4 +280,5 @@ export function registerRoomFeature(io: AppServer, socket: AppSocket): void {
   socket.on(EVENTS.ROOM_LEAVE, leaveRoomHandler(io, socket));
   socket.on(EVENTS.ROOM_CLOSE, closeRoomHandler(io, socket));
   socket.on(EVENTS.ROOM_REJOIN, rejoinRoomHandler(io, socket));
+  socket.on(EVENTS.GAME_START, startGameHandler(io, socket));
 }

@@ -1,4 +1,5 @@
-import { DEFAULT_THEME, LOCAL_STORAGE_KEY, type ThemeCode } from '../constants';
+import { LOCAL_STORAGE_KEY } from '../constants';
+import { DEFAULT_THEME, type ThemeCode } from '../constants/theme';
 
 export function getTheme(): ThemeCode {
   return (

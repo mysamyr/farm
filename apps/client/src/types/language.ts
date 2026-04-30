@@ -1,5 +1,5 @@
 import type { ERROR } from '@game/shared/constants';
-import type { GAME_RULES } from '@game/shared/constants/farm';
+import type { GameId } from '@game/shared/types';
 
 import type { LanguageCode } from '../constants/language';
 
@@ -15,10 +15,6 @@ type ClientErrorKeys = {
   apiErrorOnCreatingRoom: string;
 };
 
-// type ErrorMessages = ClientErrorKeys & Record<string, string>;
-// type ErrorMessages = ClientErrorKeys & {
-//   [ERROR]: string;
-// };
 type ErrorMessages = ClientErrorKeys & Record<ERROR, string>;
 
 export type Translation = {
@@ -26,27 +22,18 @@ export type Translation = {
   dashboard: {
     header: string;
     usernameInputLabel: string;
-    usernameInputPlaceholder: string;
     createRoomBtn: string;
     openRoomsHeader: string;
-    currentRoomHeader: string;
     noActiveRooms: string;
     roomRules: string;
     players: string;
-    rules: {
-      [GAME_RULES.EXTRA_DUCK]: string;
-      [GAME_RULES.ONE_EXCHANGE]: string;
-      [GAME_RULES.UNLIMITED_CARDS]: string;
-    };
+    rules: Record<string, string>;
   };
-  gameboard: {
-    roomLeaveConfirmation: string;
-    exchangeAnimalsHeader: string;
-    winner: string;
-    yourTurn: string;
-    gameButton: {
-      throwDice: string;
-    };
+  game: {
+    [K in GameId]: Record<string, unknown>;
+  };
+  help: {
+    [K in GameId]: Record<string, string | string[]>;
   };
   roomButton: {
     full: string;
@@ -63,24 +50,6 @@ export type Translation = {
     idle: string;
     running: string;
     finished: string;
-  };
-  help: {
-    title: string;
-    goal: string;
-    componentsHeader: string;
-    components: string[];
-    turnHeader: string;
-    turnParagraphs: string[];
-    breedingHeader: string;
-    breedingParagraphs: string[];
-    examplesHeader: string;
-    examples: string[];
-    predatorsHeader: string;
-    predators: string[];
-    protectionHeader: string;
-    protection: string[];
-    rulesHeader: string;
-    rules: string[];
   };
   notifications: {
     playerJoined: (playerName: string) => string;

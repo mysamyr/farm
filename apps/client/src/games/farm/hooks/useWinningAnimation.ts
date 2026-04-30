@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { GAME_WIN_EVENT } from '../constants/events';
+import { GAME_WIN_EVENT } from '../../../constants/events';
 
-import type { ConfettiPiece } from '../types/app';
+import type { ConfettiPiece } from '../../../types/app';
 
 type UseWinningAnimationResult = {
   show: boolean;

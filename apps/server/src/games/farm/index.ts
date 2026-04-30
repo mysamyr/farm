@@ -1,5 +1,5 @@
-import { ROOM_STATES, ERROR } from '@game/shared/constants';
-import { ANIMALS, EMOTES, FARM_EVENTS } from '@game/shared/constants/farm';
+import { ERROR } from '@game/shared/constants';
+import { EMOTES, FARM_EVENTS } from '@game/shared/constants/farm';
 import {
   GameExchangePayload,
   RollDiceAck,
@@ -9,8 +9,7 @@ import {
 import type { Room } from '@game/shared/types/farm';
 
 import { LogLevel } from '../../constants';
-import { canStartGame } from '../../features/room/room.helpers';
-import { getRoomById, updateRoomsList } from '../../features/room/room.service';
+import { getRoomById } from '../../features/room/room.service';
 import { log } from '../../services/logger';
 
 import type { AckFunc, AppServer, AppSocket } from '../../types';
@@ -18,7 +17,6 @@ import type { AckFunc, AppServer, AppSocket } from '../../types';
 import {
   isEnoughCardsToExchange,
   checkWinner,
-  getInitDuckValue,
   isExchangeForbidden,
   rollDice,
   areLimitedCards,
@@ -28,52 +26,8 @@ import {
   applyExchange,
   checkPlayerAction,
   setNextTurn,
-  setOrder,
   winnerHandler,
 } from './service';
-
-const startGameHandler =
-  (io: AppServer, socket: AppSocket) =>
-  (req: RoomIdPayload, ack?: AckFunc): void => {
-    log(LogLevel.DEBUG, 'event:game:start', {
-      socketId: socket.id,
-      roomId: req.roomId,
-    });
-
-    const room = getRoomById(req.roomId) as Room;
-    if (!room) {
-      ack?.({ ok: false, error: ERROR.ROOM_NOT_FOUND });
-      return;
-    }
-    if (room.ownerId !== socket.id) {
-      ack?.({ ok: false, error: ERROR.NOT_OWNER });
-      return;
-    }
-    if (!canStartGame(room)) {
-      ack?.({ ok: false, error: ERROR.CANNOT_START });
-      return;
-    }
-
-    room.state = ROOM_STATES.RUNNING;
-    setOrder(room);
-    // init animals
-    room.players.forEach(player => {
-      player.animals = {
-        [ANIMALS.DUCK]: getInitDuckValue(room.rules),
-        [ANIMALS.GOAT]: 0,
-        [ANIMALS.PIG]: 0,
-        [ANIMALS.HORSE]: 0,
-        [ANIMALS.COW]: 0,
-        [ANIMALS.SMALL_DOG]: 0,
-        [ANIMALS.BIG_DOG]: 0,
-      };
-    });
-
-    updateRoomsList(io);
-    io.to(room.id).emit(FARM_EVENTS.GAME_STARTED, { room });
-    ack?.({ ok: true });
-    log(LogLevel.INFO, 'game:started', { room });
-  };
 
 const rollDiceHandler =
   (io: AppServer, socket: AppSocket) =>
@@ -207,7 +161,6 @@ const sendEmoteHandler =
   };
 
 export function registerGameFeature(io: AppServer, socket: AppSocket): void {
-  socket.on(FARM_EVENTS.GAME_START, startGameHandler(io, socket));
   socket.on(FARM_EVENTS.GAME_ROLL_DICE, rollDiceHandler(io, socket));
   socket.on(FARM_EVENTS.GAME_EXCHANGE, exchangeHandler(io, socket));
   socket.on(FARM_EVENTS.GAME_SEND_EMOTE, sendEmoteHandler(io, socket));

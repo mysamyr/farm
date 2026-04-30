@@ -1,12 +1,9 @@
 import { ERROR, EVENTS, NOTIFICATION_TYPES } from '../constants';
 import { FARM_EVENTS } from '../constants/farm';
 
-import type {
-  DiceAnimals,
-  EmoteId,
-  Room as FarmRoom,
-  TradableAnimals,
-} from './farm';
+import type { DiceAnimals, EmoteId, TradableAnimals } from './farm';
+
+import type { Room } from './index';
 
 export type SocketAck = {
   ok: boolean;
@@ -18,7 +15,7 @@ export type RollDiceAck = SocketAck & {
 };
 
 export type RejoinRoomAck = SocketAck & {
-  room?: FarmRoom;
+  room?: Room;
 };
 
 export type ServerNotification = {
@@ -31,7 +28,7 @@ export type RoomIdPayload = {
 };
 
 export type RoomPayload = {
-  room: FarmRoom;
+  room: Room;
 };
 
 export type RoomUpdatePayload = RoomIdPayload & {
@@ -86,7 +83,7 @@ export type ClientToServerEvents = {
     payload: PlayerRenamePayload,
     ack?: (response: SocketAck) => void
   ) => void;
-  [FARM_EVENTS.GAME_START]: (
+  [EVENTS.GAME_START]: (
     payload: RoomIdPayload,
     ack?: (response: SocketAck) => void
   ) => void;
@@ -106,11 +103,11 @@ export type ClientToServerEvents = {
 
 export type ServerToClientEvents = {
   [EVENTS.CONNECT]: () => void;
-  [EVENTS.ROOMS_LIST]: (rooms: FarmRoom[]) => void;
+  [EVENTS.ROOMS_LIST]: (rooms: Room[]) => void;
   [EVENTS.ROOM_CLOSED]: () => void;
   [EVENTS.NOTIFICATION]: (payload: ServerNotification) => void;
   [EVENTS.ONLINE_COUNT]: (online: number) => void;
-  [FARM_EVENTS.GAME_STARTED]: (payload: RoomPayload) => void;
+  [EVENTS.GAME_STARTED]: (payload: RoomPayload) => void;
   [FARM_EVENTS.GAME_UPDATE]: (payload: RoomPayload) => void;
   [FARM_EVENTS.GAME_EMOTE_SENT]: (payload: EmoteSentPayload) => void;
 };

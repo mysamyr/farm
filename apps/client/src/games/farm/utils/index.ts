@@ -1,4 +1,4 @@
-import { ANIMALS, GAME_RULES } from '@game/shared/constants/farm';
+import { ANIMALS } from '@game/shared/constants/farm';
 
 import type {
   DiceAnimals,
@@ -7,9 +7,9 @@ import type {
   TradableAnimals,
 } from '@game/shared/types/farm';
 
-import { ANIMALS_ICONS_CONFIG } from '../constants';
+import type { Translation } from '../../../types/language';
 
-import type { Translation } from '../types/language';
+import { ANIMALS_ICONS_CONFIG } from '../constants';
 
 export function getCurrentPlayerTurnId(room: Room): string | undefined {
   return room.order[room.turn ?? 0];
@@ -38,16 +38,7 @@ export function canExchange(
 }
 
 export function getRuleLabel(key: keyof Rules, t: Translation): string {
-  switch (key) {
-    case GAME_RULES.EXTRA_DUCK:
-      return t.dashboard.rules[GAME_RULES.EXTRA_DUCK];
-    case GAME_RULES.ONE_EXCHANGE:
-      return t.dashboard.rules[GAME_RULES.ONE_EXCHANGE];
-    case GAME_RULES.UNLIMITED_CARDS:
-      return t.dashboard.rules[GAME_RULES.UNLIMITED_CARDS];
-    default:
-      return key;
-  }
+  return t.dashboard.rules[key] ?? key;
 }
 
 export function getOwnerName(room: Room): string {

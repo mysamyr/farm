@@ -26,6 +26,8 @@ export const EVENTS = {
   ROOM_CLOSED: 'room:closed',
   NOTIFICATION: 'notification',
   ONLINE_COUNT: 'count',
+  GAME_START: 'game:start',
+  GAME_STARTED: 'game:started',
 } as const;
 
 export enum NOTIFICATION_TYPES {

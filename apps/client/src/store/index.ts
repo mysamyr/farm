@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ComponentType, Dispatch, SetStateAction } from 'react';
 
-import type { Room } from '@game/shared/types/farm';
+import type { Room } from '@game/shared/types';
 import { create } from 'zustand';
 
-import { type ThemeCode } from '../constants';
 import languageMap, { LanguageCode } from '../constants/language';
+import { type ThemeCode } from '../constants/theme';
 import type { Translation } from '../types/language';
 import {
   getLanguage,

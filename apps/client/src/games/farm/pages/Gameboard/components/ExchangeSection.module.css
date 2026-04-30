@@ -1,6 +1,6 @@
 .container {
   background: var(--bg-card);
-  padding: 16px;
+  padding: 12px;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
 }

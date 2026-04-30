@@ -20,7 +20,11 @@ import type { AppServer } from '../../types';
 import { shuffleArray } from '../../utils';
 
 import { ANIMALS_WAGES, TURN_START_INDEX } from './constants';
-import { getAddedAnimalsCount, getCurrentPlayerTurnId } from './helpers';
+import {
+  getAddedAnimalsCount,
+  getCurrentPlayerTurnId,
+  getInitDuckValue,
+} from './helpers';
 
 export function addRoomFields(): Pick<Room, 'rules' | 'order' | 'turn'> {
   return {
@@ -34,6 +38,22 @@ export function addRoomFields(): Pick<Room, 'rules' | 'order' | 'turn'> {
     order: [],
     turn: TURN_START_INDEX,
   };
+}
+
+export function initGameState(_io: AppServer, room: Room): void {
+  setOrder(room);
+
+  room.players.forEach(player => {
+    player.animals = {
+      [ANIMALS.DUCK]: getInitDuckValue(room.rules),
+      [ANIMALS.GOAT]: 0,
+      [ANIMALS.PIG]: 0,
+      [ANIMALS.HORSE]: 0,
+      [ANIMALS.COW]: 0,
+      [ANIMALS.SMALL_DOG]: 0,
+      [ANIMALS.BIG_DOG]: 0,
+    };
+  });
 }
 
 export function winnerHandler(io: AppServer, room: Room, player: Player): void {

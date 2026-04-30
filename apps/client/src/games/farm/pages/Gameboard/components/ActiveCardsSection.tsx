@@ -1,20 +1,23 @@
 import type { ReactElement } from 'react';
 
 import { ANIMALS, ANIMALS_DEFAULT_QUANTITY } from '@game/shared/constants/farm';
-import type { TradableAnimals } from '@game/shared/types/farm';
+import type {
+  Room as FarmRoom,
+  TradableAnimals,
+} from '@game/shared/types/farm';
 
+import { useRoom } from '../../../../../hooks/useRoom';
 import { ANIMALS_ICONS_CONFIG } from '../../../constants';
-
-import { useRoom } from '../../../hooks/useRoom';
 
 import styles from './ActiveCardsSection.module.css';
 
 export default function ActiveCardsSection(): ReactElement {
   const { currentRoom } = useRoom();
+  const room = currentRoom as FarmRoom;
 
   const usedCardsByAnimal: Partial<Record<TradableAnimals, number>> = {};
 
-  for (const player of currentRoom!.players) {
+  for (const player of room.players) {
     for (const [animal, count] of Object.entries(player.animals)) {
       const key = animal as TradableAnimals;
       usedCardsByAnimal[key] = (usedCardsByAnimal[key] || 0) + count;

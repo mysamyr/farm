@@ -5,10 +5,8 @@ import express from 'express';
 import { Server } from 'socket.io';
 
 import config from './config';
-import { Env, LogLevel } from './constants';
-import qrRouter from './features/qr';
+import { LogLevel } from './constants';
 import { httpLogger, log } from './services/logger';
-import { openUrlInBrowser } from './services/open';
 import { registerSocketHandlers } from './socket/handlers';
 
 import type { AppServer } from './types';
@@ -24,7 +22,6 @@ const io: AppServer = new Server(server, {
 });
 
 app.use(httpLogger);
-app.use(qrRouter);
 
 registerSocketHandlers(io);
 
@@ -39,7 +36,4 @@ server.listen(config.PORT, (): void => {
   log(LogLevel.INFO, `Server started: http://localhost:${config.PORT}`, {
     port: config.PORT,
   });
-  if (config.ENV === Env.COMPILE) {
-    openUrlInBrowser(`http://localhost:${config.PORT}`);
-  }
 });

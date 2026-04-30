@@ -1,19 +1,18 @@
 import { ReactElement, useCallback } from 'react';
 
 import { ROOM_STATES } from '@game/shared/constants';
-
 import { FARM_EVENTS } from '@game/shared/constants/farm';
 
 import { useNavigate } from 'react-router-dom';
 
-import Button from '../../../components/ui/Button';
-import { BUTTON_VARIANT, PATHS } from '../../../constants';
-import { useLanguage } from '../../../hooks/useLanguage';
-import { useRoom } from '../../../hooks/useRoom';
-
-import { useSnackbar } from '../../../hooks/useSnackbar';
-import { emitEvent } from '../../../socket/client';
-import { resolveErrorMessage } from '../../../utils/language';
+import Button from '../../../../../components/ui/Button';
+import { BUTTON_VARIANT, PATHS } from '../../../../../constants';
+import { useLanguage } from '../../../../../hooks/useLanguage';
+import { useRoom } from '../../../../../hooks/useRoom';
+import { useSnackbar } from '../../../../../hooks/useSnackbar';
+import { emitEvent } from '../../../../../socket/client';
+import { resolveErrorMessage } from '../../../../../utils/language';
+import { useFarmTranslation } from '../../../hooks/useFarmTranslation';
 
 import styles from './Header.module.css';
 
@@ -21,6 +20,7 @@ export default function Header(): ReactElement {
   const navigate = useNavigate();
   const { currentRoom, setCurrentRoom } = useRoom();
   const { translation } = useLanguage();
+  const farmT = useFarmTranslation();
   const { showSnackbar } = useSnackbar();
 
   const room = currentRoom!;
@@ -47,7 +47,7 @@ export default function Header(): ReactElement {
         onClick={() => {
           if (
             !shouldConfirmLeave ||
-            window.confirm(translation.gameboard.roomLeaveConfirmation)
+            window.confirm(farmT.roomLeaveConfirmation)
           ) {
             onLeave();
           }

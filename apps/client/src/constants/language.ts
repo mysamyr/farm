@@ -1,5 +1,4 @@
 import { VALIDATION, ERROR } from '@game/shared/constants';
-import { GAME_RULES } from '@game/shared/constants/farm';
 
 import type { Language, Translation } from '../types/language';
 
@@ -7,6 +6,8 @@ export enum LanguageCode {
   EN = 'en',
   UA = 'ua',
 }
+
+export const DEFAULT_LANGUAGE = LanguageCode.EN;
 
 export const LANGUAGES_CONFIG: Language[] = [
   {
@@ -49,26 +50,74 @@ const translations: Record<LanguageCode, Translation> = {
     dashboard: {
       header: 'Super Farm',
       usernameInputLabel: 'Your Name:',
-      usernameInputPlaceholder: 'Enter nickname',
       createRoomBtn: 'Create Room',
       openRoomsHeader: 'Open Rooms',
-      currentRoomHeader: 'Current Room',
       noActiveRooms: 'Create new room.',
       roomRules: 'Rules',
       players: 'Players',
       rules: {
-        [GAME_RULES.EXTRA_DUCK]: 'Extra duck on start',
-        [GAME_RULES.ONE_EXCHANGE]: 'One exchange per turn',
-        [GAME_RULES.UNLIMITED_CARDS]: 'Unlimited cards',
+        extra_duck: 'Extra duck on start',
+        one_exchange_per_turn: 'One exchange per turn',
+        unlimited_cards: 'Unlimited cards',
       },
     },
-    gameboard: {
-      roomLeaveConfirmation: 'Are you sure you want to leave room?',
-      exchangeAnimalsHeader: 'Exchange Animals',
-      winner: 'WINNER',
-      yourTurn: 'YOUR TURN',
-      gameButton: {
-        throwDice: 'Throw Dice',
+    game: {
+      farm: {
+        roomLeaveConfirmation: 'Are you sure you want to leave room?',
+        exchangeAnimalsHeader: 'Exchange Animals',
+        winner: 'WINNER',
+        yourTurn: 'YOUR TURN',
+        gameButton: {
+          throwDice: 'Throw Dice',
+        },
+      },
+    },
+    help: {
+      farm: {
+        title: 'Game Goal',
+        goal: 'Be the first to collect 1 animal of each species on your farm: Duck 🦆, Goat 🐐, Pig 🐖, Horse 🐎, Cow 🐄',
+        componentsHeader: 'Components',
+        components: [
+          'Dice: 2 pcs',
+          'Faces: 🦆, 🐐, 🐖, 🐎 / 🐄, 🦊 / 🐻.',
+          'Main herd: 60 🦆, 24 🐐, 20 🐖, 12 🐎, 8 🐄.',
+          'Dogs: 4 🐕 (protects from 🦊), 2 🐕‍🦺 (protects from 🐻)',
+        ],
+        turnHeader: "Player's Turn",
+        turnParagraphs: [
+          '(Optional) make 1 or several exchanges with the main herd (according to rules) before rolling.',
+          'Throw 2 dice',
+          'Apply results (predators / breeding)',
+        ],
+        breedingHeader: 'Breeding of animals',
+        breedingParagraphs: [
+          'Only animals shown on the dice breed.',
+          'To breed you need a pair of the same species.',
+          'You receive 1 new animal from the main herd for each full pair.',
+        ],
+        examplesHeader: 'Examples:',
+        examples: [
+          'Have 1 🦆, rolled 1 🦆 → (1+1)/2 = +1 🦆 (1 pair)',
+          'Have 3 🦆, rolled 🦆🦆 → (3+2)/2 = +2 🦆 (2 pairs)',
+          'No 🐖 nor 🐎, rolled 🐖 + 🐎 → nothing, because there were no pairs',
+        ],
+        predatorsHeader: 'Predators',
+        predators: [
+          '🦊 Fox → you return all 🦆 and 🐐 to the main herd',
+          '🐻 Bear → you return all 🐖 and 🐎 to the main herd',
+        ],
+        protectionHeader: 'Protection from predators',
+        protection: [
+          '🐕 Small dog → protects from 🦊',
+          '🐕‍🦺 Big dog → protects from 🐻',
+          'On attack only dog is returned, animals are kept',
+        ],
+        rulesHeader: 'Rules',
+        rules: [
+          'Extra duck on start: each player begins with 1 🦆 (but 🦊 still eats ALL ducks).',
+          'One exchange per turn: only 1 exchange with the main herd before rolling.',
+          'Unlimited cards: no limit to animal cards (you may have more than main herd counts).',
+        ],
       },
     },
     roomButton: {
@@ -87,52 +136,6 @@ const translations: Record<LanguageCode, Translation> = {
     you: 'You',
     owner: 'by',
     youWin: 'You win!',
-    help: {
-      title: 'Game Goal',
-      goal: 'Be the first to collect 1 animal of each species on your farm: Duck 🦆, Goat 🐐, Pig 🐖, Horse 🐎, Cow 🐄',
-      componentsHeader: 'Components',
-      components: [
-        'Dice: 2 pcs',
-        'Faces: 🦆, 🐐, 🐖, 🐎 / 🐄, 🦊 / 🐻.',
-        'Main herd: 60 🦆, 24 🐐, 20 🐖, 12 🐎, 8 🐄.',
-        'Dogs: 4 🐕 (protects from 🦊), 2 🐕‍🦺 (protects from 🐻)',
-      ],
-      turnHeader: "Player's Turn",
-      turnParagraphs: [
-        '(Optional) make 1 or several exchanges with the main herd (according to rules) before rolling.',
-        'Throw 2 dice',
-        'Apply results (predators / breeding)',
-      ],
-      breedingHeader: 'Breeding of animals',
-      breedingParagraphs: [
-        'Only animals shown on the dice breed.',
-        'To breed you need a pair of the same species.',
-        'You receive 1 new animal from the main herd for each full pair.',
-      ],
-      examplesHeader: 'Examples:',
-      examples: [
-        'Have 1 🦆, rolled 1 🦆 → (1+1)/2 = +1 🦆 (1 pair)',
-        'Have 3 🦆, rolled 🦆🦆 → (3+2)/2 = +2 🦆 (2 pairs)',
-        'No 🐖 nor 🐎, rolled 🐖 + 🐎 → nothing, because there were no pairs',
-      ],
-      predatorsHeader: 'Predators',
-      predators: [
-        '🦊 Fox → you return all 🦆 and 🐐 to the main herd',
-        '🐻 Bear → you return all 🐖 and 🐎 to the main herd',
-      ],
-      protectionHeader: 'Protection from predators',
-      protection: [
-        '🐕 Small dog → protects from 🦊',
-        '🐕‍🦺 Big dog → protects from 🐻',
-        'On attack only dog is returned, animals are kept',
-      ],
-      rulesHeader: 'Rules',
-      rules: [
-        'Extra duck on start: each player begins with 1 🦆 (but 🦊 still eats ALL ducks).',
-        'One exchange per turn: only 1 exchange with the main herd before rolling.',
-        'Unlimited cards: no limit to animal cards (you may have more than main herd counts).',
-      ],
-    },
     notifications: {
       playerJoined: (name: string): string => `${name} joined the room.`,
       playerLeft: (name: string): string => `${name} left the room.`,
@@ -169,26 +172,74 @@ const translations: Record<LanguageCode, Translation> = {
     dashboard: {
       header: 'Весела Ферма',
       usernameInputLabel: 'Ваше імʼя:',
-      usernameInputPlaceholder: 'Введіть імʼя',
       createRoomBtn: 'Створити кімнату',
       openRoomsHeader: 'Відкриті кімнати',
-      currentRoomHeader: 'Активна Кімната',
       noActiveRooms: 'Створіть нову кімнату.',
       roomRules: 'Правила',
       players: 'Гравців',
       rules: {
-        [GAME_RULES.EXTRA_DUCK]: 'Додаткова качка на старті',
-        [GAME_RULES.ONE_EXCHANGE]: 'Один обмін за хід',
-        [GAME_RULES.UNLIMITED_CARDS]: 'Безкінечна кількість карт',
+        extra_duck: 'Додаткова качка на старті',
+        one_exchange_per_turn: 'Один обмін за хід',
+        unlimited_cards: 'Безкінечна кількість карт',
       },
     },
-    gameboard: {
-      roomLeaveConfirmation: 'Ви впевнені, що хочете залишити кімнату?',
-      exchangeAnimalsHeader: 'Обмін Тваринами',
-      winner: 'ПЕРЕМОЖЕЦЬ',
-      yourTurn: 'ВАША ЧЕРГА',
-      gameButton: {
-        throwDice: 'Кинути Кубики',
+    game: {
+      farm: {
+        roomLeaveConfirmation: 'Ви впевнені, що хочете залишити кімнату?',
+        exchangeAnimalsHeader: 'Обмін Тваринами',
+        winner: 'ПЕРЕМОЖЕЦЬ',
+        yourTurn: 'ВАША ЧЕРГА',
+        gameButton: {
+          throwDice: 'Кинути Кубики',
+        },
+      },
+    },
+    help: {
+      farm: {
+        title: 'Мета гри',
+        goal: 'Першим зібрати на своїй фермі по 1 тварині кожного виду: Качка 🦆, Коза 🐐, Свиня 🐖, Кінь 🐎, Корова 🐄',
+        componentsHeader: 'Компоненти',
+        components: [
+          'Кубики: 2 шт',
+          'Грані: 🦆, 🐐, 🐖, 🐎 / 🐄, 🦊 / 🐻.',
+          'Головне стадо: 60 🦆, 24 🐐, 20 🐖, 12 🐎, 8 🐄.',
+          'Собаки: 4 🐕(захист від 🦊), 2 🐕‍🦺(захист від 🐻)',
+        ],
+        turnHeader: 'Хід гравця',
+        turnParagraphs: [
+          '(Опціонально) зроби 1 чи кілька (згідно з правилами, описаними нижче) обмінів з головним стадом (за курсом)',
+          'Кинь 2 кубики',
+          'Застосуй результат (хижаки / розмноження)',
+        ],
+        breedingHeader: 'Розмноження тварин',
+        breedingParagraphs: [
+          'Розмножуються лише ті тварини, що випали на кубиках.',
+          'Для розмноження потрібна пара одного виду.',
+          'Отримуєш 1 нову тварину з головного стада за кожну повну пару.',
+        ],
+        examplesHeader: 'Приклади:',
+        examples: [
+          'Є 1 🦆, випала 1 🦆 → (1+1)/2 = +1 🦆 (1 пара)',
+          'Є 3 🦆, випали 🦆🦆 → (3+2)/2 = +2 🦆 (2 пари)',
+          'Немає ні 🐖 ні 🐎, випали 🐖 + 🐎 → нічого, бо цих тварин не було парами',
+        ],
+        predatorsHeader: 'Хижаки',
+        predators: [
+          '🦊 Лисиця → повертаєш у стадо всіх 🦆 і 🐐',
+          '🐻 Ведмідь → повертаєш у стадо всіх 🐖 і 🐎',
+        ],
+        protectionHeader: 'Захист від хижаків',
+        protection: [
+          '🐕 Маленька собака → захищає від 🦊',
+          '🐕‍🦺 Велика собака → захищає від 🐻',
+          'При нападі віддається лише собака, тварини зберігаються',
+        ],
+        rulesHeader: 'Правила',
+        rules: [
+          'Додаткова качка на старті: кожен гравець починає з 1 🦆 (але 🦊 так чи інакше зʼїдає всіх 🦆).',
+          'Один обмін за хід: перед кидком кубиків можливий лише 1 обмін з головним стадом.',
+          'Безкінечна кількість карт: ліміт карт тварин не застосовується (можна мати більше 60-ти 🦆, 24-ти 🐐...).',
+        ],
       },
     },
     roomButton: {
@@ -207,52 +258,6 @@ const translations: Record<LanguageCode, Translation> = {
     you: 'Ви',
     owner: 'Власник',
     youWin: 'Ви виграли!',
-    help: {
-      title: 'Мета гри',
-      goal: 'Першим зібрати на своїй фермі по 1 тварині кожного виду: Качка 🦆, Коза 🐐, Свиня 🐖, Кінь 🐎, Корова 🐄',
-      componentsHeader: 'Компоненти',
-      components: [
-        'Кубики: 2 шт',
-        'Грані: 🦆, 🐐, 🐖, 🐎 / 🐄, 🦊 / 🐻.',
-        'Головне стадо: 60 🦆, 24 🐐, 20 🐖, 12 🐎, 8 🐄.',
-        'Собаки: 4 🐕(захист від 🦊), 2 🐕‍🦺(захист від 🐻)',
-      ],
-      turnHeader: 'Хід гравця',
-      turnParagraphs: [
-        '(Опціонально) зроби 1 чи кілька (згідно з правилами, описаними нижче) обмінів з головним стадом (за курсом)',
-        'Кинь 2 кубики',
-        'Застосуй результат (хижаки / розмноження)',
-      ],
-      breedingHeader: 'Розмноження тварин',
-      breedingParagraphs: [
-        'Розмножуються лише ті тварини, що випали на кубиках.',
-        'Для розмноження потрібна пара одного виду.',
-        'Отримуєш 1 нову тварину з головного стада за кожну повну пару.',
-      ],
-      examplesHeader: 'Приклади:',
-      examples: [
-        'Є 1 🦆, випала 1 🦆 → (1+1)/2 = +1 🦆 (1 пара)',
-        'Є 3 🦆, випали 🦆🦆 → (3+2)/2 = +2 🦆 (2 пари)',
-        'Немає ні 🐖 ні 🐎, випали 🐖 + 🐎 → нічого, бо цих тварин не було парами',
-      ],
-      predatorsHeader: 'Хижаки',
-      predators: [
-        '🦊 Лисиця → повертаєш у стадо всіх 🦆 і 🐐',
-        '🐻 Ведмідь → повертаєш у стадо всіх 🐖 і 🐎',
-      ],
-      protectionHeader: 'Захист від хижаків',
-      protection: [
-        '🐕 Маленька собака → захищає від 🦊',
-        '🐕‍🦺 Велика собака → захищає від 🐻',
-        'При нападі віддається лише собака, тварини зберігаються',
-      ],
-      rulesHeader: 'Правила',
-      rules: [
-        'Додаткова качка на старті: кожен гравець починає з 1 🦆 (але 🦊 так чи інакше зʼїдає всіх 🦆).',
-        'Один обмін за хід: перед кидком кубиків можливий лише 1 обмін з головним стадом.',
-        'Безкінечна кількість карт: ліміт карт тварин не застосовується (можна мати більше 60-ти 🦆, 24-ти 🐐...).',
-      ],
-    },
     notifications: {
       playerJoined: (name: string): string => `${name} приєднався до кімнати.`,
       playerLeft: (name: string): string => `${name} покинув кімнату.`,

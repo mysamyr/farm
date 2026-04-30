@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 
 import { ROOM_STATES } from '@game/shared/constants';
 
-import type { Room } from '@game/shared/types/farm';
+import type { Room } from '@game/shared/types';
 
 import { reconnectSocket } from '../socket/client';
 

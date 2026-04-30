@@ -1,22 +1,17 @@
 import { ReactElement } from 'react';
 
-import { ROOM_STATES } from '@game/shared/constants';
-import {
-  DEFAULT_CONFIG,
-  FARM_EVENTS,
-  GAME_RULES,
-} from '@game/shared/constants/farm';
-import { Room } from '@game/shared/types/farm';
+import { EVENTS, ROOM_STATES } from '@game/shared/constants';
+import type { Room } from '@game/shared/types';
 
 import Button from '../../../components/ui/Button';
 import Tag from '../../../components/ui/Tag';
 import { BUTTON_VARIANT } from '../../../constants';
+import { getDefaultGameConfig } from '../../../games/registry';
 import { useLanguage } from '../../../hooks/useLanguage';
 import { useRoom } from '../../../hooks/useRoom';
 import { useSnackbar } from '../../../hooks/useSnackbar';
 import { emitEvent, getSocketId } from '../../../socket/client';
-import { classNames } from '../../../utils';
-import { getOwnerName, getRuleLabel } from '../../../utils/game';
+import { classNames, getOwnerName } from '../../../utils';
 import { resolveErrorMessage } from '../../../utils/language';
 
 import styles from './RoomCard.module.css';
@@ -34,9 +29,10 @@ export default function RoomCard({
   const { currentRoom } = useRoom();
   const { showSnackbar } = useSnackbar();
 
+  const gameConfig = getDefaultGameConfig();
   const isOwner = room.ownerId === getSocketId();
   const ownerLabel = isOwner ? translation.you : getOwnerName(room);
-  const isFull = room.players.length >= DEFAULT_CONFIG.maxPlayers;
+  const isFull = room.players.length >= gameConfig.maxPlayers;
   const isInRoom = room.players.some(player => player.id === getSocketId());
   const isAlreadyInRoom = !!currentRoom;
   const canJoinState = room.state === ROOM_STATES.IDLE;
@@ -65,15 +61,17 @@ export default function RoomCard({
 
       <div className={styles.roomInfo}>
         <span>
-          👥 {room.players.length}/{DEFAULT_CONFIG.maxPlayers}
+          👥 {room.players.length}/{gameConfig.maxPlayers}
         </span>
-        <div className={styles.rules}>
-          {Object.values(GAME_RULES)
-            .filter(rule => room.rules[rule])
-            .map(rule => (
-              <Tag key={rule}>{getRuleLabel(rule, translation)}</Tag>
-            ))}
-        </div>
+        {gameConfig.rules.length > 0 && (
+          <div className={styles.rules}>
+            {gameConfig.rules
+              .filter(rule => room.rules[rule.key])
+              .map(rule => (
+                <Tag key={rule.key}>{rule.label(translation.dashboard.rules)}</Tag>
+              ))}
+          </div>
+        )}
       </div>
 
       <Button
@@ -87,7 +85,7 @@ export default function RoomCard({
             return;
           }
 
-          emitEvent(FARM_EVENTS.ROOM_JOIN, { roomId: room.id }, res => {
+          emitEvent(EVENTS.ROOM_JOIN, { roomId: room.id }, res => {
             if (!res.ok) {
               showSnackbar(resolveErrorMessage(res.error, translation));
             }

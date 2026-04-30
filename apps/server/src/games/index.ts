@@ -11,6 +11,7 @@ import {
   removePlayerFromOrder,
   updateRoomOrderId,
   winnerHandler,
+  initGameState,
 } from './farm/service';
 
 export type GameModule<
@@ -27,6 +28,9 @@ export type GameModule<
   onPlayerWin?: {
     bivarianceHack(io: AppServer, room: TRoom, player: TPlayer): void;
   }['bivarianceHack'];
+  onGameStart?: {
+    bivarianceHack(io: AppServer, room: TRoom): void;
+  }['bivarianceHack'];
 };
 
 const gameModules: Record<GameId, GameModule> = {
@@ -40,6 +44,9 @@ const gameModules: Record<GameId, GameModule> = {
     },
     onPlayerWin: (io, room, player) => {
       winnerHandler(io, room, player);
+    },
+    onGameStart: (io, room) => {
+      initGameState(io, room);
     },
   } satisfies GameModule<FarmRoom, FarmPlayer>,
 };
