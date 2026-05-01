@@ -12,6 +12,11 @@ export const FARM_EVENTS = {
   GAME_SEND_EMOTE: 'game:sendEmote',
   GAME_UPDATE: 'game:update',
   GAME_EMOTE_SENT: 'game:emoteSent',
+  GAME_TRADE_START: 'game:tradeStart',
+  GAME_TRADE_UPDATE: 'game:tradeUpdate',
+  GAME_TRADE_LOCK: 'game:tradeLock',
+  GAME_TRADE_CONFIRM: 'game:tradeConfirm',
+  GAME_TRADE_CANCEL: 'game:tradeCancel',
 } as const;
 
 export const EMOTES = [
@@ -39,6 +44,7 @@ export enum GAME_RULES {
   EXTRA_DUCK = 'extra_duck',
   ONE_EXCHANGE = 'one_exchange_per_turn',
   UNLIMITED_CARDS = 'unlimited_cards',
+  ALLOW_PLAYER_TRADE = 'allow_player_trade',
 }
 
 export const ANIMALS_DEFAULT_QUANTITY = {

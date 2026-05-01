@@ -6,8 +6,9 @@ export function useModal() {
   return useModalStore(
     useShallow(s => ({
       open: s.open,
-      modalComponent: s.modalComponent,
+      modal: s.modal,
       showModal: s.showModal,
+      requestCloseModal: s.requestCloseModal,
       closeModal: s.closeModal,
     }))
   );

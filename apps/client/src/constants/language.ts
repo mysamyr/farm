@@ -41,6 +41,11 @@ const translations: Record<LanguageCode, Translation> = {
       [ERROR.LIMITED_CARDS_EXCEEDED]: 'Card limit exceeded.',
       [ERROR.UNKNOWN_EMOTE]: 'Unknown emote.',
       [ERROR.THROTTLED]: 'Too many requests. Please try again later.',
+      [ERROR.TRADE_NOT_ALLOWED]: 'Player trade is not allowed.',
+      [ERROR.TRADE_ALREADY_ACTIVE]: 'A trade is already in progress.',
+      [ERROR.TRADE_NOT_ACTIVE]: 'No active trade.',
+      [ERROR.TRADE_NOT_LOCKED]: 'Both players must lock their offers first.',
+      [ERROR.INVALID_TRADE_TARGET]: 'Invalid trade target.',
       // Client-only validations
       userNameTooShort: `Name must be at least ${VALIDATION.USER_NAME.MIN_LENGTH} characters.`,
       userNameTooLong: `Name must be at most ${VALIDATION.USER_NAME.MAX_LENGTH} characters.`,
@@ -59,6 +64,7 @@ const translations: Record<LanguageCode, Translation> = {
         extra_duck: 'Extra duck on start',
         one_exchange_per_turn: 'One exchange per turn',
         unlimited_cards: 'Unlimited cards',
+        allow_player_trade: 'Allow player trade',
       },
     },
     game: {
@@ -69,6 +75,18 @@ const translations: Record<LanguageCode, Translation> = {
         yourTurn: 'YOUR TURN',
         gameButton: {
           throwDice: 'Throw Dice',
+        },
+        trade: {
+          buttonLabel: 'Trade',
+          modalTitle: 'Trade with',
+          youGive: 'You give',
+          youReceive: 'You receive',
+          lock: 'Lock Offer',
+          confirm: 'Confirm',
+          cancel: 'Cancel',
+          waitingForOpponent: 'Waiting for opponent to lock...',
+          opponentLocked: 'Opponent locked their offer!',
+          bothLocked: 'Locked — confirm to trade!',
         },
       },
     },
@@ -141,6 +159,7 @@ const translations: Record<LanguageCode, Translation> = {
       playerLeft: (name: string): string => `${name} left the room.`,
       roomClosed: (name: string): string => `${name} closed the room.`,
       gameFinished: (name: string): string => `Game over! Winner: ${name}`,
+      tradeCancelled: (name: string): string => `${name} cancelled the trade.`,
     },
   },
   [LanguageCode.UA]: {
@@ -163,6 +182,11 @@ const translations: Record<LanguageCode, Translation> = {
       [ERROR.LIMITED_CARDS_EXCEEDED]: 'Ліміт карт перевищений.',
       [ERROR.UNKNOWN_EMOTE]: 'Невідомий емодзі.',
       [ERROR.THROTTLED]: 'Занадто багато запитів. Спробуйте пізніше.',
+      [ERROR.TRADE_NOT_ALLOWED]: 'Обмін між гравцями не дозволений.',
+      [ERROR.TRADE_ALREADY_ACTIVE]: 'Обмін вже в процесі.',
+      [ERROR.TRADE_NOT_ACTIVE]: 'Немає активного обміну.',
+      [ERROR.TRADE_NOT_LOCKED]: 'Обидва гравці повинні зафіксувати пропозицію.',
+      [ERROR.INVALID_TRADE_TARGET]: 'Невірний гравець для обміну.',
       // Client-only validations
       userNameTooShort: `Імʼя має містити щонайменше ${VALIDATION.USER_NAME.MIN_LENGTH} символи.`,
       userNameTooLong: `Імʼя має містити щонайбільше ${VALIDATION.USER_NAME.MAX_LENGTH} символів.`,
@@ -181,6 +205,7 @@ const translations: Record<LanguageCode, Translation> = {
         extra_duck: 'Додаткова качка на старті',
         one_exchange_per_turn: 'Один обмін за хід',
         unlimited_cards: 'Безкінечна кількість карт',
+        allow_player_trade: 'Обмін між гравцями',
       },
     },
     game: {
@@ -191,6 +216,18 @@ const translations: Record<LanguageCode, Translation> = {
         yourTurn: 'ВАША ЧЕРГА',
         gameButton: {
           throwDice: 'Кинути Кубики',
+        },
+        trade: {
+          buttonLabel: 'Обмін',
+          modalTitle: 'Обмін з',
+          youGive: 'Ви віддаєте',
+          youReceive: 'Ви отримуєте',
+          lock: 'Зафіксувати',
+          confirm: 'Підтвердити',
+          cancel: 'Скасувати',
+          waitingForOpponent: 'Очікуємо фіксації суперника...',
+          opponentLocked: 'Суперник зафіксував пропозицію!',
+          bothLocked: 'Зафіксовано — підтвердіть обмін!',
         },
       },
     },
@@ -264,6 +301,7 @@ const translations: Record<LanguageCode, Translation> = {
       roomClosed: (name: string): string => `${name} закрив кімнату.`,
       gameFinished: (name: string): string =>
         `Гра закінчена! Переможець: ${name}`,
+      tradeCancelled: (name: string): string => `${name} скасував обмін.`,
     },
   },
 };

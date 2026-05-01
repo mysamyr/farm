@@ -56,7 +56,11 @@ export default function Header() {
         <Button
           variant={BUTTON_VARIANT.ICON}
           title="Show Help"
-          onClick={() => showModal(getDefaultGameConfig().HelpModal)}
+          onClick={() =>
+            showModal({
+              component: getDefaultGameConfig().HelpModal,
+            })
+          }
         >
           ❓
         </Button>

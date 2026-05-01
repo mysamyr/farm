@@ -29,15 +29,20 @@ export function useGameSubscriptions({
     subscribe(
       EVENTS.NOTIFICATION,
       ({ type, data }: ServerNotification): void => {
-        if (type !== NOTIFICATION_TYPES.GAME_FINISHED) return;
+        if (type === NOTIFICATION_TYPES.GAME_FINISHED) {
+          const name = window.localStorage.getItem(LOCAL_STORAGE_KEY.USERNAME);
+          const isCurrentUser = name === data;
 
-        const name = window.localStorage.getItem(LOCAL_STORAGE_KEY.USERNAME);
-        const isCurrentUser = name === data;
+          if (!isCurrentUser) {
+            showSnackbar(translation.notifications.gameFinished(data));
+          } else {
+            onCurrentUserWon();
+          }
+          return;
+        }
 
-        if (!isCurrentUser) {
-          showSnackbar(translation.notifications.gameFinished(data));
-        } else {
-          onCurrentUserWon();
+        if (type === NOTIFICATION_TYPES.TRADE_CANCELLED) {
+          showSnackbar(translation.notifications.tradeCancelled(data));
         }
       }
     );

@@ -1,0 +1,148 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  min-width: 320px;
+}
+
+.title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sectionLocked {
+  background: var(--status-success-subtle, rgba(0, 180, 0, 0.08));
+  border: 1px solid var(--status-success, #2ea043);
+  border-radius: var(--radius-sm);
+  padding: 8px;
+}
+
+.sectionLabel {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.lockIcon {
+  font-size: 0.85rem;
+}
+
+.animalsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.animalControl {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.animalIcon {
+  font-size: 1.4rem;
+}
+
+.counterRow {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.counterBtn {
+  background: var(--bg-surface-subtle);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.counterBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.counterValue {
+  min-width: 20px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.status {
+  text-align: center;
+  font-size: 0.85rem;
+  font-style: italic;
+  color: var(--text-secondary);
+}
+
+.statusConfirmed {
+  color: var(--status-info);
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.cancelBtn {
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-surface-subtle);
+  color: var(--text-main);
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.applyBtn {
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: var(--status-info);
+  color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.applyBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.exchangeBtn {
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: var(--status-highlight);
+  color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.exchangeBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}

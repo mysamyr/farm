@@ -27,6 +27,7 @@
 
   /* Non-color primitives */
   --radius-lg: 12px;
+  --radius-sm: 6px;
   --elevation-1:
     0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   --elevation-1-strong:

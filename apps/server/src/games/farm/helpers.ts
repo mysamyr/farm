@@ -5,10 +5,12 @@ import {
 
 import type {
   DiceAnimals,
+  FarmAnimals,
   Player,
   Rules,
   Room,
   TradableAnimals,
+  TradeOffer,
 } from '@game/shared/types/farm';
 
 import {
@@ -85,4 +87,15 @@ export function getCurrentPlayerTurnId(room: Room): string {
 
 export function getInitDuckValue(rules: Rules): number {
   return rules[GAME_RULES.EXTRA_DUCK] ? 1 : 0;
+}
+
+export function isTradeAllowed(room: Room): boolean {
+  return room.rules[GAME_RULES.ALLOW_PLAYER_TRADE];
+}
+
+export function validateTradeOffer(player: Player, offer: TradeOffer): boolean {
+  return FARM_ANIMALS.every((animal: FarmAnimals) => {
+    const amount = offer[animal] || 0;
+    return amount >= 0 && player.animals[animal] >= amount;
+  });
 }

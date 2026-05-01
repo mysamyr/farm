@@ -1,5 +1,18 @@
 import { useLanguage } from '../../../hooks/useLanguage';
 
+export interface FarmTradeTranslation {
+  buttonLabel: string;
+  modalTitle: string;
+  youGive: string;
+  youReceive: string;
+  lock: string;
+  confirm: string;
+  cancel: string;
+  waitingForOpponent: string;
+  opponentLocked: string;
+  bothLocked: string;
+}
+
 export interface FarmTranslation {
   roomLeaveConfirmation: string;
   exchangeAnimalsHeader: string;
@@ -8,6 +21,7 @@ export interface FarmTranslation {
   gameButton: {
     throwDice: string;
   };
+  trade: FarmTradeTranslation;
 }
 
 export function useFarmTranslation(): FarmTranslation {

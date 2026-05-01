@@ -1,17 +1,21 @@
-import { ReactElement, useEffect, useRef, type ComponentType } from 'react';
+import { ReactElement, useEffect, useRef } from 'react';
+
+import type { ModalCloseReason, ModalConfig } from '../../store';
 
 type ModalProps = {
   open: boolean;
-  ModalComponent: ComponentType | null;
-  onClose: () => void;
+  modal: ModalConfig | null;
+  onRequestClose: (reason: ModalCloseReason) => void;
 };
 
 export function Modal({
   open,
-  ModalComponent,
-  onClose,
+  modal,
+  onRequestClose,
 }: ModalProps): ReactElement {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const ModalComponent = modal?.component;
+  const modalProps = modal?.props || {};
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -29,7 +33,10 @@ export function Modal({
   return (
     <dialog
       ref={dialogRef}
-      onClose={onClose}
+      onCancel={event => {
+        event.preventDefault();
+        onRequestClose('escape');
+      }}
       onClick={event => {
         const dialog = dialogRef.current;
         if (!dialog) {
@@ -43,11 +50,11 @@ export function Modal({
           event.clientY < rect.top ||
           event.clientY > rect.bottom
         ) {
-          onClose();
+          onRequestClose('backdrop');
         }
       }}
     >
-      {ModalComponent ? <ModalComponent /> : null}
+      {ModalComponent ? <ModalComponent {...modalProps} /> : null}
     </dialog>
   );
 }

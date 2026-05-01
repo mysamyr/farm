@@ -56,5 +56,6 @@ export type Translation = {
     playerLeft: (playerName: string) => string;
     roomClosed: (playerName: string) => string;
     gameFinished: (winnerName: string) => string;
+    tradeCancelled: (playerName: string) => string;
   };
 };

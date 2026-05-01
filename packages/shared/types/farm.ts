@@ -27,9 +27,19 @@ export type Player = BasePlayer & {
 
 export type Rules = Record<GAME_RULES, boolean>;
 
+export type TradeOffer = Partial<Record<FarmAnimals, number>>;
+
+export type TradeState = {
+  initiatorId: string;
+  targetId: string;
+  locked: Record<string, boolean>;
+  offers: Record<string, TradeOffer>;
+};
+
 export type Room = BaseRoom<Player, Rules, 'farm'> & {
   order: string[];
   turn: number;
   dice?: [DiceAnimals, DiceAnimals];
   winner?: string;
+  trade?: TradeState;
 };

@@ -1,14 +1,16 @@
-import type { ReactElement } from 'react';
+import { type ReactElement, useEffect } from 'react';
 
 import { ROOM_STATES } from '@game/shared/constants';
-import { GAME_RULES } from '@game/shared/constants/farm';
+import { FARM_EVENTS, GAME_RULES } from '@game/shared/constants/farm';
 import type { Room as FarmRoom } from '@game/shared/types/farm';
 
 import { Navigate } from 'react-router-dom';
 
 import { PATHS } from '../../../../constants';
+import { useModal } from '../../../../hooks/useModal';
 import { useRoom } from '../../../../hooks/useRoom';
-import { getSocketId } from '../../../../socket/client';
+import { emitEvent, getSocketId } from '../../../../socket/client';
+import TradeModal from '../../components/TradeModal';
 import { getCurrentPlayerTurnId } from '../../utils';
 
 import ActiveCardsSection from './components/ActiveCardsSection';
@@ -23,19 +25,41 @@ import styles from './Gameboard.module.css';
 
 export default function Gameboard(): ReactElement {
   const { currentRoom } = useRoom();
+  const { showModal, closeModal } = useModal();
+
+  const room = currentRoom as unknown as FarmRoom | null;
+
+  // Auto-open/close trade modal based on room trade state
+  useEffect(() => {
+    if (!room?.trade) {
+      closeModal();
+      return;
+    }
+    const myId = getSocketId();
+    const isParticipant =
+      room.trade.initiatorId === myId || room.trade.targetId === myId;
+    if (isParticipant) {
+      showModal({
+        component: TradeModal,
+        onClose: () => {
+          emitEvent(FARM_EVENTS.GAME_TRADE_CANCEL, { roomId: room.id });
+        },
+      });
+    }
+  }, [room?.trade, room?.id, showModal, closeModal]);
 
   if (!currentRoom) {
     return <Navigate to={PATHS.DASHBOARD} replace />;
   }
 
-  const room = currentRoom as unknown as FarmRoom;
-  const currentPlayerId = getCurrentPlayerTurnId(room);
+  const farmRoom = room!;
+  const currentPlayerId = getCurrentPlayerTurnId(farmRoom);
   const isYourTurn =
-    room.state === ROOM_STATES.RUNNING &&
+    farmRoom.state === ROOM_STATES.RUNNING &&
     !!currentPlayerId &&
     currentPlayerId === getSocketId();
 
-  const isLimitedCardsRule = !room.rules[GAME_RULES.UNLIMITED_CARDS];
+  const isLimitedCardsRule = !farmRoom.rules[GAME_RULES.UNLIMITED_CARDS];
 
   return (
     <div className={styles.container}>
@@ -47,7 +71,7 @@ export default function Gameboard(): ReactElement {
 
       <PlayersSection
         currentPlayerId={currentPlayerId}
-        winnerId={room.winner}
+        winnerId={farmRoom.winner}
       />
 
       <ExchangeSection isYourTurn={isYourTurn} />

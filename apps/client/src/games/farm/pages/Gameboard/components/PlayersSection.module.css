@@ -61,6 +61,22 @@
   opacity: 1;
 }
 
+.tradeBtn {
+  background: var(--status-info);
+  border: none;
+  cursor: pointer;
+  font-size: 0.75rem;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  color: #fff;
+  font-weight: 600;
+  transition: opacity 0.2s;
+}
+
+.tradeBtn:hover {
+  opacity: 0.8;
+}
+
 .animalGrid {
   display: flex;
   flex-wrap: nowrap;

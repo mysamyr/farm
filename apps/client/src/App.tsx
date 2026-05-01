@@ -14,7 +14,7 @@ import { useUnloadWarning } from './hooks/useUnloadWarning';
 import Dashboard from './pages/Dashboard';
 
 function AppContent() {
-  const { open: modalOpen, modalComponent, closeModal } = useModal();
+  const { open: modalOpen, modal, requestCloseModal } = useModal();
   const { open: snackbarOpen, message, closeSnackbar } = useSnackbar();
   const { currentRoom } = useRoom();
 
@@ -42,8 +42,8 @@ function AppContent() {
       {snackbarOpen && <Snackbar message={message} onClose={closeSnackbar} />}
       <Modal
         open={modalOpen}
-        ModalComponent={modalComponent}
-        onClose={closeModal}
+        modal={modal}
+        onRequestClose={requestCloseModal}
       />
     </>
   );

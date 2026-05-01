@@ -8,6 +8,7 @@ import { ANIMALS, GAME_RULES } from '@game/shared/constants/farm';
 
 import type {
   DiceAnimals,
+  FarmAnimals,
   TradableAnimals,
   Player,
   Room,
@@ -19,7 +20,7 @@ import type { AppServer } from '../../types';
 
 import { shuffleArray } from '../../utils';
 
-import { ANIMALS_WAGES, TURN_START_INDEX } from './constants';
+import { ANIMALS_WAGES, FARM_ANIMALS, TURN_START_INDEX } from './constants';
 import {
   getAddedAnimalsCount,
   getCurrentPlayerTurnId,
@@ -193,4 +194,31 @@ export function updateRoomOrderId(
   newId: string
 ): void {
   room.order = room.order.map(id => (id === oldId ? newId : id));
+}
+
+export function applyTrade(room: Room): void {
+  const trade = room.trade;
+  if (!trade) return;
+
+  const initiator = room.players.find(p => p.id === trade.initiatorId);
+  const target = room.players.find(p => p.id === trade.targetId);
+  if (!initiator || !target) return;
+
+  const initiatorOffer = trade.offers[trade.initiatorId] || {};
+  const targetOffer = trade.offers[trade.targetId] || {};
+
+  // Initiator gives their offer to target, receives target's offer
+  for (const animal of FARM_ANIMALS) {
+    const initiatorGives = initiatorOffer[animal] || 0;
+    const targetGives = targetOffer[animal] || 0;
+
+    initiator.animals[animal as FarmAnimals & TradableAnimals] -=
+      initiatorGives;
+    target.animals[animal as FarmAnimals & TradableAnimals] += initiatorGives;
+
+    target.animals[animal as FarmAnimals & TradableAnimals] -= targetGives;
+    initiator.animals[animal as FarmAnimals & TradableAnimals] += targetGives;
+  }
+
+  delete room.trade;
 }

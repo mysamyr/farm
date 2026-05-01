@@ -69,7 +69,7 @@ export default function DiceSection({
       <div className={styles.actions}>
         <Button
           variant={BUTTON_VARIANT.PRIMARY}
-          disabled={!isYourTurn}
+          disabled={!isYourTurn || !!room.trade}
           onClick={onRoll}
         >
           {farmT.gameButton.throwDice}

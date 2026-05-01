@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ComponentType, Dispatch, SetStateAction } from 'react';
 
 import type { Room } from '@game/shared/types';
@@ -98,21 +97,74 @@ export const useSnackbarStore = create<SnackbarSlice>(set => ({
 
 interface ModalSlice {
   open: boolean;
-  modalComponent: ComponentType<any> | null;
-  showModal: <T extends Record<string, any>>(
-    component: ComponentType<T>
+  modal: ModalConfig | null;
+  showModal: <T extends Record<string, unknown>>(
+    config: ModalConfig<T>
   ) => void;
+  requestCloseModal: (reason?: ModalCloseReason) => void;
   closeModal: () => void;
 }
 
-export const useModalStore = create<ModalSlice>(set => ({
+export type ModalCloseReason = 'backdrop' | 'escape' | 'programmatic';
+
+export interface ModalConfig<
+  T extends Record<string, unknown> = Record<string, unknown>,
+> {
+  component: ComponentType<T>;
+  props?: T;
+  onClose?: (reason: ModalCloseReason) => boolean | void;
+  closeOnBackdrop?: boolean;
+  closeOnEscape?: boolean;
+}
+
+let modalUnmountTimeout: ReturnType<typeof setTimeout> | null = null;
+
+export const useModalStore = create<ModalSlice>((set, get) => ({
   open: false,
-  modalComponent: null,
-  showModal: component =>
-    set({ open: true, modalComponent: component as ComponentType<any> }),
+  modal: null,
+  showModal: config => {
+    if (modalUnmountTimeout) {
+      clearTimeout(modalUnmountTimeout);
+      modalUnmountTimeout = null;
+    }
+    set({
+      open: true,
+      modal: {
+        closeOnBackdrop: true,
+        closeOnEscape: true,
+        ...config,
+      } as ModalConfig,
+    });
+  },
+  requestCloseModal: (reason = 'programmatic') => {
+    const activeModal = get().modal;
+    if (!activeModal) {
+      return;
+    }
+
+    if (reason === 'backdrop' && activeModal.closeOnBackdrop === false) {
+      return;
+    }
+    if (reason === 'escape' && activeModal.closeOnEscape === false) {
+      return;
+    }
+
+    const shouldClose = activeModal.onClose?.(reason) !== false;
+    if (!shouldClose) {
+      return;
+    }
+
+    get().closeModal();
+  },
   closeModal: () => {
+    if (modalUnmountTimeout) {
+      clearTimeout(modalUnmountTimeout);
+    }
     set({ open: false });
-    setTimeout(() => set({ modalComponent: null }), 200);
+    modalUnmountTimeout = setTimeout(() => {
+      set({ modal: null });
+      modalUnmountTimeout = null;
+    }, 200);
   },
 }));
 

@@ -20,6 +20,10 @@ registerGame({
       key: GAME_RULES.UNLIMITED_CARDS,
       label: t => t[GAME_RULES.UNLIMITED_CARDS] ?? '',
     },
+    {
+      key: GAME_RULES.ALLOW_PLAYER_TRADE,
+      label: t => t[GAME_RULES.ALLOW_PLAYER_TRADE] ?? '',
+    },
   ],
   GameboardPage: Gameboard,
   HelpModal: FarmHelpModal,
