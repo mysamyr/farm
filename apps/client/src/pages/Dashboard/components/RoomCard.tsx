@@ -3,9 +3,11 @@ import { ReactElement } from 'react';
 import { EVENTS, ROOM_STATES } from '@game/shared/constants';
 import type { Room } from '@game/shared/types';
 
+import { useNavigate } from 'react-router-dom';
+
 import Button from '../../../components/ui/Button';
 import Tag from '../../../components/ui/Tag';
-import { BUTTON_VARIANT } from '../../../constants';
+import { BUTTON_VARIANT, PATHS } from '../../../constants';
 import { getDefaultGameConfig } from '../../../games/registry';
 import { useLanguage } from '../../../hooks/useLanguage';
 import { useRoom } from '../../../hooks/useRoom';
@@ -25,6 +27,7 @@ export default function RoomCard({
   room,
   usernameInput,
 }: RoomCardProps): ReactElement {
+  const navigate = useNavigate();
   const { translation } = useLanguage();
   const { currentRoom } = useRoom();
   const { showSnackbar } = useSnackbar();
@@ -37,13 +40,15 @@ export default function RoomCard({
   const isAlreadyInRoom = !!currentRoom;
   const canJoinState = room.state === ROOM_STATES.IDLE;
   const canJoinName = !!usernameInput.trim();
+  const canEnterGame = isInRoom && room.state === ROOM_STATES.RUNNING;
   const isBtnDisabled =
-    isAlreadyInRoom ||
-    isFull ||
-    isOwner ||
-    isInRoom ||
-    !canJoinState ||
-    !canJoinName;
+    !canEnterGame &&
+    (isAlreadyInRoom ||
+      isFull ||
+      isOwner ||
+      isInRoom ||
+      !canJoinState ||
+      !canJoinName);
 
   return (
     <div key={room.id} className={styles.container}>
@@ -80,6 +85,11 @@ export default function RoomCard({
         }
         disabled={isBtnDisabled}
         onClick={() => {
+          if (canEnterGame) {
+            void navigate(PATHS.GAME_BOARD);
+            return;
+          }
+
           if (isBtnDisabled) {
             showSnackbar(translation.errors.cannotJoin);
             return;
@@ -92,7 +102,9 @@ export default function RoomCard({
           });
         }}
       >
-        {isFull
+        {canEnterGame
+          ? translation.roomButton.enter
+          : isFull
           ? translation.roomButton.full
           : isInRoom
             ? translation.roomButton.joined

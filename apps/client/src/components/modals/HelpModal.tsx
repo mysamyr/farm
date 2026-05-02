@@ -2,7 +2,6 @@ import type { ReactElement } from 'react';
 
 import { classNames } from '../../utils';
 
-import modalStyles from '../ui/Modal.module.css';
 
 import styles from './HelpModal.module.css';
 
@@ -20,7 +19,7 @@ interface HelpModalProps {
 
 function HelpModal({ sections }: HelpModalProps): ReactElement {
   return (
-    <div className={classNames(modalStyles.container, styles.container)}>
+    <div className={classNames(styles.container)}>
       {sections.map(section => {
         const Header = section.headerLevel ?? 'h2';
         return (

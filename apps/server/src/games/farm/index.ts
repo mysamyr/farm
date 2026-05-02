@@ -27,6 +27,7 @@ import {
   rollDice,
   areLimitedCards,
   validateTradeOffer,
+  isExchangeWithFarmAnimals,
 } from './helpers';
 import {
   applyDiceResult,
@@ -110,7 +111,9 @@ const exchangeHandler =
 
     applyExchange(player, from, to);
 
-    player.exchangedThisTurn = true;
+    if (isExchangeWithFarmAnimals(from, to)) {
+      player.exchangedThisTurn = true;
+    }
 
     const winner = checkWinner(player);
     if (winner) {

@@ -1,4 +1,5 @@
 import {
+  ANIMALS,
   ANIMALS_DEFAULT_QUANTITY,
   GAME_RULES,
 } from '@game/shared/constants/farm';
@@ -98,4 +99,12 @@ export function validateTradeOffer(player: Player, offer: TradeOffer): boolean {
     const amount = offer[animal] || 0;
     return amount >= 0 && player.animals[animal] >= amount;
   });
+}
+
+export function isExchangeWithFarmAnimals(
+  from: TradableAnimals,
+  to: TradableAnimals
+): boolean {
+  const dogs = [ANIMALS.SMALL_DOG, ANIMALS.BIG_DOG] as TradableAnimals[];
+  return !dogs.includes(from) && !dogs.includes(to);
 }

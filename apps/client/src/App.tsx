@@ -1,4 +1,6 @@
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { useEffect } from 'react';
+
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 
 import { Modal } from './components/ui/Modal';
 import { Snackbar } from './components/ui/Snackbar';
@@ -17,6 +19,7 @@ function AppContent() {
   const { open: modalOpen, modal, requestCloseModal } = useModal();
   const { open: snackbarOpen, message, closeSnackbar } = useSnackbar();
   const { currentRoom } = useRoom();
+  const location = useLocation();
 
   const { GameboardPage, useGameSubscriptions } = getDefaultGameConfig();
 
@@ -28,6 +31,10 @@ function AppContent() {
   });
 
   useUnloadWarning(currentRoom);
+
+  useEffect(() => {
+    requestCloseModal();
+  }, [location.pathname, requestCloseModal]);
 
   return (
     <>

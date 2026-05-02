@@ -2,10 +2,12 @@ import { ReactElement, useState } from 'react';
 
 import { ERROR, EVENTS, ROOM_STATES, VALIDATION } from '@game/shared/constants';
 
+import { useNavigate } from 'react-router-dom';
+
 import Button from '../../../components/ui/Button';
 import Slider from '../../../components/ui/Slider';
 import Tag from '../../../components/ui/Tag';
-import { BUTTON_VARIANT } from '../../../constants';
+import { BUTTON_VARIANT, PATHS } from '../../../constants';
 import { getDefaultGameConfig } from '../../../games/registry';
 import { useLanguage } from '../../../hooks/useLanguage';
 import { useRoom } from '../../../hooks/useRoom';
@@ -19,6 +21,7 @@ import { resolveErrorMessage } from '../../../utils/language';
 import styles from './ActiveRoom.module.css';
 
 export default function ActiveRoom(): ReactElement {
+  const navigate = useNavigate();
   const { currentRoom } = useRoom();
   const { translation } = useLanguage();
   const { showSnackbar } = useSnackbar();
@@ -36,6 +39,7 @@ export default function ActiveRoom(): ReactElement {
     currentRoom.players.length >= gameConfig.minPlayers &&
     currentRoom.players.length <= gameConfig.maxPlayers &&
     currentRoom.state === ROOM_STATES.IDLE;
+  const canEnterGame = currentRoom.state === ROOM_STATES.RUNNING;
 
   const trimmedRoomName = roomName.trim();
   const roomNameLength = [...trimmedRoomName].length;
@@ -156,7 +160,17 @@ export default function ActiveRoom(): ReactElement {
       )}
 
       <div className={styles.actions}>
-        {isOwner && (
+        {canEnterGame && (
+          <Button
+            variant={BUTTON_VARIANT.SUCCESS}
+            onClick={() => {
+              void navigate(PATHS.GAME_BOARD);
+            }}
+          >
+            {translation.roomButton.enter}
+          </Button>
+        )}
+        {isOwner && !canEnterGame && (
           <Button
             variant={BUTTON_VARIANT.SUCCESS}
             disabled={!canStartGame}

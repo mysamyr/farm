@@ -151,7 +151,10 @@ h3 {
 /* --- Dialog --- */
 dialog:modal {
   margin: auto;
-  max-width: 80%;
+  width: min(80vw, 640px);
+  max-width: 80vw;
+  box-sizing: border-box;
+  padding: 0;
   color: var(--text-main);
   background-color: var(--bg-card);
 }
