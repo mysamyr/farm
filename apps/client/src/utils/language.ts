@@ -5,11 +5,23 @@ import { DEFAULT_LANGUAGE, LanguageCode } from '../constants/language';
 
 import type { Translation } from '../types/language';
 
-export function getLanguage(): LanguageCode {
+function isLanguageCode(value: string | null): value is LanguageCode {
   return (
-    (window.localStorage.getItem(LOCAL_STORAGE_KEY.LANGUAGE) as LanguageCode) ||
-    DEFAULT_LANGUAGE
+    value !== null &&
+    Object.values(LanguageCode).includes(value as LanguageCode)
   );
+}
+
+export function getLanguage(): LanguageCode {
+  const storedLanguage = window.localStorage.getItem(
+    LOCAL_STORAGE_KEY.LANGUAGE
+  );
+  if (!isLanguageCode(storedLanguage)) {
+    setLanguage(DEFAULT_LANGUAGE);
+    return DEFAULT_LANGUAGE;
+  }
+
+  return storedLanguage;
 }
 
 export function setLanguage(language: LanguageCode): void {

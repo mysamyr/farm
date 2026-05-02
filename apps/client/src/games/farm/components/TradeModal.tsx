@@ -1,4 +1,10 @@
-import { type ReactElement, useCallback, useEffect, useRef, useState } from 'react';
+import {
+  type ReactElement,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 
 import { ANIMALS, FARM_EVENTS } from '@game/shared/constants/farm';
 import type {
@@ -47,7 +53,11 @@ export default function TradeModal(): ReactElement {
   const pendingUpdate = useRef(false);
 
   const myLocked = !!(trade?.locked && myId && trade.locked[myId]);
-  const opponentLocked = !!(trade?.locked && opponentId && trade.locked[opponentId]);
+  const opponentLocked = !!(
+    trade?.locked &&
+    opponentId &&
+    trade.locked[opponentId]
+  );
   const bothLocked = myLocked && opponentLocked;
 
   const opponentOffer =
@@ -67,12 +77,16 @@ export default function TradeModal(): ReactElement {
     (offer: TradeOffer): void => {
       if (!room || !isParticipant) return;
       pendingUpdate.current = true;
-      emitEvent(FARM_EVENTS.GAME_TRADE_UPDATE, { roomId: room.id, offer }, ack => {
-        if (ack && !ack.ok) {
-          pendingUpdate.current = false;
-          showSnackbar(resolveErrorMessage(ack.error, translation));
+      emitEvent(
+        FARM_EVENTS.GAME_TRADE_UPDATE,
+        { roomId: room.id, offer },
+        ack => {
+          if (ack && !ack.ok) {
+            pendingUpdate.current = false;
+            showSnackbar(resolveErrorMessage(ack.error, translation));
+          }
         }
-      });
+      );
     },
     [room, isParticipant, showSnackbar, translation]
   );
@@ -132,7 +146,9 @@ export default function TradeModal(): ReactElement {
       </div>
 
       {/* Your offer (what you give) */}
-      <div className={`${styles.section} ${myLocked ? styles.sectionLocked : ''}`}>
+      <div
+        className={`${styles.section} ${myLocked ? styles.sectionLocked : ''}`}
+      >
         <div className={styles.sectionLabel}>
           {farmT.trade.youGive}
           {myLocked && <span className={styles.lockIcon}> 🔒</span>}
@@ -172,7 +188,9 @@ export default function TradeModal(): ReactElement {
       </div>
 
       {/* What you receive (opponent's offer) */}
-      <div className={`${styles.section} ${opponentLocked ? styles.sectionLocked : ''}`}>
+      <div
+        className={`${styles.section} ${opponentLocked ? styles.sectionLocked : ''}`}
+      >
         <div className={styles.sectionLabel}>
           {farmT.trade.youReceive}
           {opponentLocked && <span className={styles.lockIcon}> 🔒</span>}

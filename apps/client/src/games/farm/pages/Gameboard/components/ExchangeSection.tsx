@@ -170,9 +170,7 @@ export default function ExchangeSection({
 
   return (
     <div className={styles.container}>
-      <h3 className={styles.title}>
-        {farmT.exchangeAnimalsHeader}
-      </h3>
+      <h3 className={styles.title}>{farmT.exchangeAnimalsHeader}</h3>
       <div className={styles.exchangeGrid}>
         {exchangeGroups.map(group => {
           const leftEnabled = isExchangeEnabled(group.rightTrade);

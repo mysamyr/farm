@@ -39,6 +39,7 @@ export type Translation = {
     full: string;
     join: string;
     joined: string;
+    enter: string;
     startGame: string;
     closeRoom: string;
     leaveRoom: string;
