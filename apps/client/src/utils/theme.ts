@@ -1,5 +1,9 @@
 import { LOCAL_STORAGE_KEY } from '../constants';
-import { DEFAULT_THEME, type ThemeCode } from '../constants/theme';
+import {
+  DEFAULT_THEME,
+  type AccentColor,
+  type ThemeCode,
+} from '../constants/theme';
 
 export function getTheme(): ThemeCode {
   return (
@@ -10,4 +14,8 @@ export function getTheme(): ThemeCode {
 
 export function setTheme(theme: ThemeCode): void {
   window.localStorage.setItem(LOCAL_STORAGE_KEY.THEME, theme);
+}
+
+export function applyAccentColor(color: AccentColor): void {
+  document.documentElement.setAttribute('data-accent', color);
 }

@@ -10,6 +10,7 @@ registerGame({
   id: 'farm',
   maxPlayers: DEFAULT_CONFIG.maxPlayers,
   minPlayers: DEFAULT_CONFIG.minPlayers,
+  color: 'orange',
   rules: [
     { key: GAME_RULES.EXTRA_DUCK, label: t => t[GAME_RULES.EXTRA_DUCK] ?? '' },
     {

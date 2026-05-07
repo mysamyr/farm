@@ -20,6 +20,7 @@ import { useRoomSubscriptions } from './hooks/useRoomSubscriptions';
 import { useSnackbar } from './hooks/useSnackbar';
 import { useUnloadWarning } from './hooks/useUnloadWarning';
 import Dashboard from './pages/Dashboard';
+import { applyAccentColor } from './utils/theme';
 
 function AppContent() {
   const { open: modalOpen, modal, requestCloseModal } = useModal();
@@ -27,7 +28,9 @@ function AppContent() {
   const { currentRoom } = useRoom();
   const location = useLocation();
 
-  const { GameboardPage, useGameSubscriptions } = getDefaultGameConfig();
+  const { color, GameboardPage, useGameSubscriptions } = getDefaultGameConfig();
+
+  applyAccentColor(color);
 
   useRoomSubscriptions();
   useGameSubscriptions({

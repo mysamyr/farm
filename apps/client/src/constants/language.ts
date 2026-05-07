@@ -53,7 +53,6 @@ const translations: Record<LanguageCode, Translation> = {
       apiErrorOnCreatingRoom: 'Error creating room: ',
     },
     dashboard: {
-      header: 'Super Farm',
       usernameInputLabel: 'Your Name:',
       createRoomBtn: 'Create Room',
       openRoomsHeader: 'Open Rooms',
@@ -195,7 +194,6 @@ const translations: Record<LanguageCode, Translation> = {
       apiErrorOnCreatingRoom: 'Помилка при створенні кімнати: ',
     },
     dashboard: {
-      header: 'Весела Ферма',
       usernameInputLabel: 'Ваше імʼя:',
       createRoomBtn: 'Створити кімнату',
       openRoomsHeader: 'Відкриті кімнати',

@@ -5,6 +5,8 @@ ENV NPM_CONFIG_UPDATE_NOTIFIER=false
 
 FROM base AS deps
 
+ENV HUSKY=0
+
 COPY package.json package-lock.json ./
 COPY apps/server/package.json apps/server/package.json
 COPY apps/client/package.json apps/client/package.json

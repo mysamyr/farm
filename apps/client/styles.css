@@ -23,6 +23,11 @@
   --pc-orange-50: #fff4e6;
   --pc-orange-900: #3a2a1a;
   --pc-orange-500: #e17055;
+  --pc-orange-shadow: #e170554d;
+  --pc-blue-50: #e3f2fd;
+  --pc-blue-800: #1a2a3a;
+  --pc-blue-500: #0984e3;
+  --pc-blue-shadow: #0984e34d;
   --pc-yellow-500: #f6e473;
 
   /* Non-color primitives */
@@ -102,26 +107,40 @@
 
 /* Compatibility aliases (legacy component tokens) */
 :root {
-  --white: var(--bg-card);
-  --gray-100: var(--bg-page);
-  --gray-200: var(--bg-surface-subtle);
-  --gray-400: var(--border-base);
-  --gray-600: var(--text-muted);
-  --gray-700: var(--text-main);
-  --gray-800: var(--text-main);
-  --purple-200: var(--accent-soft);
-  --purple-500: var(--accent);
-  --purple-shadow: var(--accent-shadow);
-  --teal-50: var(--status-info-soft);
-  --teal-500: var(--status-info);
-  --green-500: var(--status-success);
-  --red-50: var(--status-error-soft);
-  --red-500: var(--status-error);
-  --orange-50: var(--status-warning-soft);
-  --orange-500: var(--status-warning);
-  --yellow-500: var(--status-highlight);
-  --backdrop: var(--overlay-backdrop);
+  --orange-500: var(--pc-orange-500);
+  --blue-500: var(--pc-blue-500);
+  --purple-500: var(--pc-purple-500);
   --shadow: var(--shadow-elevation);
+}
+
+/* ─── Accent color palettes ──────────────────────────────────────────────── */
+/* purple is the default; no override needed                                  */
+
+:root[data-accent='orange'] {
+  --accent: var(--pc-orange-500);
+  --accent-soft: var(--pc-orange-50);
+  --accent-shadow: var(--pc-orange-shadow);
+}
+:root[data-theme='dark'][data-accent='orange'] {
+  --accent-soft: var(--pc-orange-900);
+}
+
+:root[data-accent='blue'] {
+  --accent: var(--pc-blue-500);
+  --accent-soft: var(--pc-blue-50);
+  --accent-shadow: var(--pc-blue-shadow);
+}
+:root[data-theme='dark'][data-accent='blue'] {
+  --accent-soft: var(--pc-blue-800);
+}
+
+:root[data-accent='teal'] {
+  --accent: var(--pc-teal-500);
+  --accent-soft: var(--pc-teal-50);
+  --accent-shadow: #00b8944d;
+}
+:root[data-theme='dark'][data-accent='teal'] {
+  --accent-soft: var(--pc-teal-900);
 }
 
 * {
@@ -160,5 +179,5 @@ dialog:modal {
 }
 
 dialog::backdrop {
-  background-color: var(--backdrop);
+  background-color: var(--overlay-backdrop);
 }

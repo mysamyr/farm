@@ -1,13 +1,9 @@
 import React from 'react';
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-
 import { createRoot } from 'react-dom/client';
 
 import App from './App';
 import { getTheme } from './utils/theme';
-
-const queryClient = new QueryClient();
 
 const rootElement = document.getElementById('app');
 if (!rootElement) {
@@ -19,8 +15,6 @@ document.documentElement.setAttribute('data-theme', getTheme());
 
 createRoot(rootElement).render(
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <App />
-    </QueryClientProvider>
+    <App />
   </React.StrictMode>
 );

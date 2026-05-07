@@ -20,7 +20,6 @@ type ErrorMessages = ClientErrorKeys & Record<ERROR, string>;
 export type Translation = {
   errors: ErrorMessages;
   dashboard: {
-    header: string;
     usernameInputLabel: string;
     createRoomBtn: string;
     openRoomsHeader: string;

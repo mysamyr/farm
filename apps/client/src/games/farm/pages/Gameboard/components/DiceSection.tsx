@@ -51,6 +51,7 @@ export default function DiceSection({
         <div
           className={classNames(
             styles.dice,
+            styles.blueDice,
             isWildAnimal(dice?.[0]) && styles.wildAnimal
           )}
         >
@@ -59,6 +60,7 @@ export default function DiceSection({
         <div
           className={classNames(
             styles.dice,
+            styles.orangeDice,
             isWildAnimal(dice?.[1]) && styles.wildAnimal
           )}
         >

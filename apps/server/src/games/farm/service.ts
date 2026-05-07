@@ -8,7 +8,6 @@ import { ANIMALS, GAME_RULES } from '@game/shared/constants/farm';
 
 import type {
   DiceAnimals,
-  FarmAnimals,
   TradableAnimals,
   Player,
   Room,
@@ -212,12 +211,11 @@ export function applyTrade(room: Room): void {
     const initiatorGives = initiatorOffer[animal] || 0;
     const targetGives = targetOffer[animal] || 0;
 
-    initiator.animals[animal as FarmAnimals & TradableAnimals] -=
-      initiatorGives;
-    target.animals[animal as FarmAnimals & TradableAnimals] += initiatorGives;
+    initiator.animals[animal] -= initiatorGives;
+    target.animals[animal] += initiatorGives;
 
-    target.animals[animal as FarmAnimals & TradableAnimals] -= targetGives;
-    initiator.animals[animal as FarmAnimals & TradableAnimals] += targetGives;
+    target.animals[animal] -= targetGives;
+    initiator.animals[animal] += targetGives;
   }
 
   delete room.trade;

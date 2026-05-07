@@ -24,12 +24,21 @@
   width: 60px;
   height: 60px;
   background-color: var(--bg-surface-subtle);
+  border: 1px solid var(--text-muted);
   border-radius: var(--radius-lg);
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: 2rem;
   font-weight: 700;
+}
+
+.blueDice {
+  border-color: var(--blue-500);
+}
+
+.orangeDice {
+  border-color: var(--orange-500);
 }
 
 .wildAnimal {

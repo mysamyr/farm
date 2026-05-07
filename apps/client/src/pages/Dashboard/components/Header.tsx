@@ -14,7 +14,6 @@ import styles from './Header.module.css';
 
 export default function Header() {
   const { online } = useConnection();
-  const { translation } = useLanguage();
   const { showModal } = useModal();
   const { setLanguage } = useLanguage();
   const { theme, setTheme } = useTheme();
@@ -28,7 +27,7 @@ export default function Header() {
   return (
     <header className={styles.container}>
       <div>
-        <div className={styles.logo}>🎲 {translation.dashboard.header}</div>
+        <div className={styles.logo}>Game Hub</div>
         <div className={styles.onlineIndicator}>
           <span className={styles.dot}></span>
           <span>{online} Online</span>

@@ -3,7 +3,7 @@
 ## Scope
 
 - Monorepo with three workspaces:
-  - apps/client: React 19 + Vite frontend
+  - apps/client: React 19 + Zustand +Vite frontend
   - apps/server: Express + Socket.IO backend
   - packages/shared: shared runtime constants and TypeScript types
 - Server serves static frontend from apps/client/dist.

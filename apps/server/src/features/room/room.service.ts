@@ -5,7 +5,6 @@ import {
 } from '@game/shared/constants';
 
 import type { Room } from '@game/shared/types';
-import type { Room as FarmRoom } from '@game/shared/types/farm';
 
 import { uuid } from '@game/shared/utils';
 
@@ -65,7 +64,7 @@ export function leaveRoom(
 }
 
 export function updateRoomsList(io: AppServer): void {
-  io.emit(EVENTS.ROOMS_LIST, listRooms() as FarmRoom[]);
+  io.emit(EVENTS.ROOMS_LIST, listRooms());
 }
 
 export function assignNewOwner(room: Room): void {
