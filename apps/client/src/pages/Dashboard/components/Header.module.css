@@ -5,7 +5,7 @@
   background: var(--bg-card);
   padding: 15px 25px;
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-elevation);
 }
 
 .logo {

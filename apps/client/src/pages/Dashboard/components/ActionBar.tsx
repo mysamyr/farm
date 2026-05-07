@@ -1,6 +1,7 @@
 import { type ChangeEvent, useCallback } from 'react';
 
 import { ERROR, EVENTS, VALIDATION } from '@game/shared/constants';
+import type { GameId } from '@game/shared/types';
 
 import Button from '../../../components/ui/Button';
 import { LOCAL_STORAGE_KEY } from '../../../constants';
@@ -17,11 +18,13 @@ import styles from './ActionBar.module.css';
 type ActionBarProps = {
   usernameInput: string;
   setUsernameInput: (name: string) => void;
+  activeGame: GameId;
 };
 
 export default function ActionBar({
   usernameInput,
   setUsernameInput,
+  activeGame,
 }: ActionBarProps) {
   const { translation } = useLanguage();
   const { currentRoom } = useRoom();
@@ -51,12 +54,12 @@ export default function ActionBar({
       return;
     }
 
-    emitEvent(EVENTS.ROOM_CREATE, null, res => {
+    emitEvent(EVENTS.ROOM_CREATE, { game: activeGame }, res => {
       if (!res.ok) {
         showSnackbar(resolveErrorMessage(res.error, translation));
       }
     });
-  }, [usernameInput, currentRoom, showSnackbar, translation]);
+  }, [usernameInput, currentRoom, showSnackbar, translation, activeGame]);
 
   const debouncedEmitRename = useDebounceCallback((newName: string) => {
     emitEvent(EVENTS.PLAYER_RENAME, { name: newName });

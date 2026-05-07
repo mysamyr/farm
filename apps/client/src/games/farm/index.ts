@@ -11,6 +11,7 @@ registerGame({
   maxPlayers: DEFAULT_CONFIG.maxPlayers,
   minPlayers: DEFAULT_CONFIG.minPlayers,
   color: 'orange',
+  emoji: '🐄',
   rules: [
     { key: GAME_RULES.EXTRA_DUCK, label: t => t[GAME_RULES.EXTRA_DUCK] ?? '' },
     {

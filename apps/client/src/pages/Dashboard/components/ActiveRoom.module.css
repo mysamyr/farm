@@ -5,7 +5,7 @@
   background: var(--bg-card);
   padding: 20px;
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-elevation);
   border: 2px solid var(--accent);
 }
 

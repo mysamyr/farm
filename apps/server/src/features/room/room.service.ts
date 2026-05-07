@@ -4,7 +4,7 @@ import {
   NOTIFICATION_TYPES,
 } from '@game/shared/constants';
 
-import type { Room } from '@game/shared/types';
+import type { Room, GameId } from '@game/shared/types';
 
 import { uuid } from '@game/shared/utils';
 
@@ -35,9 +35,8 @@ export function deleteRoom(roomId: string): void {
   }
 }
 
-export function createRoom(ownerId: string): Room {
+export function createRoom(ownerId: string, game: GameId): Room {
   const id = uuid();
-  const game: Room['game'] = 'farm';
   const roomFields = getGameModule(game).addRoomFields();
   const room: Room = {
     id,
@@ -50,7 +49,12 @@ export function createRoom(ownerId: string): Room {
     rules: roomFields.rules,
   };
   rooms.set(id, room);
-  log(LogLevel.INFO, 'room:create', { roomId: id, ownerId, name: room.name });
+  log(LogLevel.INFO, 'room:create', {
+    roomId: id,
+    ownerId,
+    name: room.name,
+    game,
+  });
   return room;
 }
 

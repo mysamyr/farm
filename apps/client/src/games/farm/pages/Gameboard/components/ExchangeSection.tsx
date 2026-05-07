@@ -1,11 +1,7 @@
 import type { ReactElement } from 'react';
 
 import { ANIMALS, FARM_EVENTS, GAME_RULES } from '@game/shared/constants/farm';
-import type {
-  Room as FarmRoom,
-  Player,
-  TradableAnimals,
-} from '@game/shared/types/farm';
+import type { Room, Player, TradableAnimals } from '@game/shared/types/farm';
 
 import { useLanguage } from '../../../../../hooks/useLanguage';
 import { useRoom } from '../../../../../hooks/useRoom';
@@ -41,7 +37,7 @@ export default function ExchangeSection({
   isYourTurn,
 }: ExchangeSectionProps): ReactElement {
   const { currentRoom } = useRoom();
-  const room = currentRoom as FarmRoom;
+  const room = currentRoom as Room;
   const { translation } = useLanguage();
   const farmT = useFarmTranslation();
   const { showSnackbar } = useSnackbar();
@@ -49,7 +45,7 @@ export default function ExchangeSection({
   const me = room?.players.find(
     (player: Player) => player.id === getSocketId()
   );
-  const oneExchangeRuleEnabled = !!room?.rules[GAME_RULES.ONE_EXCHANGE];
+  const oneExchangeRuleEnabled = room?.rules[GAME_RULES.ONE_EXCHANGE];
 
   const exchangeGroups: ExchangeGroup[] = [
     {

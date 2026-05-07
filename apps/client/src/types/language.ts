@@ -29,7 +29,10 @@ export type Translation = {
     rules: Record<string, string>;
   };
   game: {
-    [K in GameId]: Record<string, unknown>;
+    [K in GameId]: {
+      name: string;
+      [K: string]: unknown;
+    };
   };
   help: {
     [K in GameId]: Record<string, string | string[]>;

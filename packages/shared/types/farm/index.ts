@@ -1,8 +1,10 @@
-import type { ANIMALS, GAME_RULES, EMOTES } from '../constants/farm';
+import type { ANIMALS, GAME_RULES, EMOTES } from '../../constants/farm';
 
-import type { BasePlayer, BaseRoom } from './index';
+import type { BasePlayer, BaseRoom } from '../index';
 
 export type EmoteId = (typeof EMOTES)[number]['id'];
+
+export * from './socket';
 
 export type TradableAnimals =
   | ANIMALS.DUCK

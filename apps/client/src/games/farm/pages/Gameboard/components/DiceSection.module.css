@@ -6,7 +6,7 @@
   padding: 10px;
   background: var(--bg-card);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-elevation);
 }
 
 .diceContainer {

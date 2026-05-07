@@ -2,7 +2,7 @@ import { type ReactElement, useEffect } from 'react';
 
 import { ROOM_STATES } from '@game/shared/constants';
 import { FARM_EVENTS, GAME_RULES } from '@game/shared/constants/farm';
-import type { Room as FarmRoom } from '@game/shared/types/farm';
+import type { Room } from '@game/shared/types/farm';
 
 import { Navigate } from 'react-router-dom';
 
@@ -27,7 +27,7 @@ export default function Gameboard(): ReactElement {
   const { currentRoom } = useRoom();
   const { showModal, closeModal } = useModal();
 
-  const room = currentRoom as unknown as FarmRoom | null;
+  const room = currentRoom as unknown as Room | null;
 
   // Auto-open/close trade modal based on room trade state
   useEffect(() => {

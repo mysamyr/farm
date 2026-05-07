@@ -9,7 +9,7 @@
   background: var(--bg-card);
   border-radius: var(--radius-lg);
   padding: 12px;
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-elevation);
   border: 2px solid transparent;
   transition: all 0.3s ease;
 }

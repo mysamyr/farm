@@ -11,6 +11,7 @@
   --pc-gray-850: #2d2d2d;
   --pc-gray-900: #3d3d3d;
   --pc-purple-200: #cdc9ff;
+  --pc-purple-400: #8b7fd4;
   --pc-purple-500: #6c5ce7;
   --pc-purple-shadow: #6c5ce74d;
   --pc-teal-50: #e6fffa;
@@ -78,13 +79,13 @@
   --bg-page: var(--pc-gray-850);
   --bg-card: var(--pc-gray-800);
   --bg-surface-subtle: var(--pc-gray-900);
-  --text-main: #e8e8e8;
+  --text-main: var(--pc-gray-100);
   --text-muted: var(--pc-gray-300);
   --text-inverse: var(--pc-white);
-  --border-base: #6d6d6d;
+  --border-base: var(--pc-gray-500);
   --border-strong: var(--pc-purple-500);
   --accent: var(--pc-purple-500);
-  --accent-soft: #8b7fd4;
+  --accent-soft: var(--pc-purple-400);
   --accent-contrast: var(--pc-white);
   --accent-shadow: var(--pc-purple-shadow);
   --status-success: var(--pc-green-500);
@@ -96,8 +97,8 @@
   --status-warning-soft: var(--pc-orange-900);
   --status-highlight: var(--pc-yellow-500);
   --surface-input-bg: var(--pc-gray-900);
-  --surface-input-text: #e8e8e8;
-  --surface-input-placeholder: #b2bec3;
+  --surface-input-text: var(--pc-gray-100);
+  --surface-input-placeholder: var(--pc-gray-300);
   --overlay-backdrop: var(--overlay-backdrop-strong);
   --shadow-elevation: var(--elevation-1-strong);
   --shadow-hover-card: 0 8px 16px rgb(0 0 0 / 0.35);
@@ -109,8 +110,6 @@
 :root {
   --orange-500: var(--pc-orange-500);
   --blue-500: var(--pc-blue-500);
-  --purple-500: var(--pc-purple-500);
-  --shadow: var(--shadow-elevation);
 }
 
 /* ─── Accent color palettes ──────────────────────────────────────────────── */

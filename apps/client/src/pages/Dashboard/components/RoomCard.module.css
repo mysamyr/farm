@@ -2,7 +2,7 @@
   background: var(--bg-card);
   padding: 20px;
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-elevation);
   border: 1px solid transparent;
   display: flex;
   flex-direction: column;

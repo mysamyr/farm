@@ -7,7 +7,7 @@ import {
   ERROR,
 } from '@game/shared/constants';
 
-import type { Room } from '@game/shared/types';
+import { Room, RoomCreatePayload } from '@game/shared/types';
 import {
   RejoinRoomAck,
   RoomIdPayload,
@@ -35,10 +35,20 @@ import {
 
 const createRoomHandler =
   (io: AppServer, socket: AppSocket) =>
-  (_req: null, ack?: AckFunc): void => {
+  (req: RoomCreatePayload, ack?: AckFunc): void => {
     log(LogLevel.DEBUG, 'event:room:create', {
       socketId: socket.id,
+      game: req.game,
     });
+
+    if (!req.game) {
+      if (ack)
+        ack({
+          ok: false,
+          error: ERROR.ROOM_NOT_FOUND, // TODO: add more specific error
+        });
+      return;
+    }
 
     if (!socket.data.player.name) {
       if (ack)
@@ -58,7 +68,7 @@ const createRoomHandler =
       return;
     }
 
-    const room: Room = createRoom(socket.id);
+    const room: Room = createRoom(socket.id, req.game);
     room.players.push(socket.data.player);
     void socket.join(room.id);
     updateRoomsList(io);

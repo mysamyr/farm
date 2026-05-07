@@ -68,6 +68,7 @@ const translations: Record<LanguageCode, Translation> = {
     },
     game: {
       farm: {
+        name: 'Super Farm',
         roomLeaveConfirmation: 'Are you sure you want to leave room?',
         exchangeAnimalsHeader: 'Exchange Animals',
         winner: 'WINNER',
@@ -209,6 +210,7 @@ const translations: Record<LanguageCode, Translation> = {
     },
     game: {
       farm: {
+        name: 'Весела Ферма',
         roomLeaveConfirmation: 'Ви впевнені, що хочете залишити кімнату?',
         exchangeAnimalsHeader: 'Обмін Тваринами',
         winner: 'ПЕРЕМОЖЕЦЬ',

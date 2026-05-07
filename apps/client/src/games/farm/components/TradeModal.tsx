@@ -9,7 +9,7 @@ import {
 import { ANIMALS, FARM_EVENTS } from '@game/shared/constants/farm';
 import type {
   FarmAnimals,
-  Room as FarmRoom,
+  Room,
   Player,
   TradeOffer,
 } from '@game/shared/types/farm';
@@ -34,7 +34,7 @@ const TRADE_ANIMALS: FarmAnimals[] = [
 
 export default function TradeModal(): ReactElement {
   const { currentRoom } = useRoom();
-  const room = currentRoom as unknown as FarmRoom;
+  const room = currentRoom as unknown as Room;
   const farmT = useFarmTranslation();
   const { showSnackbar } = useSnackbar();
   const { translation } = useLanguage();

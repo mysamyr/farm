@@ -1,7 +1,11 @@
 export { ERROR } from './errors';
 
+export const GAME_IDS = {
+  FARM: 'farm',
+} as const;
+
 export const DEFAULT_CONFIG = {
-  maxPlayers: 4,
+  maxPlayers: 2,
   minPlayers: 2,
 } as const;
 

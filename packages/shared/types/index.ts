@@ -1,6 +1,6 @@
-import type { ROOM_STATES } from '../constants';
+import type { ROOM_STATES, GAME_IDS } from '../constants';
 
-export type GameId = 'farm';
+export type GameId = (typeof GAME_IDS)[keyof typeof GAME_IDS];
 
 export interface BasePlayer {
   id: string;

@@ -5,7 +5,7 @@
   padding: 6px;
   background: var(--bg-surface-subtle);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-elevation);
 }
 
 .animalItem {

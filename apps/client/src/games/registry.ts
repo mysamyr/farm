@@ -14,6 +14,7 @@ export interface GameConfig {
   maxPlayers: number;
   minPlayers: number;
   color: AccentColor;
+  emoji: string;
   rules: RuleConfig[];
   GameboardPage: ComponentType;
   HelpModal: ComponentType;

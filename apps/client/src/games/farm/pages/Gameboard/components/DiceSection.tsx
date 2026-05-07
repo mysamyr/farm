@@ -1,7 +1,7 @@
 import type { ReactElement } from 'react';
 
 import { FARM_EVENTS } from '@game/shared/constants/farm';
-import type { Room as FarmRoom } from '@game/shared/types/farm';
+import type { Room } from '@game/shared/types/farm';
 
 import Button from '../../../../../components/ui/Button';
 import { BUTTON_VARIANT } from '../../../../../constants';
@@ -29,7 +29,7 @@ export default function DiceSection({
   const { translation } = useLanguage();
   const { showSnackbar } = useSnackbar();
   const { currentRoom } = useRoom();
-  const room = currentRoom as FarmRoom;
+  const room = currentRoom as Room;
 
   const onRoll = () => {
     if (!isYourTurn) {

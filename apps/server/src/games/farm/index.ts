@@ -1,17 +1,17 @@
 import { ERROR, EVENTS, NOTIFICATION_TYPES } from '@game/shared/constants';
 import { EMOTES, FARM_EVENTS } from '@game/shared/constants/farm';
+import { RoomIdPayload } from '@game/shared/types';
 import {
+  Room,
   GameExchangePayload,
   RollDiceAck,
-  RoomIdPayload,
   SendEmotePayload,
   TradeCancelPayload,
   TradeConfirmPayload,
   TradeLockPayload,
   TradeStartPayload,
   TradeUpdatePayload,
-} from '@game/shared/types';
-import type { Room } from '@game/shared/types/farm';
+} from '@game/shared/types/farm';
 
 import { LogLevel } from '../../constants';
 import { getRoomById } from '../../features/room/room.service';

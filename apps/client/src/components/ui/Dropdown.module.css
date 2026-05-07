@@ -9,7 +9,7 @@
   left: 0;
   background: var(--bg-card);
   border: 1px solid var(--text-muted);
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-elevation);
   z-index: 2;
 }
 
