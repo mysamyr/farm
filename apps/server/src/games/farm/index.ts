@@ -1,5 +1,9 @@
-import { ERROR, EVENTS, NOTIFICATION_TYPES } from '@game/shared/constants';
-import { EMOTES, FARM_EVENTS } from '@game/shared/constants/farm';
+import { ERROR, EVENTS } from '@game/shared/constants';
+import {
+  EMOTES,
+  FARM_EVENTS,
+  FARM_NOTIFICATION_TYPES,
+} from '@game/shared/constants/farm';
 import { RoomIdPayload } from '@game/shared/types';
 import {
   Room,
@@ -391,7 +395,7 @@ const tradeCancelHandler =
     delete room.trade;
 
     io.to(opponentId).emit(EVENTS.NOTIFICATION, {
-      type: NOTIFICATION_TYPES.TRADE_CANCELLED,
+      type: FARM_NOTIFICATION_TYPES.TRADE_CANCELLED,
       data: canceller?.name || '',
     });
 

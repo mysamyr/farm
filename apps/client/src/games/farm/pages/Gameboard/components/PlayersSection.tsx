@@ -16,37 +16,33 @@ import { resolveErrorMessage } from '../../../../../utils/language';
 import { ANIMALS_ICONS_CONFIG } from '../../../constants';
 import { useFarmTranslation } from '../../../hooks/useFarmTranslation';
 
+import { getCurrentPlayerTurnId } from '../../../utils';
+
 import styles from './PlayersSection.module.css';
 
-type PlayersSectionProps = {
-  currentPlayerId?: string;
-  winnerId?: string;
-};
-
-export default function PlayersSection({
-  currentPlayerId,
-  winnerId,
-}: PlayersSectionProps): ReactElement {
-  const { currentRoom } = useRoom();
-  const room = currentRoom as FarmRoom;
+export default function PlayersSection(): ReactElement {
+  const room = useRoom();
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
   const farmT = useFarmTranslation();
   const { showSnackbar } = useSnackbar();
   const { translation } = useLanguage();
 
+  const currentRoom = room.currentRoom as FarmRoom;
+  const currentPlayerId = getCurrentPlayerTurnId(currentRoom);
+
   const myId = getSocketId();
   const isYourTurn = currentPlayerId === myId;
-  const tradeAllowed = room.rules[GAME_RULES.ALLOW_PLAYER_TRADE];
-  const tradeActive = !!room.trade;
+  const tradeAllowed = currentRoom.rules[GAME_RULES.ALLOW_PLAYER_TRADE];
+  const tradeActive = !!currentRoom.trade;
 
-  const players = room.order
-    .map(playerId => room.players.find(player => player.id === playerId))
+  const players = currentRoom.order
+    .map(playerId => currentRoom.players.find(player => player.id === playerId))
     .filter(Boolean) as Player[];
 
   function handleTrade(targetPlayerId: string): void {
     emitEvent(
       FARM_EVENTS.GAME_TRADE_START,
-      { roomId: room.id, targetPlayerId },
+      { roomId: currentRoom.id, targetPlayerId },
       ack => {
         if (ack && !ack.ok) {
           showSnackbar(resolveErrorMessage(ack.error, translation));
@@ -59,11 +55,11 @@ export default function PlayersSection({
     <div className={styles.playersContainer}>
       {players.map(player => {
         const isActive = player.id === currentPlayerId;
-        const isWinner = player.id === winnerId;
+        const isWinner = player.id === currentRoom.winner;
         const isCollapsed = !!collapsed[player.id];
         const isSelf = player.id === myId;
         const canTrade =
-          isYourTurn && tradeAllowed && !tradeActive && !isSelf && !winnerId;
+          isYourTurn && tradeAllowed && !tradeActive && !isSelf && !isWinner;
 
         return (
           <div

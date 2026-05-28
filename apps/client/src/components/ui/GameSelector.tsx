@@ -1,24 +1,17 @@
 import { type ReactElement } from 'react';
 
 import { GAME_IDS } from '@game/shared/constants';
-import { type GameId } from '@game/shared/types';
 
 import { getGameConfig } from '../../games/registry';
 
+import { useActiveGame } from '../../hooks/useActiveGame';
 import { useLanguage } from '../../hooks/useLanguage';
 
 import styles from './GameSelector.module.css';
 
-type GameSelectorProps = {
-  activeGame: GameId;
-  onGameChange: (gameId: GameId) => void;
-};
-
-export default function GameSelector({
-  activeGame,
-  onGameChange,
-}: GameSelectorProps): ReactElement {
+export default function GameSelector(): ReactElement {
   const { translation } = useLanguage();
+  const { activeGame, setActiveGame } = useActiveGame();
 
   return (
     <div className={styles.container}>
@@ -30,7 +23,7 @@ export default function GameSelector({
           <button
             key={gameId}
             className={`${styles.tab} ${isActive ? styles.active : ''}`}
-            onClick={() => onGameChange(gameId)}
+            onClick={() => setActiveGame(gameId)}
             aria-pressed={isActive}
             type="button"
           >

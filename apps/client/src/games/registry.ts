@@ -32,9 +32,3 @@ export function getGameConfig(id: GameId): GameConfig {
   if (!config) throw new Error(`Game "${id}" is not registered`);
   return config;
 }
-
-export function getDefaultGameConfig(): GameConfig {
-  const first = registry.values().next().value;
-  if (!first) throw new Error('No games registered');
-  return first;
-}

@@ -8,7 +8,8 @@ import Button from '../../../components/ui/Button';
 import Slider from '../../../components/ui/Slider';
 import Tag from '../../../components/ui/Tag';
 import { BUTTON_VARIANT, PATHS } from '../../../constants';
-import { getDefaultGameConfig } from '../../../games/registry';
+import { getGameConfig } from '../../../games/registry';
+import { useActiveGame } from '../../../hooks/useActiveGame';
 import { useLanguage } from '../../../hooks/useLanguage';
 import { useRoom } from '../../../hooks/useRoom';
 import { useSnackbar } from '../../../hooks/useSnackbar';
@@ -22,15 +23,14 @@ import styles from './ActiveRoom.module.css';
 
 export default function ActiveRoom(): ReactElement {
   const navigate = useNavigate();
-  const { currentRoom } = useRoom();
+  const { activeGame, cleanupCurrentIdleRoom } = useActiveGame();
+  const room = useRoom();
   const { translation } = useLanguage();
   const { showSnackbar } = useSnackbar();
 
-  if (!currentRoom) {
-    throw new Error('ActiveRoom component rendered without currentRoom');
-  }
+  const currentRoom = room.currentRoom!;
 
-  const gameConfig = getDefaultGameConfig();
+  const gameConfig = getGameConfig(activeGame);
   const [roomName, setRoomName] = useState(currentRoom.name);
 
   const isOwner = currentRoom.ownerId === getSocketId();
@@ -166,7 +166,7 @@ export default function ActiveRoom(): ReactElement {
           <Button
             variant={BUTTON_VARIANT.SUCCESS}
             onClick={() => {
-              void navigate(PATHS.GAME_BOARD);
+              void navigate(`${PATHS.GAME_BOARD}?game=${currentRoom.game}`);
             }}
           >
             {translation.roomButton.enter}
@@ -193,9 +193,7 @@ export default function ActiveRoom(): ReactElement {
         )}
         <Button
           variant={BUTTON_VARIANT.DANGER}
-          onClick={() => {
-            emitEvent(EVENTS.ROOM_LEAVE, { roomId: currentRoom.id });
-          }}
+          onClick={cleanupCurrentIdleRoom}
         >
           {isOwner
             ? translation.roomButton.closeRoom

@@ -1,10 +1,10 @@
 import { type ChangeEvent, useCallback } from 'react';
 
 import { ERROR, EVENTS, VALIDATION } from '@game/shared/constants';
-import type { GameId } from '@game/shared/types';
 
 import Button from '../../../components/ui/Button';
 import { LOCAL_STORAGE_KEY } from '../../../constants';
+import { useActiveGame } from '../../../hooks/useActiveGame';
 import { useDebounceCallback } from '../../../hooks/useDebounceCallback';
 import { useLanguage } from '../../../hooks/useLanguage';
 import { useRoom } from '../../../hooks/useRoom';
@@ -18,17 +18,16 @@ import styles from './ActionBar.module.css';
 type ActionBarProps = {
   usernameInput: string;
   setUsernameInput: (name: string) => void;
-  activeGame: GameId;
 };
 
 export default function ActionBar({
   usernameInput,
   setUsernameInput,
-  activeGame,
 }: ActionBarProps) {
   const { translation } = useLanguage();
   const { currentRoom } = useRoom();
   const { showSnackbar } = useSnackbar();
+  const { activeGame } = useActiveGame();
 
   const onRoomCreate = useCallback(() => {
     const name = usernameInput.trim();

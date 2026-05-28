@@ -1,4 +1,4 @@
-import { ERROR, EVENTS, NOTIFICATION_TYPES } from '../constants';
+import { ERROR, EVENTS } from '../constants';
 
 import {
   ClientToServerEvents as ClientToServerFarmEvents,
@@ -17,7 +17,7 @@ export type RejoinRoomAck = SocketAck & {
 };
 
 export type ServerNotification = {
-  type: NOTIFICATION_TYPES;
+  type: string;
   data: string;
 };
 

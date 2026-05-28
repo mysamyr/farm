@@ -30,7 +30,9 @@ export function useRoomSubscriptions(): void {
       emitEvent(EVENTS.ROOM_REJOIN, null, res => {
         if (res.ok && res.room) {
           setCurrentRoom(res.room);
-          void navigate(`${PATHS.GAME_BOARD}?roomId=${res.room.id}`);
+          void navigate(
+            `${PATHS.GAME_BOARD}?game=${res.room.game}&roomId=${res.room.id}`
+          );
         } else {
           void navigate(PATHS.DASHBOARD);
         }
@@ -60,7 +62,7 @@ export function useRoomSubscriptions(): void {
 
     subscribe(EVENTS.GAME_STARTED, ({ room }: RoomPayload): void => {
       setCurrentRoom(room);
-      void navigate(`${PATHS.GAME_BOARD}?roomId=${room.id}`);
+      void navigate(`${PATHS.GAME_BOARD}?game=${room.game}&roomId=${room.id}`);
     });
 
     subscribe(

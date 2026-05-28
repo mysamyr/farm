@@ -3,5 +3,5 @@
   "compilerOptions": {
     "moduleResolution": "Node"
   },
-  "include": ["./**/*.ts"]
+  "include": ["./**/*.ts", "../../assets/constants/duel.ts"]
 }

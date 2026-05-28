@@ -34,13 +34,12 @@ export const EVENTS = {
   GAME_STARTED: 'game:started',
 } as const;
 
-export enum NOTIFICATION_TYPES {
-  PLAYER_JOINED,
-  PLAYER_LEFT,
-  CLOSE_ROOM,
-  GAME_FINISHED,
-  TRADE_CANCELLED,
-}
+export const NOTIFICATION_TYPES = {
+  PLAYER_JOINED: 'player_joined',
+  PLAYER_LEFT: 'player_left',
+  CLOSE_ROOM: 'close_room',
+  GAME_FINISHED: 'game_finished',
+} as const;
 
 export const VALIDATION = {
   ROOM_NAME: {

@@ -1,0 +1,121 @@
+.container {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-card);
+  padding: 12px 20px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-elevation);
+  gap: 12px;
+}
+
+.left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 0;
+}
+
+.logo {
+  font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.onlineIndicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: var(--status-success);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--status-success);
+  flex-shrink: 0;
+}
+
+.desktopTools {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.rightSlot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.additionalActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.burger {
+  display: none;
+}
+
+.burgerGlyph {
+  display: block;
+  line-height: 1;
+  transform: translateY(-2px);
+}
+
+.sidebarContent {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 12px;
+}
+
+.sidebarSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sidebarSlot {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sidebarControl {
+  width: 100%;
+  text-align: left;
+  justify-content: flex-start;
+}
+
+@media (max-width: 900px) {
+  .desktopTools {
+    display: none;
+  }
+
+  .burger {
+    display: flex;
+  }
+
+  .logo {
+    font-size: 1.2rem;
+  }
+}

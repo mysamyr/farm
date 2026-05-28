@@ -1,4 +1,4 @@
-import { EVENTS } from './index';
+import { EVENTS, NOTIFICATION_TYPES } from './index';
 
 export const DEFAULT_CONFIG = {
   maxPlayers: 4,
@@ -46,6 +46,11 @@ export enum GAME_RULES {
   UNLIMITED_CARDS = 'unlimited_cards',
   ALLOW_PLAYER_TRADE = 'allow_player_trade',
 }
+
+export const FARM_NOTIFICATION_TYPES = {
+  ...NOTIFICATION_TYPES,
+  TRADE_CANCELLED: 'trade_cancelled',
+} as const;
 
 export const ANIMALS_DEFAULT_QUANTITY = {
   [ANIMALS.DUCK]: 60,

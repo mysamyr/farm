@@ -1,0 +1,58 @@
+.root {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.root.open {
+  pointer-events: auto;
+  visibility: visible;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: var(--overlay-backdrop);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  cursor: default;
+}
+
+.root.open .overlay {
+  opacity: 1;
+}
+
+.panel {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 280px;
+  max-width: 85vw;
+  background: var(--bg-card);
+  box-shadow: var(--shadow-elevation);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.25s ease;
+  padding: 24px 20px;
+  box-sizing: border-box;
+}
+
+.right {
+  right: 0;
+  transform: translateX(100%);
+}
+
+.left {
+  left: 0;
+  transform: translateX(-100%);
+}
+
+.root.open .right {
+  transform: translateX(0);
+}
+
+.root.open .left {
+  transform: translateX(0);
+}

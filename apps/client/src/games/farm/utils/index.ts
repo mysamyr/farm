@@ -24,7 +24,7 @@ export function isWildAnimal(animal?: DiceAnimals): boolean {
 
 export function getDiceIcon(dice?: DiceAnimals): string {
   if (!dice) {
-    return '?';
+    return '🎲';
   }
   return ANIMALS_ICONS_CONFIG[dice].icon;
 }

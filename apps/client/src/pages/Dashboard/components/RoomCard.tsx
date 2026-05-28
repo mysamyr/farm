@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import Button from '../../../components/ui/Button';
 import Tag from '../../../components/ui/Tag';
 import { BUTTON_VARIANT, PATHS } from '../../../constants';
-import { getDefaultGameConfig } from '../../../games/registry';
+import { getGameConfig } from '../../../games/registry';
 import { useLanguage } from '../../../hooks/useLanguage';
 import { useRoom } from '../../../hooks/useRoom';
 import { useSnackbar } from '../../../hooks/useSnackbar';
@@ -32,7 +32,7 @@ export default function RoomCard({
   const { currentRoom } = useRoom();
   const { showSnackbar } = useSnackbar();
 
-  const gameConfig = getDefaultGameConfig();
+  const gameConfig = getGameConfig(room.game);
   const isOwner = room.ownerId === getSocketId();
   const ownerLabel = isOwner ? translation.you : getOwnerName(room);
   const isFull = room.players.length >= gameConfig.maxPlayers;
@@ -88,7 +88,7 @@ export default function RoomCard({
         disabled={isBtnDisabled}
         onClick={() => {
           if (canEnterGame) {
-            void navigate(PATHS.GAME_BOARD);
+            void navigate(`${PATHS.GAME_BOARD}?game=${room.game}`);
             return;
           }
 

@@ -1,19 +1,16 @@
-import { ReactElement, useState, useEffect } from 'react';
+import { ReactElement, useState } from 'react';
 
 import { VALIDATION, GAME_IDS } from '@game/shared/constants';
-import type { GameId } from '@game/shared/types';
 
 import GameSelector from '../../components/ui/GameSelector';
+import { Header } from '../../components/ui/Header';
 import { LOCAL_STORAGE_KEY } from '../../constants';
-import { getGameConfig } from '../../games/registry';
+import { useActiveGame } from '../../hooks/useActiveGame';
 import { useLanguage } from '../../hooks/useLanguage';
 import { useRoom } from '../../hooks/useRoom';
-import { useTheme } from '../../hooks/useTheme';
-import { applyAccentColor } from '../../utils/theme';
 
 import ActionBar from './components/ActionBar';
 import ActiveRoom from './components/ActiveRoom';
-import Header from './components/Header';
 import RoomCard from './components/RoomCard';
 
 import styles from './Dashboard.module.css';
@@ -21,7 +18,7 @@ import styles from './Dashboard.module.css';
 export default function Dashboard(): ReactElement {
   const { rooms, currentRoom } = useRoom();
   const { translation } = useLanguage();
-  const { theme } = useTheme();
+  const { activeGame } = useActiveGame();
 
   const [usernameInput, setUsernameInput] = useState(() => {
     const stored =
@@ -29,31 +26,19 @@ export default function Dashboard(): ReactElement {
     return [...stored].slice(0, VALIDATION.USER_NAME.MAX_LENGTH).join('');
   });
 
-  const [activeGame, setActiveGame] = useState<GameId>(GAME_IDS.FARM);
-
   const filteredRooms = rooms.filter(room => room.game === activeGame);
 
-  // Sync theme with DOM
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-  }, [theme]);
-
-  // Apply accent color when active game changes
-  useEffect(() => {
-    const gameConfig = getGameConfig(activeGame);
-    applyAccentColor(gameConfig.color);
-  }, [activeGame]);
+  const areMultipleGames = Object.keys(GAME_IDS).length > 1;
 
   return (
     <div className={styles.container}>
       <Header />
 
-      <GameSelector activeGame={activeGame} onGameChange={setActiveGame} />
+      {areMultipleGames && <GameSelector />}
 
       <ActionBar
         usernameInput={usernameInput}
         setUsernameInput={setUsernameInput}
-        activeGame={activeGame}
       />
 
       <div className={styles.dashboardGrid}>
