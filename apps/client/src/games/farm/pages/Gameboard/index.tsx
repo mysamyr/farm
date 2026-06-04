@@ -38,8 +38,6 @@ export default function Gameboard(): ReactElement {
 
   const currentRoom = rawCurrentRoom as unknown as Room | null;
 
-  const shouldConfirmLeave = currentRoom?.state === ROOM_STATES.RUNNING;
-
   const handleLeave = useCallback(() => {
     if (!rawCurrentRoom) {
       return;
@@ -54,7 +52,10 @@ export default function Gameboard(): ReactElement {
   }, [rawCurrentRoom, navigate, setCurrentRoom, showSnackbar, translation]);
 
   function onLeaveClick() {
-    if (!shouldConfirmLeave || window.confirm(farmT.roomLeaveConfirmation)) {
+    if (
+      currentRoom?.state !== ROOM_STATES.RUNNING ||
+      window.confirm(farmT.roomLeaveConfirmation)
+    ) {
       handleLeave();
     }
   }

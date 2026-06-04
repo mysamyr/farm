@@ -1,0 +1,94 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+  border: 1px solid var(--border-base);
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.card.active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-shadow);
+}
+
+.card.winner {
+  border-color: gold;
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.4);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.playerName {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  flex: 1;
+}
+
+.turnBadge {
+  font-size: 0.72rem;
+  font-weight: 600;
+  background: var(--accent-soft);
+  color: var(--accent);
+  padding: 1px 7px;
+  border-radius: 99px;
+}
+
+.winnerBadge {
+  font-size: 0.72rem;
+  font-weight: 600;
+  background: rgba(255, 215, 0, 0.15);
+  color: gold;
+  padding: 1px 7px;
+  border-radius: 99px;
+}
+
+.statsGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.statItem {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8rem;
+  background: var(--surface-elevated);
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+}
+
+.statLabel {
+  color: var(--text-muted);
+}
+
+.statValue {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.statusList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.statusBadge {
+  font-size: 0.72rem;
+  padding: 2px 7px;
+  border-radius: 99px;
+  background: var(--surface-elevated);
+  color: var(--text-secondary);
+}

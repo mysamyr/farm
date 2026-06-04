@@ -1,12 +1,12 @@
 import { DEFAULT_CONFIG, GAME_RULES } from '@game/shared/constants/farm';
 
-import { registerGame } from '../registry';
+import type { GameConfig } from '../types';
 
 import FarmHelpModal from './components/FarmHelpModal';
 import { useGameSubscriptions } from './hooks/useGameSubscriptions';
 import Gameboard from './pages/Gameboard';
 
-registerGame({
+export const farmConfig: GameConfig = {
   id: 'farm',
   maxPlayers: DEFAULT_CONFIG.maxPlayers,
   minPlayers: DEFAULT_CONFIG.minPlayers,
@@ -30,4 +30,4 @@ registerGame({
   GameboardPage: Gameboard,
   HelpModal: FarmHelpModal,
   useGameSubscriptions,
-});
+};

@@ -8,11 +8,11 @@ import {
   useLocation,
 } from 'react-router-dom';
 
+import { GameSubscriptions } from './components/GameSubscriptions';
 import { Modal } from './components/ui/Modal';
 import { Snackbar } from './components/ui/Snackbar';
 import { PATHS } from './constants';
-import { GAME_WIN_EVENT } from './constants/events';
-import './games';
+import './games/configs';
 import { getGameConfig } from './games/registry';
 import { useActiveGame } from './hooks/useActiveGame';
 import { useModal } from './hooks/useModal';
@@ -33,15 +33,9 @@ function AppContent() {
 
   const location = useLocation();
 
-  const { color, GameboardPage, useGameSubscriptions } =
-    getGameConfig(activeGame);
+  const { color, GameboardPage } = getGameConfig(activeGame);
 
   useRoomSubscriptions();
-  useGameSubscriptions({
-    onCurrentUserWon: () => {
-      window.dispatchEvent(new CustomEvent(GAME_WIN_EVENT));
-    },
-  });
 
   useUnloadWarning(currentRoom);
 
@@ -60,6 +54,7 @@ function AppContent() {
 
   return (
     <>
+      <GameSubscriptions key={activeGame} gameId={activeGame} />
       <Routes>
         <Route path={PATHS.DASHBOARD} element={<Dashboard />} />
         {currentRoom && (

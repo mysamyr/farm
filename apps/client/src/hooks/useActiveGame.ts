@@ -10,7 +10,7 @@ import { emitEvent } from '../socket/client';
 import { useRoom } from './useRoom';
 
 const GAME_QUERY_PARAM = 'game';
-const GAME_ID_LIST = Object.values(GAME_IDS);
+const GAME_ID_LIST: GameId[] = Object.values(GAME_IDS);
 const DEFAULT_GAME_ID = GAME_ID_LIST[0] as GameId;
 
 function isGameId(value: string | null): value is GameId {

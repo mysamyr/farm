@@ -1,30 +1,15 @@
-import type { ComponentType } from 'react';
-
 import type { GameId } from '@game/shared/types';
 
-import type { AccentColor } from '../constants/theme';
+import type { GameConfig } from './types';
 
-export interface RuleConfig {
-  key: string;
-  label: (t: Record<string, string>) => string;
-}
-
-export interface GameConfig {
-  id: GameId;
-  maxPlayers: number;
-  minPlayers: number;
-  color: AccentColor;
-  emoji: string;
-  rules: RuleConfig[];
-  GameboardPage: ComponentType;
-  HelpModal: ComponentType;
-  useGameSubscriptions: (args: { onCurrentUserWon: () => void }) => void;
-}
+export type { GameConfig, RuleConfig } from './types';
 
 const registry = new Map<GameId, GameConfig>();
 
-export function registerGame(config: GameConfig): void {
-  registry.set(config.id, config);
+export function setGameConfigs(configs: Record<GameId, GameConfig>): void {
+  for (const [id, config] of Object.entries(configs)) {
+    registry.set(id as GameId, config);
+  }
 }
 
 export function getGameConfig(id: GameId): GameConfig {

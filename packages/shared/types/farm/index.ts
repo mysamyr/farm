@@ -22,26 +22,26 @@ export type FarmAnimals = Exclude<
   ANIMALS.SMALL_DOG | ANIMALS.BIG_DOG | ANIMALS.FOX | ANIMALS.BEAR
 >;
 
-export type Player = BasePlayer & {
+export interface Player extends BasePlayer {
   exchangedThisTurn: boolean;
   animals: Record<TradableAnimals, number>;
-};
+}
 
 export type Rules = Record<GAME_RULES, boolean>;
 
 export type TradeOffer = Partial<Record<FarmAnimals, number>>;
 
-export type TradeState = {
+export interface TradeState {
   initiatorId: string;
   targetId: string;
   locked: Record<string, boolean>;
   offers: Record<string, TradeOffer>;
-};
+}
 
-export type Room = BaseRoom<Player, Rules, 'farm'> & {
+export interface Room extends BaseRoom<Player, Rules, 'farm'> {
   order: string[];
   turn: number;
   dice?: [DiceAnimals, DiceAnimals];
   winner?: string;
   trade?: TradeState;
-};
+}

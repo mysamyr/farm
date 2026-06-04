@@ -89,6 +89,9 @@ const translations: Record<LanguageCode, Translation> = {
           bothLocked: 'Locked — confirm to trade!',
         },
       },
+      arena: {
+        name: 'Arena',
+      },
     },
     help: {
       farm: {
@@ -137,6 +140,7 @@ const translations: Record<LanguageCode, Translation> = {
           'Unlimited cards: no limit to animal cards (you may have more than main herd counts).',
         ],
       },
+      arena: {},
     },
     roomButton: {
       full: 'Full',
@@ -231,6 +235,9 @@ const translations: Record<LanguageCode, Translation> = {
           bothLocked: 'Зафіксовано — підтвердіть обмін!',
         },
       },
+      arena: {
+        name: 'Арена',
+      },
     },
     help: {
       farm: {
@@ -279,6 +286,7 @@ const translations: Record<LanguageCode, Translation> = {
           'Безкінечна кількість карт: ліміт карт тварин не застосовується (можна мати більше 60-ти 🦆, 24-ти 🐐...).',
         ],
       },
+      arena: {},
     },
     roomButton: {
       full: 'Повна',

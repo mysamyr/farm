@@ -1,6 +1,10 @@
 import { ERROR, EVENTS } from '../constants';
 
 import {
+  ClientToServerEvents as ClientToServerArenaEvents,
+  ServerToClientEvents as ServerToClientArenaEvents,
+} from './arena/socket';
+import {
   ClientToServerEvents as ClientToServerFarmEvents,
   ServerToClientEvents as ServerToClientFarmEvents,
 } from './farm/socket';
@@ -75,7 +79,8 @@ export type ClientToServerEvents = {
     payload: RoomIdPayload,
     ack?: (response: SocketAck) => void
   ) => void;
-} & ClientToServerFarmEvents;
+} & ClientToServerFarmEvents &
+  ClientToServerArenaEvents;
 
 export type ServerToClientEvents = {
   [EVENTS.CONNECT]: () => void;
@@ -84,4 +89,5 @@ export type ServerToClientEvents = {
   [EVENTS.NOTIFICATION]: (payload: ServerNotification) => void;
   [EVENTS.ONLINE_COUNT]: (online: number) => void;
   [EVENTS.GAME_STARTED]: (payload: RoomPayload) => void;
-} & ServerToClientFarmEvents;
+} & ServerToClientFarmEvents &
+  ServerToClientArenaEvents;

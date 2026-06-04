@@ -3,7 +3,7 @@ import { EVENTS } from '@game/shared/constants';
 import { registerConnection } from '../features/connection';
 import { registerPlayerFeature } from '../features/player';
 import { registerRoomFeature } from '../features/room';
-import { registerGameFeature as registerFarmGameFeature } from '../games/farm';
+import { registerAllGameFeatures } from '../games';
 
 import type { AppServer, AppSocket } from '../types';
 
@@ -13,6 +13,6 @@ export function registerSocketHandlers(io: AppServer): void {
     registerRoomFeature(io, socket);
     registerPlayerFeature(io, socket);
 
-    registerFarmGameFeature(io, socket);
+    registerAllGameFeatures(io, socket);
   });
 }

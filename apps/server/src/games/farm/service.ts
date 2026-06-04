@@ -103,7 +103,7 @@ export function removePlayerFromOrder(room: Room, playerId: string): void {
   }
 }
 
-export function setOrder(room: Room): void {
+function setOrder(room: Room): void {
   room.order = shuffleArray(room.players.map(p => p.id));
 }
 

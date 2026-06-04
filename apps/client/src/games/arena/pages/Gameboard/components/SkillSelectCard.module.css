@@ -1,0 +1,152 @@
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-base);
+  background: var(--bg-card);
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
+  min-height: 44px;
+  text-align: center;
+  user-select: none;
+}
+
+@media (hover: hover) {
+  .card:hover:not(.disabled) {
+    border-color: var(--accent);
+    box-shadow: var(--shadow-hover-card);
+    transform: translateY(-1px);
+  }
+}
+
+.card.selected {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  box-shadow: 0 0 0 2px var(--accent-shadow);
+}
+
+.card.disabled {
+  opacity: 0.4;
+  filter: grayscale(60%);
+  cursor: not-allowed;
+}
+
+.icon {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.name {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-main);
+  line-height: 1.2;
+  word-break: break-word;
+}
+
+.badge {
+  font-size: 0.6rem;
+  font-weight: 500;
+  padding: 1px 6px;
+  border-radius: 99px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.badgeActive {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.badgePassive {
+  background: var(--bg-surface-subtle);
+  color: var(--text-muted);
+}
+
+.checkmark {
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  font-size: 0.7rem;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* ─── Tooltip ────────────────────────────────────────────── */
+.tooltip {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  width: 180px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-base);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-elevation);
+  padding: 8px 10px;
+  pointer-events: none;
+  animation: fadeIn 0.15s ease;
+}
+
+.tooltipAbove {
+  bottom: calc(100% + 6px);
+}
+
+.tooltipBelow {
+  top: calc(100% + 6px);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.tooltipHeader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.tooltipIcon {
+  font-size: 1.1rem;
+}
+
+.tooltipName {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.tooltipEffects {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tooltipEffects li {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.tooltipEmpty {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-style: italic;
+}

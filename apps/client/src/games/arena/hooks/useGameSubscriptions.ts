@@ -1,11 +1,9 @@
 import { useEffect } from 'react';
 
 import { EVENTS, NOTIFICATION_TYPES } from '@game/shared/constants';
-import {
-  FARM_EVENTS,
-  FARM_NOTIFICATION_TYPES,
-} from '@game/shared/constants/farm';
-import type { RoomPayload, ServerNotification } from '@game/shared/types';
+import { ARENA_EVENTS } from '@game/shared/constants/arena';
+import type { ServerNotification } from '@game/shared/types';
+import type { Room } from '@game/shared/types/arena';
 
 import { LOCAL_STORAGE_KEY } from '../../../constants';
 import { useLanguage } from '../../../hooks/useLanguage';
@@ -25,12 +23,12 @@ export function useGameSubscriptions({
   const { translation } = useLanguage();
 
   useEffect(() => {
-    const handleGameUpdate = ({ room }: RoomPayload): void => {
+    const handleGameUpdate = ({ room }: { room: Room }): void => {
       setCurrentRoom(room);
     };
 
     const handleNotification = ({ type, data }: ServerNotification): void => {
-      if (currentRoom?.game !== 'farm') {
+      if (currentRoom?.game !== 'arena') {
         return;
       }
 
@@ -45,24 +43,14 @@ export function useGameSubscriptions({
         }
         return;
       }
-
-      if (type === FARM_NOTIFICATION_TYPES.TRADE_CANCELLED) {
-        showSnackbar(translation.notifications.tradeCancelled(data));
-      }
     };
 
-    subscribe(FARM_EVENTS.GAME_UPDATE, handleGameUpdate);
+    subscribe(ARENA_EVENTS.GAME_UPDATE, handleGameUpdate);
     subscribe(EVENTS.NOTIFICATION, handleNotification);
 
     return () => {
-      unsubscribe(FARM_EVENTS.GAME_UPDATE, handleGameUpdate);
+      unsubscribe(ARENA_EVENTS.GAME_UPDATE, handleGameUpdate);
       unsubscribe(EVENTS.NOTIFICATION, handleNotification);
     };
-  }, [
-    currentRoom?.game,
-    onCurrentUserWon,
-    setCurrentRoom,
-    showSnackbar,
-    translation.notifications,
-  ]);
+  }, [onCurrentUserWon, setCurrentRoom]);
 }

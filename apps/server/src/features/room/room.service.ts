@@ -9,7 +9,7 @@ import type { Room, GameId } from '@game/shared/types';
 import { uuid } from '@game/shared/utils';
 
 import { LogLevel } from '../../constants';
-import { getGameModule } from '../../games';
+import { getGameModule } from '../../games/modules';
 import { log } from '../../services/logger';
 import type { AppServer, AppSocket } from '../../types';
 
@@ -46,7 +46,6 @@ export function createRoom(ownerId: string, game: GameId): Room {
     state: ROOM_STATES.IDLE,
     players: [],
     ...roomFields,
-    rules: roomFields.rules,
   };
   rooms.set(id, room);
   log(LogLevel.INFO, 'room:create', {

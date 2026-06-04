@@ -2,6 +2,7 @@ export { ERROR } from './errors';
 
 export const GAME_IDS = {
   FARM: 'farm',
+  ARENA: 'arena',
 } as const;
 
 export const DEFAULT_CONFIG = {

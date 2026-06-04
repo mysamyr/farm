@@ -1,0 +1,260 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ─── Equipped section ───────────────────────────────────── */
+.equippedSection {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.slotGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  min-width: 180px;
+}
+
+.slotGroupHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.slotGroupLabel {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.slotCounter {
+  font-size: 0.72rem;
+  font-weight: 600;
+  background: var(--accent-soft);
+  color: var(--accent);
+  padding: 1px 7px;
+  border-radius: 99px;
+}
+
+.activeSlots {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.passiveSlots {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.slot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.activeSlot {
+  width: 88px;
+  height: 88px;
+  border-radius: var(--radius-sm);
+  border: 2px dashed var(--border-base);
+  flex-direction: column;
+}
+
+.passiveSlot {
+  min-width: 140px;
+  height: 44px;
+  border-radius: 99px;
+  border: 2px dashed var(--border-base);
+  padding: 0 12px;
+  flex-direction: row;
+}
+
+.slot.slotFilled {
+  border-style: solid;
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  box-shadow: 0 0 0 2px var(--accent-shadow);
+}
+
+.slot:hover.slotFilled {
+  box-shadow:
+    0 0 0 2px var(--accent-shadow),
+    var(--shadow-hover-card);
+}
+
+.slotPlus {
+  font-size: 1.4rem;
+  color: var(--border-base);
+  line-height: 1;
+}
+
+.slotIcon {
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.slotName {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--accent);
+  text-align: center;
+  word-break: break-word;
+  line-height: 1.2;
+}
+
+.passiveSlot .slotName {
+  font-size: 0.72rem;
+}
+
+.slotRemove {
+  position: absolute;
+  top: 2px;
+  right: 4px;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-weight: 700;
+  line-height: 1;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.passiveSlot .slotRemove {
+  position: static;
+  margin-left: auto;
+}
+
+.slot:hover .slotRemove {
+  opacity: 1;
+}
+
+/* ─── Skill grid ─────────────────────────────────────────── */
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sectionTitle {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.skillGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 8px;
+}
+
+/* ─── Actions ────────────────────────────────────────────── */
+.actions {
+  display: flex;
+  gap: 12px;
+}
+
+/* ─── Waiting state ──────────────────────────────────────── */
+.waitingMessage {
+  text-align: center;
+  padding: 16px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* ─── Bottom sheet ───────────────────────────────────────── */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--overlay-backdrop);
+  z-index: 200;
+}
+
+.sheet {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 201;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  padding: 20px 20px 32px;
+  box-shadow: var(--shadow-elevation);
+  animation: slideUp 0.2s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.sheetHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.sheetIcon {
+  font-size: 1.8rem;
+}
+
+.sheetName {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.sheetEffects {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sheetEffects li {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  padding: 2px 0;
+}
+
+.sheetActions {
+  display: flex;
+  gap: 12px;
+}
+
+/* ─── Mobile overrides ───────────────────────────────────── */
+@media (max-width: 480px) {
+  .equippedSection {
+    flex-direction: column;
+  }
+
+  .skillGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .activeSlot {
+    width: 76px;
+    height: 76px;
+  }
+}
