@@ -1,14 +1,12 @@
 import type { GameAction, Skill, StatType } from '@game/shared/types/arena';
 
-export const STAT_LABELS: Record<StatType, string> = {
-  hp: '❤️ HP',
-  armor: '🛡️ Armor',
-  attack: '⚔️ Attack',
-  crit: '🎯 Crit',
-  dodge: '💨 Evade',
-};
+import type {
+  ArenaSkillNamesTranslation,
+  ArenaSkillEffectLabelsTranslation,
+  ArenaStatLabelsTranslation,
+} from '../hooks/useArenaTranslation';
 
-// TODO: more ts types
+// ─── Skill icons (visual only, not translatable) ─────────
 export const SKILL_ICONS: Record<string, string> = {
   attack: '⚔️',
   skip: '⏭️',
@@ -27,53 +25,71 @@ export const SKILL_ICONS: Record<string, string> = {
   thorns: '🌵',
 };
 
-export const SKILL_NAMES: Record<string, string> = {
-  attack: 'Attack',
-  skip: 'Skip',
-  bleed_strike: 'Bleed Strike',
-  viper_strike: 'Viper Strike',
-  knockback: 'Knockback',
-  heal: 'Heal',
-  regeneration: 'Regeneration',
-  magic_shield: 'Magic Shield',
-  vampiric_strike: 'Vampiric Strike',
-  toughened: 'Toughened',
-  plating: 'Plating',
-  assassin: 'Assassin',
-  strong: 'Strong',
-  fanatic: 'Fanatic',
-  thorns: 'Thorns',
-};
-
 export function getSkillIcon(skillId: string): string {
   return SKILL_ICONS[skillId] ?? '✨';
 }
 
-export function getSkillName(skillId: string): string {
-  return SKILL_NAMES[skillId] ?? skillId.replace(/_/g, ' ');
+export function getSkillName(
+  skillId: string,
+  skillNames: ArenaSkillNamesTranslation
+): string {
+  return skillNames[skillId] ?? skillId.replace(/_/g, ' ');
 }
 
-function formatAction(action: GameAction): string {
+export function getStatLabel(
+  stat: StatType,
+  statLabels: ArenaStatLabelsTranslation
+): string {
+  return statLabels[stat] ?? stat;
+}
+
+function formatAction(
+  action: GameAction,
+  labels: ArenaSkillEffectLabelsTranslation,
+  statLabels: ArenaStatLabelsTranslation
+): string {
   switch (action.type) {
     case 'DAMAGE':
-      return `Deal ${action.value} damage`;
+      return labels.damage.replace('{value}', String(action.value));
     case 'HEAL':
-      return `Heal for ${action.value}`;
+      return labels.heal.replace('{value}', String(action.value));
     case 'LIFESTEAL':
-      return `Lifesteal ${action.value}% of damage`;
+      return labels.lifesteal.replace('{value}', String(action.value));
     case 'APPLY_STATUS': {
       const val = action.value !== undefined ? ` (${action.value})` : '';
       const dur =
-        action.duration < 999 ? ` for ${action.duration} turns` : ' (passive)';
-      return `Apply ${action.status}${val}${dur}`;
+        action.duration < 999
+          ? ` ${labels.durationTurns.replace('{turns}', String(action.duration))}`
+          : ` ${labels.durationPassive}`;
+      return labels.applyStatus
+        .replace('{status}', action.status)
+        .replace('{value}', val)
+        .replace('{duration}', dur);
     }
     case 'MODIFY_STAT': {
       const sign = (action.value ?? 0) >= 0 ? '+' : '';
-      return `${sign}${action.value ?? 0} ${STAT_LABELS[action.stat] ?? action.stat}`;
+      return labels.modifyStat
+        .replace('{sign}', sign)
+        .replace('{value}', String(action.value ?? 0))
+        .replace('{stat}', getStatLabel(action.stat, statLabels));
     }
   }
 }
 
-export function getSkillEffects(skill: Skill): string[] {
-  return skill.actions.map(formatAction);
+export function getSkillCooldownText(
+  skill: Skill,
+  labels: ArenaSkillEffectLabelsTranslation
+): string | null {
+  if (skill.type === 'active' || skill.type === 'healing') {
+    return labels.cooldown.replace('{cooldown}', String(skill.cooldown));
+  }
+  return null;
+}
+
+export function getSkillEffects(
+  skill: Skill,
+  labels: ArenaSkillEffectLabelsTranslation,
+  statLabels: ArenaStatLabelsTranslation
+): string[] {
+  return skill.actions.map(a => formatAction(a, labels, statLabels));
 }

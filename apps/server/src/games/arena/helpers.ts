@@ -1,6 +1,7 @@
 import {
   BASE_SKILLS,
   REQUIRED_ACTIVE_COUNT,
+  REQUIRED_HEALING_COUNT,
   REQUIRED_PASSIVE_COUNT,
   SKILLS,
 } from '@game/shared/constants/arena';
@@ -56,6 +57,21 @@ export function getPlayerStats(player: Player): PlayerStats {
   return stats;
 }
 
+export function isPlayerResistant(player: Player): boolean {
+  return player.statuses.some(
+    s => s.type === 'resistance' && (s.permanent || s.remainingDuration > 0)
+  );
+}
+
+export function getThorns(player: Player): number {
+  return player.statuses.reduce((acc, s) => {
+    if (s.type === 'thorns' && (s.permanent || s.remainingDuration > 0)) {
+      acc += s.value ?? 0;
+    }
+    return acc;
+  }, 0);
+}
+
 export function isValidSkillSelection(skills: SkillId[]): boolean {
   const uniqueSkills = new Set(skills);
   if (uniqueSkills.size !== skills.length) return false;
@@ -67,16 +83,37 @@ export function isValidSkillSelection(skills: SkillId[]): boolean {
   const validIds = new Set(selectableSkills.map(s => s.id));
   if (!skills.every(id => validIds.has(id))) return false;
 
-  const activeCount = skills.filter(
-    id => selectableSkills.find(s => s.id === id)?.type === 'active'
-  ).length;
-  const passiveCount = skills.filter(
-    id => selectableSkills.find(s => s.id === id)?.type === 'passive'
-  ).length;
+  const selectedSkills = skills
+    .map(id => selectableSkills.find(s => s.id === id))
+    .filter((skill): skill is Skill => skill !== undefined);
+
+  const activeCount = selectedSkills.filter(s => s.type === 'active').length;
+  const healingCount = selectedSkills.filter(s => s.type === 'healing').length;
+  const passiveCount = selectedSkills.filter(s => s.type === 'passive').length;
 
   return (
     activeCount === REQUIRED_ACTIVE_COUNT &&
+    healingCount === REQUIRED_HEALING_COUNT &&
     passiveCount === REQUIRED_PASSIVE_COUNT
+  );
+}
+
+export function canStartArenaGame(_room: Room): boolean {
+  const baseSkillIds = new Set(BASE_SKILLS.map(s => s.id));
+  const selectableSkills = SKILLS.filter(s => !baseSkillIds.has(s.id));
+
+  const activeCount = selectableSkills.filter(s => s.type === 'active').length;
+  const healingCount = selectableSkills.filter(
+    s => s.type === 'healing'
+  ).length;
+  const passiveCount = selectableSkills.filter(
+    s => s.type === 'passive'
+  ).length;
+
+  return (
+    activeCount >= REQUIRED_ACTIVE_COUNT &&
+    healingCount >= REQUIRED_HEALING_COUNT &&
+    passiveCount >= REQUIRED_PASSIVE_COUNT
   );
 }
 

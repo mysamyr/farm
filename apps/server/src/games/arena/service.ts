@@ -7,6 +7,7 @@ import { BASE_SKILLS, SKILLS } from '@game/shared/constants/arena';
 import type {
   ActiveSkill,
   GameAction,
+  HealingSkill,
   LogEffect,
   PassiveSkill,
   Player,
@@ -29,7 +30,9 @@ import {
   getPlayerMaxHp,
   getPlayerMinHp,
   getPlayerStats,
+  getThorns,
   isDead,
+  isPlayerResistant,
   isStunned,
   rollChance,
   skillTargetsOpponent,
@@ -89,22 +92,24 @@ export function winnerHandler(io: AppServer, room: Room, player: Player): void {
 }
 
 export function applySkillSelection(player: Player, skills: SkillId[]): void {
-  const [activeSkills, passiveSkills] = skills.reduce<
-    [ActiveSkill[], PassiveSkill[]]
+  const [activeSkills, healingSkills, passiveSkills] = skills.reduce<
+    [ActiveSkill[], HealingSkill[], PassiveSkill[]]
   >(
     (acc, id) => {
       const skill = SKILLS.find(s => s.id === id);
       if (!skill) return acc;
       if (skill.type === 'active') acc[0].push(skill);
-      else if (skill.type === 'passive') acc[1].push(skill);
+      else if (skill.type === 'healing') acc[1].push(skill);
+      else if (skill.type === 'passive') acc[2].push(skill);
       return acc;
     },
-    [[], []]
+    [[], [], []]
   );
 
   player.skills = [
     ...BASE_SKILLS.map(s => ({ id: s.id, cooldown: 0 })),
     ...activeSkills.map(s => ({ id: s.id, cooldown: s.cooldown })),
+    ...healingSkills.map(s => ({ id: s.id, cooldown: s.cooldown })),
   ];
   player.statuses = passiveSkills.flatMap(s =>
     s.actions.reduce((acc: StatusEffect[], action: GameAction) => {
@@ -214,14 +219,15 @@ function applyLifesteal(
 }
 
 function applyThorns(
-  player: Player,
+  attacker: Player,
   totalDamageDealt: number,
   thorns: number,
   ctx: TurnContext = NO_CONTEXT
 ): void {
+  if (totalDamageDealt <= 0 || thorns <= 0) return;
   // Thorns: reflect % of direct damage back to attacker
   const reflected = Math.max(Math.floor((totalDamageDealt * thorns) / 100), 1);
-  applyDamage(player, reflected);
+  applyDamage(attacker, reflected);
   ctx.addEffect({ kind: 'thorns', value: reflected, target: 'self' });
 }
 
@@ -240,12 +246,8 @@ function applySkillToOpponent(
   }
 
   const isCrit = rollChance(attackerStats.crit);
-  const hasResistance = opponent.statuses.some(
-    s => s.type === 'resistance' && (s.permanent || s.remainingDuration > 0)
-  );
-  const thorns = opponent.statuses.find(
-    s => s.type === 'thorns' && (s.permanent || s.remainingDuration > 0)
-  );
+  const hasResistance = isPlayerResistant(opponent);
+  const thorns = getThorns(opponent);
 
   let totalDamageDealt = 0;
 
@@ -279,9 +281,7 @@ function applySkillToOpponent(
     });
   }
 
-  if (thorns && totalDamageDealt > 0) {
-    applyThorns(player, totalDamageDealt, thorns.value, ctx);
-  }
+  applyThorns(player, totalDamageDealt, thorns, ctx);
 
   applyLifesteal(player, actions, totalDamageDealt, ctx);
 }
@@ -346,7 +346,7 @@ export function setSkillCooldown(player: Player, skillId: SkillId): void {
   if (!playerSkill) return;
 
   const skillDef = SKILLS.find(s => s.id === skillId);
-  if (skillDef?.type === 'active') {
+  if (skillDef?.type === 'active' || skillDef?.type === 'healing') {
     playerSkill.cooldown = skillDef.cooldown + 1; // +1 because cooldown decrements at end of turn
   }
 }
@@ -361,7 +361,9 @@ export function processPlayerTurn(
 ): { dead: 'attacker' | 'defender' | null } {
   const player = getActivePlayer(room)!;
   const skill = SKILLS.find(s => s.id === skillId);
-  if (!skill || skill.type !== 'active') return { dead: null };
+  if (!skill || (skill.type !== 'active' && skill.type !== 'healing')) {
+    return { dead: null };
+  }
 
   const effects: LogEffect[] = [];
   const ctx: TurnContext = { addEffect: e => effects.push(e) };

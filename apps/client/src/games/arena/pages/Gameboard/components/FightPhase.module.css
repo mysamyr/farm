@@ -4,17 +4,38 @@
   gap: 16px;
 }
 
-.playersRow {
-  display: flex;
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 16px;
 }
 
+.mainColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.playersRow {
+  display: flex;
+  gap: 12px;
+}
+
 .playersRow > * {
+  display: flex;
   flex: 1;
+}
+
+@media (min-width: 1024px) {
+  .layout {
+    grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
+    align-items: start;
+  }
 }
 
 @media (max-width: 600px) {
   .playersRow {
     flex-direction: column;
+    gap: 12px;
   }
 }

@@ -3,6 +3,9 @@ import type { GameId } from '@game/shared/types';
 
 import type { LanguageCode } from '../constants/language';
 
+import type { ArenaTranslation } from '../games/arena/hooks/useArenaTranslation';
+import type { FarmTranslation } from '../games/farm/hooks/useFarmTranslation';
+
 export type Language = {
   name: string;
   code: LanguageCode;
@@ -17,6 +20,11 @@ type ClientErrorKeys = {
 
 type ErrorMessages = ClientErrorKeys & Record<ERROR, string>;
 
+type GameTranslationRegistry = {
+  farm: FarmTranslation;
+  arena: ArenaTranslation;
+};
+
 export type Translation = {
   errors: ErrorMessages;
   dashboard: {
@@ -29,10 +37,7 @@ export type Translation = {
     rules: Record<string, string>;
   };
   game: {
-    [K in GameId]: {
-      name: string;
-      [K: string]: unknown;
-    };
+    [K in GameId]: GameTranslationRegistry[K] & { name: string };
   };
   help: {
     [K in GameId]: Record<string, string | string[]>;

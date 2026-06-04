@@ -26,5 +26,5 @@ export interface FarmTranslation {
 
 export function useFarmTranslation(): FarmTranslation {
   const { translation } = useLanguage();
-  return translation.game.farm as unknown as FarmTranslation;
+  return translation.game.farm;
 }

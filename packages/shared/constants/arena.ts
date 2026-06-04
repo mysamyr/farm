@@ -1,5 +1,6 @@
 import type {
   ActiveSkill,
+  HealingSkill,
   PassiveSkill,
   Skill,
   StatType,
@@ -12,7 +13,8 @@ export const DEFAULT_CONFIG = {
   minPlayers: 2,
 } as const;
 
-export const REQUIRED_ACTIVE_COUNT = 3;
+export const REQUIRED_ACTIVE_COUNT = 2;
+export const REQUIRED_HEALING_COUNT = 1;
 export const REQUIRED_PASSIVE_COUNT = 2;
 
 export const DEFAULT_PLAYER_STATS: Record<StatType, number> = {
@@ -93,16 +95,31 @@ const ACTIVE_SKILLS: ActiveSkill[] = [
       },
     ],
   },
-  // Heal
+  {
+    id: 'magic_shield',
+    type: 'active',
+    cooldown: 3,
+    actions: [
+      {
+        type: 'APPLY_STATUS',
+        target: 'self',
+        status: 'resistance',
+        duration: 3,
+      },
+    ],
+  },
+];
+
+const HEALING_SKILLS: HealingSkill[] = [
   {
     id: 'heal',
-    type: 'active',
+    type: 'healing',
     cooldown: 4,
     actions: [{ type: 'HEAL', target: 'self', value: 20 }],
   },
   {
     id: 'regeneration',
-    type: 'active',
+    type: 'healing',
     cooldown: 3,
     actions: [
       {
@@ -115,19 +132,6 @@ const ACTIVE_SKILLS: ActiveSkill[] = [
         target: 'self',
         status: 'regeneration',
         value: 5,
-        duration: 3,
-      },
-    ],
-  },
-  {
-    id: 'magic_shield',
-    type: 'active',
-    cooldown: 3,
-    actions: [
-      {
-        type: 'APPLY_STATUS',
-        target: 'self',
-        status: 'resistance',
         duration: 3,
       },
     ],
@@ -260,6 +264,7 @@ const PASSIVE_SKILLS: PassiveSkill[] = [
 export const SKILLS: Skill[] = [
   ...BASE_SKILLS,
   ...ACTIVE_SKILLS,
+  ...HEALING_SKILLS,
   ...PASSIVE_SKILLS,
 ];
 

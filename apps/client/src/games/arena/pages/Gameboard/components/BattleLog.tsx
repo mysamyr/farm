@@ -3,6 +3,7 @@ import { useState, type ReactElement } from 'react';
 import type { LogEffect, LogStep } from '@game/shared/types/arena';
 
 import { classNames } from '../../../../../utils';
+import { useArenaTranslation } from '../../../hooks/useArenaTranslation';
 
 import styles from './BattleLog.module.css';
 
@@ -56,23 +57,24 @@ function getEffectClass(effect: LogEffect): string | undefined {
 }
 
 export default function BattleLog({ steps }: BattleLogProps): ReactElement {
+  const { battleLog: t } = useArenaTranslation();
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <div className={styles.panel}>
       <button className={styles.toggle} onClick={() => setIsOpen(o => !o)}>
-        <span>Battle Log</span>
+        <span>{t.title}</span>
         <span>{isOpen ? '▴' : '▾'}</span>
       </button>
       {isOpen && (
         <div className={styles.content}>
           {steps.length === 0 ? (
-            <p className={styles.empty}>No actions yet.</p>
+            <p className={styles.empty}>{t.noActionsYet}</p>
           ) : (
             [...steps].reverse().map(step => (
               <div key={step.step} className={styles.stepSection}>
                 <p className={styles.stepHeader}>
-                  Turn {step.step} &mdash; {step.playerName} used{' '}
+                  {t.turnLabel} {step.step} &mdash; {step.playerName} {t.used}{' '}
                   {formatSkillId(step.skillId)}
                 </p>
                 {step.effects.map((effect, i) => (

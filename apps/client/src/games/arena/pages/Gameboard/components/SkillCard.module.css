@@ -1,70 +1,207 @@
 .card {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: var(--surface);
+  padding: 10px 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-base);
+  background: var(--bg-card);
   cursor: pointer;
-  transition: all 0.15s ease;
-  min-width: 80px;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
+  min-height: 44px;
   text-align: center;
+  user-select: none;
+  z-index: 1;
 }
 
-.card:hover:not(.disabled) {
-  border-color: var(--accent);
-  background: var(--surface-elevated);
+.card:hover {
+  z-index: 10;
+}
+
+@media (hover: hover) {
+  .card:hover:not(.disabled) {
+    border-color: var(--accent);
+    box-shadow: var(--shadow-hover-card);
+    transform: translateY(-1px);
+  }
 }
 
 .card.selected {
   border-color: var(--accent);
-  background: var(--accent-bg);
+  background: var(--accent-soft);
+  box-shadow: 0 0 0 2px var(--accent-shadow);
 }
 
 .card.disabled {
-  opacity: 0.5;
   cursor: not-allowed;
 }
 
-.card.onCooldown {
-  opacity: 0.6;
+.card.disabled .icon,
+.card.disabled .name,
+.card.disabled .badge {
+  opacity: 0.4;
+  filter: grayscale(60%);
 }
 
-.skillName {
-  font-size: 0.8rem;
+.icon {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.name {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-main);
+  line-height: 1.2;
+  word-break: break-word;
+}
+
+.badge {
+  font-size: 0.6rem;
   font-weight: 500;
-  color: var(--text-primary);
+  padding: 1px 6px;
+  border-radius: 99px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
-.skillType {
+.badgeActive {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.badgePassive {
+  background: var(--bg-surface-subtle);
+  color: var(--text-muted);
+}
+
+.badgeHealing {
+  background: rgba(82, 196, 26, 0.16);
+  color: #3f8600;
+}
+
+.checkmark {
+  position: absolute;
+  top: 4px;
+  right: 6px;
   font-size: 0.7rem;
-  color: var(--text-secondary);
+  color: var(--accent);
+  font-weight: 700;
 }
 
-.cooldownBadge {
-  font-size: 0.7rem;
-  color: var(--text-secondary);
-  background: var(--surface-elevated);
-  padding: 1px 5px;
-  border-radius: 4px;
+/* ─── Tooltip ────────────────────────────────────────────── */
+.tooltip {
+  position: absolute;
+  z-index: 100;
+  width: max-content;
+  max-width: 180px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-base);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-elevation);
+  padding: 8px 10px;
+  pointer-events: none;
+  animation: fadeIn 0.15s ease;
 }
 
-.placeholder {
+.tooltipAlignCenter {
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.tooltipAlignLeft {
+  left: -4px;
+}
+
+.tooltipAlignRight {
+  right: -4px;
+}
+
+.tooltipAbove {
+  bottom: calc(100% + 6px);
+}
+
+.tooltipBelow {
+  top: calc(100% + 6px);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.tooltipHeader {
   display: flex;
   align-items: center;
-  justify-content: center;
-  min-width: 80px;
-  min-height: 60px;
-  border-radius: 8px;
-  border: 2px dashed var(--border);
-  color: var(--text-secondary);
-  font-size: 0.75rem;
+  gap: 6px;
+  margin-bottom: 6px;
 }
 
-.placeholder.filled {
-  border-style: solid;
-  border-color: var(--accent);
-  background: var(--accent-bg);
+.tooltipIcon {
+  font-size: 1.1rem;
+}
+
+.tooltipName {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.tooltipEffects {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tooltipEffects li {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.tooltipCooldown {
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 1px solid var(--border-base);
+  color: var(--accent) !important;
+  font-weight: 500;
+}
+
+.tooltipEmpty {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.card.onCooldown .icon,
+.card.onCooldown .name,
+.card.onCooldown .badge {
+  opacity: 0.82;
+}
+
+.card.onCooldown .name {
+  opacity: 0.9;
+  color: var(--text-main);
+}
+.cooldownBadge {
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: var(--text-main);
+  background: var(--bg-surface-subtle);
+  padding: 1px 5px;
+  border-radius: 99px;
 }

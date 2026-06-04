@@ -101,7 +101,7 @@ const useSkillHandler =
     }
 
     const skill = getSkillById(skillId);
-    if (!skill || skill.type !== 'active') {
+    if (!skill || (skill.type !== 'active' && skill.type !== 'healing')) {
       ack?.({ ok: false });
       return;
     }

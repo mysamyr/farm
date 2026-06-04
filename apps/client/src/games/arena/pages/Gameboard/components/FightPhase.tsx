@@ -7,6 +7,7 @@ import type { Room } from '@game/shared/types/arena';
 import { useRoom } from '../../../../../hooks/useRoom';
 import { useSnackbar } from '../../../../../hooks/useSnackbar';
 import { emitEvent, getSocketId } from '../../../../../socket/client';
+import { useArenaTranslation } from '../../../hooks/useArenaTranslation';
 import { getActivePlayerId } from '../../../utils';
 
 import BattleLog from './BattleLog';
@@ -17,6 +18,7 @@ import PlayerStatsDisplay from './PlayerStats';
 export default function FightPhase(): ReactElement {
   const { currentRoom: rawCurrentRoom } = useRoom();
   const { showSnackbar } = useSnackbar();
+  const t = useArenaTranslation();
   const room = rawCurrentRoom as unknown as Room | null;
 
   if (!room) {
@@ -37,7 +39,7 @@ export default function FightPhase(): ReactElement {
         { roomId: room.id, skill: skillId, target: opponentId },
         res => {
           if (!res.ok) {
-            showSnackbar('Failed to use skill');
+            showSnackbar(t.fight.failedToUseSkill);
           }
         }
       );
@@ -47,35 +49,44 @@ export default function FightPhase(): ReactElement {
 
   return (
     <div className={styles.container}>
-      <div className={styles.playersRow}>
-        {room.players.map(player => (
-          <PlayerStatsDisplay
-            key={player.id}
-            player={player}
-            isActive={activePlayerId === player.id}
-            isWinner={room.winner === player.id}
-            showStatuses
-          />
-        ))}
+      <div className={styles.layout}>
+        <div className={styles.mainColumn}>
+          <div className={styles.playersRow}>
+            {room.players.map(player => (
+              <PlayerStatsDisplay
+                key={player.id}
+                player={player}
+                isActive={activePlayerId === player.id}
+                isWinner={room.winner === player.id}
+                isLoser={isGameOver && !!room.winner && room.winner !== player.id}
+                isMatchEnded={isGameOver}
+                showStatuses
+              />
+            ))}
+          </div>
+
+          {room.players.map(player => {
+            if (player.id !== socketId) return null;
+            const isStunned = player.statuses.some(
+              s => s.type === 'stun' && s.remainingDuration > 0
+            );
+            return (
+              <PlayerSkills
+                key={player.id}
+                player={player}
+                isMyTurn={isMyTurn}
+                isGameOver={isGameOver}
+                isStunned={isStunned}
+                onUseSkill={handleUseSkill}
+              />
+            );
+          })}
+        </div>
+
+        <aside>
+          <BattleLog steps={room.steps} />
+        </aside>
       </div>
-
-      {room.players.map(player => {
-        if (player.id !== socketId) return null;
-        const isStunned = player.statuses.some(
-          s => s.type === 'stun' && s.remainingDuration > 0
-        );
-        return (
-          <PlayerSkills
-            key={player.id}
-            player={player}
-            isMyTurn={isMyTurn}
-            isStunned={isStunned}
-            onUseSkill={handleUseSkill}
-          />
-        );
-      })}
-
-      <BattleLog steps={room.steps} />
     </div>
   );
 }

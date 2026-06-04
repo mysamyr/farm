@@ -74,11 +74,16 @@ export interface ActiveSkill extends BaseSkill {
   cooldown: number;
 }
 
+export interface HealingSkill extends BaseSkill {
+  type: 'healing';
+  cooldown: number;
+}
+
 export interface PassiveSkill extends BaseSkill {
   type: 'passive';
 }
 
-export type Skill = ActiveSkill | PassiveSkill;
+export type Skill = ActiveSkill | HealingSkill | PassiveSkill;
 
 // === Log ===
 export type LogEffectKind =

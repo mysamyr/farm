@@ -31,7 +31,7 @@
   font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   font-size: 1.4rem;
   font-weight: 800;
-  color: var(--accent);
+  color: #e5e7eb;
   white-space: nowrap;
 }
 
@@ -73,12 +73,13 @@
 
 .burger {
   display: none;
+  align-items: center;
+  justify-content: center;
 }
 
 .burgerGlyph {
   display: block;
   line-height: 1;
-  transform: translateY(-2px);
 }
 
 .sidebarContent {

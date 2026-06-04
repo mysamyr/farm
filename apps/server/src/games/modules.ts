@@ -10,6 +10,7 @@ import type {
 
 import type { AppServer } from '../types';
 
+import { canStartArenaGame } from './arena/helpers';
 import * as arena from './arena/service';
 import * as farm from './farm/service';
 
@@ -17,6 +18,7 @@ export type GameModule<
   TRoom extends Room = Room,
   TPlayer extends Player = Player,
 > = {
+  canStartGame?: (room: TRoom) => boolean;
   addRoomFields: () => Pick<TRoom, 'rules'> & Partial<TRoom>;
   onPlayerRemoved?: (room: TRoom, playerId: string) => void;
   onPlayerReconnected?: (
@@ -51,6 +53,9 @@ const gameModules: Record<GameId, GameModule> = {
     },
   }),
   arena: defineGameModule<ArenaRoom, ArenaPlayer>({
+    canStartGame: room => {
+      return canStartArenaGame(room);
+    },
     addRoomFields: arena.addRoomFields,
     onPlayerRemoved: (room, playerId) => {
       arena.removePlayerFromOrder(room, playerId);

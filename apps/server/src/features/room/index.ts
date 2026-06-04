@@ -7,7 +7,7 @@ import {
   ERROR,
 } from '@game/shared/constants';
 
-import { Room, RoomCreatePayload } from '@game/shared/types';
+import { Player, Room, RoomCreatePayload } from '@game/shared/types';
 import {
   RejoinRoomAck,
   RoomIdPayload,
@@ -32,6 +32,13 @@ import {
   removePlayerFromRoom,
   updateRoomsList,
 } from './room.service';
+
+function createRoomPlayer(player: Player): Player {
+  return {
+    id: player.id,
+    name: player.name,
+  };
+}
 
 const createRoomHandler =
   (io: AppServer, socket: AppSocket) =>
@@ -69,7 +76,7 @@ const createRoomHandler =
     }
 
     const room: Room = createRoom(socket.id, req.game);
-    room.players.push(socket.data.player);
+    room.players.push(createRoomPlayer(socket.data.player));
     void socket.join(room.id);
     updateRoomsList(io);
     if (ack) ack({ ok: true });
@@ -148,7 +155,7 @@ const joinRoomHandler =
       return;
     }
 
-    room.players.push(socket.data.player);
+    room.players.push(createRoomPlayer(socket.data.player));
     void socket.join(room.id);
 
     io.to(room.id).emit(EVENTS.NOTIFICATION, {
@@ -273,9 +280,15 @@ const startGameHandler =
       return;
     }
 
+    const gameModule = getGameModule(room.game);
+    if (gameModule.canStartGame && !gameModule.canStartGame(room)) {
+      ack?.({ ok: false, error: ERROR.CANNOT_START });
+      return;
+    }
+
     room.state = ROOM_STATES.RUNNING;
 
-    getGameModule(room.game).onGameStart?.(io, room);
+    gameModule.onGameStart?.(io, room);
 
     updateRoomsList(io);
     io.to(room.id).emit(EVENTS.GAME_STARTED, { room });

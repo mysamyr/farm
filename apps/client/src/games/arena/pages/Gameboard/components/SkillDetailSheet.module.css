@@ -1,0 +1,75 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--overlay-backdrop);
+  z-index: 200;
+}
+
+.sheet {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 201;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  padding: 20px 20px 32px;
+  box-shadow: var(--shadow-elevation);
+  animation: slideUp 0.2s ease;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.sheetHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.sheetIcon {
+  font-size: 1.8rem;
+}
+
+.sheetName {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.sheetEffects {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sheetEffects li {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  padding: 2px 0;
+}
+
+.sheetCooldown {
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 1px solid var(--border-base);
+  color: var(--accent) !important;
+  font-weight: 500;
+}
+
+.sheetActions {
+  display: flex;
+  gap: 12px;
+}
