@@ -7,7 +7,7 @@
   align-items: center;
   background: var(--bg-card);
   padding: 12px 20px;
-  border-radius: var(--radius-lg);
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
   box-shadow: var(--shadow-elevation);
   gap: 12px;
 }
@@ -31,7 +31,7 @@
   font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   font-size: 1.4rem;
   font-weight: 800;
-  color: #e5e7eb;
+  color: var(--text-main);
   white-space: nowrap;
 }
 
@@ -107,7 +107,7 @@
   justify-content: flex-start;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1023px) {
   .desktopTools {
     display: none;
   }

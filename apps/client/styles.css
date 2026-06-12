@@ -151,7 +151,7 @@ body {
   font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   background-color: var(--bg-page);
   color: var(--text-main);
-  padding: 20px;
+  padding: 0 20px;
 }
 
 h2 {

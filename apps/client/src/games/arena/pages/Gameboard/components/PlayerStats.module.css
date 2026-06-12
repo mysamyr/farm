@@ -18,8 +18,8 @@
 }
 
 .card.winner {
-  border-color: rgba(255, 193, 7, 0.8);
-  box-shadow: 0 0 15px rgba(255, 193, 7, 0.2);
+  border-color: var(--status-highlight);
+  box-shadow: 0 0 8px var(--status-highlight);
 }
 
 .card.loser {
@@ -53,8 +53,8 @@
 .winnerBadge {
   font-size: 0.72rem;
   font-weight: 600;
-  background: rgba(255, 215, 0, 0.15);
-  color: gold;
+  background: var(--status-highlight);
+  color: var(--pc-gray-800);
   padding: 1px 7px;
   border-radius: 99px;
 }
@@ -72,7 +72,7 @@
   gap: 8px;
   min-width: 0;
   font-size: 0.8rem;
-  background: var(--surface-elevated);
+  background: var(--bg-surface-subtle);
   padding: 3px 8px;
   border-radius: var(--radius-sm);
 }
@@ -84,7 +84,7 @@
 
 .statValue {
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--text-main);
 }
 
 .statusList {
@@ -97,11 +97,11 @@
   font-size: 0.72rem;
   padding: 2px 7px;
   border-radius: 99px;
-  background: var(--surface-elevated);
-  color: var(--text-secondary);
+  background: var(--bg-surface-subtle);
+  color: var(--text-muted);
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1023px) {
   .statsGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }

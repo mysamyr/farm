@@ -99,7 +99,7 @@
   color: var(--text-main);
 }
 
-@media (max-width: 600px) {
+@media (max-width: 767px) {
   .playersContainer {
     grid-template-columns: 1fr;
   }

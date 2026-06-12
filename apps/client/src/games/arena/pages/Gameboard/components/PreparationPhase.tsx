@@ -8,7 +8,7 @@ import {
   SKILLS,
 } from '@game/shared/constants/arena';
 import { ARENA_EVENTS } from '@game/shared/constants/arena';
-import type { Room, Skill, SkillId } from '@game/shared/types/arena';
+import type { ActiveSkill, HealingSkill, PassiveSkill, Room, Skill, SkillId } from '@game/shared/types/arena';
 
 import Button from '../../../../../components/ui/Button';
 import { BUTTON_VARIANT } from '../../../../../constants';
@@ -45,17 +45,17 @@ export default function PreparationPhase(): ReactElement {
 
   const baseSkillIds = useMemo(() => new Set(BASE_SKILLS.map(s => s.id)), []);
 
-  const activeSkills = useMemo(
-    () => SKILLS.filter(s => s.type === 'active' && !baseSkillIds.has(s.id)),
+  const activeSkills: ActiveSkill[] = useMemo(
+    () => SKILLS.filter(s => s.type === 'active' && !baseSkillIds.has(s.id)) as ActiveSkill[],
     [baseSkillIds]
   );
 
-  const healingSkills = useMemo(
+  const healingSkills: HealingSkill[] = useMemo(
     () => SKILLS.filter(s => s.type === 'healing'),
     []
   );
 
-  const passiveSkills = useMemo(
+  const passiveSkills: PassiveSkill[] = useMemo(
     () => SKILLS.filter(s => s.type === 'passive'),
     []
   );
@@ -329,7 +329,7 @@ export default function PreparationPhase(): ReactElement {
       <div className={styles.section}>
         <h3 className={styles.sectionTitle}>{t.preparation.activeSkillsLabel}</h3>
         <div className={styles.skillGrid}>
-          {activeSkills.map((skill: Skill) => (
+          {activeSkills.map((skill: ActiveSkill) => (
             <SkillCard
               key={skill.id}
               skill={skill}
@@ -346,7 +346,7 @@ export default function PreparationPhase(): ReactElement {
       <div className={styles.section}>
         <h3 className={styles.sectionTitle}>{t.preparation.healingSkillsLabel}</h3>
         <div className={styles.skillGrid}>
-          {healingSkills.map((skill: Skill) => (
+          {healingSkills.map((skill: HealingSkill) => (
             <SkillCard
               key={skill.id}
               skill={skill}
@@ -363,7 +363,7 @@ export default function PreparationPhase(): ReactElement {
       <div className={styles.section}>
         <h3 className={styles.sectionTitle}>{t.preparation.passiveSkillsLabel}</h3>
         <div className={styles.skillGrid}>
-          {passiveSkills.map((skill: Skill) => (
+          {passiveSkills.map((skill: PassiveSkill) => (
             <SkillCard
               key={skill.id}
               skill={skill}
