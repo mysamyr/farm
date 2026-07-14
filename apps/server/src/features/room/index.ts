@@ -7,7 +7,7 @@ import {
   ERROR,
 } from '@game/shared/constants';
 
-import { Player, Room, RoomCreatePayload } from '@game/shared/types';
+import { BasePlayer, BaseRoom, RoomCreatePayload } from '@game/shared/types';
 import {
   RejoinRoomAck,
   RoomIdPayload,
@@ -33,7 +33,7 @@ import {
   updateRoomsList,
 } from './room.service';
 
-function createRoomPlayer(player: Player): Player {
+function createRoomPlayer(player: BasePlayer): BasePlayer {
   return {
     id: player.id,
     name: player.name,
@@ -75,7 +75,7 @@ const createRoomHandler =
       return;
     }
 
-    const room: Room = createRoom(socket.id, req.game);
+    const room: BaseRoom = createRoom(socket.id, req.game);
     room.players.push(createRoomPlayer(socket.data.player));
     void socket.join(room.id);
     updateRoomsList(io);

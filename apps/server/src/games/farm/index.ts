@@ -6,9 +6,9 @@ import {
 } from '@game/shared/constants/farm';
 import { RoomIdPayload } from '@game/shared/types';
 import {
-  Room,
   GameExchangePayload,
   RollDiceAck,
+  Room,
   SendEmotePayload,
   TradeCancelPayload,
   TradeConfirmPayload,
@@ -18,18 +18,18 @@ import {
 } from '@game/shared/types/farm';
 
 import { LogLevel } from '../../constants';
-import { getRoomById } from '../../features/room/room.service';
+import { getRoomById } from '../../features/room/room.store';
 import { log } from '../../services/logger';
 
 import type { AckFunc, AppServer, AppSocket } from '../../types';
 
 import {
-  isEnoughCardsToExchange,
+  areLimitedCards,
   checkWinner,
+  isEnoughCardsToExchange,
   isExchangeForbidden,
   isTradeAllowed,
   rollDice,
-  areLimitedCards,
   validateTradeOffer,
 } from './helpers';
 import {

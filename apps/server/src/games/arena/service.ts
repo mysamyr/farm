@@ -3,7 +3,11 @@ import {
   EVENTS,
   NOTIFICATION_TYPES,
 } from '@game/shared/constants';
-import { BASE_SKILLS, SKILLS } from '@game/shared/constants/arena';
+import {
+  BASE_SKILLS,
+  NEGATIVE_EFFECTS,
+  SKILLS,
+} from '@game/shared/constants/arena';
 import type {
   ActiveSkill,
   GameAction,
@@ -14,6 +18,7 @@ import type {
   Room,
   SkillId,
   StatusEffect,
+  StatusEffectType,
 } from '@game/shared/types/arena';
 
 import { LogLevel } from '../../constants';
@@ -26,6 +31,7 @@ import { NO_CONTEXT, TURN_START_INDEX } from './constants';
 import {
   calculateDamage,
   getActivePlayer,
+  getLeech,
   getOpponent,
   getPlayerMaxHp,
   getPlayerMinHp,
@@ -144,10 +150,21 @@ function applyDamage(player: Player, damage: number): void {
   player.hp = Math.max(player.hp - damage, minHp);
 }
 
+function cleanseNegativeEffects(player: Player): void {
+  player.statuses = player.statuses.filter(s =>
+    NEGATIVE_EFFECTS.includes(s.type as StatusEffectType)
+  );
+}
+
 function processStatusEffects(
   player: Player,
+  actions: GameAction[],
   ctx: TurnContext = NO_CONTEXT
 ): void {
+  // Clear negative effects before processing
+  if (actions.some(a => a.type === 'CLEANSE')) {
+    cleanseNegativeEffects(player);
+  }
   for (const status of player.statuses) {
     const playerHp = getPlayerStats(player).hp;
     switch (status.type) {
@@ -169,7 +186,11 @@ function processStatusEffects(
           : status.value;
         applyHeal(player, heal);
         if (heal > 0)
-          ctx.addEffect({ kind: 'regeneration', value: heal, target: 'self' });
+          ctx.addEffect({
+            kind: 'regeneration',
+            value: heal,
+            target: 'self',
+          });
         break;
       }
     }
@@ -181,6 +202,7 @@ function applySkillToSelf(
   actions: GameAction[],
   ctx: TurnContext = NO_CONTEXT
 ): void {
+  // Only positive effects
   for (const action of actions) {
     if (action.target !== 'self') continue;
 
@@ -231,6 +253,19 @@ function applyThorns(
   ctx.addEffect({ kind: 'thorns', value: reflected, target: 'self' });
 }
 
+function applyLeech(
+  player: Player,
+  totalDamageDealt: number,
+  leech: number,
+  ctx: TurnContext = NO_CONTEXT
+): void {
+  if (totalDamageDealt <= 0 || leech <= 0) return;
+  // Leech: return % of direct damage as health to attacker
+  const heal = Math.max(Math.floor((totalDamageDealt * leech) / 100), 1);
+  applyHeal(player, heal);
+  ctx.addEffect({ kind: 'leech', value: heal, target: 'self' });
+}
+
 function applySkillToOpponent(
   player: Player,
   opponent: Player,
@@ -248,6 +283,7 @@ function applySkillToOpponent(
   const isCrit = rollChance(attackerStats.crit);
   const hasResistance = isPlayerResistant(opponent);
   const thorns = getThorns(opponent);
+  const leech = getLeech(player);
 
   let totalDamageDealt = 0;
 
@@ -284,6 +320,8 @@ function applySkillToOpponent(
   applyThorns(player, totalDamageDealt, thorns, ctx);
 
   applyLifesteal(player, actions, totalDamageDealt, ctx);
+
+  applyLeech(player, totalDamageDealt, leech, ctx);
 }
 
 function applyStatusToOpponent(
@@ -368,7 +406,7 @@ export function processPlayerTurn(
   const effects: LogEffect[] = [];
   const ctx: TurnContext = { addEffect: e => effects.push(e) };
 
-  processStatusEffects(player, ctx);
+  processStatusEffects(player, skill.actions, ctx);
   if (isDead(player)) {
     log(LogLevel.DEBUG, 'player:dead', { player, reason: 'status_effects' });
     room.steps.push({

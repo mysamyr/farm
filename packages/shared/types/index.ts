@@ -1,4 +1,4 @@
-import type { ROOM_STATES, GAME_IDS } from '../constants';
+import type { GAME_IDS, ROOM_STATES } from '../constants';
 
 export type GameId = (typeof GAME_IDS)[keyof typeof GAME_IDS];
 
@@ -7,11 +7,12 @@ export interface BasePlayer {
   name: string;
 }
 
-export type Player = BasePlayer;
-
-export type BaseRules = Record<string, boolean>;
-
-export type Rules = BaseRules;
+export interface BaseRules {
+  /**
+   * checkbox, number or dropdown
+   */
+  [key: string]: boolean | number | string;
+}
 
 export interface BaseRoom<
   TPlayer extends BasePlayer = BasePlayer,
@@ -26,7 +27,5 @@ export interface BaseRoom<
   players: TPlayer[];
   rules: TRules;
 }
-
-export type Room = BaseRoom;
 
 export * from './socket';

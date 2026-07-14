@@ -1,15 +1,15 @@
 import {
-  ROOM_STATES,
   EVENTS,
   NOTIFICATION_TYPES,
+  ROOM_STATES,
 } from '@game/shared/constants';
 
-import type { Room, GameId } from '@game/shared/types';
+import type { BaseRoom, GameId } from '@game/shared/types';
 
 import { uuid } from '@game/shared/utils';
 
 import { LogLevel } from '../../constants';
-import { getGameModule } from '../../games/modules';
+import { getGameModule } from '../../games';
 import { log } from '../../services/logger';
 import type { AppServer, AppSocket } from '../../types';
 
@@ -18,27 +18,29 @@ import {
   shouldAutowin,
   shouldDeleteRoom,
 } from './room.helpers';
+import {
+  getRoomById as getRoomByIdFromStore,
+  getRoomsMap,
+  listRooms as listRoomsFromStore,
+  removeRoom,
+  setRoom,
+} from './room.store';
 
-const rooms: Map<string, Room> = new Map();
+const rooms = getRoomsMap();
 
-export function getRoomById(roomId: string): Room | null {
-  return rooms.get(roomId) || null;
-}
-
-export function listRooms(): Room[] {
-  return Array.from(rooms.values());
-}
+export const getRoomById = getRoomByIdFromStore;
+export const listRooms = listRoomsFromStore;
 
 export function deleteRoom(roomId: string): void {
-  if (rooms.delete(roomId)) {
+  if (removeRoom(roomId)) {
     log(LogLevel.INFO, 'room:delete', { roomId });
   }
 }
 
-export function createRoom(ownerId: string, game: GameId): Room {
+export function createRoom(ownerId: string, game: GameId): BaseRoom {
   const id = uuid();
   const roomFields = getGameModule(game).addRoomFields();
-  const room: Room = {
+  const room: BaseRoom = {
     id,
     name: generateRoomName(rooms),
     ownerId,
@@ -47,7 +49,7 @@ export function createRoom(ownerId: string, game: GameId): Room {
     players: [],
     ...roomFields,
   };
-  rooms.set(id, room);
+  setRoom(room);
   log(LogLevel.INFO, 'room:create', {
     roomId: id,
     ownerId,
@@ -70,7 +72,7 @@ export function updateRoomsList(io: AppServer): void {
   io.emit(EVENTS.ROOMS_LIST, listRooms());
 }
 
-export function assignNewOwner(room: Room): void {
+export function assignNewOwner(room: BaseRoom): void {
   const nextOwner = room.players[0];
   if (nextOwner) {
     room.ownerId = nextOwner.id;
@@ -79,7 +81,7 @@ export function assignNewOwner(room: Room): void {
 
 export function removePlayerFromRoom(
   io: AppServer,
-  room: Room,
+  room: BaseRoom,
   socket: AppSocket
 ): void {
   const idx = room.players.findIndex(p => p.id === socket.id);
@@ -118,7 +120,7 @@ export function removePlayerFromAllRooms(io: AppServer, socket: AppSocket) {
   }
 }
 
-export function getActiveRoom(playerId: string): Room | null {
+export function getActiveRoom(playerId: string): BaseRoom | null {
   for (const room of rooms.values()) {
     if (room.players.some(p => p.id === playerId)) return room;
   }

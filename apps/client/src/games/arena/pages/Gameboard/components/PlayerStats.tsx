@@ -19,7 +19,10 @@ type PlayerStatsProps = {
 
 const STAT_TYPES: string[] = ['hp', 'armor', 'attack', 'crit', 'dodge'];
 
-function getStatusLabel(status: StatusEffect, statusLabels: Record<string, string>): string {
+function getStatusLabel(
+  status: StatusEffect,
+  statusLabels: Record<string, string>
+): string {
   const label = statusLabels[status.type] ?? status.type;
   if (status.permanent) return label;
   return `${label} (${status.remainingDuration})`;
@@ -64,7 +67,9 @@ export default function PlayerStatsDisplay({
         {isActive && !isWinner && !isMatchEnded && (
           <span className={styles.turnBadge}>{t.fight.turnBadge}</span>
         )}
-        {isWinner && <span className={styles.winnerBadge}>{t.fight.winnerBadge}</span>}
+        {isWinner && (
+          <span className={styles.winnerBadge}>{t.fight.winnerBadge}</span>
+        )}
       </div>
       <div className={styles.statsGrid}>
         {(Object.keys(t.statLabels) as StatType[]).map(stat => (

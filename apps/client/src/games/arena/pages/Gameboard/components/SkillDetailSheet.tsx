@@ -24,7 +24,7 @@ export default function SkillDetailSheet({
   actions,
 }: SkillDetailSheetProps): ReactElement {
   const t = useArenaTranslation();
-  
+
   const icon = getSkillIcon(skill.id);
   const name = getSkillName(skill.id, t.skillNames);
   const effects = getSkillEffects(skill, t.skillEffectLabels, t.statLabels);

@@ -6,6 +6,7 @@
     "moduleResolution": "Bundler",
     "jsx": "react-jsx",
     "types": ["vite/client"],
+    "lib": ["ES2023", "DOM"],
     "noEmit": true,
     "paths": {
       "@game/shared/*": ["../../packages/shared/*"]

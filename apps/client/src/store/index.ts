@@ -1,6 +1,6 @@
 import { ComponentType, Dispatch, SetStateAction } from 'react';
 
-import type { Room } from '@game/shared/types';
+import type { BaseRoom } from '@game/shared/types';
 import { create } from 'zustand';
 
 import languageMap, { LanguageCode } from '../constants/language';
@@ -49,10 +49,10 @@ export const useThemeStore = create<ThemeSlice>((set, get) => ({
 // ─── Rooms ───────────────────────────────────────────────────────────────────
 
 interface RoomsSlice {
-  rooms: Room[];
-  currentRoom: Room | null;
-  setRooms: Dispatch<SetStateAction<Room[]>>;
-  setCurrentRoom: Dispatch<SetStateAction<Room | null>>;
+  rooms: BaseRoom[];
+  currentRoom: BaseRoom | null;
+  setRooms: Dispatch<SetStateAction<BaseRoom[]>>;
+  setCurrentRoom: Dispatch<SetStateAction<BaseRoom | null>>;
   clearCurrentRoom: () => void;
 }
 

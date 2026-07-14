@@ -4,6 +4,7 @@ import type {
   PassiveSkill,
   Skill,
   StatType,
+  StatusEffectType,
 } from '../types/arena';
 
 import { EVENTS } from './index';
@@ -44,7 +45,7 @@ const ACTIVE_SKILLS: ActiveSkill[] = [
   {
     id: 'bleed_strike',
     type: 'active',
-    cooldown: 3,
+    cooldown: 2,
     actions: [
       { type: 'DAMAGE', target: 'opponent', value: 10 },
       {
@@ -60,7 +61,7 @@ const ACTIVE_SKILLS: ActiveSkill[] = [
   {
     id: 'viper_strike',
     type: 'active',
-    cooldown: 3,
+    cooldown: 2,
     actions: [
       { type: 'DAMAGE', target: 'opponent', value: 10 },
       {
@@ -75,7 +76,7 @@ const ACTIVE_SKILLS: ActiveSkill[] = [
   {
     id: 'vampiric_strike',
     type: 'active',
-    cooldown: 3,
+    cooldown: 2,
     actions: [
       { type: 'DAMAGE', target: 'opponent', value: 12 },
       { type: 'LIFESTEAL', target: 'self', value: 50 },
@@ -84,7 +85,7 @@ const ACTIVE_SKILLS: ActiveSkill[] = [
   {
     id: 'knockback',
     type: 'active',
-    cooldown: 5,
+    cooldown: 4,
     actions: [
       { type: 'DAMAGE', target: 'opponent', value: 10 },
       {
@@ -108,13 +109,24 @@ const ACTIVE_SKILLS: ActiveSkill[] = [
       },
     ],
   },
+  {
+    id: 'cleanse',
+    type: 'active',
+    cooldown: 4,
+    actions: [
+      {
+        type: 'CLEANSE',
+        target: 'self',
+      },
+    ],
+  },
 ];
 
 const HEALING_SKILLS: HealingSkill[] = [
   {
     id: 'heal',
     type: 'healing',
-    cooldown: 4,
+    cooldown: 3,
     actions: [{ type: 'HEAL', target: 'self', value: 20 }],
   },
   {
@@ -259,6 +271,19 @@ const PASSIVE_SKILLS: PassiveSkill[] = [
       },
     ],
   },
+  {
+    id: 'leech',
+    type: 'passive',
+    actions: [
+      {
+        type: 'APPLY_STATUS',
+        target: 'self',
+        status: 'leech',
+        value: 30,
+        duration: 999,
+      },
+    ],
+  },
 ];
 
 export const SKILLS: Skill[] = [
@@ -267,6 +292,8 @@ export const SKILLS: Skill[] = [
   ...HEALING_SKILLS,
   ...PASSIVE_SKILLS,
 ];
+
+export const NEGATIVE_EFFECTS: StatusEffectType[] = ['poison', 'bleed', 'stun'];
 
 export const ARENA_EVENTS = {
   ...EVENTS,

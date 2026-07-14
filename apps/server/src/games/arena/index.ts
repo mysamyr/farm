@@ -10,16 +10,16 @@ import type {
 } from '@game/shared/types/arena/socket';
 
 import { LogLevel } from '../../constants';
-import { getRoomById } from '../../features/room/room.service';
+import { getRoomById } from '../../features/room/room.store';
 import { log } from '../../services/logger';
 import type { AckFunc, AppServer, AppSocket } from '../../types';
 
 import {
-  isValidSkillSelection,
   getActivePlayer,
-  getSkillById,
   getOpponent,
+  getSkillById,
   isStunned,
+  isValidSkillSelection,
 } from './helpers';
 import {
   applySkillSelection,

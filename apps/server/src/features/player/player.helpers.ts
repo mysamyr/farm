@@ -1,4 +1,4 @@
-import type { Room } from '@game/shared/types';
+import type { BaseRoom } from '@game/shared/types';
 
 import type { AppSocket } from '../../types';
 
@@ -7,7 +7,7 @@ export function getDefaultPlayerName(socket: AppSocket): string {
 }
 
 export function checkIfPlayerAlreadyInRoom(
-  room: Room,
+  room: BaseRoom,
   socket: AppSocket
 ): boolean {
   for (const player of room.players) {

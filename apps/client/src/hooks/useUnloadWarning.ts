@@ -2,11 +2,11 @@ import { useEffect } from 'react';
 
 import { ROOM_STATES } from '@game/shared/constants';
 
-import type { Room } from '@game/shared/types';
+import type { BaseRoom } from '@game/shared/types';
 
 import { reconnectSocket } from '../socket/client';
 
-export function useUnloadWarning(currentRoom: Room | null): void {
+export function useUnloadWarning(currentRoom: BaseRoom | null): void {
   useEffect(() => {
     const shouldWarn = (): boolean => {
       return !!currentRoom && currentRoom.state === ROOM_STATES.RUNNING;

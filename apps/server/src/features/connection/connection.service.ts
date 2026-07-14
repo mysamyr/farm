@@ -1,5 +1,5 @@
 import { EVENTS } from '@game/shared/constants';
-import type { Player } from '@game/shared/types';
+import type { BasePlayer } from '@game/shared/types';
 
 import { LogLevel } from '../../constants';
 import { log } from '../../services/logger';
@@ -15,7 +15,7 @@ const GRACE_PERIOD_MS = 30 * 1000;
 export type PendingDisconnect = {
   timeout: NodeJS.Timeout;
   oldSocketId: string;
-  player: Player;
+  player: BasePlayer;
 };
 
 const pendingDisconnects = new Map<string, PendingDisconnect>();

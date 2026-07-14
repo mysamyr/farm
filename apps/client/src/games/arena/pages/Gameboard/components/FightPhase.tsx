@@ -58,7 +58,9 @@ export default function FightPhase(): ReactElement {
                 player={player}
                 isActive={activePlayerId === player.id}
                 isWinner={room.winner === player.id}
-                isLoser={isGameOver && !!room.winner && room.winner !== player.id}
+                isLoser={
+                  isGameOver && !!room.winner && room.winner !== player.id
+                }
                 isMatchEnded={isGameOver}
                 showStatuses
               />

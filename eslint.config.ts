@@ -8,7 +8,7 @@ export default defineConfig(
   {
     ignores: ['**/dist/**', '**/node_modules/**', 'assets/**'],
   },
-  // ...tseslint.configs.recommended,
+  ...tseslint.configs.recommended,
   {
     files: ['**/*.{ts,tsx}'],
     plugins: {

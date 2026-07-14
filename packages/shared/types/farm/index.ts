@@ -1,4 +1,4 @@
-import type { ANIMALS, GAME_RULES, EMOTES } from '../../constants/farm';
+import type { ANIMALS, EMOTES, GAME_RULES } from '../../constants/farm';
 
 import type { BasePlayer, BaseRoom } from '../index';
 

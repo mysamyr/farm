@@ -16,6 +16,7 @@ export const SKILL_ICONS: Record<string, string> = {
   heal: '💚',
   regeneration: '🌿',
   magic_shield: '🛡️',
+  cleanse: '✨',
   vampiric_strike: '🧛',
   toughened: '🪨',
   plating: '⚙️',
@@ -23,6 +24,7 @@ export const SKILL_ICONS: Record<string, string> = {
   strong: '💪',
   fanatic: '🔥',
   thorns: '🌵',
+  leech: '🩸',
 };
 
 export function getSkillIcon(skillId: string): string {
@@ -55,6 +57,8 @@ function formatAction(
       return labels.heal.replace('{value}', String(action.value));
     case 'LIFESTEAL':
       return labels.lifesteal.replace('{value}', String(action.value));
+    case 'CLEANSE':
+      return labels.cleanse;
     case 'APPLY_STATUS': {
       const val = action.value !== undefined ? ` (${action.value})` : '';
       const dur =

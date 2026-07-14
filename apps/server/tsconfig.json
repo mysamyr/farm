@@ -1,9 +1,8 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "module": "CommonJS",
-    "moduleResolution": "Node",
     "types": ["node"],
+    "outDir": "dist",
     "paths": {
       "@game/shared/*": ["../../packages/shared/*"]
     }

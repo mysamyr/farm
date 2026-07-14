@@ -11,7 +11,7 @@
     "./utils": "./dist/utils/index.js"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
-    "typecheck": "tsc --noEmit -p tsconfig.json"
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
   }
 }

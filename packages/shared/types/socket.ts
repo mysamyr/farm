@@ -9,7 +9,7 @@ import {
   ServerToClientEvents as ServerToClientFarmEvents,
 } from './farm/socket';
 
-import type { Room, GameId } from './index';
+import type { BaseRoom, GameId } from './index';
 
 export type SocketAck = {
   ok: boolean;
@@ -17,7 +17,7 @@ export type SocketAck = {
 };
 
 export type RejoinRoomAck = SocketAck & {
-  room?: Room;
+  room?: BaseRoom;
 };
 
 export type ServerNotification = {
@@ -34,7 +34,7 @@ export type RoomCreatePayload = {
 };
 
 export type RoomPayload = {
-  room: Room;
+  room: BaseRoom;
 };
 
 export type RoomUpdatePayload = RoomIdPayload & {
@@ -84,7 +84,7 @@ export type ClientToServerEvents = {
 
 export type ServerToClientEvents = {
   [EVENTS.CONNECT]: () => void;
-  [EVENTS.ROOMS_LIST]: (rooms: Room[]) => void;
+  [EVENTS.ROOMS_LIST]: (rooms: BaseRoom[]) => void;
   [EVENTS.ROOM_CLOSED]: () => void;
   [EVENTS.NOTIFICATION]: (payload: ServerNotification) => void;
   [EVENTS.ONLINE_COUNT]: (online: number) => void;

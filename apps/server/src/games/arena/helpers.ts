@@ -72,6 +72,15 @@ export function getThorns(player: Player): number {
   }, 0);
 }
 
+export function getLeech(player: Player): number {
+  return player.statuses.reduce((acc, s) => {
+    if (s.type === 'leech' && (s.permanent || s.remainingDuration > 0)) {
+      acc += s.value ?? 0;
+    }
+    return acc;
+  }, 0);
+}
+
 export function isValidSkillSelection(skills: SkillId[]): boolean {
   const uniqueSkills = new Set(skills);
   if (uniqueSkills.size !== skills.length) return false;

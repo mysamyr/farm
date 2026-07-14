@@ -27,7 +27,11 @@ export default function PlayerSkills({
   onUseSkill,
 }: PlayerSkillsProps): ReactElement {
   const { fight: t } = useArenaTranslation();
-  const [detailSkill, setDetailSkill] = useState<{ def: Skill; currentCooldown: number; disabled: boolean } | null>(null);
+  const [detailSkill, setDetailSkill] = useState<{
+    def: Skill;
+    currentCooldown: number;
+    disabled: boolean;
+  } | null>(null);
   const baseSkillIds = new Set(BASE_SKILLS.map(skill => skill.id));
 
   const skillsByType = player.skills.reduce(
@@ -63,9 +67,7 @@ export default function PlayerSkills({
         )}
       </div>
 
-      <div
-        className={styles.skillsGrid}
-      >
+      <div className={styles.skillsGrid}>
         {[
           ...skillsByType.base,
           ...skillsByType.active,
@@ -85,7 +87,13 @@ export default function PlayerSkills({
               cooldown={playerSkill.cooldown}
               disabled={disabled}
               onClick={() => onUseSkill(playerSkill.id)}
-              onOpenDetail={(skill) => setDetailSkill({ def: skill, currentCooldown: playerSkill.cooldown, disabled })}
+              onOpenDetail={skill =>
+                setDetailSkill({
+                  def: skill,
+                  currentCooldown: playerSkill.cooldown,
+                  disabled,
+                })
+              }
             />
           );
         })}

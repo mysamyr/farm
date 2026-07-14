@@ -7,6 +7,7 @@ import type { AccentColor } from '../constants/theme';
 export interface RuleConfig {
   key: string;
   label: (t: Record<string, string>) => string;
+  // TODO: Add a type for the rule config options when we have more than just a label.
 }
 
 export interface GameConfig {

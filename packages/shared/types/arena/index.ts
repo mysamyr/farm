@@ -10,7 +10,11 @@ export type ActionTarget = 'self' | 'opponent';
 
 export type NegativeStatusType = 'poison' | 'bleed' | 'stun';
 
-export type PositiveStatusType = 'regeneration' | 'resistance' | 'thorns';
+export type PositiveStatusType =
+  | 'regeneration'
+  | 'resistance'
+  | 'thorns'
+  | 'leech';
 
 export type StatusEffectType = NegativeStatusType | PositiveStatusType;
 
@@ -56,11 +60,17 @@ export type LifestealAction = BaseAction & {
   value: number;
 };
 
+export type CleanseAction = BaseAction & {
+  type: 'CLEANSE';
+  target: 'self';
+};
+
 export type GameAction =
   | DamageAction
   | HealAction
   | ApplyStatusAction
   | ModifyStatAction
+  | CleanseAction
   | LifestealAction;
 
 // === Skills ===
@@ -94,6 +104,7 @@ export type LogEffectKind =
   | 'poison'
   | 'regeneration'
   | 'thorns'
+  | 'leech'
   | 'dodge';
 
 export interface LogEffect {

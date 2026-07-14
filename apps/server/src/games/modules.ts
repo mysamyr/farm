@@ -1,4 +1,4 @@
-import type { GameId, Player, Room } from '@game/shared/types';
+import type { GameId, BasePlayer, BaseRoom } from '@game/shared/types';
 import type {
   Room as ArenaRoom,
   Player as ArenaPlayer,
@@ -15,8 +15,8 @@ import * as arena from './arena/service';
 import * as farm from './farm/service';
 
 export type GameModule<
-  TRoom extends Room = Room,
-  TPlayer extends Player = Player,
+  TRoom extends BaseRoom = BaseRoom,
+  TPlayer extends BasePlayer = BasePlayer,
 > = {
   canStartGame?: (room: TRoom) => boolean;
   addRoomFields: () => Pick<TRoom, 'rules'> & Partial<TRoom>;
@@ -30,9 +30,10 @@ export type GameModule<
   onGameStart?: (io: AppServer, room: TRoom) => void;
 };
 
-function defineGameModule<TRoom extends Room, TPlayer extends Player = Player>(
-  module: GameModule<TRoom, TPlayer>
-): GameModule {
+function defineGameModule<
+  TRoom extends BaseRoom,
+  TPlayer extends BasePlayer = BasePlayer,
+>(module: GameModule<TRoom, TPlayer>): GameModule {
   return module as unknown as GameModule;
 }
 

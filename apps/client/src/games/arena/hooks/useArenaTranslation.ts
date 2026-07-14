@@ -9,6 +9,7 @@ export interface ArenaSkillNamesTranslation {
   heal: string;
   regeneration: string;
   magic_shield: string;
+  cleanse: string;
   vampiric_strike: string;
   toughened: string;
   plating: string;
@@ -16,6 +17,7 @@ export interface ArenaSkillNamesTranslation {
   strong: string;
   fanatic: string;
   thorns: string;
+  leech: string;
   [key: string]: string;
 }
 
@@ -33,6 +35,7 @@ export interface ArenaSkillEffectLabelsTranslation {
   lifesteal: string;
   applyStatus: string;
   modifyStat: string;
+  cleanse: string;
   durationTurns: string;
   durationPassive: string;
   cooldown: string;

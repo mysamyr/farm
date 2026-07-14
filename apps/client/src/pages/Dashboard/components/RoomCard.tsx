@@ -1,7 +1,7 @@
 import { ReactElement } from 'react';
 
 import { EVENTS, ROOM_STATES } from '@game/shared/constants';
-import type { Room } from '@game/shared/types';
+import type { BaseRoom } from '@game/shared/types';
 
 import { useNavigate } from 'react-router-dom';
 
@@ -19,7 +19,7 @@ import { resolveErrorMessage } from '../../../utils/language';
 import styles from './RoomCard.module.css';
 
 type RoomCardProps = {
-  room: Room;
+  room: BaseRoom;
   usernameInput: string;
 };
 

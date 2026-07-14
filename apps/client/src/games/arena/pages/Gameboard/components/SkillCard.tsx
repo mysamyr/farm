@@ -85,7 +85,12 @@ export default function SkillCard({
         disabled && styles.disabled,
         onCooldown && styles.onCooldown
       )}
-      onClick={(!disabled && !onCooldown) || (window.matchMedia('(pointer: coarse)').matches && onOpenDetail) ? handleClick : undefined}
+      onClick={
+        (!disabled && !onCooldown) ||
+        (window.matchMedia('(pointer: coarse)').matches && onOpenDetail)
+          ? handleClick
+          : undefined
+      }
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
@@ -104,7 +109,9 @@ export default function SkillCard({
         {skill.type}
       </span>
       {selected && <span className={styles.checkmark}>✓</span>}
-      {onCooldown && <span className={styles.cooldownBadge}>CD: {cooldown}</span>}
+      {onCooldown && (
+        <span className={styles.cooldownBadge}>CD: {cooldown}</span>
+      )}
 
       {tooltipVisible && (
         <div

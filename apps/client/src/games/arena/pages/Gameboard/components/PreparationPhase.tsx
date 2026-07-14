@@ -8,17 +8,21 @@ import {
   SKILLS,
 } from '@game/shared/constants/arena';
 import { ARENA_EVENTS } from '@game/shared/constants/arena';
-import type { ActiveSkill, HealingSkill, PassiveSkill, Room, Skill, SkillId } from '@game/shared/types/arena';
+import type {
+  ActiveSkill,
+  HealingSkill,
+  PassiveSkill,
+  Room,
+  Skill,
+  SkillId,
+} from '@game/shared/types/arena';
 
 import Button from '../../../../../components/ui/Button';
 import { BUTTON_VARIANT } from '../../../../../constants';
 import { useRoom } from '../../../../../hooks/useRoom';
 import { useSnackbar } from '../../../../../hooks/useSnackbar';
 import { emitEvent } from '../../../../../socket/client';
-import {
-  getSkillIcon,
-  getSkillName,
-} from '../../../constants';
+import { getSkillIcon, getSkillName } from '../../../constants';
 import { useArenaTranslation } from '../../../hooks/useArenaTranslation';
 import { getCurrentPlayer } from '../../../utils';
 
@@ -46,7 +50,10 @@ export default function PreparationPhase(): ReactElement {
   const baseSkillIds = useMemo(() => new Set(BASE_SKILLS.map(s => s.id)), []);
 
   const activeSkills: ActiveSkill[] = useMemo(
-    () => SKILLS.filter(s => s.type === 'active' && !baseSkillIds.has(s.id)) as ActiveSkill[],
+    () =>
+      SKILLS.filter(
+        s => s.type === 'active' && !baseSkillIds.has(s.id)
+      ) as ActiveSkill[],
     [baseSkillIds]
   );
 
@@ -124,7 +131,11 @@ export default function PreparationPhase(): ReactElement {
 
   const handleReady = useCallback(() => {
     if (!isReady) return;
-    const skills = [...selectedActives, ...selectedHealing, ...selectedPassives];
+    const skills = [
+      ...selectedActives,
+      ...selectedHealing,
+      ...selectedPassives,
+    ];
     emitEvent(ARENA_EVENTS.PLAYER_READY, { roomId: room.id, skills }, res => {
       if (!res.ok) {
         showSnackbar(t.preparation.failedToReady);
@@ -164,14 +175,18 @@ export default function PreparationPhase(): ReactElement {
           <div className={styles.congratsContent}>
             {isCurrentPlayerWinner ? (
               <>
-                <h2 className={styles.congratsTitle}>{t.preparation.victoryTitle}</h2>
+                <h2 className={styles.congratsTitle}>
+                  {t.preparation.victoryTitle}
+                </h2>
                 <p className={styles.congratsMessage}>
                   {t.preparation.victoryMessage}
                 </p>
               </>
             ) : (
               <>
-                <h2 className={styles.congratsTitle}>{t.preparation.opponentLeftTitle}</h2>
+                <h2 className={styles.congratsTitle}>
+                  {t.preparation.opponentLeftTitle}
+                </h2>
                 <p className={styles.congratsMessage}>
                   {t.preparation.opponentLeftMessage}
                 </p>
@@ -203,7 +218,9 @@ export default function PreparationPhase(): ReactElement {
       <div className={styles.equippedSection}>
         <div className={styles.slotGroup}>
           <div className={styles.slotGroupHeader}>
-            <span className={styles.slotGroupLabel}>{t.preparation.activeSkillsLabel}</span>
+            <span className={styles.slotGroupLabel}>
+              {t.preparation.activeSkillsLabel}
+            </span>
             <span className={styles.slotCounter}>
               {selectedActives.length}/{REQUIRED_ACTIVE_COUNT}
             </span>
@@ -244,7 +261,9 @@ export default function PreparationPhase(): ReactElement {
 
         <div className={styles.slotGroup}>
           <div className={styles.slotGroupHeader}>
-            <span className={styles.slotGroupLabel}>{t.preparation.healingSkillsLabel}</span>
+            <span className={styles.slotGroupLabel}>
+              {t.preparation.healingSkillsLabel}
+            </span>
             <span className={styles.slotCounter}>
               {selectedHealing.length}/{REQUIRED_HEALING_COUNT}
             </span>
@@ -285,7 +304,9 @@ export default function PreparationPhase(): ReactElement {
 
         <div className={styles.slotGroup}>
           <div className={styles.slotGroupHeader}>
-            <span className={styles.slotGroupLabel}>{t.preparation.passiveSkillsLabel}</span>
+            <span className={styles.slotGroupLabel}>
+              {t.preparation.passiveSkillsLabel}
+            </span>
             <span className={styles.slotCounter}>
               {selectedPassives.length}/{REQUIRED_PASSIVE_COUNT}
             </span>
@@ -327,7 +348,9 @@ export default function PreparationPhase(): ReactElement {
 
       {/* Active skill grid */}
       <div className={styles.section}>
-        <h3 className={styles.sectionTitle}>{t.preparation.activeSkillsLabel}</h3>
+        <h3 className={styles.sectionTitle}>
+          {t.preparation.activeSkillsLabel}
+        </h3>
         <div className={styles.skillGrid}>
           {activeSkills.map((skill: ActiveSkill) => (
             <SkillCard
@@ -344,7 +367,9 @@ export default function PreparationPhase(): ReactElement {
 
       {/* Healing skill grid */}
       <div className={styles.section}>
-        <h3 className={styles.sectionTitle}>{t.preparation.healingSkillsLabel}</h3>
+        <h3 className={styles.sectionTitle}>
+          {t.preparation.healingSkillsLabel}
+        </h3>
         <div className={styles.skillGrid}>
           {healingSkills.map((skill: HealingSkill) => (
             <SkillCard
@@ -361,7 +386,9 @@ export default function PreparationPhase(): ReactElement {
 
       {/* Passive skill grid */}
       <div className={styles.section}>
-        <h3 className={styles.sectionTitle}>{t.preparation.passiveSkillsLabel}</h3>
+        <h3 className={styles.sectionTitle}>
+          {t.preparation.passiveSkillsLabel}
+        </h3>
         <div className={styles.skillGrid}>
           {passiveSkills.map((skill: PassiveSkill) => (
             <SkillCard
@@ -386,9 +413,7 @@ export default function PreparationPhase(): ReactElement {
         >
           {t.preparation.readyButton}
         </Button>
-        <Button onClick={handleClear}>
-          {t.preparation.clearButton}
-        </Button>
+        <Button onClick={handleClear}>{t.preparation.clearButton}</Button>
       </div>
 
       {/* Mobile detail bottom sheet */}
@@ -408,8 +433,8 @@ export default function PreparationPhase(): ReactElement {
                     : detailSkill.type === 'healing'
                       ? !selectedHealing.includes(detailSkill.id) &&
                         healingSlotsFull
-                    : !selectedPassives.includes(detailSkill.id) &&
-                      passiveSlotsFull
+                      : !selectedPassives.includes(detailSkill.id) &&
+                        passiveSlotsFull
                 }
               >
                 {(
@@ -417,7 +442,7 @@ export default function PreparationPhase(): ReactElement {
                     ? selectedActives.includes(detailSkill.id)
                     : detailSkill.type === 'healing'
                       ? selectedHealing.includes(detailSkill.id)
-                    : selectedPassives.includes(detailSkill.id)
+                      : selectedPassives.includes(detailSkill.id)
                 )
                   ? t.preparation.unequipButton
                   : t.preparation.equipButton}

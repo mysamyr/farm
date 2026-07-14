@@ -1,4 +1,4 @@
-import type { Player } from '@game/shared/types';
+import type { BasePlayer } from '@game/shared/types';
 import type {
   ClientToServerEvents,
   SocketAck,
@@ -11,7 +11,7 @@ export type AckFunc<TResponse extends SocketAck = SocketAck> = (
 ) => void;
 
 export type SocketSessionData = {
-  player: Player;
+  player: BasePlayer;
   lastEmoteSendTime?: number; // TODO: game-specific
   userId?: string;
 };
