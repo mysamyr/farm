@@ -1,7 +1,2 @@
-node_modules
 .husky
-.idea
-.vscode
-.git
-/assets
 package-lock.json

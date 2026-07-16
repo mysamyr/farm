@@ -151,8 +151,8 @@ function applyDamage(player: Player, damage: number): void {
 }
 
 function cleanseNegativeEffects(player: Player): void {
-  player.statuses = player.statuses.filter(s =>
-    NEGATIVE_EFFECTS.includes(s.type as StatusEffectType)
+  player.statuses = player.statuses.filter(
+    s => !NEGATIVE_EFFECTS.includes(s.type as StatusEffectType)
   );
 }
 

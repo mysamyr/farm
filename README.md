@@ -29,3 +29,11 @@ review possibility to reduce amount of trading events
 @media (max-width: 1023px) { Below Desktop }
 @media (max-width: 767px) { Below Tablet }
 @media (max-width: 479px) { Below Mobile Large }
+
+- heal and after it DoT
+- -HP issue
+- passive that will ignore 5 armor
+- negative status that will ignore 10 armor
+- thorns - 40% instead of 30%
+- regeneration - heal (10HP + effect that will heal based on remaining HP (less HP = more regen))
+- cleansing removes positive effects instead of negative

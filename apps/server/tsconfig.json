@@ -2,10 +2,7 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "types": ["node"],
-    "outDir": "dist",
-    "paths": {
-      "@game/shared/*": ["../../packages/shared/*"]
-    }
+    "outDir": "dist"
   },
   "include": ["src/**/*.ts"]
 }
