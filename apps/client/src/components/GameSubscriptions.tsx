@@ -1,7 +1,7 @@
 import { GAME_WIN_EVENT } from '@game/client-core/constants';
 import type { GameId } from '@game/shared/types';
 
-import { useGameConfig } from '../hooks';
+import { useGameConfig } from '../hooks/index.js';
 
 export function GameSubscriptions({ gameId }: { gameId: GameId }) {
   const { config } = useGameConfig(gameId);

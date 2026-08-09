@@ -1,4 +1,3 @@
-// Arena Game - Shared Module Entry Point
-export * from './constants';
-export * from './types';
-export * from './socket';
+export * from './constants.js';
+export * from './types.js';
+export * from './socket.js';

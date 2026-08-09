@@ -15,11 +15,11 @@ import {
 import { EVENTS, NOTIFICATION_TYPES } from '@game/shared/constants';
 import type { BasePlayer, BaseRoom } from '@game/shared/types';
 
-import { LogLevel } from '../constants';
-import { log } from '../services/logger';
-import type { AppServer } from '../types';
+import { LogLevel } from '../constants/index.js';
+import { log } from '../services/logger.js';
+import type { AppServer } from '../types/index.js';
 
-import { gameRegistry, type ServerGameModule } from './registry';
+import { gameRegistry, type ServerGameModule } from './registry.js';
 
 /**
  * Define a type-safe game module.

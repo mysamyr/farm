@@ -2,9 +2,9 @@ import { type ComponentType, lazy, type LazyExoticComponent } from 'react';
 
 import type { GameId } from '@game/shared/types';
 
-import type { GameConfig } from './types';
+import type { GameConfig } from './types.js';
 
-export type { GameConfig, RuleConfig } from './types';
+export type { GameConfig, RuleConfig } from './types.js';
 
 /** Loader function type for lazy loading game configs */
 export type GameLoader = () => Promise<{ default: GameConfig } | GameConfig>;

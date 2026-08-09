@@ -3,7 +3,7 @@ import { Component, type ErrorInfo, type ReactNode, Suspense } from 'react';
 import type { GameId } from '@game/shared/types';
 
 import styles from './GameContainer.module.css';
-import { gameRegistry } from './registry';
+import { gameRegistry } from './registry.js';
 
 interface GameContainerProps {
   gameId: GameId;

@@ -7,8 +7,8 @@ import {
   getSkillEffects,
   getSkillIcon,
   getSkillName,
-} from '../../../constants';
-import { useArenaTranslation } from '../../../hooks/useArenaTranslation';
+} from '../../../constants/index.js';
+import { useArenaTranslation } from '../../../hooks/useArenaTranslation.js';
 
 import styles from './SkillDetailSheet.module.css';
 

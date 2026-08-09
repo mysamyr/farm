@@ -1,6 +1,6 @@
 import { useShallow } from 'zustand/react/shallow';
 
-import { useSnackbarStore } from '../store';
+import { useSnackbarStore } from '../store/index.js';
 
 export function useSnackbar() {
   return useSnackbarStore(

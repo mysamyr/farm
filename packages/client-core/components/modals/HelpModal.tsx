@@ -1,6 +1,6 @@
 import type { ReactElement } from 'react';
 
-import { classNames } from '../../utils';
+import { classNames } from '../../utils/index.js';
 
 import styles from './HelpModal.module.css';
 

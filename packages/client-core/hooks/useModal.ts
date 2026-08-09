@@ -1,6 +1,6 @@
 import { useShallow } from 'zustand/react/shallow';
 
-import { useModalStore } from '../store';
+import { useModalStore } from '../store/index.js';
 
 export function useModal() {
   return useModalStore(

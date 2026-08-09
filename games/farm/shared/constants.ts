@@ -1,7 +1,3 @@
-// ============================================================================
-// Farm Game - Shared Constants
-// ============================================================================
-
 import { EVENTS, NOTIFICATION_TYPES } from '@game/shared/constants';
 
 export const DEFAULT_CONFIG = {

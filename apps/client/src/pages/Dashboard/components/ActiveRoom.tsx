@@ -14,7 +14,7 @@ import { classNames, resolveErrorMessage } from '@game/client-core/utils';
 import { ERROR, EVENTS, ROOM_STATES, VALIDATION } from '@game/shared/constants';
 import { useNavigate } from 'react-router-dom';
 
-import { useGameConfig } from '../../../hooks';
+import { useGameConfig } from '../../../hooks/index.js';
 
 import styles from './ActiveRoom.module.css';
 

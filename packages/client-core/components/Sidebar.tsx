@@ -2,7 +2,7 @@ import { type ReactElement, type ReactNode, useEffect } from 'react';
 
 import { createPortal } from 'react-dom';
 
-import { classNames } from '../utils';
+import { classNames } from '../utils/index.js';
 
 import styles from './Sidebar.module.css';
 

@@ -4,13 +4,13 @@ import {
   type FarmHelpTranslation,
   type FarmTranslation,
   getFarmTranslations,
-} from '../i18n';
+} from '../i18n/index.js';
 
 export type {
   FarmHelpTranslation,
   FarmTranslation,
   FarmTradeTranslation,
-} from '../i18n';
+} from '../i18n/index.js';
 
 export function useFarmTranslation(): FarmTranslation {
   const { language } = useLanguage();

@@ -13,12 +13,12 @@ import { Navigate, useNavigate } from 'react-router-dom';
 
 import { ARENA_EVENTS, type Room } from '@game/game-arena/shared';
 
-import ArenaHelpModal from '../../components/ArenaHelpModal';
+import ArenaHelpModal from '../../components/ArenaHelpModal.js';
 
-import { isAllPlayersReady } from '../../utils';
+import { isAllPlayersReady } from '../../utils/index.js';
 
-import FightPhase from './components/FightPhase';
-import PreparationPhase from './components/PreparationPhase';
+import FightPhase from './components/FightPhase.js';
+import PreparationPhase from './components/PreparationPhase.js';
 
 import styles from './Gameboard.module.css';
 

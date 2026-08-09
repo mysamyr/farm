@@ -1,14 +1,14 @@
 import { EVENTS } from '@game/shared/constants';
 import type { BasePlayer } from '@game/shared/types';
 
-import { LogLevel } from '../../constants';
-import { log } from '../../services/logger';
-import type { AppServer, AppSocket } from '../../types';
-import { getDefaultPlayerName } from '../player/player.helpers';
+import { LogLevel } from '../../constants/index.js';
+import { log } from '../../services/logger.js';
+import type { AppServer, AppSocket } from '../../types/index.js';
+import { getDefaultPlayerName } from '../player/player.helpers.js';
 import {
   reassignPlayerInRooms,
   removePlayerFromAllRooms,
-} from '../room/room.service';
+} from '../room/room.service.js';
 
 const GRACE_PERIOD_MS = 30 * 1000;
 

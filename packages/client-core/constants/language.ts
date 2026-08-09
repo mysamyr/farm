@@ -1,6 +1,6 @@
 import { ERROR, VALIDATION } from '@game/shared/constants';
 
-import type { Language, Translation } from '../types';
+import type { Language, Translation } from '../types/language.js';
 
 export enum LanguageCode {
   EN = 'en',

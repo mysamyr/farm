@@ -1,4 +1,4 @@
-import type { GAME_IDS, ROOM_STATES } from '../constants';
+import type { GAME_IDS, ROOM_STATES } from '../constants/index.js';
 
 export type GameId = (typeof GAME_IDS)[keyof typeof GAME_IDS];
 
@@ -46,6 +46,6 @@ export type {
   BaseGameEngine,
   BaseGameState,
   GameModule,
-} from '../engine';
+} from '../engine/index.js';
 
-export * from './socket';
+export * from './socket.js';

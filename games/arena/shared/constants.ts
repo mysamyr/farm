@@ -1,7 +1,3 @@
-// ============================================================================
-// Arena Game - Shared Constants
-// ============================================================================
-
 import { EVENTS } from '@game/shared/constants';
 
 import type {
@@ -11,7 +7,7 @@ import type {
   Skill,
   StatType,
   StatusEffectType,
-} from './types';
+} from './types.js';
 
 export const DEFAULT_CONFIG = {
   maxPlayers: 2,

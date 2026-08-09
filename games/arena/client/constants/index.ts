@@ -4,7 +4,7 @@ import type {
   ArenaSkillEffectLabelsTranslation,
   ArenaSkillNamesTranslation,
   ArenaStatLabelsTranslation,
-} from '../hooks/useArenaTranslation';
+} from '../i18n/index.js';
 
 // ─── Skill icons (visual only, not translatable) ─────────
 export const SKILL_ICONS: Record<string, string> = {

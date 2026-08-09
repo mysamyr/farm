@@ -1,4 +1,3 @@
-// Arena Game - Game Engine Logic
 import { ROOM_STATES } from '@game/shared/constants';
 import { shuffleArray } from '@game/shared/utils';
 
@@ -16,9 +15,9 @@ import {
   SKILLS,
   type StatusEffect,
   type StatusEffectType,
-} from '../shared';
+} from '../shared/index.js';
 
-import { NO_CONTEXT, TURN_START_INDEX } from './constants';
+import { NO_CONTEXT, TURN_START_INDEX } from './constants.js';
 import {
   calculateDamage,
   getActivePlayer,
@@ -33,8 +32,8 @@ import {
   isStunned,
   rollChance,
   skillTargetsOpponent,
-} from './helpers';
-import type { TurnContext } from './types';
+} from './helpers.js';
+import type { TurnContext } from './types.js';
 
 export function addRoomFields(): Pick<
   Room,

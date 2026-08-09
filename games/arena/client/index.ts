@@ -1,8 +1,8 @@
 import type { GameConfig } from '@game/client-core/types';
 
-import ArenaHelpModal from './components/ArenaHelpModal';
-import { useGameSubscriptions } from './hooks/useGameSubscriptions';
-import Gameboard from './pages/Gameboard';
+import ArenaHelpModal from './components/ArenaHelpModal.js';
+import { useGameSubscriptions } from './hooks/useGameSubscriptions.js';
+import Gameboard from './pages/Gameboard/index.js';
 
 export const arenaConfig: GameConfig = {
   id: 'arena',

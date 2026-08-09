@@ -4,7 +4,7 @@ import type {
 } from '@game/shared/types';
 import { io, Socket } from 'socket.io-client';
 
-import { getUserId } from '../utils';
+import { getUserId } from '../utils/index.js';
 
 // Base socket with core events only.
 // Game-specific events are handled via type assertions in game packages.

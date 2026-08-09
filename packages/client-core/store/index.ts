@@ -3,14 +3,14 @@ import { ComponentType, Dispatch, SetStateAction } from 'react';
 import type { BaseRoom, GameId, GameMetadata } from '@game/shared/types';
 import { create } from 'zustand';
 
-import type { ThemeCode } from '../constants';
-import languageMap, { LanguageCode } from '../constants/language';
-import type { Translation } from '../types';
+import type { ThemeCode } from '../constants/index.js';
+import languageMap, { LanguageCode } from '../constants/language.js';
+import type { Translation } from '../types/index.js';
 import {
   getLanguage,
   setLanguage as setLanguageStorage,
-} from '../utils/language';
-import { getTheme, setTheme as setThemeStorage } from '../utils/theme';
+} from '../utils/language.js';
+import { getTheme, setTheme as setThemeStorage } from '../utils/theme.js';
 
 // ─── Language ────────────────────────────────────────────────────────────────
 

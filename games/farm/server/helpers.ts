@@ -1,4 +1,3 @@
-// Farm Game - Pure Helper Functions
 import {
   ANIMALS_DEFAULT_QUANTITY,
   type DiceAnimals,
@@ -9,14 +8,14 @@ import {
   type Rules,
   type TradableAnimals,
   type TradeOffer,
-} from '../shared';
+} from '../shared/index.js';
 
 import {
   ANIMALS_WAGES,
   BLUE_DICE,
   FARM_ANIMALS,
   ORANGE_DICE,
-} from './constants';
+} from './constants.js';
 
 export function rollDice(): [DiceAnimals, DiceAnimals] {
   return [

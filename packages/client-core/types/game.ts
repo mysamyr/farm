@@ -2,7 +2,7 @@ import type { ComponentType } from 'react';
 
 import type { GameId } from '@game/shared/types';
 
-import type { AccentColor } from '../constants';
+import type { AccentColor } from '../constants/index.js';
 
 export interface RuleConfig {
   key: string;

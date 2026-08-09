@@ -9,12 +9,12 @@ import {
 } from '@game/client-core/hooks';
 import { VALIDATION } from '@game/shared/constants';
 
-import { GameSelector, Header } from '../../components';
-import { useGameConfig } from '../../hooks';
+import { GameSelector, Header } from '../../components/index.js';
+import { useGameConfig } from '../../hooks/index.js';
 
-import ActionBar from './components/ActionBar';
-import ActiveRoom from './components/ActiveRoom';
-import RoomCard from './components/RoomCard';
+import ActionBar from './components/ActionBar.js';
+import ActiveRoom from './components/ActiveRoom.js';
+import RoomCard from './components/RoomCard.js';
 
 import styles from './Dashboard.module.css';
 

@@ -1,6 +1,6 @@
 import type { RoomIdPayload } from '@game/shared/types';
 
-import type { SKILLS } from './constants';
+import type { SKILLS } from './constants.js';
 
 export type SkillId = (typeof SKILLS)[number]['id'];
 

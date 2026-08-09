@@ -20,13 +20,13 @@ import {
   type SkillId,
 } from '@game/game-arena/shared';
 
-import { getSkillIcon, getSkillName } from '../../../constants';
-import { useArenaTranslation } from '../../../hooks/useArenaTranslation';
-import { getCurrentPlayer } from '../../../utils';
+import { getSkillIcon, getSkillName } from '../../../constants/index.js';
+import { useArenaTranslation } from '../../../hooks/useArenaTranslation.js';
+import { getCurrentPlayer } from '../../../utils/index.js';
 
 import styles from './PreparationPhase.module.css';
-import SkillCard from './SkillCard';
-import SkillDetailSheet from './SkillDetailSheet';
+import SkillCard from './SkillCard.js';
+import SkillDetailSheet from './SkillDetailSheet.js';
 
 export default function PreparationPhase(): ReactElement {
   const { currentRoom: rawCurrentRoom } = useRoom();

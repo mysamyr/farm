@@ -1,1 +1,1 @@
-export { useGameConfig } from './useGameConfig';
+export { useGameConfig } from './useGameConfig.js';

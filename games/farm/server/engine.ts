@@ -1,4 +1,3 @@
-// Farm Game - Game Engine Logic
 import { ERROR, ROOM_STATES } from '@game/shared/constants';
 import { shuffleArray } from '@game/shared/utils';
 
@@ -9,14 +8,14 @@ import {
   type Player,
   type Room,
   type TradableAnimals,
-} from '../shared';
+} from '../shared/index.js';
 
-import { ANIMALS_WAGES, FARM_ANIMALS, TURN_START_INDEX } from './constants';
+import { ANIMALS_WAGES, FARM_ANIMALS, TURN_START_INDEX } from './constants.js';
 import {
   getAddedAnimalsCount,
   getCurrentPlayerTurnId,
   getInitDuckValue,
-} from './helpers';
+} from './helpers.js';
 
 export function addRoomFields(): Pick<Room, 'rules' | 'order' | 'turn'> {
   return {

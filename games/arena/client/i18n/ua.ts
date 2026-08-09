@@ -1,7 +1,4 @@
-/**
- * Arena game translations - Ukrainian
- */
-import type { ArenaHelpTranslation, ArenaTranslation } from './types';
+import type { ArenaHelpTranslation, ArenaTranslation } from './types.js';
 
 export const arenaGameTranslation: ArenaTranslation = {
   name: 'Арена',

@@ -2,7 +2,7 @@ import type { ReactElement } from 'react';
 
 import { HelpModal, type HelpSection } from '@game/client-core/components';
 
-import { useFarmHelpTranslation } from '../hooks/useFarmTranslation';
+import { useFarmHelpTranslation } from '../hooks/useFarmTranslation.js';
 
 export default function FarmHelpModal(): ReactElement {
   const help = useFarmHelpTranslation();

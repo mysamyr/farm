@@ -13,10 +13,10 @@ import {
   type TradableAnimals,
 } from '@game/game-farm/shared';
 
-import { ANIMALS_ICONS_CONFIG } from '../../../constants';
-import { useFarmTranslation } from '../../../hooks/useFarmTranslation';
+import { ANIMALS_ICONS_CONFIG } from '../../../constants/index.js';
+import { useFarmTranslation } from '../../../hooks/useFarmTranslation.js';
 
-import { getCurrentPlayerTurnId } from '../../../utils';
+import { getCurrentPlayerTurnId } from '../../../utils/index.js';
 
 import styles from './PlayersSection.module.css';
 

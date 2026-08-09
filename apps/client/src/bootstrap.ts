@@ -1,4 +1,4 @@
-import { gameRegistry } from './games/registry';
+import { gameRegistry } from './games/registry.js';
 
 // Register game loaders - add new games here
 gameRegistry.registerLoader('farm', () =>

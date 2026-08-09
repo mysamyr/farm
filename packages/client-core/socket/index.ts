@@ -1,4 +1,3 @@
-// Client Core - Socket Utilities
 export {
   emitEvent,
   emitGameEvent,
@@ -8,4 +7,4 @@ export {
   subscribeGameEvent,
   unsubscribe,
   unsubscribeGameEvent,
-} from './client';
+} from './client.js';

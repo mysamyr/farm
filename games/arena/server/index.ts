@@ -1,13 +1,9 @@
-// Arena Game - Server Module Entry Point
-export { BASE_SKILLS, DEFAULT_CONFIG, SKILLS } from '../shared';
+export { BASE_SKILLS, DEFAULT_CONFIG, SKILLS } from '../shared/index.js';
 
-// Server types
-export type { TurnContext } from './types';
+export type { TurnContext } from './types.js';
 
-// Server constants
-export { NO_CONTEXT, TURN_START_INDEX } from './constants';
+export { NO_CONTEXT, TURN_START_INDEX } from './constants.js';
 
-// Helper functions
 export {
   calculateDamage,
   canStartArenaGame,
@@ -26,9 +22,8 @@ export {
   type PlayerStats,
   rollChance,
   skillTargetsOpponent,
-} from './helpers';
+} from './helpers.js';
 
-// Game engine logic
 export {
   addRoomFields,
   applySkillSelection,
@@ -40,12 +35,10 @@ export {
   removePlayerFromOrder,
   setSkillCooldown,
   updateRoomOrderId,
-} from './engine';
+} from './engine.js';
 
-// Socket handlers
-export { registerHandlers } from './handlers';
+export { registerHandlers } from './handlers.js';
 
-// Re-export shared types for server use
 export type {
   ActiveSkill,
   GameAction,
@@ -56,7 +49,6 @@ export type {
   Room,
   Skill,
   StatusEffect,
-} from '../shared';
+} from '../shared/index.js';
 
-// Re-export handler context type
 export type { GameHandlerContext } from '@game/shared/engine';

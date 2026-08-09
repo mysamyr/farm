@@ -1,6 +1,6 @@
 import { useShallow } from 'zustand/react/shallow';
 
-import { useRoomsStore } from '../store';
+import { useRoomsStore } from '../store/index.js';
 
 export function useRoom() {
   return useRoomsStore(

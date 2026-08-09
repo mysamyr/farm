@@ -8,12 +8,12 @@ import { classNames, resolveErrorMessage } from '@game/client-core/utils';
 
 import { FARM_EVENTS, type Room } from '@game/game-farm/shared';
 
-import { useFarmTranslation } from '../../../hooks/useFarmTranslation';
-import { getDiceIcon, isWildAnimal } from '../../../utils';
+import { useFarmTranslation } from '../../../hooks/useFarmTranslation.js';
+import { getDiceIcon, isWildAnimal } from '../../../utils/index.js';
 
 import styles from './DiceSection.module.css';
 
-import EmoteButton from './EmoteButton';
+import EmoteButton from './EmoteButton.js';
 
 type DiceSectionProps = {
   isYourTurn: boolean;

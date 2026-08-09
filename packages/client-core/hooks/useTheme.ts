@@ -1,6 +1,6 @@
 import { useShallow } from 'zustand/react/shallow';
 
-import { useThemeStore } from '../store';
+import { useThemeStore } from '../store/index.js';
 
 export function useTheme() {
   return useThemeStore(

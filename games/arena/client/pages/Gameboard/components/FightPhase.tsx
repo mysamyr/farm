@@ -7,13 +7,13 @@ import { ROOM_STATES } from '@game/shared/constants';
 
 import { ARENA_EVENTS, type Room } from '@game/game-arena/shared';
 
-import { useArenaTranslation } from '../../../hooks/useArenaTranslation';
-import { getActivePlayerId } from '../../../utils';
+import { useArenaTranslation } from '../../../hooks/useArenaTranslation.js';
+import { getActivePlayerId } from '../../../utils/index.js';
 
-import BattleLog from './BattleLog';
+import BattleLog from './BattleLog.js';
 import styles from './FightPhase.module.css';
-import PlayerSkills from './PlayerSkills';
-import PlayerStatsDisplay from './PlayerStats';
+import PlayerSkills from './PlayerSkills.js';
+import PlayerStatsDisplay from './PlayerStats.js';
 
 export default function FightPhase(): ReactElement {
   const { currentRoom: rawCurrentRoom } = useRoom();

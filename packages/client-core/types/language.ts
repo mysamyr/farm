@@ -1,6 +1,6 @@
 import type { ERROR } from '@game/shared/constants';
 
-import type { LanguageCode } from '../constants';
+import type { LanguageCode } from '../constants/index.js';
 
 export type Language = {
   name: string;

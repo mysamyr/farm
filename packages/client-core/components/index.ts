@@ -1,13 +1,13 @@
 // Client Core - UI Components
-export { default as Button } from './Button';
-export { default as Dropdown } from './Dropdown';
-export { default as Modal } from './Modal';
-export { Sidebar } from './Sidebar';
-export { default as Slider } from './Slider';
-export { Snackbar } from './Snackbar';
-export { default as Tag } from './Tag';
-export { WinningAnimation } from './WinningAnimation';
+export { default as Button } from './Button.js';
+export { default as Dropdown } from './Dropdown.js';
+export { default as Modal } from './Modal.js';
+export { Sidebar } from './Sidebar.js';
+export { default as Slider } from './Slider.js';
+export { Snackbar } from './Snackbar.js';
+export { default as Tag } from './Tag.js';
+export { WinningAnimation } from './WinningAnimation.js';
 
 // Modals
-export { default as HelpModal } from './modals/HelpModal';
-export type { HelpSection } from './modals/HelpModal';
+export { default as HelpModal } from './modals/HelpModal.js';
+export type { HelpSection } from './modals/HelpModal.js';

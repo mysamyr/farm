@@ -2,16 +2,16 @@ import { EVENTS, ROOM_STATES } from '@game/shared/constants';
 
 import type { DisconnectReason } from 'socket.io';
 
-import { LogLevel } from '../../constants';
-import { log } from '../../services/logger';
-import type { AppServer, AppSocket } from '../../types';
+import { LogLevel } from '../../constants/index.js';
+import { log } from '../../services/logger.js';
+import type { AppServer, AppSocket } from '../../types/index.js';
 import {
   getActiveRoom,
   removePlayerFromAllRooms,
   updateRoomsList,
-} from '../room/room.service';
+} from '../room/room.service.js';
 
-import { getIpAddress } from './connection.helper';
+import { getIpAddress } from './connection.helper.js';
 import {
   assignPlayer,
   broadcastOnlineCount,
@@ -19,7 +19,7 @@ import {
   gracefulDisconnect,
   PendingDisconnect,
   reconnect,
-} from './connection.service';
+} from './connection.service.js';
 
 const disconnectHandler =
   (io: AppServer, socket: AppSocket, ip: string) =>

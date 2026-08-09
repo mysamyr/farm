@@ -17,13 +17,13 @@ import type {
   RoomUpdatePayload,
 } from '@game/shared/types';
 
-import { LogLevel } from '../../constants';
-import { gameRegistry } from '../../games';
-import { log } from '../../services/logger';
-import type { AckFunc, AppServer, AppSocket } from '../../types';
-import { checkIfPlayerAlreadyInRoom } from '../player/player.helpers';
+import { LogLevel } from '../../constants/index.js';
+import { gameRegistry } from '../../games/index.js';
+import { log } from '../../services/logger.js';
+import type { AckFunc, AppServer, AppSocket } from '../../types/index.js';
+import { checkIfPlayerAlreadyInRoom } from '../player/player.helpers.js';
 
-import { canStartGame } from './room.helpers';
+import { canStartGame } from './room.helpers.js';
 
 import {
   createRoom,
@@ -34,7 +34,7 @@ import {
   listRooms,
   removePlayerFromRoom,
   updateRoomsList,
-} from './room.service';
+} from './room.service.js';
 
 function createRoomPlayer(player: BasePlayer): BasePlayer {
   return {

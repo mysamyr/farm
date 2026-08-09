@@ -12,6 +12,10 @@
     "./constants": "./constants/index.ts",
     "./types": "./types/index.ts"
   },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
   "dependencies": {
     "@game/shared": "*",
     "react": "^19.2.7",

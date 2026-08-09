@@ -5,13 +5,13 @@ import type { RoomPayload, ServerNotification } from '@game/shared/types';
 
 import { useNavigate } from 'react-router-dom';
 
-import { LOCAL_STORAGE_KEY, PATHS } from '../constants';
-import { emitEvent, getSocketId, subscribe } from '../socket';
+import { LOCAL_STORAGE_KEY, PATHS } from '../constants/index.js';
+import { emitEvent, getSocketId, subscribe } from '../socket/index.js';
 
-import { useConnection } from './useConnection';
-import { useLanguage } from './useLanguage';
-import { useRoom } from './useRoom';
-import { useSnackbar } from './useSnackbar';
+import { useConnection } from './useConnection.js';
+import { useLanguage } from './useLanguage.js';
+import { useRoom } from './useRoom.js';
+import { useSnackbar } from './useSnackbar.js';
 
 export function useRoomSubscriptions(): void {
   const navigate = useNavigate();

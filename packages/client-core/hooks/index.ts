@@ -1,13 +1,13 @@
 // Client Core - Hooks
-export { useActiveGame } from './useActiveGame';
-export { useConnection } from './useConnection';
-export { useDebounceCallback } from './useDebounceCallback';
-export { useGames, useGamesLoader } from './useGames';
-export { useLanguage } from './useLanguage';
-export { useModal } from './useModal';
-export { useRoom } from './useRoom';
-export { useRoomSubscriptions } from './useRoomSubscriptions';
-export { useSnackbar } from './useSnackbar';
-export { useTheme } from './useTheme';
-export { useUnloadWarning } from './useUnloadWarning';
-export { useWinningAnimation } from './useWinningAnimation';
+export { useActiveGame } from './useActiveGame.js';
+export { useConnection } from './useConnection.js';
+export { useDebounceCallback } from './useDebounceCallback.js';
+export { useGames, useGamesLoader } from './useGames.js';
+export { useLanguage } from './useLanguage.js';
+export { useModal } from './useModal.js';
+export { useRoom } from './useRoom.js';
+export { useRoomSubscriptions } from './useRoomSubscriptions.js';
+export { useSnackbar } from './useSnackbar.js';
+export { useTheme } from './useTheme.js';
+export { useUnloadWarning } from './useUnloadWarning.js';
+export { useWinningAnimation } from './useWinningAnimation.js';

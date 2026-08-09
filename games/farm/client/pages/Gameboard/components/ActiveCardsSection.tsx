@@ -9,7 +9,7 @@ import {
   type TradableAnimals,
 } from '@game/game-farm/shared';
 
-import { ANIMALS_ICONS_CONFIG } from '../../../constants';
+import { ANIMALS_ICONS_CONFIG } from '../../../constants/index.js';
 
 import styles from './ActiveCardsSection.module.css';
 

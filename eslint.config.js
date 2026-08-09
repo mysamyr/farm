@@ -11,7 +11,6 @@ export default defineConfig(
       '**/dist/**',
       '**/node_modules/**',
       'assets/**',
-      'packages/db-prisma/src/generated/**',
     ],
   },
   {

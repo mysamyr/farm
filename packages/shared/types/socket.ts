@@ -1,6 +1,6 @@
-import { ERROR, EVENTS } from '../constants';
+import { ERROR, EVENTS } from '../constants/index.js';
 
-import type { BaseRoom, GameId } from './index';
+import type { BaseRoom, GameId } from './index.js';
 
 // ============================================================================
 // Core Socket Types

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 import type { GameId } from '@game/shared/types';
 
-import { type GameConfig, gameRegistry } from '../games/registry';
+import { type GameConfig, gameRegistry } from '../games/registry.js';
 
 /**
  * Hook to load a game plugin configuration.

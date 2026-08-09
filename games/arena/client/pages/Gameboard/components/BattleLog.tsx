@@ -4,7 +4,7 @@ import { classNames } from '@game/client-core/utils';
 
 import type { LogEffect, LogStep } from '@game/game-arena/shared';
 
-import { useArenaTranslation } from '../../../hooks/useArenaTranslation';
+import { useArenaTranslation } from '../../../hooks/useArenaTranslation.js';
 
 import styles from './BattleLog.module.css';
 

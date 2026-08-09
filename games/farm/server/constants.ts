@@ -1,10 +1,9 @@
-// Farm Game - Server Constants
 import {
   ANIMALS,
   type DiceAnimals,
   type FarmAnimals,
   type TradableAnimals,
-} from '../shared';
+} from '../shared/index.js';
 
 export const TURN_START_INDEX = 0 as const;
 

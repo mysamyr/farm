@@ -11,7 +11,7 @@ import {
   type EmoteId,
 } from '@game/game-farm/shared';
 
-import EmoteAnimation from './EmoteAnimation';
+import EmoteAnimation from './EmoteAnimation.js';
 
 import styles from './EmoteFloatingContainer.module.css';
 

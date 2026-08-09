@@ -5,7 +5,7 @@ import {
   type TradableAnimals,
 } from '@game/game-farm/shared';
 
-import { ANIMALS_ICONS_CONFIG } from '../constants';
+import { ANIMALS_ICONS_CONFIG } from '../constants/index.js';
 
 export function getCurrentPlayerTurnId(room: Room): string | undefined {
   return room.order[room.turn ?? 0];

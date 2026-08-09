@@ -1,6 +1,6 @@
 import { ReactElement, useEffect, useRef } from 'react';
 
-import type { ModalCloseReason, ModalConfig } from '../store';
+import type { ModalCloseReason, ModalConfig } from '../store/index.js';
 
 type ModalProps = {
   open: boolean;

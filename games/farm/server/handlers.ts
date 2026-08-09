@@ -1,4 +1,3 @@
-// Farm Game - Socket Event Handlers
 import { ERROR, EVENTS } from '@game/shared/constants';
 import type { GameHandlerContext } from '@game/shared/engine';
 import type { RoomIdPayload, SocketAck } from '@game/shared/types';
@@ -17,7 +16,7 @@ import {
   type TradeLockPayload,
   type TradeStartPayload,
   type TradeUpdatePayload,
-} from '../shared';
+} from '../shared/index.js';
 
 import {
   applyDiceResult,
@@ -26,7 +25,7 @@ import {
   checkPlayerAction,
   markWinner,
   setNextTurn,
-} from './engine';
+} from './engine.js';
 import {
   areLimitedCards,
   checkWinner,
@@ -35,7 +34,7 @@ import {
   isTradeAllowed,
   rollDice,
   validateTradeOffer,
-} from './helpers';
+} from './helpers.js';
 
 function winnerHandler(
   ctx: GameHandlerContext,

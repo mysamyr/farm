@@ -2,9 +2,9 @@ import type { GameConfig } from '@game/client-core/types';
 
 import { DEFAULT_CONFIG, GAME_RULES } from '@game/game-farm/shared';
 
-import FarmHelpModal from './components/FarmHelpModal';
-import { useGameSubscriptions } from './hooks/useGameSubscriptions';
-import Gameboard from './pages/Gameboard';
+import FarmHelpModal from './components/FarmHelpModal.js';
+import { useGameSubscriptions } from './hooks/useGameSubscriptions.js';
+import Gameboard from './pages/Gameboard/index.js';
 
 export const farmConfig: GameConfig = {
   id: 'farm',

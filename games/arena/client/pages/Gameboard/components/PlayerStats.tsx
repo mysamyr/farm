@@ -4,8 +4,8 @@ import { classNames } from '@game/client-core/utils';
 
 import type { Player, StatType, StatusEffect } from '@game/game-arena/shared';
 
-import { useArenaTranslation } from '../../../hooks/useArenaTranslation';
-import { getPlayerStats } from '../../../utils';
+import { useArenaTranslation } from '../../../hooks/useArenaTranslation.js';
+import { getPlayerStats } from '../../../utils/index.js';
 
 import styles from './PlayerStats.module.css';
 

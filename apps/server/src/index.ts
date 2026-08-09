@@ -4,13 +4,13 @@ import path from 'node:path';
 import express from 'express';
 import { Server } from 'socket.io';
 
-import config from './config';
-import { LogLevel } from './constants';
-import { gameRegistry } from './games';
-import { httpLogger, log } from './services/logger';
-import { registerSocketHandlers } from './socket/handlers';
+import config from './config/index.js';
+import { LogLevel } from './constants/index.js';
+import { gameRegistry } from './games/index.js';
+import { httpLogger, log } from './services/logger.js';
+import { registerSocketHandlers } from './socket/handlers.js';
 
-import type { AppServer } from './types';
+import type { AppServer } from './types/index.js';
 
 const app = express();
 const server = http.createServer(app);

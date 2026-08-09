@@ -1,9 +1,9 @@
 import { ReactElement, ReactNode, useEffect, useRef, useState } from 'react';
 
-import { BUTTON_VARIANT, ButtonVariant } from '../constants';
-import { classNames } from '../utils';
+import { BUTTON_VARIANT, ButtonVariant } from '../constants/index.js';
+import { classNames } from '../utils/index.js';
 
-import Button from './Button';
+import Button from './Button.js';
 
 import styles from './Dropdown.module.css';
 

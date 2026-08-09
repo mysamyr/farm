@@ -2,7 +2,7 @@ import { ROOM_STATES } from '@game/shared/constants';
 
 import type { BaseRoom } from '@game/shared/types';
 
-import { gameRegistry } from '../../games';
+import { gameRegistry } from '../../games/index.js';
 
 export function canStartGame(room: BaseRoom): boolean {
   const config = gameRegistry.getConfig(room.game);

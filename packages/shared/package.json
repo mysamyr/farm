@@ -5,12 +5,9 @@
   "type": "module",
   "exports": {
     "./constants": "./constants/index.ts",
-    "./constants/*": "./constants/*.ts",
     "./types": "./types/index.ts",
-    "./types/*": "./types/*.ts",
     "./engine": "./engine/index.ts",
-    "./utils": "./utils/index.ts",
-    "./utils/*": "./utils/*.ts"
+    "./utils": "./utils/index.ts"
   },
   "scripts": {
     "build": "tsc",

@@ -1,17 +1,15 @@
 import type { GameHandlerContext } from '@game/shared/engine';
 import type { BaseRoom } from '@game/shared/types';
 
-import { LogLevel } from '../constants';
-import { getRoomById } from '../features/room/room.store';
-import { log } from '../services/logger';
-import type { AppServer, AppSocket } from '../types';
+import { LogLevel } from '../constants/index.js';
+import { getRoomById } from '../features/room/room.store.js';
+import { log } from '../services/logger.js';
+import type { AppServer, AppSocket } from '../types/index.js';
 
-// Re-export registry and modules
-export { gameRegistry } from './registry';
+export { gameRegistry } from './registry.js';
 
-// Import modules to trigger registration
-import { gameRegistry } from './registry';
-import './modules';
+import { gameRegistry } from './registry.js';
+import './modules.js';
 
 /**
  * Creates a GameHandlerContext adapter that bridges Socket.io to the

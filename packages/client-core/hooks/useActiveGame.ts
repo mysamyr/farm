@@ -5,10 +5,10 @@ import type { GameId } from '@game/shared/types';
 
 import { useSearchParams } from 'react-router-dom';
 
-import { emitEvent } from '../socket';
-import { useGamesStore } from '../store';
+import { emitEvent } from '../socket/index.js';
+import { useGamesStore } from '../store/index.js';
 
-import { useRoom } from './useRoom';
+import { useRoom } from './useRoom.js';
 
 const GAME_QUERY_PARAM = 'game';
 

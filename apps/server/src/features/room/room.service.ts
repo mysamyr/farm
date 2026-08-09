@@ -8,23 +8,23 @@ import type { BaseRoom, GameId } from '@game/shared/types';
 
 import { uuid } from '@game/shared/utils';
 
-import { LogLevel } from '../../constants';
-import { gameRegistry } from '../../games';
-import { log } from '../../services/logger';
-import type { AppServer, AppSocket } from '../../types';
+import { LogLevel } from '../../constants/index.js';
+import { gameRegistry } from '../../games/index.js';
+import { log } from '../../services/logger.js';
+import type { AppServer, AppSocket } from '../../types/index.js';
 
 import {
   generateRoomName,
   shouldAutowin,
   shouldDeleteRoom,
-} from './room.helpers';
+} from './room.helpers.js';
 import {
   getRoomById as getRoomByIdFromStore,
   getRoomsMap,
   listRooms as listRoomsFromStore,
   removeRoom,
   setRoom,
-} from './room.store';
+} from './room.store.js';
 
 const rooms = getRoomsMap();
 

@@ -23,6 +23,11 @@ export type ButtonVariant =
   (typeof BUTTON_VARIANT)[keyof typeof BUTTON_VARIANT];
 
 // Re-export from other constant files
-export { type LanguageCode, LANGUAGES_CONFIG } from './language';
-export { ACCENT_COLOR, type AccentColor, THEME, type ThemeCode } from './theme';
-export * from './events';
+export { type LanguageCode, LANGUAGES_CONFIG } from './language.js';
+export {
+  ACCENT_COLOR,
+  type AccentColor,
+  THEME,
+  type ThemeCode,
+} from './theme.js';
+export * from './events.js';

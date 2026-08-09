@@ -13,7 +13,7 @@ import { EVENTS, ROOM_STATES } from '@game/shared/constants';
 import type { BaseRoom } from '@game/shared/types';
 import { useNavigate } from 'react-router-dom';
 
-import { useGameConfig } from '../../../hooks';
+import { useGameConfig } from '../../../hooks/index.js';
 
 import styles from './RoomCard.module.css';
 

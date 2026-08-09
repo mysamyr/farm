@@ -1,7 +1,7 @@
 import type { ButtonHTMLAttributes, ReactElement, ReactNode } from 'react';
 
-import { BUTTON_VARIANT, ButtonVariant } from '../constants';
-import { classNames } from '../utils';
+import { BUTTON_VARIANT, ButtonVariant } from '../constants/index.js';
+import { classNames } from '../utils/index.js';
 
 import styles from './Button.module.css';
 

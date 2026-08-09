@@ -10,11 +10,11 @@ import {
   type Skill,
 } from '@game/game-arena/shared';
 
-import { useArenaTranslation } from '../../../hooks/useArenaTranslation';
+import { useArenaTranslation } from '../../../hooks/useArenaTranslation.js';
 
 import styles from './PlayerSkills.module.css';
-import SkillCard from './SkillCard';
-import SkillDetailSheet from './SkillDetailSheet';
+import SkillCard from './SkillCard.js';
+import SkillDetailSheet from './SkillDetailSheet.js';
 
 type PlayerSkillsProps = {
   player: Player;

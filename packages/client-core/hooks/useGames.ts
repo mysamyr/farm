@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 
 import type { GameMetadata } from '@game/shared/types';
 
-import { useGamesStore } from '../store';
+import { useGamesStore } from '../store/index.js';
 
 /**
  * Fetches available games from the server and populates the games store.

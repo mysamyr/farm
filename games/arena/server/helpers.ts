@@ -1,4 +1,3 @@
-// Arena Game - Pure Helper Functions
 import {
   BASE_SKILLS,
   type GameAction,
@@ -12,7 +11,7 @@ import {
   SKILLS,
   type StatType,
   type StatusEffect,
-} from '../shared';
+} from '../shared/index.js';
 
 const STAT_TYPES: StatType[] = ['hp', 'armor', 'attack', 'crit', 'dodge'];
 

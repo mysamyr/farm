@@ -17,17 +17,17 @@ import { Navigate, useNavigate } from 'react-router-dom';
 
 import { FARM_EVENTS, GAME_RULES, type Room } from '@game/game-farm/shared';
 
-import FarmHelpModal from '../../components/FarmHelpModal';
+import FarmHelpModal from '../../components/FarmHelpModal.js';
 
-import TradeModal from '../../components/TradeModal';
-import { useFarmTranslation } from '../../hooks/useFarmTranslation';
-import { getCurrentPlayerTurnId } from '../../utils';
+import TradeModal from '../../components/TradeModal.js';
+import { useFarmTranslation } from '../../hooks/useFarmTranslation.js';
+import { getCurrentPlayerTurnId } from '../../utils/index.js';
 
-import ActiveCardsSection from './components/ActiveCardsSection';
-import DiceSection from './components/DiceSection';
-import EmoteFloatingContainer from './components/EmoteFloatingContainer';
-import ExchangeSection from './components/ExchangeSection';
-import PlayersSection from './components/PlayersSection';
+import ActiveCardsSection from './components/ActiveCardsSection.js';
+import DiceSection from './components/DiceSection.js';
+import EmoteFloatingContainer from './components/EmoteFloatingContainer.js';
+import ExchangeSection from './components/ExchangeSection.js';
+import PlayersSection from './components/PlayersSection.js';
 
 import styles from './Gameboard.module.css';
 

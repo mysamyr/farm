@@ -1,6 +1,6 @@
 import { loadEnvFile } from 'node:process';
 
-import { Env, LogLevel } from '../constants';
+import { Env, LogLevel } from '../constants/index.js';
 
 try {
   loadEnvFile('.env');

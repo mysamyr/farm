@@ -5,7 +5,7 @@ import type {
   SocketAck,
 } from '@game/shared/types';
 
-import type { ANIMALS, EMOTES, GAME_RULES } from './constants';
+import type { ANIMALS, EMOTES, GAME_RULES } from './constants.js';
 
 // ============================================================================
 // Core Game Types

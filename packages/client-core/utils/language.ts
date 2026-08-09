@@ -1,9 +1,9 @@
 import { ERROR } from '@game/shared/constants';
 
-import { LOCAL_STORAGE_KEY } from '../constants';
-import { DEFAULT_LANGUAGE, LanguageCode } from '../constants/language';
+import { LOCAL_STORAGE_KEY } from '../constants/index.js';
+import { DEFAULT_LANGUAGE, LanguageCode } from '../constants/language.js';
 
-import type { Translation } from '../types';
+import type { Translation } from '../types/index.js';
 
 function isLanguageCode(value: string | null): value is LanguageCode {
   return (

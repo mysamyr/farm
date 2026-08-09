@@ -1,11 +1,11 @@
 import { EVENTS } from '@game/shared/constants';
 
-import { registerConnection } from '../features/connection';
-import { registerPlayerFeature } from '../features/player';
-import { registerRoomFeature } from '../features/room';
-import { registerAllGameFeatures } from '../games';
+import { registerConnection } from '../features/connection/index.js';
+import { registerPlayerFeature } from '../features/player/index.js';
+import { registerRoomFeature } from '../features/room/index.js';
+import { registerAllGameFeatures } from '../games/index.js';
 
-import type { AppServer, AppSocket } from '../types';
+import type { AppServer, AppSocket } from '../types/index.js';
 
 export function registerSocketHandlers(io: AppServer): void {
   io.on(EVENTS.CONNECTION, (socket: AppSocket) => {

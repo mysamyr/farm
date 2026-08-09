@@ -1,7 +1,7 @@
 import type { NextFunction, Request, Response } from 'express';
 
-import config from '../config';
-import { LogLevel } from '../constants';
+import config from '../config/index.js';
+import { LogLevel } from '../constants/index.js';
 
 const levels: Record<LogLevel, number> = {
   [LogLevel.DEBUG]: 10,

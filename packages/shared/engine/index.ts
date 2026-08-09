@@ -1,4 +1,4 @@
-import type { BasePlayer, BaseRoom, BaseRules } from '../types';
+import type { BasePlayer, BaseRoom, BaseRules } from '../types/index.js';
 
 /**
  * Base game state that all game states must extend.

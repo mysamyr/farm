@@ -1,2 +1,2 @@
-export * from './array';
-export { default as uuid } from './uuid';
+export * from './array.js';
+export { default as uuid } from './uuid.js';

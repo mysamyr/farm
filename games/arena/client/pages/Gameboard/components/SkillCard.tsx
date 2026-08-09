@@ -9,8 +9,8 @@ import {
   getSkillIcon,
   getSkillName,
   getSkillCooldownText,
-} from '../../../constants';
-import { useArenaTranslation } from '../../../hooks/useArenaTranslation';
+} from '../../../constants/index.js';
+import { useArenaTranslation } from '../../../hooks/useArenaTranslation.js';
 
 import styles from './SkillCard.module.css';
 

@@ -1,4 +1,4 @@
-import type { FarmHelpTranslation, FarmTranslation } from './types';
+import type { FarmHelpTranslation, FarmTranslation } from './types.js';
 
 export const farmGameTranslation: FarmTranslation = {
   name: 'Super Farm',

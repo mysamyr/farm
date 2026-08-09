@@ -30,6 +30,6 @@ export function t(
 }
 
 // Re-export from other utility files
-export { getUserId } from './identity';
-export { getLanguage, resolveErrorMessage, setLanguage } from './language';
-export { applyAccentColor, getTheme, setTheme } from './theme';
+export { getUserId } from './identity.js';
+export { getLanguage, resolveErrorMessage, setLanguage } from './language.js';
+export { applyAccentColor, getTheme, setTheme } from './theme.js';

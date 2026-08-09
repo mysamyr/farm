@@ -1,6 +1,6 @@
 import { useShallow } from 'zustand/react/shallow';
 
-import { useLanguageStore } from '../store';
+import { useLanguageStore } from '../store/index.js';
 
 export function useLanguage() {
   return useLanguageStore(

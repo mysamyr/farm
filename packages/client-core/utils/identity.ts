@@ -1,6 +1,6 @@
 import { uuid } from '@game/shared/utils';
 
-import { LOCAL_STORAGE_KEY } from '../constants';
+import { LOCAL_STORAGE_KEY } from '../constants/index.js';
 
 export function getUserId(): string {
   let userId = window.localStorage.getItem(LOCAL_STORAGE_KEY.USER_ID);

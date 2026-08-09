@@ -23,9 +23,9 @@ import {
   useLocation,
 } from 'react-router-dom';
 
-import { GameSubscriptions } from './components/GameSubscriptions';
-import { GameContainer } from './games';
-import Dashboard from './pages/Dashboard';
+import { GameSubscriptions } from './components/GameSubscriptions.js';
+import { GameContainer } from './games/index.js';
+import Dashboard from './pages/Dashboard/index.js';
 
 function AppContent() {
   const { open: modalOpen, modal, requestCloseModal } = useModal();

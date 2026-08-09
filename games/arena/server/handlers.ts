@@ -1,4 +1,3 @@
-// Arena Game - Socket Event Handlers
 import {
   ERROR,
   EVENTS,
@@ -15,16 +14,20 @@ import {
   type PlayerReadyPayload,
   type Room,
   type UseSkillPayload,
-} from '../shared';
+} from '../shared/index.js';
 
-import { applySkillSelection, markWinner, processPlayerTurn } from './engine';
+import {
+  applySkillSelection,
+  markWinner,
+  processPlayerTurn,
+} from './engine.js';
 import {
   getActivePlayer,
   getOpponent,
   getSkillById,
   isStunned,
   isValidSkillSelection,
-} from './helpers';
+} from './helpers.js';
 
 type AckFunc<T extends SocketAck = SocketAck> = (response: T) => void;
 

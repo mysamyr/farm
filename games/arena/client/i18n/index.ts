@@ -3,9 +3,9 @@
  */
 import type { LanguageCode } from '@game/client-core/constants';
 
-import * as en from './en';
-import type { ArenaHelpTranslation, ArenaTranslation } from './types';
-import * as ua from './ua';
+import * as en from './en.js';
+import type { ArenaHelpTranslation, ArenaTranslation } from './types.js';
+import * as ua from './ua.js';
 
 export type {
   ArenaBattleLogTranslation,
@@ -16,7 +16,7 @@ export type {
   ArenaSkillNamesTranslation,
   ArenaStatLabelsTranslation,
   ArenaTranslation,
-} from './types';
+} from './types.js';
 
 const translations: Record<
   LanguageCode,

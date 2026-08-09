@@ -1,4 +1,4 @@
-export { ERROR } from './errors';
+export { ERROR } from './errors.js';
 
 export const GAME_IDS = {
   FARM: 'farm',

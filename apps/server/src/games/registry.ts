@@ -6,7 +6,7 @@ import type {
   GameMetadata,
 } from '@game/shared/types';
 
-import type { AppServer } from '../types';
+import type { AppServer } from '../types/index.js';
 
 /**
  * Server-side game module interface.

@@ -1,9 +1,9 @@
-import { LOCAL_STORAGE_KEY } from '../constants';
+import { LOCAL_STORAGE_KEY } from '../constants/index.js';
 import {
   DEFAULT_THEME,
   type AccentColor,
   type ThemeCode,
-} from '../constants/theme';
+} from '../constants/theme.js';
 
 export function getTheme(): ThemeCode {
   return (
