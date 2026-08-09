@@ -1,5 +1,8 @@
 # Farm Board game
 
+type: module
+Header - add centralized leave button
+
 - [ ] generate README.md
 
 review logging on server

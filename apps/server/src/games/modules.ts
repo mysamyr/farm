@@ -1,44 +1,65 @@
-import type { GameId, BasePlayer, BaseRoom } from '@game/shared/types';
-import type {
-  Room as ArenaRoom,
-  Player as ArenaPlayer,
-} from '@game/shared/types/arena';
-import type {
-  Room as FarmRoom,
-  Player as FarmPlayer,
-} from '@game/shared/types/farm';
+import * as arena from '@game/game-arena/server';
+import {
+  DEFAULT_CONFIG as ARENA_CONFIG,
+  GAME_METADATA as ARENA_METADATA,
+  type Player as ArenaPlayer,
+  type Room as ArenaRoom,
+} from '@game/game-arena/shared';
+import * as farm from '@game/game-farm/server';
+import {
+  DEFAULT_CONFIG as FARM_CONFIG,
+  GAME_METADATA as FARM_METADATA,
+  type Player as FarmPlayer,
+  type Room as FarmRoom,
+} from '@game/game-farm/shared';
+import { EVENTS, NOTIFICATION_TYPES } from '@game/shared/constants';
+import type { BasePlayer, BaseRoom } from '@game/shared/types';
 
+import { LogLevel } from '../constants';
+import { log } from '../services/logger';
 import type { AppServer } from '../types';
 
-import { canStartArenaGame } from './arena/helpers';
-import * as arena from './arena/service';
-import * as farm from './farm/service';
+import { gameRegistry, type ServerGameModule } from './registry';
 
-export type GameModule<
-  TRoom extends BaseRoom = BaseRoom,
-  TPlayer extends BasePlayer = BasePlayer,
-> = {
-  canStartGame?: (room: TRoom) => boolean;
-  addRoomFields: () => Pick<TRoom, 'rules'> & Partial<TRoom>;
-  onPlayerRemoved?: (room: TRoom, playerId: string) => void;
-  onPlayerReconnected?: (
-    room: TRoom,
-    oldPlayerId: string,
-    newPlayerId: string
-  ) => void;
-  onPlayerWin?: (io: AppServer, room: TRoom, player: TPlayer) => void;
-  onGameStart?: (io: AppServer, room: TRoom) => void;
-};
-
+/**
+ * Define a type-safe game module.
+ */
 function defineGameModule<
   TRoom extends BaseRoom,
   TPlayer extends BasePlayer = BasePlayer,
->(module: GameModule<TRoom, TPlayer>): GameModule {
-  return module as unknown as GameModule;
+>(module: ServerGameModule<TRoom, TPlayer>): ServerGameModule<TRoom, TPlayer> {
+  return module;
 }
 
-const gameModules: Record<GameId, GameModule> = {
-  farm: defineGameModule<FarmRoom, FarmPlayer>({
+function createWinnerHandler<
+  TRoom extends BaseRoom,
+  TPlayer extends BasePlayer,
+>(markWinner: (room: TRoom, player: TPlayer) => void) {
+  return (io: AppServer, room: TRoom, player: TPlayer): void => {
+    markWinner(room, player);
+
+    log(LogLevel.INFO, 'game:finished', {
+      roomId: room.id,
+      winnerId: player.id,
+      winnerName: player.name,
+    });
+
+    io.to(room.id).emit(EVENTS.NOTIFICATION, {
+      type: NOTIFICATION_TYPES.GAME_FINISHED,
+      data: player.name,
+    });
+  };
+}
+
+// Register Farm game module
+gameRegistry.register(
+  defineGameModule<FarmRoom, FarmPlayer>({
+    gameId: 'farm',
+    config: {
+      minPlayers: FARM_CONFIG.minPlayers,
+      maxPlayers: FARM_CONFIG.maxPlayers,
+    },
+    metadata: FARM_METADATA,
     addRoomFields: farm.addRoomFields,
     onPlayerRemoved: (room, playerId) => {
       farm.removePlayerFromOrder(room, playerId);
@@ -46,16 +67,25 @@ const gameModules: Record<GameId, GameModule> = {
     onPlayerReconnected: (room, oldPlayerId, newPlayerId) => {
       farm.updateRoomOrderId(room, oldPlayerId, newPlayerId);
     },
-    onPlayerWin: (io, room, player) => {
-      farm.winnerHandler(io, room, player);
+    onPlayerWin: createWinnerHandler<FarmRoom, FarmPlayer>(farm.markWinner),
+    onGameStart: (_io, room) => {
+      farm.initGameState(room);
     },
-    onGameStart: (io, room) => {
-      farm.initGameState(io, room);
+    registerHandlers: farm.registerHandlers,
+  })
+);
+
+// Register Arena game module
+gameRegistry.register(
+  defineGameModule<ArenaRoom, ArenaPlayer>({
+    gameId: 'arena',
+    metadata: ARENA_METADATA,
+    config: {
+      minPlayers: ARENA_CONFIG.minPlayers,
+      maxPlayers: ARENA_CONFIG.maxPlayers,
     },
-  }),
-  arena: defineGameModule<ArenaRoom, ArenaPlayer>({
     canStartGame: room => {
-      return canStartArenaGame(room);
+      return arena.canStartArenaGame(room);
     },
     addRoomFields: arena.addRoomFields,
     onPlayerRemoved: (room, playerId) => {
@@ -64,15 +94,10 @@ const gameModules: Record<GameId, GameModule> = {
     onPlayerReconnected: (room, oldPlayerId, newPlayerId) => {
       arena.updateRoomOrderId(room, oldPlayerId, newPlayerId);
     },
-    onPlayerWin: (io, room, player) => {
-      arena.winnerHandler(io, room, player);
+    onPlayerWin: createWinnerHandler<ArenaRoom, ArenaPlayer>(arena.markWinner),
+    onGameStart: (_io, room) => {
+      arena.initGameState(room);
     },
-    onGameStart: (io, room) => {
-      arena.initGameState(io, room);
-    },
-  }),
-};
-
-export function getGameModule(game: GameId): GameModule {
-  return gameModules[game];
-}
+    registerHandlers: arena.registerHandlers,
+  })
+);

@@ -5,11 +5,6 @@ export const GAME_IDS = {
   ARENA: 'arena',
 } as const;
 
-export const DEFAULT_CONFIG = {
-  maxPlayers: 2,
-  minPlayers: 2,
-} as const;
-
 export enum ROOM_STATES {
   IDLE = 'idle',
   RUNNING = 'running',

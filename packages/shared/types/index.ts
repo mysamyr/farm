@@ -2,6 +2,19 @@ import type { GAME_IDS, ROOM_STATES } from '../constants';
 
 export type GameId = (typeof GAME_IDS)[keyof typeof GAME_IDS];
 
+/**
+ * Runtime game metadata provided by the server.
+ * Used by the client to display game info without hardcoding.
+ */
+export interface GameMetadata {
+  id: GameId;
+  name: string;
+  emoji: string;
+  color: string;
+  minPlayers: number;
+  maxPlayers: number;
+}
+
 export interface BasePlayer {
   id: string;
   name: string;
@@ -27,5 +40,12 @@ export interface BaseRoom<
   players: TPlayer[];
   rules: TRules;
 }
+
+export type {
+  ActionResult,
+  BaseGameEngine,
+  BaseGameState,
+  GameModule,
+} from '../engine';
 
 export * from './socket';

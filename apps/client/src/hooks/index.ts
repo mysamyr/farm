@@ -1,0 +1,1 @@
+export { useGameConfig } from './useGameConfig';

@@ -1,17 +1,17 @@
 import { type ChangeEvent, useCallback } from 'react';
 
+import { Button } from '@game/client-core/components';
+import { LOCAL_STORAGE_KEY } from '@game/client-core/constants';
+import {
+  useActiveGame,
+  useDebounceCallback,
+  useLanguage,
+  useRoom,
+  useSnackbar,
+} from '@game/client-core/hooks';
+import { emitEvent } from '@game/client-core/socket';
+import { resolveErrorMessage } from '@game/client-core/utils';
 import { ERROR, EVENTS, VALIDATION } from '@game/shared/constants';
-
-import Button from '../../../components/ui/Button';
-import { LOCAL_STORAGE_KEY } from '../../../constants';
-import { useActiveGame } from '../../../hooks/useActiveGame';
-import { useDebounceCallback } from '../../../hooks/useDebounceCallback';
-import { useLanguage } from '../../../hooks/useLanguage';
-import { useRoom } from '../../../hooks/useRoom';
-import { useSnackbar } from '../../../hooks/useSnackbar';
-
-import { emitEvent } from '../../../socket/client';
-import { resolveErrorMessage } from '../../../utils/language';
 
 import styles from './ActionBar.module.css';
 

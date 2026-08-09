@@ -1,20 +1,19 @@
 import { ReactElement } from 'react';
 
+import { Button, Tag } from '@game/client-core/components';
+import { BUTTON_VARIANT, PATHS } from '@game/client-core/constants';
+import { useGames, useLanguage, useRoom, useSnackbar } from '@game/client-core/hooks';
+import { emitEvent, getSocketId } from '@game/client-core/socket';
+import {
+  classNames,
+  getOwnerName,
+  resolveErrorMessage,
+} from '@game/client-core/utils';
 import { EVENTS, ROOM_STATES } from '@game/shared/constants';
 import type { BaseRoom } from '@game/shared/types';
-
 import { useNavigate } from 'react-router-dom';
 
-import Button from '../../../components/ui/Button';
-import Tag from '../../../components/ui/Tag';
-import { BUTTON_VARIANT, PATHS } from '../../../constants';
-import { getGameConfig } from '../../../games/registry';
-import { useLanguage } from '../../../hooks/useLanguage';
-import { useRoom } from '../../../hooks/useRoom';
-import { useSnackbar } from '../../../hooks/useSnackbar';
-import { emitEvent, getSocketId } from '../../../socket/client';
-import { classNames, getOwnerName } from '../../../utils';
-import { resolveErrorMessage } from '../../../utils/language';
+import { useGameConfig } from '../../../hooks';
 
 import styles from './RoomCard.module.css';
 
@@ -31,11 +30,16 @@ export default function RoomCard({
   const { translation } = useLanguage();
   const { currentRoom } = useRoom();
   const { showSnackbar } = useSnackbar();
+  const { getGame } = useGames();
+  const { config: gameConfig } = useGameConfig(room.game);
 
-  const gameConfig = getGameConfig(room.game);
+  const gameMetadata = getGame(room.game);
+  const maxPlayers = gameMetadata?.maxPlayers ?? 4;
+  const rules = gameConfig?.rules ?? [];
+
   const isOwner = room.ownerId === getSocketId();
   const ownerLabel = isOwner ? translation.you : getOwnerName(room);
-  const isFull = room.players.length >= gameConfig.maxPlayers;
+  const isFull = room.players.length >= maxPlayers;
   const isInRoom = room.players.some(player => player.id === getSocketId());
   const isAlreadyInRoom = !!currentRoom;
   const canJoinState = room.state === ROOM_STATES.IDLE;
@@ -66,11 +70,11 @@ export default function RoomCard({
 
       <div className={styles.roomInfo}>
         <span>
-          👥 {room.players.length}/{gameConfig.maxPlayers}
+          👥 {room.players.length}/{maxPlayers}
         </span>
-        {gameConfig.rules.length > 0 && (
+        {rules.length > 0 && (
           <div className={styles.rules}>
-            {gameConfig.rules
+            {rules
               .filter(rule => room.rules[rule.key])
               .map(rule => (
                 <Tag key={rule.key}>

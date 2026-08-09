@@ -1,34 +1,28 @@
 import { type ReactElement } from 'react';
 
-import { GAME_IDS } from '@game/shared/constants';
-
-import { getGameConfig } from '../../games/registry';
-
-import { useActiveGame } from '../../hooks/useActiveGame';
-import { useLanguage } from '../../hooks/useLanguage';
+import { useActiveGame, useGames } from '@game/client-core/hooks';
 
 import styles from './GameSelector.module.css';
 
-export default function GameSelector(): ReactElement {
-  const { translation } = useLanguage();
+export function GameSelector(): ReactElement {
   const { activeGame, setActiveGame } = useActiveGame();
+  const { games } = useGames();
 
   return (
     <div className={styles.container}>
-      {Object.values(GAME_IDS).map(gameId => {
-        const isActive = gameId === activeGame;
-        const gameInfo = getGameConfig(gameId);
+      {games.map(game => {
+        const isActive = game.id === activeGame;
 
         return (
           <button
-            key={gameId}
+            key={game.id}
             className={`${styles.tab} ${isActive ? styles.active : ''}`}
-            onClick={() => setActiveGame(gameId)}
+            onClick={() => setActiveGame(game.id)}
             aria-pressed={isActive}
             type="button"
           >
-            <span className={styles.emoji}>{gameInfo.emoji}</span>
-            <span className={styles.name}>{translation.game[gameId].name}</span>
+            <span className={styles.emoji}>{game.emoji}</span>
+            <span className={styles.name}>{game.name}</span>
           </button>
         );
       })}

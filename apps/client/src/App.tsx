@@ -1,5 +1,20 @@
 import { useEffect } from 'react';
 
+import { Modal, Snackbar } from '@game/client-core/components';
+import { PATHS } from '@game/client-core/constants';
+import type { AccentColor } from '@game/client-core/constants';
+import {
+  useActiveGame,
+  useGames,
+  useGamesLoader,
+  useModal,
+  useRoom,
+  useRoomSubscriptions,
+  useSnackbar,
+  useTheme,
+  useUnloadWarning,
+} from '@game/client-core/hooks';
+import { applyAccentColor } from '@game/client-core/utils';
 import {
   BrowserRouter,
   Navigate,
@@ -9,20 +24,8 @@ import {
 } from 'react-router-dom';
 
 import { GameSubscriptions } from './components/GameSubscriptions';
-import { Modal } from './components/ui/Modal';
-import { Snackbar } from './components/ui/Snackbar';
-import { PATHS } from './constants';
-import './games/configs';
-import { getGameConfig } from './games/registry';
-import { useActiveGame } from './hooks/useActiveGame';
-import { useModal } from './hooks/useModal';
-import { useRoom } from './hooks/useRoom';
-import { useRoomSubscriptions } from './hooks/useRoomSubscriptions';
-import { useSnackbar } from './hooks/useSnackbar';
-import { useTheme } from './hooks/useTheme';
-import { useUnloadWarning } from './hooks/useUnloadWarning';
+import { GameContainer } from './games';
 import Dashboard from './pages/Dashboard';
-import { applyAccentColor } from './utils/theme';
 
 function AppContent() {
   const { open: modalOpen, modal, requestCloseModal } = useModal();
@@ -30,18 +33,24 @@ function AppContent() {
   const { currentRoom } = useRoom();
   const { activeGame } = useActiveGame();
   const { theme } = useTheme();
+  const { games, loading: gamesLoading, error: gamesError, getGame } = useGames();
 
   const location = useLocation();
 
-  const { color, GameboardPage } = getGameConfig(activeGame);
+  // Get accent color from the loaded game metadata
+  const gameMetadata = getGame(activeGame);
+  const accentColor = (gameMetadata?.color ?? 'orange') as AccentColor;
+
+  // Load games from server on mount
+  useGamesLoader();
 
   useRoomSubscriptions();
 
   useUnloadWarning(currentRoom);
 
   useEffect(() => {
-    applyAccentColor(color);
-  }, [color]);
+    applyAccentColor(accentColor);
+  }, [accentColor]);
 
   // Sync theme with DOM
   useEffect(() => {
@@ -52,13 +61,35 @@ function AppContent() {
     requestCloseModal();
   }, [location.pathname, requestCloseModal]);
 
+  // Show loading state while fetching games
+  if (gamesLoading && games.length === 0) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <p>Loading...</p>
+      </div>
+    );
+  }
+
+  // Show error state if games failed to load
+  if (gamesError && games.length === 0) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '100vh', gap: '1rem' }}>
+        <p>Failed to load games: {gamesError}</p>
+        <button onClick={() => window.location.reload()}>Retry</button>
+      </div>
+    );
+  }
+
   return (
     <>
       <GameSubscriptions key={activeGame} gameId={activeGame} />
       <Routes>
         <Route path={PATHS.DASHBOARD} element={<Dashboard />} />
         {currentRoom && (
-          <Route path={PATHS.GAME_BOARD} element={<GameboardPage />} />
+          <Route
+            path={PATHS.GAME_BOARD}
+            element={<GameContainer gameId={activeGame} />}
+          />
         )}
         <Route path="*" element={<Navigate to={PATHS.DASHBOARD} replace />} />
       </Routes>

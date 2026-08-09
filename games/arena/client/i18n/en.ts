@@ -1,0 +1,82 @@
+/**
+ * Arena game translations - English
+ */
+import type { ArenaHelpTranslation, ArenaTranslation } from './types';
+
+export const arenaGameTranslation: ArenaTranslation = {
+  name: 'Arena',
+  statLabels: {
+    hp: '❤️ HP',
+    armor: '🛡️ Armor',
+    attack: '⚔️ Attack',
+    crit: '🎯 Crit',
+    dodge: '💨 Evade',
+  },
+  skillNames: {
+    attack: 'Attack',
+    skip: 'Skip',
+    bleed_strike: 'Bleed Strike',
+    viper_strike: 'Viper Strike',
+    knockback: 'Knockback',
+    heal: 'Heal',
+    regeneration: 'Regeneration',
+    magic_shield: 'Magic Shield',
+    cleanse: 'Cleanse',
+    vampiric_strike: 'Vampiric Strike',
+    toughened: 'Toughened',
+    plating: 'Plating',
+    assassin: 'Assassin',
+    strong: 'Strong',
+    fanatic: 'Fanatic',
+    thorns: 'Thorns',
+    leech: 'Leech',
+  },
+  skillEffectLabels: {
+    damage: 'Deal {value} damage',
+    heal: 'Heal for {value}',
+    lifesteal: 'Lifesteal {value}% of damage',
+    cleanse: 'Cleanse all negative effects',
+    applyStatus: 'Apply {status}{value}{duration}',
+    modifyStat: '{sign}{value} {stat}',
+    durationTurns: 'for {turns} turns',
+    durationPassive: '(passive)',
+    cooldown: 'Cooldown: {cooldown}',
+  },
+  preparation: {
+    activeSkillsLabel: 'Active Skills',
+    healingSkillsLabel: 'Healing Skills',
+    passiveSkillsLabel: 'Passive Skills',
+    activeSkillsFull: 'Active skill slots are full',
+    healingSkillFull: 'Healing skill slot is full',
+    passiveSkillsFull: 'Passive skill slots are full',
+    waitingForOpponent: 'Waiting for opponent to select skills...',
+    failedToReady: 'Failed to ready up',
+    readyButton: 'Ready',
+    clearButton: 'Clear',
+    victoryTitle: '🎉 Victory!',
+    victoryMessage: 'Opponent left the room. You win by default!',
+    opponentLeftTitle: '😞 Opponent Left',
+    opponentLeftMessage: 'The opponent has left the room.',
+    equipButton: 'Equip',
+    unequipButton: 'Unequip',
+    closeButton: 'Close',
+  },
+  fight: {
+    yourSkillsLabel: 'Skills',
+    opponentTurnBadge: "Opponent's turn",
+    gameOverBadge: 'Match Ended',
+    failedToUseSkill: 'Failed to use skill',
+    useButton: 'Use Skill',
+    closeButton: 'Close',
+    turnBadge: 'Turn',
+    winnerBadge: 'Winner 🏆',
+  },
+  battleLog: {
+    title: 'Battle Log',
+    noActionsYet: 'No actions yet.',
+    turnLabel: 'Turn',
+    used: 'used',
+  },
+};
+
+export const arenaHelpTranslation: ArenaHelpTranslation = {};

@@ -1,13 +1,16 @@
 import { ReactElement, useState } from 'react';
 
-import { VALIDATION, GAME_IDS } from '@game/shared/constants';
+import { LOCAL_STORAGE_KEY } from '@game/client-core/constants';
+import {
+  useActiveGame,
+  useGames,
+  useLanguage,
+  useRoom,
+} from '@game/client-core/hooks';
+import { VALIDATION } from '@game/shared/constants';
 
-import GameSelector from '../../components/ui/GameSelector';
-import { Header } from '../../components/ui/Header';
-import { LOCAL_STORAGE_KEY } from '../../constants';
-import { useActiveGame } from '../../hooks/useActiveGame';
-import { useLanguage } from '../../hooks/useLanguage';
-import { useRoom } from '../../hooks/useRoom';
+import { GameSelector, Header } from '../../components';
+import { useGameConfig } from '../../hooks';
 
 import ActionBar from './components/ActionBar';
 import ActiveRoom from './components/ActiveRoom';
@@ -19,6 +22,8 @@ export default function Dashboard(): ReactElement {
   const { rooms, currentRoom } = useRoom();
   const { translation } = useLanguage();
   const { activeGame } = useActiveGame();
+  const { games } = useGames();
+  const { config: gameConfig } = useGameConfig(activeGame);
 
   const [usernameInput, setUsernameInput] = useState(() => {
     const stored =
@@ -28,11 +33,11 @@ export default function Dashboard(): ReactElement {
 
   const filteredRooms = rooms.filter(room => room.game === activeGame);
 
-  const areMultipleGames = Object.keys(GAME_IDS).length > 1;
+  const areMultipleGames = games.length > 1;
 
   return (
     <div className={styles.container}>
-      <Header />
+      <Header helpModal={gameConfig?.HelpModal} />
 
       {areMultipleGames && <GameSelector />}
 

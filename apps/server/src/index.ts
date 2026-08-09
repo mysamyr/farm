@@ -6,6 +6,7 @@ import { Server } from 'socket.io';
 
 import config from './config';
 import { LogLevel } from './constants';
+import { gameRegistry } from './games';
 import { httpLogger, log } from './services/logger';
 import { registerSocketHandlers } from './socket/handlers';
 
@@ -22,6 +23,11 @@ const io: AppServer = new Server(server, {
 });
 
 app.use(httpLogger);
+
+// API endpoint to get available games
+app.get('/api/games', (_req, res) => {
+  res.json(gameRegistry.getAllMetadata());
+});
 
 registerSocketHandlers(io);
 

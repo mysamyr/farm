@@ -9,7 +9,7 @@ import type { BaseRoom, GameId } from '@game/shared/types';
 import { uuid } from '@game/shared/utils';
 
 import { LogLevel } from '../../constants';
-import { getGameModule } from '../../games';
+import { gameRegistry } from '../../games';
 import { log } from '../../services/logger';
 import type { AppServer, AppSocket } from '../../types';
 
@@ -39,7 +39,7 @@ export function deleteRoom(roomId: string): void {
 
 export function createRoom(ownerId: string, game: GameId): BaseRoom {
   const id = uuid();
-  const roomFields = getGameModule(game).addRoomFields();
+  const roomFields = gameRegistry.get(game).addRoomFields();
   const room: BaseRoom = {
     id,
     name: generateRoomName(rooms),
@@ -89,7 +89,7 @@ export function removePlayerFromRoom(
 
   room.players.splice(idx, 1);
   leaveRoom(io, room.id, socket.id);
-  const gameModule = getGameModule(room.game);
+  const gameModule = gameRegistry.get(room.game);
   gameModule.onPlayerRemoved?.(room, socket.id);
   if (shouldAutowin(room)) {
     gameModule.onPlayerWin?.(io, room, room.players[0]!);
@@ -141,11 +141,9 @@ export function reassignPlayerInRooms(
       room.players = room.players.map(p =>
         p.id === oldSocketId ? { ...p, id: newSocket.id } : p
       );
-      getGameModule(room.game).onPlayerReconnected?.(
-        room,
-        oldSocketId,
-        newSocket.id
-      );
+      gameRegistry
+        .get(room.game)
+        .onPlayerReconnected?.(room, oldSocketId, newSocket.id);
 
       void newSocket.join(room.id);
 

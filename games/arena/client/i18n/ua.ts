@@ -1,0 +1,82 @@
+/**
+ * Arena game translations - Ukrainian
+ */
+import type { ArenaHelpTranslation, ArenaTranslation } from './types';
+
+export const arenaGameTranslation: ArenaTranslation = {
+  name: 'Арена',
+  statLabels: {
+    hp: '❤️ HP',
+    armor: '🛡️ Броня',
+    attack: '⚔️ Атака',
+    crit: '🎯 Крит',
+    dodge: '💨 Ухил',
+  },
+  skillNames: {
+    attack: 'Атака',
+    skip: 'Пропустити',
+    bleed_strike: 'Кровотеча',
+    viper_strike: 'Укус гадюки',
+    knockback: 'Відкидання',
+    heal: 'Зцілення',
+    regeneration: 'Регенерація',
+    magic_shield: 'Магічний щит',
+    cleanse: 'Очищення',
+    vampiric_strike: 'Удар вампіра',
+    toughened: 'Загартований',
+    plating: 'Броньований',
+    assassin: 'Асасін',
+    strong: 'Сильний',
+    fanatic: 'Фанатик',
+    thorns: 'Шипи',
+    leech: 'Вампірик',
+  },
+  skillEffectLabels: {
+    damage: 'Завдати {value} шкоди',
+    heal: 'Зцілити на {value}',
+    lifesteal: 'Вкрасти {value}% від шкоди',
+    cleanse: 'Очистити негативні ефекти',
+    applyStatus: 'Накласти {status}{value}{duration}',
+    modifyStat: '{sign}{value} {stat}',
+    durationTurns: 'протягом {turns} ходів',
+    durationPassive: '(перманентно)',
+    cooldown: 'Перезаряджання: {cooldown}',
+  },
+  preparation: {
+    activeSkillsLabel: 'Активні навички',
+    healingSkillsLabel: 'Лікувальні навички',
+    passiveSkillsLabel: 'Пасивні навички',
+    activeSkillsFull: 'Слоти активних навичок заповнені',
+    healingSkillFull: 'Слот лікувальної навички заповнений',
+    passiveSkillsFull: 'Слоти пасивних навичок заповнені',
+    waitingForOpponent: 'Очікуємо вибір навичок суперника...',
+    failedToReady: 'Не вдалося підтвердити готовність',
+    readyButton: 'Готово',
+    clearButton: 'Очистити',
+    victoryTitle: '🎉 Перемога!',
+    victoryMessage: 'Суперник покинув кімнату. Ви перемогли!',
+    opponentLeftTitle: '😞 Суперник пішов',
+    opponentLeftMessage: 'Суперник залишив кімнату.',
+    equipButton: 'Вибрати',
+    unequipButton: 'Зняти',
+    closeButton: 'Закрити',
+  },
+  fight: {
+    yourSkillsLabel: 'Навички',
+    opponentTurnBadge: 'Хід суперника',
+    gameOverBadge: 'Матч завершено',
+    failedToUseSkill: 'Не вдалося використати навичку',
+    useButton: 'Використати',
+    closeButton: 'Закрити',
+    turnBadge: 'Ваш хід',
+    winnerBadge: 'Переможець 🏆',
+  },
+  battleLog: {
+    title: 'Журнал бою',
+    noActionsYet: 'Немає дій.',
+    turnLabel: 'Хід',
+    used: 'використав',
+  },
+};
+
+export const arenaHelpTranslation: ArenaHelpTranslation = {};

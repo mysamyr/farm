@@ -1,4 +1,4 @@
-import type { Request, Response, NextFunction } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 
 import config from '../config';
 import { LogLevel } from '../constants';
@@ -18,7 +18,7 @@ export function log(
   if (levels[level] < levels[config.LOG_LEVEL]) return;
   const time = new Date().toISOString();
   const payload = meta ? ` ${JSON.stringify(meta)}` : '';
-  // eslint-disable-next-line no-console
+
   console.log(`[${time}] [${level.toUpperCase()}] ${msg}${payload}`);
 }
 

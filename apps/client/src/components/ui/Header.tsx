@@ -1,27 +1,35 @@
-import { type ReactElement, type ReactNode, useMemo, useState } from 'react';
+import {
+  type ComponentType,
+  type ReactElement,
+  type ReactNode,
+  useMemo,
+  useState,
+} from 'react';
 
-import { BUTTON_VARIANT } from '../../constants';
-import { LANGUAGES_CONFIG } from '../../constants/language';
-import { THEME } from '../../constants/theme';
-import { getGameConfig } from '../../games/registry';
-import { useActiveGame } from '../../hooks/useActiveGame';
-import { useConnection } from '../../hooks/useConnection';
-import { useLanguage } from '../../hooks/useLanguage';
-import { useModal } from '../../hooks/useModal';
-import { useTheme } from '../../hooks/useTheme';
-import type { Language } from '../../types/language';
-import { classNames } from '../../utils';
+import { Button, Dropdown, Sidebar } from '@game/client-core/components';
+import {
+  BUTTON_VARIANT,
+  LANGUAGES_CONFIG,
+  THEME,
+} from '@game/client-core/constants';
+import {
+  useConnection,
+  useLanguage,
+  useModal,
+  useTheme,
+} from '@game/client-core/hooks';
+import type { Language } from '@game/client-core/types';
+import { classNames } from '@game/client-core/utils';
 
-import Button from './Button';
-import Dropdown from './Dropdown';
 import styles from './Header.module.css';
-import { Sidebar } from './Sidebar';
 
 export interface MainHeaderProps {
   leftSlot?: ReactNode;
   centerSlot?: ReactNode;
   rightSlot?: ReactNode;
   additionalActions?: ReactNode;
+  /** Help modal component to show when help button is clicked */
+  helpModal?: ComponentType;
 }
 
 export function Header({
@@ -29,13 +37,13 @@ export function Header({
   centerSlot,
   rightSlot,
   additionalActions,
+  helpModal,
 }: MainHeaderProps): ReactElement {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const { online } = useConnection();
   const { showModal } = useModal();
   const { setLanguage } = useLanguage();
-  const { activeGame } = useActiveGame();
   const { theme, setTheme } = useTheme();
 
   const languageItems = LANGUAGES_CONFIG.map((item: Language) => ({
@@ -48,8 +56,9 @@ export function Header({
   }));
 
   function openHelp() {
+    if (!helpModal) return;
     setSidebarOpen(false);
-    showModal({ component: getGameConfig(activeGame).HelpModal });
+    showModal({ component: helpModal });
   }
 
   function toggleTheme() {

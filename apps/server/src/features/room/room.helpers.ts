@@ -1,12 +1,15 @@
-import { DEFAULT_CONFIG, ROOM_STATES } from '@game/shared/constants';
+import { ROOM_STATES } from '@game/shared/constants';
 
 import type { BaseRoom } from '@game/shared/types';
 
+import { gameRegistry } from '../../games';
+
 export function canStartGame(room: BaseRoom): boolean {
+  const config = gameRegistry.getConfig(room.game);
   const count = room.players.length;
   return (
-    count >= DEFAULT_CONFIG.minPlayers &&
-    count <= DEFAULT_CONFIG.maxPlayers &&
+    count >= config.minPlayers &&
+    count <= config.maxPlayers &&
     room.state === ROOM_STATES.IDLE
   );
 }

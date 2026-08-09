@@ -1,11 +1,24 @@
+import { GAME_WIN_EVENT } from '@game/client-core/constants';
 import type { GameId } from '@game/shared/types';
 
-import { GAME_WIN_EVENT } from '../constants/events';
-import { getGameConfig } from '../games/registry';
+import { useGameConfig } from '../hooks';
 
 export function GameSubscriptions({ gameId }: { gameId: GameId }) {
-  const { useGameSubscriptions } = getGameConfig(gameId);
+  const { config } = useGameConfig(gameId);
 
+  // Wait for config to load
+  if (!config) {
+    return null;
+  }
+
+  return <GameSubscriptionsInner useGameSubscriptions={config.useGameSubscriptions} />;
+}
+
+function GameSubscriptionsInner({
+  useGameSubscriptions,
+}: {
+  useGameSubscriptions: (args: { onCurrentUserWon: () => void }) => void;
+}) {
   useGameSubscriptions({
     onCurrentUserWon: () => {
       window.dispatchEvent(new CustomEvent(GAME_WIN_EVENT));

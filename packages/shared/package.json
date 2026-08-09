@@ -2,13 +2,15 @@
   "name": "@game/shared",
   "version": "0.1.0",
   "private": true,
-  "type": "commonjs",
+  "type": "module",
   "exports": {
-    "./constants": "./dist/constants/index.js",
-    "./constants/*": "./dist/constants/*.js",
-    "./types": "./dist/types/index.js",
-    "./types/*": "./dist/types/*.js",
-    "./utils": "./dist/utils/index.js"
+    "./constants": "./constants/index.ts",
+    "./constants/*": "./constants/*.ts",
+    "./types": "./types/index.ts",
+    "./types/*": "./types/*.ts",
+    "./engine": "./engine/index.ts",
+    "./utils": "./utils/index.ts",
+    "./utils/*": "./utils/*.ts"
   },
   "scripts": {
     "build": "tsc",

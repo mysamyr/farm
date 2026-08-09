@@ -1,21 +1,24 @@
 import {
-  DEFAULT_CONFIG,
-  ROOM_STATES,
+  ERROR,
   EVENTS,
   NOTIFICATION_TYPES,
+  ROOM_STATES,
   VALIDATION,
-  ERROR,
 } from '@game/shared/constants';
 
-import { BasePlayer, BaseRoom, RoomCreatePayload } from '@game/shared/types';
-import {
+import type {
+  BasePlayer,
+  BaseRoom,
+  RoomCreatePayload,
+} from '@game/shared/types';
+import type {
   RejoinRoomAck,
   RoomIdPayload,
   RoomUpdatePayload,
 } from '@game/shared/types';
 
 import { LogLevel } from '../../constants';
-import { getGameModule } from '../../games';
+import { gameRegistry } from '../../games';
 import { log } from '../../services/logger';
 import type { AckFunc, AppServer, AppSocket } from '../../types';
 import { checkIfPlayerAlreadyInRoom } from '../player/player.helpers';
@@ -49,29 +52,32 @@ const createRoomHandler =
     });
 
     if (!req.game) {
-      if (ack)
+      if (ack) {
         ack({
           ok: false,
           error: ERROR.ROOM_NOT_FOUND, // TODO: add more specific error
         });
+      }
       return;
     }
 
     if (!socket.data.player.name) {
-      if (ack)
+      if (ack) {
         ack({
           ok: false,
           error: ERROR.NO_USERNAME,
         });
+      }
       return;
     }
 
     if (listRooms().find(r => r.players.some(p => p.id === socket.id))) {
-      if (ack)
+      if (ack) {
         ack({
           ok: false,
           error: ERROR.ALREADY_IN_ROOM,
         });
+      }
       return;
     }
 
@@ -146,7 +152,8 @@ const joinRoomHandler =
       if (ack) ack({ ok: false, error: ERROR.GAME_IN_PROGRESS });
       return;
     }
-    if (room.players.length >= DEFAULT_CONFIG.maxPlayers) {
+    const gameConfig = gameRegistry.getConfig(room.game);
+    if (room.players.length >= gameConfig.maxPlayers) {
       if (ack) ack({ ok: false, error: ERROR.ROOM_FULL });
       return;
     }
@@ -280,7 +287,7 @@ const startGameHandler =
       return;
     }
 
-    const gameModule = getGameModule(room.game);
+    const gameModule = gameRegistry.get(room.game);
     if (gameModule.canStartGame && !gameModule.canStartGame(room)) {
       ack?.({ ok: false, error: ERROR.CANNOT_START });
       return;

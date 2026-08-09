@@ -1,0 +1,82 @@
+import { type ReactElement, useCallback } from 'react';
+
+import { Header } from '@game/client/components';
+import { Button, WinningAnimation } from '@game/client-core/components';
+
+import { BUTTON_VARIANT, PATHS } from '@game/client-core/constants';
+import { useLanguage, useRoom, useSnackbar } from '@game/client-core/hooks';
+import { emitGameEvent } from '@game/client-core/socket';
+import { resolveErrorMessage } from '@game/client-core/utils';
+
+import { ROOM_STATES } from '@game/shared/constants';
+import { Navigate, useNavigate } from 'react-router-dom';
+
+import { ARENA_EVENTS, type Room } from '@game/game-arena/shared';
+
+import ArenaHelpModal from '../../components/ArenaHelpModal';
+
+import { isAllPlayersReady } from '../../utils';
+
+import FightPhase from './components/FightPhase';
+import PreparationPhase from './components/PreparationPhase';
+
+import styles from './Gameboard.module.css';
+
+export default function Gameboard(): ReactElement {
+  const navigate = useNavigate();
+  const { currentRoom: rawCurrentRoom, setCurrentRoom } = useRoom();
+  const { translation } = useLanguage();
+  const { showSnackbar } = useSnackbar();
+
+  const currentRoom = rawCurrentRoom as unknown as Room | null;
+
+  const handleLeave = useCallback(() => {
+    if (!rawCurrentRoom) return;
+    emitGameEvent(
+      ARENA_EVENTS.ROOM_LEAVE,
+      { roomId: rawCurrentRoom.id },
+      (res: { ok: boolean; error?: string }) => {
+        if (!res.ok) {
+          showSnackbar(resolveErrorMessage(res.error, translation));
+        }
+        setCurrentRoom(null);
+        void navigate(PATHS.DASHBOARD);
+      }
+    );
+  }, [rawCurrentRoom, navigate, setCurrentRoom, showSnackbar, translation]);
+
+  function onLeaveClick() {
+    if (
+      currentRoom?.state !== ROOM_STATES.RUNNING ||
+      window.confirm('Leave the arena?')
+    ) {
+      handleLeave();
+    }
+  }
+
+  if (!currentRoom) {
+    return <Navigate to={PATHS.DASHBOARD} replace />;
+  }
+
+  const isFightPhase = isAllPlayersReady(currentRoom);
+
+  return (
+    <div className={styles.container}>
+      <Header
+        centerSlot={<h1 className={styles.roomTitle}>{currentRoom.name}</h1>}
+        helpModal={ArenaHelpModal}
+        additionalActions={
+          <Button
+            variant={BUTTON_VARIANT.SECONDARY}
+            className={styles.leaveHeaderButton}
+            onClick={onLeaveClick}
+          >
+            Leave
+          </Button>
+        }
+      />
+      {isFightPhase ? <FightPhase /> : <PreparationPhase />}
+      <WinningAnimation />
+    </div>
+  );
+}

@@ -1,15 +1,10 @@
 import { ERROR, EVENTS } from '../constants';
 
-import {
-  ClientToServerEvents as ClientToServerArenaEvents,
-  ServerToClientEvents as ServerToClientArenaEvents,
-} from './arena/socket';
-import {
-  ClientToServerEvents as ClientToServerFarmEvents,
-  ServerToClientEvents as ServerToClientFarmEvents,
-} from './farm/socket';
-
 import type { BaseRoom, GameId } from './index';
+
+// ============================================================================
+// Core Socket Types
+// ============================================================================
 
 export type SocketAck = {
   ok: boolean;
@@ -46,7 +41,15 @@ export type PlayerRenamePayload = {
   name: string;
 };
 
-export type ClientToServerEvents = {
+// ============================================================================
+// Core Shell Events (room management, player, connection)
+// ============================================================================
+
+/**
+ * Core client-to-server events for room/player management.
+ * Game-specific events are merged via intersection types.
+ */
+export type CoreClientToServerEvents = {
   [EVENTS.ROOM_REJOIN]: (
     payload: null,
     ack?: (response: RejoinRoomAck) => void
@@ -79,15 +82,17 @@ export type ClientToServerEvents = {
     payload: RoomIdPayload,
     ack?: (response: SocketAck) => void
   ) => void;
-} & ClientToServerFarmEvents &
-  ClientToServerArenaEvents;
+};
 
-export type ServerToClientEvents = {
+/**
+ * Core server-to-client events for room/player management.
+ * Game-specific events are merged via intersection types.
+ */
+export type CoreServerToClientEvents = {
   [EVENTS.CONNECT]: () => void;
   [EVENTS.ROOMS_LIST]: (rooms: BaseRoom[]) => void;
   [EVENTS.ROOM_CLOSED]: () => void;
   [EVENTS.NOTIFICATION]: (payload: ServerNotification) => void;
   [EVENTS.ONLINE_COUNT]: (online: number) => void;
   [EVENTS.GAME_STARTED]: (payload: RoomPayload) => void;
-} & ServerToClientFarmEvents &
-  ServerToClientArenaEvents;
+};

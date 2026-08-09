@@ -1,12 +1,4 @@
 {
-  "extends": "../../tsconfig.json",
-  "compilerOptions": {
-    "target": "ES2023",
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "jsx": "react-jsx",
-    "types": ["vite/client"],
-    "noEmit": true
-  },
+  "extends": "../../tsconfig.react.json",
   "include": ["src", "vite.config.ts"]
 }
