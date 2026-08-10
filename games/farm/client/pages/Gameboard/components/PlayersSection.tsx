@@ -4,9 +4,10 @@ import { useLanguage, useRoom, useSnackbar } from '@game/client-core/hooks';
 import { emitGameEvent, getSocketId } from '@game/client-core/socket';
 import { classNames, resolveErrorMessage } from '@game/client-core/utils';
 
+import { EVENTS } from '@game/shared/constants';
+
 import {
   ANIMALS,
-  FARM_EVENTS,
   GAME_RULES,
   type Room as FarmRoom,
   type Player,
@@ -41,8 +42,11 @@ export default function PlayersSection(): ReactElement {
 
   function handleTrade(targetPlayerId: string): void {
     emitGameEvent(
-      FARM_EVENTS.GAME_TRADE_START,
-      { roomId: currentRoom.id, targetPlayerId },
+      EVENTS.GAME_ACTION,
+      {
+        roomId: currentRoom.id,
+        action: { type: 'TRADE_START', targetPlayerId },
+      },
       (ack: { ok: boolean; error?: string }) => {
         if (ack && !ack.ok) {
           showSnackbar(resolveErrorMessage(ack.error, translation));

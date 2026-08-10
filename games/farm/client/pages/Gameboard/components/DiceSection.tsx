@@ -6,7 +6,9 @@ import { useLanguage, useRoom, useSnackbar } from '@game/client-core/hooks';
 import { emitGameEvent } from '@game/client-core/socket';
 import { classNames, resolveErrorMessage } from '@game/client-core/utils';
 
-import { FARM_EVENTS, type Room } from '@game/game-farm/shared';
+import { EVENTS } from '@game/shared/constants';
+
+import { type Room } from '@game/game-farm/shared';
 
 import { useFarmTranslation } from '../../../hooks/useFarmTranslation.js';
 import { getDiceIcon, isWildAnimal } from '../../../utils/index.js';
@@ -34,8 +36,8 @@ export default function DiceSection({
     }
 
     emitGameEvent(
-      FARM_EVENTS.GAME_ROLL_DICE,
-      { roomId: room.id },
+      EVENTS.GAME_ACTION,
+      { roomId: room.id, action: { type: 'ROLL_DICE' } },
       (res: { ok: boolean; error?: string }) => {
         if (!res.ok) {
           showSnackbar(resolveErrorMessage(res.error, translation));

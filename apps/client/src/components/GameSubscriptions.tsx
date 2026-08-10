@@ -11,7 +11,11 @@ export function GameSubscriptions({ gameId }: { gameId: GameId }) {
     return null;
   }
 
-  return <GameSubscriptionsInner useGameSubscriptions={config.useGameSubscriptions} />;
+  return (
+    <GameSubscriptionsInner
+      useGameSubscriptions={config.useGameSubscriptions}
+    />
+  );
 }
 
 function GameSubscriptionsInner({

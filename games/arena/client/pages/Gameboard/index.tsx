@@ -8,10 +8,10 @@ import { useLanguage, useRoom, useSnackbar } from '@game/client-core/hooks';
 import { emitGameEvent } from '@game/client-core/socket';
 import { resolveErrorMessage } from '@game/client-core/utils';
 
-import { ROOM_STATES } from '@game/shared/constants';
+import { EVENTS, ROOM_STATES } from '@game/shared/constants';
 import { Navigate, useNavigate } from 'react-router-dom';
 
-import { ARENA_EVENTS, type Room } from '@game/game-arena/shared';
+import { type Room } from '@game/game-arena/shared';
 
 import ArenaHelpModal from '../../components/ArenaHelpModal.js';
 
@@ -33,7 +33,7 @@ export default function Gameboard(): ReactElement {
   const handleLeave = useCallback(() => {
     if (!rawCurrentRoom) return;
     emitGameEvent(
-      ARENA_EVENTS.ROOM_LEAVE,
+      EVENTS.ROOM_LEAVE,
       { roomId: rawCurrentRoom.id },
       (res: { ok: boolean; error?: string }) => {
         if (!res.ok) {

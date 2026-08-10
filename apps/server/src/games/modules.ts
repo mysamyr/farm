@@ -21,9 +21,6 @@ import type { AppServer } from '../types/index.js';
 
 import { gameRegistry, type ServerGameModule } from './registry.js';
 
-/**
- * Define a type-safe game module.
- */
 function defineGameModule<
   TRoom extends BaseRoom,
   TPlayer extends BasePlayer = BasePlayer,
@@ -51,7 +48,6 @@ function createWinnerHandler<
   };
 }
 
-// Register Farm game module
 gameRegistry.register(
   defineGameModule<FarmRoom, FarmPlayer>({
     gameId: 'farm',
@@ -71,11 +67,10 @@ gameRegistry.register(
     onGameStart: (_io, room) => {
       farm.initGameState(room);
     },
-    registerHandlers: farm.registerHandlers,
+    handleAction: (ctx, payload, ack) => farm.handleAction(ctx, payload, ack),
   })
 );
 
-// Register Arena game module
 gameRegistry.register(
   defineGameModule<ArenaRoom, ArenaPlayer>({
     gameId: 'arena',
@@ -98,6 +93,6 @@ gameRegistry.register(
     onGameStart: (_io, room) => {
       arena.initGameState(room);
     },
-    registerHandlers: arena.registerHandlers,
+    handleAction: (ctx, payload, ack) => arena.handleAction(ctx, payload, ack),
   })
 );

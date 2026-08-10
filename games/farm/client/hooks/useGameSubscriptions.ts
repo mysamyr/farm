@@ -2,17 +2,15 @@ import { useEffect } from 'react';
 
 import { LOCAL_STORAGE_KEY } from '@game/client-core/constants';
 import { useLanguage, useRoom, useSnackbar } from '@game/client-core/hooks';
-import {
-  subscribe,
-  subscribeGameEvent,
-  unsubscribe,
-  unsubscribeGameEvent,
-} from '@game/client-core/socket';
+import { subscribe, unsubscribe } from '@game/client-core/socket';
 
 import { EVENTS, NOTIFICATION_TYPES } from '@game/shared/constants';
-import type { RoomPayload, ServerNotification } from '@game/shared/types';
+import type {
+  GameStateUpdatePayload,
+  ServerNotification,
+} from '@game/shared/types';
 
-import { FARM_EVENTS, FARM_NOTIFICATION_TYPES } from '@game/game-farm/shared';
+import { FARM_NOTIFICATION_TYPES } from '@game/game-farm/shared';
 
 type UseGameSubscriptionsArgs = {
   onCurrentUserWon: () => void;
@@ -26,8 +24,8 @@ export function useGameSubscriptions({
   const { translation } = useLanguage();
 
   useEffect(() => {
-    const handleGameUpdate = ({ room }: RoomPayload): void => {
-      setCurrentRoom(room);
+    const handleGameUpdate = ({ state }: GameStateUpdatePayload): void => {
+      setCurrentRoom(state);
     };
 
     const handleNotification = ({ type, data }: ServerNotification): void => {
@@ -52,11 +50,11 @@ export function useGameSubscriptions({
       }
     };
 
-    subscribeGameEvent(FARM_EVENTS.GAME_UPDATE, handleGameUpdate);
+    subscribe(EVENTS.GAME_STATE_UPDATE, handleGameUpdate);
     subscribe(EVENTS.NOTIFICATION, handleNotification);
 
     return () => {
-      unsubscribeGameEvent(FARM_EVENTS.GAME_UPDATE, handleGameUpdate);
+      unsubscribe(EVENTS.GAME_STATE_UPDATE, handleGameUpdate);
       unsubscribe(EVENTS.NOTIFICATION, handleNotification);
     };
   }, [

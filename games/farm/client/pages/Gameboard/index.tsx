@@ -12,10 +12,10 @@ import {
 } from '@game/client-core/hooks';
 import { emitGameEvent, getSocketId } from '@game/client-core/socket';
 import { resolveErrorMessage } from '@game/client-core/utils';
-import { ROOM_STATES } from '@game/shared/constants';
+import { EVENTS, ROOM_STATES } from '@game/shared/constants';
 import { Navigate, useNavigate } from 'react-router-dom';
 
-import { FARM_EVENTS, GAME_RULES, type Room } from '@game/game-farm/shared';
+import { GAME_RULES, type Room } from '@game/game-farm/shared';
 
 import FarmHelpModal from '../../components/FarmHelpModal.js';
 
@@ -46,7 +46,7 @@ export default function Gameboard(): ReactElement {
       return;
     }
     emitGameEvent(
-      FARM_EVENTS.ROOM_LEAVE,
+      EVENTS.ROOM_LEAVE,
       { roomId: rawCurrentRoom.id },
       (res: { ok: boolean; error?: string }) => {
         if (!res.ok) {
@@ -81,8 +81,9 @@ export default function Gameboard(): ReactElement {
       showModal({
         component: TradeModal,
         onClose: () => {
-          emitGameEvent(FARM_EVENTS.GAME_TRADE_CANCEL, {
+          emitGameEvent(EVENTS.GAME_ACTION, {
             roomId: currentRoom.id,
+            action: { type: 'TRADE_CANCEL' },
           });
         },
       });

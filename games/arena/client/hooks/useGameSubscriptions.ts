@@ -2,17 +2,13 @@ import { useEffect } from 'react';
 
 import { LOCAL_STORAGE_KEY } from '@game/client-core/constants';
 import { useLanguage, useRoom, useSnackbar } from '@game/client-core/hooks';
-import {
-  subscribe,
-  subscribeGameEvent,
-  unsubscribe,
-  unsubscribeGameEvent,
-} from '@game/client-core/socket';
+import { subscribe, unsubscribe } from '@game/client-core/socket';
 
 import { EVENTS, NOTIFICATION_TYPES } from '@game/shared/constants';
-import type { ServerNotification } from '@game/shared/types';
-
-import { ARENA_EVENTS, type Room } from '@game/game-arena/shared';
+import type {
+  GameStateUpdatePayload,
+  ServerNotification,
+} from '@game/shared/types';
 
 type UseGameSubscriptionsArgs = {
   onCurrentUserWon: () => void;
@@ -26,8 +22,8 @@ export function useGameSubscriptions({
   const { translation } = useLanguage();
 
   useEffect(() => {
-    const handleGameUpdate = ({ room }: { room: Room }): void => {
-      setCurrentRoom(room);
+    const handleGameUpdate = ({ state }: GameStateUpdatePayload): void => {
+      setCurrentRoom(state);
     };
 
     const handleNotification = ({ type, data }: ServerNotification): void => {
@@ -48,11 +44,11 @@ export function useGameSubscriptions({
       }
     };
 
-    subscribeGameEvent(ARENA_EVENTS.GAME_UPDATE, handleGameUpdate);
+    subscribe(EVENTS.GAME_STATE_UPDATE, handleGameUpdate);
     subscribe(EVENTS.NOTIFICATION, handleNotification);
 
     return () => {
-      unsubscribeGameEvent(ARENA_EVENTS.GAME_UPDATE, handleGameUpdate);
+      unsubscribe(EVENTS.GAME_STATE_UPDATE, handleGameUpdate);
       unsubscribe(EVENTS.NOTIFICATION, handleNotification);
     };
   }, [onCurrentUserWon, setCurrentRoom]);

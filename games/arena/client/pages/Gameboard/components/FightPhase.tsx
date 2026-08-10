@@ -3,9 +3,9 @@ import { type ReactElement, useCallback } from 'react';
 import { useRoom, useSnackbar } from '@game/client-core/hooks';
 import { emitGameEvent, getSocketId } from '@game/client-core/socket';
 
-import { ROOM_STATES } from '@game/shared/constants';
+import { EVENTS, ROOM_STATES } from '@game/shared/constants';
 
-import { ARENA_EVENTS, type Room } from '@game/game-arena/shared';
+import { type Room } from '@game/game-arena/shared';
 
 import { useArenaTranslation } from '../../../hooks/useArenaTranslation.js';
 import { getActivePlayerId } from '../../../utils/index.js';
@@ -35,8 +35,11 @@ export default function FightPhase(): ReactElement {
     (skillId: string) => {
       if (!isMyTurn) return;
       emitGameEvent(
-        ARENA_EVENTS.USE_SKILL,
-        { roomId: room.id, skill: skillId, target: opponentId },
+        EVENTS.GAME_ACTION,
+        {
+          roomId: room.id,
+          action: { type: 'USE_SKILL', skill: skillId, target: opponentId },
+        },
         (res: { ok: boolean }) => {
           if (!res.ok) {
             showSnackbar(t.fight.failedToUseSkill);

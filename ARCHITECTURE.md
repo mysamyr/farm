@@ -46,5 +46,5 @@ routing. Individual games act as isolated plugins implementing a strict contract
 - A game package **MUST NOT** import anything from other game packages.
 - A game package **MUST ONLY** depend on `@game/shared` for core types.
 - Communication between Client and Server for games MUST follow the pattern:
-  - Client -> Server: `game:action` `{ roomId, type, payload }`
+  - Client -> Server: `game:action` `{ roomId, action: { type, ...payload } }`
   - Server -> Client: `game:state_update` `{ state }` | `game:error` `{ message }`

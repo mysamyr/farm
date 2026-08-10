@@ -5,15 +5,13 @@ import {
   ROOM_STATES,
 } from '@game/shared/constants';
 import type { GameHandlerContext } from '@game/shared/engine';
-import type { SocketAck } from '@game/shared/types';
+import type { GameActionPayload, SocketAck } from '@game/shared/types';
 
 import {
-  ARENA_EVENTS,
   DEFAULT_PLAYER_STATS,
+  type ArenaGameActionPayload,
   type Player,
-  type PlayerReadyPayload,
   type Room,
-  type UseSkillPayload,
 } from '../shared/index.js';
 
 import {
@@ -48,105 +46,142 @@ function winnerHandler(
   });
 }
 
-const playerReadyHandler =
-  (ctx: GameHandlerContext) =>
-  (req: PlayerReadyPayload, ack?: AckFunc): void => {
-    const { roomId, skills } = req;
-    ctx.log('event:arena:playerReady', { socketId: ctx.socketId, roomId });
+const playerReadyHandler = (
+  ctx: GameHandlerContext,
+  req: Extract<ArenaGameActionPayload['action'], { type: 'PLAYER_READY' }> &
+    Pick<ArenaGameActionPayload, 'roomId'>,
+  ack?: AckFunc
+): void => {
+  const { roomId, skills } = req;
+  ctx.log('event:arena:playerReady', { socketId: ctx.socketId, roomId });
 
-    const room = ctx.getRoomById(roomId) as Room;
-    if (!room) {
-      ack?.({ ok: false, error: ERROR.ROOM_NOT_FOUND });
-      return;
-    }
-    if (room.state !== ROOM_STATES.RUNNING) {
-      ack?.({ ok: false, error: ERROR.GAME_NOT_RUNNING });
-      return;
-    }
+  const room = ctx.getRoomById(roomId) as Room;
+  if (!room) {
+    ack?.({ ok: false, error: ERROR.ROOM_NOT_FOUND });
+    return;
+  }
+  if (room.state !== ROOM_STATES.RUNNING) {
+    ack?.({ ok: false, error: ERROR.GAME_NOT_RUNNING });
+    return;
+  }
 
-    const player = room.players.find(p => p.id === ctx.socketId);
-    if (!player) {
-      ack?.({ ok: false, error: ERROR.PLAYER_NOT_FOUND });
-      return;
-    }
-    if (player.ready) {
-      ack?.({ ok: false });
-      return;
-    }
+  const player = room.players.find(p => p.id === ctx.socketId);
+  if (!player) {
+    ack?.({ ok: false, error: ERROR.PLAYER_NOT_FOUND });
+    return;
+  }
+  if (player.ready) {
+    ack?.({ ok: false });
+    return;
+  }
 
-    if (!isValidSkillSelection(skills)) {
-      ack?.({ ok: false });
-      return;
-    }
+  if (!isValidSkillSelection(skills)) {
+    ack?.({ ok: false });
+    return;
+  }
 
-    player.ready = true;
-    player.hp = DEFAULT_PLAYER_STATS.hp;
-    applySkillSelection(player, skills);
+  player.ready = true;
+  player.hp = DEFAULT_PLAYER_STATS.hp;
+  applySkillSelection(player, skills);
 
-    ctx.emitToRoom(room.id, ARENA_EVENTS.GAME_UPDATE, { room });
-    ack?.({ ok: true });
-  };
+  ctx.emitToRoom(room.id, EVENTS.GAME_STATE_UPDATE, { state: room });
+  ack?.({ ok: true });
+};
 
-const useSkillHandler =
-  (ctx: GameHandlerContext) =>
-  (req: UseSkillPayload, ack?: AckFunc): void => {
-    const { roomId, skill: skillId } = req;
-    ctx.log('event:arena:useSkill', {
-      socketId: ctx.socketId,
-      roomId,
-      skillId,
-    });
+const useSkillHandler = (
+  ctx: GameHandlerContext,
+  req: Extract<ArenaGameActionPayload['action'], { type: 'USE_SKILL' }> &
+    Pick<ArenaGameActionPayload, 'roomId'>,
+  ack?: AckFunc
+): void => {
+  const { roomId, skill: skillId } = req;
+  ctx.log('event:arena:useSkill', {
+    socketId: ctx.socketId,
+    roomId,
+    skillId,
+  });
 
-    const room = ctx.getRoomById(roomId) as Room;
-    if (!room) {
-      ack?.({ ok: false, error: ERROR.ROOM_NOT_FOUND });
-      return;
-    }
-    if (room.state !== ROOM_STATES.RUNNING) {
-      ack?.({ ok: false, error: ERROR.GAME_NOT_RUNNING });
-      return;
-    }
+  const room = ctx.getRoomById(roomId) as Room;
+  if (!room) {
+    ack?.({ ok: false, error: ERROR.ROOM_NOT_FOUND });
+    return;
+  }
+  if (room.state !== ROOM_STATES.RUNNING) {
+    ack?.({ ok: false, error: ERROR.GAME_NOT_RUNNING });
+    return;
+  }
 
-    const player = getActivePlayer(room);
-    if (!player || player.id !== ctx.socketId) {
-      ack?.({ ok: false, error: ERROR.NOT_YOUR_TURN });
-      return;
-    }
+  const player = getActivePlayer(room);
+  if (!player || player.id !== ctx.socketId) {
+    ack?.({ ok: false, error: ERROR.NOT_YOUR_TURN });
+    return;
+  }
 
-    if (isStunned(player) && skillId !== 'skip') {
-      ack?.({ ok: false });
-      return;
-    }
+  if (isStunned(player) && skillId !== 'skip') {
+    ack?.({ ok: false });
+    return;
+  }
 
-    const skill = getSkillById(skillId);
-    if (!skill || (skill.type !== 'active' && skill.type !== 'healing')) {
-      ack?.({ ok: false });
-      return;
-    }
+  const skill = getSkillById(skillId);
+  if (!skill || (skill.type !== 'active' && skill.type !== 'healing')) {
+    ack?.({ ok: false });
+    return;
+  }
 
-    const playerSkill = player.skills.find(s => s.id === skillId);
-    if (!playerSkill || playerSkill.cooldown > 0) {
-      ack?.({ ok: false });
-      return;
-    }
+  const playerSkill = player.skills.find(s => s.id === skillId);
+  if (!playerSkill || playerSkill.cooldown > 0) {
+    ack?.({ ok: false });
+    return;
+  }
 
-    const { dead } = processPlayerTurn(room, skillId);
+  const { dead } = processPlayerTurn(room, skillId);
 
-    if (dead === 'attacker') {
-      const opponent = getOpponent(room, player.id)!;
-      winnerHandler(ctx, room, opponent);
-    } else if (dead === 'defender') {
-      winnerHandler(ctx, room, player);
-    }
+  if (dead === 'attacker') {
+    const opponent = getOpponent(room, player.id)!;
+    winnerHandler(ctx, room, opponent);
+  } else if (dead === 'defender') {
+    winnerHandler(ctx, room, player);
+  }
 
-    ctx.emitToRoom(room.id, ARENA_EVENTS.GAME_UPDATE, { room });
-    ack?.({ ok: true });
-  };
+  ctx.emitToRoom(room.id, EVENTS.GAME_STATE_UPDATE, { state: room });
+  ack?.({ ok: true });
+};
 
 /**
- * Register all Arena game socket event handlers.
+ * Handle Arena actions routed through the core game:action socket event.
  */
-export function registerHandlers(ctx: GameHandlerContext): void {
-  ctx.on(ARENA_EVENTS.PLAYER_READY, playerReadyHandler(ctx));
-  ctx.on(ARENA_EVENTS.USE_SKILL, useSkillHandler(ctx));
+export function handleAction(
+  ctx: GameHandlerContext,
+  payload: GameActionPayload,
+  ack?: AckFunc
+): void {
+  const room = ctx.getRoomById(payload.roomId) as Room | null;
+  if (!room || room.game !== 'arena') {
+    return;
+  }
+
+  const action = payload.action as ArenaGameActionPayload['action'];
+
+  switch (action.type) {
+    case 'PLAYER_READY':
+      playerReadyHandler(
+        ctx,
+        {
+          roomId: payload.roomId,
+          ...action,
+        },
+        ack
+      );
+      break;
+    case 'USE_SKILL':
+      useSkillHandler(
+        ctx,
+        {
+          roomId: payload.roomId,
+          ...action,
+        },
+        ack
+      );
+      break;
+  }
 }

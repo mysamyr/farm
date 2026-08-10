@@ -10,9 +10,10 @@ import { useLanguage, useRoom, useSnackbar } from '@game/client-core/hooks';
 import { emitGameEvent, getSocketId } from '@game/client-core/socket';
 import { resolveErrorMessage } from '@game/client-core/utils';
 
+import { EVENTS } from '@game/shared/constants';
+
 import {
   ANIMALS,
-  FARM_EVENTS,
   type FarmAnimals,
   type Room,
   type Player,
@@ -78,8 +79,8 @@ export default function TradeModal(): ReactElement {
       if (!room || !isParticipant) return;
       pendingUpdate.current = true;
       emitGameEvent(
-        FARM_EVENTS.GAME_TRADE_UPDATE,
-        { roomId: room.id, offer },
+        EVENTS.GAME_ACTION,
+        { roomId: room.id, action: { type: 'TRADE_UPDATE', offer } },
         (ack: { ok: boolean; error?: string }) => {
           if (ack && !ack.ok) {
             pendingUpdate.current = false;
@@ -111,8 +112,8 @@ export default function TradeModal(): ReactElement {
   function handleLock(): void {
     if (!room || !isParticipant) return;
     emitGameEvent(
-      FARM_EVENTS.GAME_TRADE_LOCK,
-      { roomId: room.id },
+      EVENTS.GAME_ACTION,
+      { roomId: room.id, action: { type: 'TRADE_LOCK' } },
       (ack: { ok: boolean; error?: string }) => {
         if (ack && !ack.ok) {
           showSnackbar(resolveErrorMessage(ack.error, translation));
@@ -124,8 +125,8 @@ export default function TradeModal(): ReactElement {
   function handleConfirm(): void {
     if (!room || !isParticipant) return;
     emitGameEvent(
-      FARM_EVENTS.GAME_TRADE_CONFIRM,
-      { roomId: room.id },
+      EVENTS.GAME_ACTION,
+      { roomId: room.id, action: { type: 'TRADE_CONFIRM' } },
       (ack: { ok: boolean; error?: string }) => {
         if (ack && !ack.ok) {
           showSnackbar(resolveErrorMessage(ack.error, translation));
@@ -137,8 +138,8 @@ export default function TradeModal(): ReactElement {
   function handleCancel(): void {
     if (!room) return;
     emitGameEvent(
-      FARM_EVENTS.GAME_TRADE_CANCEL,
-      { roomId: room.id },
+      EVENTS.GAME_ACTION,
+      { roomId: room.id, action: { type: 'TRADE_CANCEL' } },
       (ack: { ok: boolean; error?: string }) => {
         if (ack && !ack.ok) {
           showSnackbar(resolveErrorMessage(ack.error, translation));

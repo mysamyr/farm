@@ -1,12 +1,17 @@
 import { useEffect } from 'react';
 
 import { EVENTS, NOTIFICATION_TYPES } from '@game/shared/constants';
-import type { RoomPayload, ServerNotification } from '@game/shared/types';
+import type {
+  GameErrorPayload,
+  RoomPayload,
+  ServerNotification,
+} from '@game/shared/types';
 
 import { useNavigate } from 'react-router-dom';
 
 import { LOCAL_STORAGE_KEY, PATHS } from '../constants/index.js';
 import { emitEvent, getSocketId, subscribe } from '../socket/index.js';
+import { resolveErrorMessage } from '../utils/index.js';
 
 import { useConnection } from './useConnection.js';
 import { useLanguage } from './useLanguage.js';
@@ -88,6 +93,13 @@ export function useRoomSubscriptions(): void {
         }
       }
     );
+
+    subscribe(EVENTS.GAME_ERROR, (payload: GameErrorPayload): void => {
+      showSnackbar(
+        resolveErrorMessage(payload.code, translation) ||
+          `Error: ${payload.code}`
+      );
+    });
 
     subscribe(EVENTS.ONLINE_COUNT, (online: number): void => {
       setOnline(online);

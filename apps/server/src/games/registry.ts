@@ -2,8 +2,10 @@ import type { GameHandlerContext } from '@game/shared/engine';
 import type {
   BasePlayer,
   BaseRoom,
+  GameActionPayload,
   GameId,
   GameMetadata,
+  SocketAck,
 } from '@game/shared/types';
 
 import type { AppServer } from '../types/index.js';
@@ -50,8 +52,12 @@ export interface ServerGameModule<
   /** Initialize game state when game starts */
   onGameStart?: (io: AppServer, room: TRoom) => void;
 
-  /** Register game-specific socket event handlers */
-  registerHandlers?: (ctx: GameHandlerContext) => void;
+  /** Handle a game action payload */
+  handleAction?: (
+    ctx: GameHandlerContext,
+    payload: GameActionPayload,
+    ack?: (response: SocketAck) => void
+  ) => void;
 }
 
 /**

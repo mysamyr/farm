@@ -28,6 +28,10 @@ export const EVENTS = {
   ONLINE_COUNT: 'count',
   GAME_START: 'game:start',
   GAME_STARTED: 'game:started',
+  GAME_ACTION: 'game:action',
+  GAME_STATE_UPDATE: 'game:state_update',
+  GAME_EFFECT: 'game:effect',
+  GAME_ERROR: 'game:error',
 } as const;
 
 export const NOTIFICATION_TYPES = {

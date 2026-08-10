@@ -2,7 +2,12 @@ import { ReactElement } from 'react';
 
 import { Button, Tag } from '@game/client-core/components';
 import { BUTTON_VARIANT, PATHS } from '@game/client-core/constants';
-import { useGames, useLanguage, useRoom, useSnackbar } from '@game/client-core/hooks';
+import {
+  useGames,
+  useLanguage,
+  useRoom,
+  useSnackbar,
+} from '@game/client-core/hooks';
 import { emitEvent, getSocketId } from '@game/client-core/socket';
 import {
   classNames,

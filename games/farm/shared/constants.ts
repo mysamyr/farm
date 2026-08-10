@@ -1,5 +1,3 @@
-import { EVENTS, NOTIFICATION_TYPES } from '@game/shared/constants';
-
 export const DEFAULT_CONFIG = {
   maxPlayers: 4,
   minPlayers: 2,
@@ -13,20 +11,6 @@ export const GAME_METADATA = {
   minPlayers: DEFAULT_CONFIG.minPlayers,
   maxPlayers: DEFAULT_CONFIG.maxPlayers,
 };
-
-export const FARM_EVENTS = {
-  ...EVENTS,
-  GAME_ROLL_DICE: 'farm:rollDice',
-  GAME_EXCHANGE: 'farm:exchange',
-  GAME_SEND_EMOTE: 'farm:sendEmote',
-  GAME_UPDATE: 'farm:update',
-  GAME_EMOTE_SENT: 'farm:emoteSent',
-  GAME_TRADE_START: 'farm:tradeStart',
-  GAME_TRADE_UPDATE: 'farm:tradeUpdate',
-  GAME_TRADE_LOCK: 'farm:tradeLock',
-  GAME_TRADE_CONFIRM: 'farm:tradeConfirm',
-  GAME_TRADE_CANCEL: 'farm:tradeCancel',
-} as const;
 
 export const EMOTES = [
   { id: 'laugh', emoji: '😂' },
@@ -57,8 +41,7 @@ export enum GAME_RULES {
 }
 
 export const FARM_NOTIFICATION_TYPES = {
-  ...NOTIFICATION_TYPES,
-  TRADE_CANCELLED: 'trade_cancelled',
+  TRADE_CANCELLED: 'trade_cancelled', // TODO: remove
 } as const;
 
 export const ANIMALS_DEFAULT_QUANTITY = {

@@ -4,6 +4,7 @@ import { Button } from '@game/client-core/components';
 import { BUTTON_VARIANT } from '@game/client-core/constants';
 import { useRoom, useSnackbar } from '@game/client-core/hooks';
 import { emitGameEvent } from '@game/client-core/socket';
+import { EVENTS } from '@game/shared/constants';
 
 import {
   BASE_SKILLS,
@@ -11,7 +12,6 @@ import {
   REQUIRED_HEALING_COUNT,
   REQUIRED_PASSIVE_COUNT,
   SKILLS,
-  ARENA_EVENTS,
   type ActiveSkill,
   type HealingSkill,
   type PassiveSkill,
@@ -135,8 +135,8 @@ export default function PreparationPhase(): ReactElement {
       ...selectedPassives,
     ];
     emitGameEvent(
-      ARENA_EVENTS.PLAYER_READY,
-      { roomId: room.id, skills },
+      EVENTS.GAME_ACTION,
+      { roomId: room.id, action: { type: 'PLAYER_READY', skills } },
       (res: { ok: boolean }) => {
         if (!res.ok) {
           showSnackbar(t.preparation.failedToReady);

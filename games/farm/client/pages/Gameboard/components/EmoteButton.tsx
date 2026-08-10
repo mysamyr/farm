@@ -10,8 +10,9 @@ import {
 import { Dropdown } from '@game/client-core/components';
 import { BUTTON_VARIANT } from '@game/client-core/constants';
 import { emitGameEvent } from '@game/client-core/socket';
+import { EVENTS } from '@game/shared/constants';
 
-import { EMOTES, FARM_EVENTS, type EmoteId } from '@game/game-farm/shared';
+import { EMOTES, type EmoteId } from '@game/game-farm/shared';
 
 import styles from './EmoteButton.module.css';
 
@@ -54,8 +55,8 @@ export default function EmoteButton({
       }
 
       emitGameEvent(
-        FARM_EVENTS.GAME_SEND_EMOTE,
-        { roomId, emoteId },
+        EVENTS.GAME_ACTION,
+        { roomId, action: { type: 'SEND_EMOTE', emoteId } },
         (res: { ok: boolean }) => {
           if (res.ok) {
             setLastEmoteSendTime(Date.now());

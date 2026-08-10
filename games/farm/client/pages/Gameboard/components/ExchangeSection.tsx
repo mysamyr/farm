@@ -4,9 +4,10 @@ import { useLanguage, useRoom, useSnackbar } from '@game/client-core/hooks';
 import { emitGameEvent, getSocketId } from '@game/client-core/socket';
 import { resolveErrorMessage } from '@game/client-core/utils';
 
+import { EVENTS } from '@game/shared/constants';
+
 import {
   ANIMALS,
-  FARM_EVENTS,
   GAME_RULES,
   type Room,
   type Player,
@@ -155,11 +156,14 @@ export default function ExchangeSection({
 
   const onExchange = (pair: ExchangePair) => {
     emitGameEvent(
-      FARM_EVENTS.GAME_EXCHANGE,
+      EVENTS.GAME_ACTION,
       {
         roomId: room.id,
-        from: pair.left,
-        to: pair.right,
+        action: {
+          type: 'EXCHANGE',
+          from: pair.left,
+          to: pair.right,
+        },
       },
       (res: { ok: boolean; error?: string }) => {
         if (!res.ok) {

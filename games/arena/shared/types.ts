@@ -1,9 +1,5 @@
 import type { BasePlayer, BaseRoom, BaseRules } from '@game/shared/types';
 
-// ============================================================================
-// Core Type Definitions
-// ============================================================================
-
 export type StatType = 'hp' | 'armor' | 'attack' | 'crit' | 'dodge';
 
 export type ActionTarget = 'self' | 'opponent';
@@ -17,10 +13,6 @@ export type PositiveStatusType =
   | 'leech';
 
 export type StatusEffectType = NegativeStatusType | PositiveStatusType;
-
-// ============================================================================
-// Actions
-// ============================================================================
 
 type BaseAction = {
   target: ActionTarget;
@@ -74,10 +66,6 @@ export type GameAction =
   | CleanseAction
   | LifestealAction;
 
-// ============================================================================
-// Skills
-// ============================================================================
-
 interface BaseSkill {
   id: string;
   actions: GameAction[];
@@ -98,10 +86,6 @@ export interface PassiveSkill extends BaseSkill {
 }
 
 export type Skill = ActiveSkill | HealingSkill | PassiveSkill;
-
-// ============================================================================
-// Combat Log
-// ============================================================================
 
 export type LogEffectKind =
   | 'damage'
@@ -129,10 +113,6 @@ export interface LogStep {
   skillId: string;
   effects: LogEffect[];
 }
-
-// ============================================================================
-// Runtime State
-// ============================================================================
 
 export interface StatusEffect {
   type: StatType | StatusEffectType;

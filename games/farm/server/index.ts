@@ -34,7 +34,7 @@ export {
   updateRoomOrderId,
 } from './engine.js';
 
-export { registerHandlers } from './handlers.js';
+export { handleAction } from './handlers.js';
 
 export type {
   DiceAnimals,

@@ -2,10 +2,6 @@ import { ERROR, EVENTS } from '../constants/index.js';
 
 import type { BaseRoom, GameId } from './index.js';
 
-// ============================================================================
-// Core Socket Types
-// ============================================================================
-
 export type SocketAck = {
   ok: boolean;
   error?: ERROR;
@@ -37,13 +33,15 @@ export type RoomUpdatePayload = RoomIdPayload & {
   rules?: Record<string, boolean>;
 };
 
+export type GameActionPayload<
+  TAction extends { type: string } = { type: string },
+> = RoomIdPayload & {
+  action: TAction;
+};
+
 export type PlayerRenamePayload = {
   name: string;
 };
-
-// ============================================================================
-// Core Shell Events (room management, player, connection)
-// ============================================================================
 
 /**
  * Core client-to-server events for room/player management.
@@ -82,12 +80,30 @@ export type CoreClientToServerEvents = {
     payload: RoomIdPayload,
     ack?: (response: SocketAck) => void
   ) => void;
+  [EVENTS.GAME_ACTION]: (
+    payload: GameActionPayload,
+    ack?: (response: SocketAck) => void
+  ) => void;
 };
 
 /**
  * Core server-to-client events for room/player management.
  * Game-specific events are merged via intersection types.
  */
+export type GameStateUpdatePayload = {
+  state: BaseRoom;
+};
+
+export type GameEffectPayload = {
+  type: string;
+  payload?: unknown;
+};
+
+export type GameErrorPayload = {
+  code: string;
+  params?: Record<string, unknown>;
+};
+
 export type CoreServerToClientEvents = {
   [EVENTS.CONNECT]: () => void;
   [EVENTS.ROOMS_LIST]: (rooms: BaseRoom[]) => void;
@@ -95,4 +111,7 @@ export type CoreServerToClientEvents = {
   [EVENTS.NOTIFICATION]: (payload: ServerNotification) => void;
   [EVENTS.ONLINE_COUNT]: (online: number) => void;
   [EVENTS.GAME_STARTED]: (payload: RoomPayload) => void;
+  [EVENTS.GAME_STATE_UPDATE]: (payload: GameStateUpdatePayload) => void;
+  [EVENTS.GAME_EFFECT]: (payload: GameEffectPayload) => void;
+  [EVENTS.GAME_ERROR]: (payload: GameErrorPayload) => void;
 };

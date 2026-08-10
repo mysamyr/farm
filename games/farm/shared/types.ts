@@ -1,15 +1,6 @@
-import type {
-  BasePlayer,
-  BaseRoom,
-  RoomIdPayload,
-  SocketAck,
-} from '@game/shared/types';
+import type { BasePlayer, BaseRoom, SocketAck } from '@game/shared/types';
 
 import type { ANIMALS, EMOTES, GAME_RULES } from './constants.js';
-
-// ============================================================================
-// Core Game Types
-// ============================================================================
 
 export type EmoteId = (typeof EMOTES)[number]['id'];
 
@@ -53,38 +44,6 @@ export interface Room extends BaseRoom<Player, Rules, 'farm'> {
   trade?: TradeState;
 }
 
-// ============================================================================
-// Socket Event Payloads
-// ============================================================================
-
 export type RollDiceAck = SocketAck & {
   diceResult?: [DiceAnimals, DiceAnimals];
-};
-
-export type GameExchangePayload = RoomIdPayload & {
-  from: TradableAnimals;
-  to: TradableAnimals;
-};
-
-export type SendEmotePayload = RoomIdPayload & {
-  emoteId: EmoteId;
-};
-
-export type TradeStartPayload = RoomIdPayload & {
-  targetPlayerId: string;
-};
-
-export type TradeUpdatePayload = RoomIdPayload & {
-  offer: TradeOffer;
-};
-
-export type TradeLockPayload = RoomIdPayload;
-
-export type TradeConfirmPayload = RoomIdPayload;
-
-export type TradeCancelPayload = RoomIdPayload;
-
-export type EmoteSentPayload = {
-  emoteId: EmoteId;
-  playerName: string;
 };

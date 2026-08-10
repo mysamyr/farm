@@ -1,21 +1,13 @@
 import { ERROR, EVENTS } from '@game/shared/constants';
 import type { GameHandlerContext } from '@game/shared/engine';
-import type { RoomIdPayload, SocketAck } from '@game/shared/types';
+import type { GameActionPayload, SocketAck } from '@game/shared/types';
 
 import {
   EMOTES,
-  FARM_EVENTS,
   FARM_NOTIFICATION_TYPES,
-  type GameExchangePayload,
+  type FarmGameActionPayload,
   type Player,
-  type RollDiceAck,
   type Room,
-  type SendEmotePayload,
-  type TradeCancelPayload,
-  type TradeConfirmPayload,
-  type TradeLockPayload,
-  type TradeStartPayload,
-  type TradeUpdatePayload,
 } from '../shared/index.js';
 
 import {
@@ -54,10 +46,21 @@ function winnerHandler(
 }
 
 type AckFunc<T extends SocketAck = SocketAck> = (response: T) => void;
+type RollDiceAck = SocketAck & { diceResult?: Room['dice'] };
+type RollDicePayload = Pick<FarmGameActionPayload, 'roomId'>;
+type ExchangePayload = Pick<FarmGameActionPayload, 'roomId'> &
+  Extract<FarmGameActionPayload['action'], { type: 'EXCHANGE' }>;
+type SendEmotePayload = Pick<FarmGameActionPayload, 'roomId'> &
+  Extract<FarmGameActionPayload['action'], { type: 'SEND_EMOTE' }>;
+type TradeStartPayload = Pick<FarmGameActionPayload, 'roomId'> &
+  Extract<FarmGameActionPayload['action'], { type: 'TRADE_START' }>;
+type TradeUpdatePayload = Pick<FarmGameActionPayload, 'roomId'> &
+  Extract<FarmGameActionPayload['action'], { type: 'TRADE_UPDATE' }>;
+type TradeRoomPayload = Pick<FarmGameActionPayload, 'roomId'>;
 
 const rollDiceHandler =
   (ctx: GameHandlerContext) =>
-  (req: RoomIdPayload, ack?: AckFunc<RollDiceAck>): void => {
+  (req: RollDicePayload, ack?: AckFunc<RollDiceAck>): void => {
     const { roomId } = req;
     ctx.log('event:game:rollDice', { socketId: ctx.socketId, roomId });
 
@@ -87,15 +90,15 @@ const rollDiceHandler =
     }
 
     activeRoom.dice = dice;
-    ctx.emitToRoom(activeRoom.id, FARM_EVENTS.GAME_UPDATE, {
-      room: activeRoom,
+    ctx.emitToRoom(activeRoom.id, EVENTS.GAME_STATE_UPDATE, {
+      state: activeRoom,
     });
     ack?.({ ok: true, diceResult: dice });
   };
 
 const exchangeHandler =
   (ctx: GameHandlerContext) =>
-  (req: GameExchangePayload, ack?: AckFunc): void => {
+  (req: ExchangePayload, ack?: AckFunc): void => {
     const { roomId, from, to } = req;
     ctx.log('event:game:exchange', { socketId: ctx.socketId, ...req });
 
@@ -128,8 +131,8 @@ const exchangeHandler =
       winnerHandler(ctx, activeRoom, player);
     }
 
-    ctx.emitToRoom(activeRoom.id, FARM_EVENTS.GAME_UPDATE, {
-      room: activeRoom,
+    ctx.emitToRoom(activeRoom.id, EVENTS.GAME_STATE_UPDATE, {
+      state: activeRoom,
     });
     ack?.({ ok: true });
   };
@@ -172,9 +175,12 @@ const sendEmoteHandler =
 
     ctx.setSocketData('lastEmoteSendTime', now);
 
-    ctx.emitToRoom(room.id, FARM_EVENTS.GAME_EMOTE_SENT, {
-      emoteId,
-      playerName: player.name,
+    ctx.emitToRoom(room.id, EVENTS.GAME_EFFECT, {
+      type: 'emote_sent',
+      payload: {
+        emoteId,
+        playerName: player.name,
+      },
     });
 
     ack?.({ ok: true });
@@ -224,8 +230,8 @@ const tradeStartHandler =
       offers: {},
     };
 
-    ctx.emitToRoom(activeRoom.id, FARM_EVENTS.GAME_UPDATE, {
-      room: activeRoom,
+    ctx.emitToRoom(activeRoom.id, EVENTS.GAME_STATE_UPDATE, {
+      state: activeRoom,
     });
     ack?.({ ok: true });
   };
@@ -269,13 +275,13 @@ const tradeUpdateHandler =
     room.trade.locked = {};
     room.trade.offers[ctx.socketId] = offer;
 
-    ctx.emitToRoom(room.id, FARM_EVENTS.GAME_UPDATE, { room });
+    ctx.emitToRoom(room.id, EVENTS.GAME_STATE_UPDATE, { state: room });
     ack?.({ ok: true });
   };
 
 const tradeLockHandler =
   (ctx: GameHandlerContext) =>
-  (req: TradeLockPayload, ack?: AckFunc): void => {
+  (req: TradeRoomPayload, ack?: AckFunc): void => {
     const { roomId } = req;
     ctx.log('event:game:tradeLock', { socketId: ctx.socketId, roomId });
 
@@ -299,13 +305,13 @@ const tradeLockHandler =
 
     room.trade.locked[ctx.socketId] = true;
 
-    ctx.emitToRoom(room.id, FARM_EVENTS.GAME_UPDATE, { room });
+    ctx.emitToRoom(room.id, EVENTS.GAME_STATE_UPDATE, { state: room });
     ack?.({ ok: true });
   };
 
 const tradeConfirmHandler =
   (ctx: GameHandlerContext) =>
-  (req: TradeConfirmPayload, ack?: AckFunc): void => {
+  (req: TradeRoomPayload, ack?: AckFunc): void => {
     const { roomId } = req;
     ctx.log('event:game:tradeConfirm', { socketId: ctx.socketId, roomId });
 
@@ -356,13 +362,13 @@ const tradeConfirmHandler =
     // Atomic execution: transfer all animals in a single operation
     applyTrade(room);
 
-    ctx.emitToRoom(room.id, FARM_EVENTS.GAME_UPDATE, { room });
+    ctx.emitToRoom(room.id, EVENTS.GAME_STATE_UPDATE, { state: room });
     ack?.({ ok: true });
   };
 
 const tradeCancelHandler =
   (ctx: GameHandlerContext) =>
-  (req: TradeCancelPayload, ack?: AckFunc): void => {
+  (req: TradeRoomPayload, ack?: AckFunc): void => {
     const { roomId } = req;
     ctx.log('event:game:tradeCancel', { socketId: ctx.socketId, roomId });
 
@@ -397,20 +403,49 @@ const tradeCancelHandler =
       data: canceller?.name || '',
     });
 
-    ctx.emitToRoom(room.id, FARM_EVENTS.GAME_UPDATE, { room });
+    ctx.emitToRoom(room.id, EVENTS.GAME_STATE_UPDATE, { state: room });
     ack?.({ ok: true });
   };
 
 /**
- * Register all Farm game socket event handlers.
+ * Handle Farm actions routed through the core game:action socket event.
  */
-export function registerHandlers(ctx: GameHandlerContext): void {
-  ctx.on(FARM_EVENTS.GAME_ROLL_DICE, rollDiceHandler(ctx));
-  ctx.on(FARM_EVENTS.GAME_EXCHANGE, exchangeHandler(ctx));
-  ctx.on(FARM_EVENTS.GAME_SEND_EMOTE, sendEmoteHandler(ctx));
-  ctx.on(FARM_EVENTS.GAME_TRADE_START, tradeStartHandler(ctx));
-  ctx.on(FARM_EVENTS.GAME_TRADE_UPDATE, tradeUpdateHandler(ctx));
-  ctx.on(FARM_EVENTS.GAME_TRADE_LOCK, tradeLockHandler(ctx));
-  ctx.on(FARM_EVENTS.GAME_TRADE_CONFIRM, tradeConfirmHandler(ctx));
-  ctx.on(FARM_EVENTS.GAME_TRADE_CANCEL, tradeCancelHandler(ctx));
+export function handleAction(
+  ctx: GameHandlerContext,
+  payload: GameActionPayload,
+  ack?: AckFunc
+): void {
+  const room = ctx.getRoomById(payload.roomId) as Room | null;
+  if (!room || room.game !== 'farm') {
+    return;
+  }
+
+  const action = payload.action as FarmGameActionPayload['action'];
+
+  switch (action.type) {
+    case 'ROLL_DICE':
+      rollDiceHandler(ctx)({ roomId: payload.roomId }, ack);
+      break;
+    case 'EXCHANGE':
+      exchangeHandler(ctx)({ roomId: payload.roomId, ...action }, ack);
+      break;
+    case 'SEND_EMOTE':
+      sendEmoteHandler(ctx)({ roomId: payload.roomId, ...action }, ack);
+      break;
+    case 'TRADE_START':
+      tradeStartHandler(ctx)({ roomId: payload.roomId, ...action }, ack);
+      break;
+    case 'TRADE_UPDATE':
+      tradeUpdateHandler(ctx)({ roomId: payload.roomId, ...action }, ack);
+      break;
+    case 'TRADE_LOCK':
+      tradeLockHandler(ctx)({ roomId: payload.roomId }, ack);
+      break;
+    case 'TRADE_CONFIRM':
+      tradeConfirmHandler(ctx)({ roomId: payload.roomId }, ack);
+      break;
+    case 'TRADE_CANCEL':
+      tradeCancelHandler(ctx)({ roomId: payload.roomId }, ack);
+      break;
+  }
 }

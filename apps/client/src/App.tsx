@@ -33,7 +33,12 @@ function AppContent() {
   const { currentRoom } = useRoom();
   const { activeGame } = useActiveGame();
   const { theme } = useTheme();
-  const { games, loading: gamesLoading, error: gamesError, getGame } = useGames();
+  const {
+    games,
+    loading: gamesLoading,
+    error: gamesError,
+    getGame,
+  } = useGames();
 
   const location = useLocation();
 
@@ -64,7 +69,14 @@ function AppContent() {
   // Show loading state while fetching games
   if (gamesLoading && games.length === 0) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+        }}
+      >
         <p>Loading...</p>
       </div>
     );
@@ -73,7 +85,16 @@ function AppContent() {
   // Show error state if games failed to load
   if (gamesError && games.length === 0) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '100vh', gap: '1rem' }}>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+          gap: '1rem',
+        }}
+      >
         <p>Failed to load games: {gamesError}</p>
         <button onClick={() => window.location.reload()}>Retry</button>
       </div>

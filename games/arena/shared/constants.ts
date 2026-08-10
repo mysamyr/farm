@@ -1,5 +1,3 @@
-import { EVENTS } from '@game/shared/constants';
-
 import type {
   ActiveSkill,
   HealingSkill,
@@ -303,10 +301,3 @@ export const SKILLS: Skill[] = [
 ];
 
 export const NEGATIVE_EFFECTS: StatusEffectType[] = ['poison', 'bleed', 'stun'];
-
-export const ARENA_EVENTS = {
-  ...EVENTS,
-  PLAYER_READY: 'arena:ready',
-  USE_SKILL: 'arena:skill',
-  GAME_UPDATE: 'arena:update',
-} as const;

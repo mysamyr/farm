@@ -1,5 +1,10 @@
+import { ERROR, EVENTS } from '@game/shared/constants';
 import type { GameHandlerContext } from '@game/shared/engine';
-import type { BaseRoom } from '@game/shared/types';
+import type {
+  BaseRoom,
+  GameActionPayload,
+  SocketAck,
+} from '@game/shared/types';
 
 import { LogLevel } from '../constants/index.js';
 import { getRoomById } from '../features/room/room.store.js';
@@ -69,18 +74,44 @@ function createHandlerContext(
 }
 
 /**
- * Registers all game-specific socket event handlers for the connected socket.
- * Iterates through the game registry and calls each game's registerHandlers function.
+ * Registers the unified game action router for the connected socket.
+ * Routes core `game:action` events to the active room's game module.
  */
 export function registerAllGameFeatures(
   io: AppServer,
   socket: AppSocket
 ): void {
   const ctx = createHandlerContext(io, socket);
+  socket.on(
+    EVENTS.GAME_ACTION,
+    (payload: GameActionPayload, ack?: (response: SocketAck) => void): void => {
+      const room = getRoomById(payload.roomId);
+      if (!room) {
+        const response = { ok: false, error: ERROR.ROOM_NOT_FOUND } as const;
+        socket.emit(EVENTS.GAME_ERROR, {
+          code: ERROR[response.error] ?? String(response.error),
+        });
+        ack?.(response);
+        return;
+      }
 
-  for (const module of gameRegistry.getAll()) {
-    if (module.registerHandlers) {
-      module.registerHandlers(ctx);
+      const gameModule = gameRegistry.get(room.game);
+      if (!gameModule.handleAction) {
+        const response = { ok: false } as const;
+        ack?.(response);
+        return;
+      }
+
+      const wrappedAck = (response: SocketAck): void => {
+        if (!response.ok && response.error !== undefined) {
+          socket.emit(EVENTS.GAME_ERROR, {
+            code: ERROR[response.error] ?? String(response.error),
+          });
+        }
+        ack?.(response);
+      };
+
+      gameModule.handleAction(ctx, payload, wrappedAck);
     }
-  }
+  );
 }

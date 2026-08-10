@@ -34,9 +34,11 @@ export function resolveErrorMessage(
 ): string {
   if (!error) return '';
 
-  // If the error is a known ERROR enum value, return the corresponding translation
-  if (typeof error === 'number') {
-    return translation.errors[error] || `Unknown error: ${error}`;
+  if (typeof error === 'string' && error in ERROR) {
+    const enumValue = ERROR[error as keyof typeof ERROR];
+    if (typeof enumValue === 'string') {
+      return translation.errors[enumValue] || error;
+    }
   }
 
   return error;
