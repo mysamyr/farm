@@ -13,8 +13,3 @@ export type FarmGameAction =
   | { type: 'TRADE_CANCEL' };
 
 export type FarmGameActionPayload = GameActionPayload<FarmGameAction>;
-
-export type EmoteSentPayload = {
-  emoteId: EmoteId;
-  playerName: string;
-};

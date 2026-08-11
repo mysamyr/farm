@@ -1,6 +1,6 @@
-import { ERROR, EVENTS } from '../constants/index.js';
+import { ERROR, GameId, EVENTS } from '../constants/index.js';
 
-import type { BaseRoom, GameId } from './index.js';
+import type { BaseRoom } from './index.js';
 
 export type SocketAck = {
   ok: boolean;

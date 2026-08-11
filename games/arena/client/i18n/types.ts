@@ -64,6 +64,8 @@ export interface ArenaTranslation {
   battleLog: ArenaBattleLogTranslation;
 }
 
-// Arena help is empty for now but uses Record type to pass lint
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface ArenaHelpTranslation {} // TODO: Add Arena help
+// TODO: Add Arena help
+export interface ArenaHelpTranslation {
+  title: string;
+  goal: string;
+}

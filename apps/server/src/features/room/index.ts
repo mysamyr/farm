@@ -1,6 +1,7 @@
 import {
   ERROR,
   EVENTS,
+  GameId,
   NOTIFICATION_TYPES,
   ROOM_STATES,
   VALIDATION,
@@ -51,7 +52,7 @@ const createRoomHandler =
       game: req.game,
     });
 
-    if (!req.game) {
+    if (!req.game || !GameId[req.game]) {
       if (ack) {
         ack({
           ok: false,

@@ -1,5 +1,5 @@
 import { GAME_WIN_EVENT } from '@game/client-core/constants';
-import type { GameId } from '@game/shared/types';
+import type { GameId } from '@game/shared/constants';
 
 import { useGameConfig } from '../hooks/index.js';
 

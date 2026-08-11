@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import type { GameConfig } from '@game/client-core/types';
-import type { GameId } from '@game/shared/types';
+import type { GameId } from '@game/shared/constants';
 
 import { gameRegistry } from '../games/registry.js';
 

@@ -1,41 +1,37 @@
 import type { ReactElement } from 'react';
 
-import { HelpModal, type HelpSection } from '@game/client-core/components';
+import { HelpModal } from '@game/client-core/components';
 
 import { useFarmHelpTranslation } from '../hooks/useFarmTranslation.js';
 
 export default function FarmHelpModal(): ReactElement {
   const help = useFarmHelpTranslation();
 
-  const sections: HelpSection[] = [
-    { header: help.title, content: help.goal },
-    {
-      header: help.componentsHeader,
-      content: help.components,
-    },
-    {
-      header: help.turnHeader,
-      content: help.turnParagraphs,
-    },
-    {
-      header: help.breedingHeader,
-      content: help.breedingParagraphs,
-    },
-    {
-      header: help.examplesHeader,
-      headerLevel: 'h3',
-      content: help.examples,
-    },
-    {
-      header: help.predatorsHeader,
-      content: help.predators,
-    },
-    {
-      header: help.protectionHeader,
-      content: help.protection,
-    },
-    { header: help.rulesHeader, content: help.rules },
-  ];
+  return (
+    <HelpModal>
+      <h2>{help.title}</h2>
+      <p>{help.goal}</p>
 
-  return <HelpModal sections={sections} />;
+      <h2>{help.componentsHeader}</h2>
+      <p>{help.components}</p>
+
+      <h2>{help.turnHeader}</h2>
+      <p>{help.turnParagraphs}</p>
+
+      <h2>{help.breedingHeader}</h2>
+      <p>{help.breedingParagraphs}</p>
+
+      <h3>{help.examplesHeader}</h3>
+      <p>{help.examples}</p>
+
+      <h2>{help.predatorsHeader}</h2>
+      <p>{help.predators}</p>
+
+      <h2>{help.protectionHeader}</h2>
+      <p>{help.protection}</p>
+
+      <h2>{help.rulesHeader}</h2>
+      <p>{help.rules}</p>
+    </HelpModal>
+  );
 }

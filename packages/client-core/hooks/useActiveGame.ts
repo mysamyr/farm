@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo } from 'react';
 
-import { EVENTS, ROOM_STATES } from '@game/shared/constants';
-import type { GameId } from '@game/shared/types';
+import { EVENTS, GameId, ROOM_STATES } from '@game/shared/constants';
 
 import { useSearchParams } from 'react-router-dom';
 
@@ -35,7 +34,7 @@ export function useActiveGame(): {
   const defaultGameId = getDefaultGameId();
   const activeGame = isValidGameId(gameParam)
     ? gameParam
-    : (defaultGameId ?? 'farm'); // fallback for initial load
+    : (defaultGameId ?? GameId.farm); // fallback for initial load
 
   const cleanupCurrentIdleRoom = useCallback((): void => {
     if (!currentRoom || currentRoom.state !== ROOM_STATES.IDLE) {

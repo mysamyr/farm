@@ -1,9 +1,9 @@
+import { GameId } from '@game/shared/constants';
 import type { GameHandlerContext } from '@game/shared/engine';
 import type {
   BasePlayer,
   BaseRoom,
   GameActionPayload,
-  GameId,
   GameMetadata,
   SocketAck,
 } from '@game/shared/types';

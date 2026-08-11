@@ -5,10 +5,17 @@
   "type": "module",
   "exports": {
     "./client": "./client/index.ts",
-    "./server": "./server/index.ts",
-    "./shared": "./shared/index.ts"
+    "./server": {
+      "development": "./server/index.ts",
+      "default": "./dist/server/index.js"
+    },
+    "./shared": {
+      "development": "./shared/index.ts",
+      "default": "./dist/shared/index.js"
+    }
   },
   "scripts": {
+    "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit -p shared/tsconfig.json && tsc --noEmit -p server/tsconfig.json && tsc --noEmit -p client/tsconfig.json"
   },
   "dependencies": {

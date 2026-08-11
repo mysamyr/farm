@@ -2,7 +2,7 @@ import { type ReactElement, useCallback, useRef, useState } from 'react';
 
 import { classNames } from '@game/client-core/utils';
 
-import type { Skill } from '@game/game-arena/shared';
+import { type Skill, SkillType } from '@game/game-arena/shared';
 
 import {
   getSkillEffects,
@@ -100,9 +100,9 @@ export default function SkillCard({
       <span
         className={classNames(
           styles.badge,
-          skill.type === 'passive'
+          skill.type === SkillType.passive
             ? styles.badgePassive
-            : skill.type === 'healing'
+            : skill.type === SkillType.healing
               ? styles.badgeHealing
               : styles.badgeActive
         )}

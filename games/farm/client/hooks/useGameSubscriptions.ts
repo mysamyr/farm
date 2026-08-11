@@ -4,7 +4,7 @@ import { LOCAL_STORAGE_KEY } from '@game/client-core/constants';
 import { useLanguage, useRoom, useSnackbar } from '@game/client-core/hooks';
 import { subscribe, unsubscribe } from '@game/client-core/socket';
 
-import { EVENTS, NOTIFICATION_TYPES } from '@game/shared/constants';
+import { EVENTS, GameId, NOTIFICATION_TYPES } from '@game/shared/constants';
 import type {
   GameStateUpdatePayload,
   ServerNotification,
@@ -29,7 +29,7 @@ export function useGameSubscriptions({
     };
 
     const handleNotification = ({ type, data }: ServerNotification): void => {
-      if (currentRoom?.game !== 'farm') {
+      if (currentRoom?.game !== GameId.farm) {
         return;
       }
 

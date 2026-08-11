@@ -10,4 +10,3 @@ export { WinningAnimation } from './WinningAnimation.js';
 
 // Modals
 export { default as HelpModal } from './modals/HelpModal.js';
-export type { HelpSection } from './modals/HelpModal.js';

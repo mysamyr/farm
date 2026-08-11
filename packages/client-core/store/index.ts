@@ -1,6 +1,7 @@
 import { ComponentType, Dispatch, SetStateAction } from 'react';
 
-import type { BaseRoom, GameId, GameMetadata } from '@game/shared/types';
+import type { GameId } from '@game/shared/constants';
+import type { BaseRoom, GameMetadata } from '@game/shared/types';
 import { create } from 'zustand';
 
 import type { ThemeCode } from '../constants/index.js';

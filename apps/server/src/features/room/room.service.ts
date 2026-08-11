@@ -4,7 +4,8 @@ import {
   ROOM_STATES,
 } from '@game/shared/constants';
 
-import type { BaseRoom, GameId } from '@game/shared/types';
+import type { GameId } from '@game/shared/constants';
+import type { BaseRoom } from '@game/shared/types';
 
 import { uuid } from '@game/shared/utils';
 

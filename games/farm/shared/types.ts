@@ -1,4 +1,5 @@
-import type { BasePlayer, BaseRoom, SocketAck } from '@game/shared/types';
+import { GameId } from '@game/shared/constants';
+import type { BasePlayer, BaseRoom } from '@game/shared/types';
 
 import type { ANIMALS, EMOTES, GAME_RULES } from './constants.js';
 
@@ -36,14 +37,10 @@ export interface TradeState {
   offers: Record<string, TradeOffer>;
 }
 
-export interface Room extends BaseRoom<Player, Rules, 'farm'> {
+export interface Room extends BaseRoom<Player, Rules, GameId.farm> {
   order: string[];
   turn: number;
   dice?: [DiceAnimals, DiceAnimals];
   winner?: string;
   trade?: TradeState;
 }
-
-export type RollDiceAck = SocketAck & {
-  diceResult?: [DiceAnimals, DiceAnimals];
-};

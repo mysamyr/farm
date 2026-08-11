@@ -1,4 +1,4 @@
-import { ERROR, EVENTS } from '@game/shared/constants';
+import { ERROR, GameId, EVENTS } from '@game/shared/constants';
 import type { GameHandlerContext } from '@game/shared/engine';
 import type { GameActionPayload, SocketAck } from '@game/shared/types';
 
@@ -416,7 +416,7 @@ export function handleAction(
   ack?: AckFunc
 ): void {
   const room = ctx.getRoomById(payload.roomId) as Room | null;
-  if (!room || room.game !== 'farm') {
+  if (!room || room.game !== GameId.farm) {
     return;
   }
 

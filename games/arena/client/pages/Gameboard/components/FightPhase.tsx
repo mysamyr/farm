@@ -5,7 +5,7 @@ import { emitGameEvent, getSocketId } from '@game/client-core/socket';
 
 import { EVENTS, ROOM_STATES } from '@game/shared/constants';
 
-import { type Room } from '@game/game-arena/shared';
+import { EffectId, type Room } from '@game/game-arena/shared';
 
 import { useArenaTranslation } from '../../../hooks/useArenaTranslation.js';
 import { getActivePlayerId } from '../../../utils/index.js';
@@ -73,7 +73,7 @@ export default function FightPhase(): ReactElement {
           {room.players.map(player => {
             if (player.id !== socketId) return null;
             const isStunned = player.statuses.some(
-              s => s.type === 'stun' && s.remainingDuration > 0
+              s => s.type === EffectId.stun && s.remainingDuration > 0
             );
             return (
               <PlayerSkills

@@ -1,4 +1,3 @@
-// Client Core - Hooks
 export { useActiveGame } from './useActiveGame.js';
 export { useConnection } from './useConnection.js';
 export { useDebounceCallback } from './useDebounceCallback.js';

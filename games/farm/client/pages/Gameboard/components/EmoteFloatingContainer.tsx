@@ -21,4 +21,3 @@ export default function EmoteFloatingContainer(): ReactElement {
     </div>
   );
 }
-

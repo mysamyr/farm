@@ -76,4 +76,7 @@ export const arenaGameTranslation: ArenaTranslation = {
   },
 };
 
-export const arenaHelpTranslation: ArenaHelpTranslation = {};
+export const arenaHelpTranslation: ArenaHelpTranslation = {
+  title: 'Game Goal',
+  goal: "Be the first who lower opponent's hp to 0 by creating build and using skills",
+};

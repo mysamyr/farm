@@ -1,10 +1,12 @@
+import { GameId } from '@game/shared/constants';
+
 export const DEFAULT_CONFIG = {
   maxPlayers: 4,
   minPlayers: 2,
 } as const;
 
 export const GAME_METADATA = {
-  id: 'farm' as const,
+  id: GameId.farm,
   name: 'Super Farm',
   emoji: '🐄',
   color: 'orange',

@@ -1,6 +1,4 @@
-import type { GAME_IDS, ROOM_STATES } from '../constants/index.js';
-
-export type GameId = (typeof GAME_IDS)[keyof typeof GAME_IDS];
+import type { GameId, ROOM_STATES } from '../constants/index.js';
 
 /**
  * Runtime game metadata provided by the server.

@@ -1,6 +1,6 @@
 import { Component, type ErrorInfo, type ReactNode, Suspense } from 'react';
 
-import type { GameId } from '@game/shared/types';
+import type { GameId } from '@game/shared/constants';
 
 import styles from './GameContainer.module.css';
 import { gameRegistry } from './registry.js';

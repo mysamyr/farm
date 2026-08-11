@@ -1,9 +1,9 @@
 export { ERROR } from './errors.js';
 
-export const GAME_IDS = {
-  FARM: 'farm',
-  ARENA: 'arena',
-} as const;
+export enum GameId {
+  farm = 'farm',
+  arena = 'arena',
+}
 
 export enum ROOM_STATES {
   IDLE = 'idle',

@@ -1,10 +1,9 @@
-import path from 'path';
-
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
+import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), tsconfigPaths()],
   server: {
     proxy: {
       '/api': {
@@ -16,11 +15,5 @@ export default defineConfig({
         ws: true,
       },
     },
-  },
-  resolve: {
-    alias: {
-      '@game/shared': path.resolve(__dirname, '../../packages/shared'),
-    },
-    extensions: ['.ts', '.tsx', '.mjs', '.js', '.mts', '.jsx', '.json'],
   },
 });

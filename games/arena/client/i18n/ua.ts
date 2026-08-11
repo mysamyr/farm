@@ -76,4 +76,7 @@ export const arenaGameTranslation: ArenaTranslation = {
   },
 };
 
-export const arenaHelpTranslation: ArenaHelpTranslation = {};
+export const arenaHelpTranslation: ArenaHelpTranslation = {
+  title: 'Мета гри',
+  goal: 'Першим опустити здоровʼя суперника до 0 вибравши та використовуючи навички',
+};

@@ -12,7 +12,7 @@ import {
   type Player as FarmPlayer,
   type Room as FarmRoom,
 } from '@game/game-farm/shared';
-import { EVENTS, NOTIFICATION_TYPES } from '@game/shared/constants';
+import { EVENTS, GameId, NOTIFICATION_TYPES } from '@game/shared/constants';
 import type { BasePlayer, BaseRoom } from '@game/shared/types';
 
 import { LogLevel } from '../constants/index.js';
@@ -50,7 +50,7 @@ function createWinnerHandler<
 
 gameRegistry.register(
   defineGameModule<FarmRoom, FarmPlayer>({
-    gameId: 'farm',
+    gameId: GameId.farm,
     config: {
       minPlayers: FARM_CONFIG.minPlayers,
       maxPlayers: FARM_CONFIG.maxPlayers,
@@ -73,7 +73,7 @@ gameRegistry.register(
 
 gameRegistry.register(
   defineGameModule<ArenaRoom, ArenaPlayer>({
-    gameId: 'arena',
+    gameId: GameId.arena,
     metadata: ARENA_METADATA,
     config: {
       minPlayers: ARENA_CONFIG.minPlayers,

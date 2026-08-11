@@ -4,10 +4,26 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./constants": "./constants/index.ts",
-    "./types": "./types/index.ts",
-    "./engine": "./engine/index.ts",
-    "./utils": "./utils/index.ts"
+    "./constants": {
+      "development": "./constants/index.ts",
+      "default": "./dist/constants/index.js",
+      "types": "./dist/constants/index.d.ts"
+    },
+    "./types": {
+      "development": "./types/index.ts",
+      "default": "./dist/types/index.js",
+      "types": "./dist/types/index.d.ts"
+    },
+    "./engine": {
+      "development": "./engine/index.ts",
+      "default": "./dist/engine/index.js",
+      "types": "./dist/engine/index.d.ts"
+    },
+    "./utils": {
+      "development": "./utils/index.ts",
+      "default": "./dist/utils/index.js",
+      "types": "./dist/utils/index.d.ts"
+    }
   },
   "scripts": {
     "build": "tsc",

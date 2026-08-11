@@ -12,7 +12,10 @@
     "noUncheckedIndexedAccess": true,
     "declaration": true,
     "declarationMap": true,
-    "isolatedModules": true
+    "isolatedModules": true,
+    "paths": {
+      "@game/shared/*": ["./packages/shared/*"]
+    }
   },
   "references": [
     { "path": "./packages/shared" },

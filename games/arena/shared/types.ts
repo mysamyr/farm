@@ -1,3 +1,4 @@
+import { GameId } from '@game/shared/constants';
 import type { BasePlayer, BaseRoom, BaseRules } from '@game/shared/types';
 
 import type {
@@ -136,7 +137,7 @@ export interface Player extends BasePlayer {
 
 // Room
 
-export interface Room extends BaseRoom<Player, BaseRules, 'arena'> {
+export interface Room extends BaseRoom<Player, BaseRules, GameId.arena> {
   order: string[];
   turn: number;
   activePlayerId?: string;

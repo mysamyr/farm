@@ -1,3 +1,5 @@
+import { GameId } from '@game/shared/constants';
+
 import type { Skill } from './types.js';
 
 export const DEFAULT_CONFIG = {
@@ -6,7 +8,7 @@ export const DEFAULT_CONFIG = {
 } as const;
 
 export const GAME_METADATA = {
-  id: 'arena' as const,
+  id: GameId.arena,
   name: 'Arena',
   emoji: '⚔️',
   color: 'blue',

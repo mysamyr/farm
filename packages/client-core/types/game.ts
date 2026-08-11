@@ -1,6 +1,6 @@
 import type { ComponentType } from 'react';
 
-import type { GameId } from '@game/shared/types';
+import type { GameId } from '@game/shared/constants';
 
 import type { AccentColor } from '../constants/index.js';
 

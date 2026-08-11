@@ -1,6 +1,7 @@
 import {
   ERROR,
   EVENTS,
+  GameId,
   NOTIFICATION_TYPES,
   ROOM_STATES,
 } from '@game/shared/constants';
@@ -8,10 +9,12 @@ import type { GameHandlerContext } from '@game/shared/engine';
 import type { GameActionPayload, SocketAck } from '@game/shared/types';
 
 import {
-  DEFAULT_PLAYER_STATS,
   type ArenaGameActionPayload,
+  DEFAULT_PLAYER_STATS,
   type Player,
   type Room,
+  SkillId,
+  SkillType,
 } from '../shared/index.js';
 
 import {
@@ -117,13 +120,16 @@ const useSkillHandler = (
     return;
   }
 
-  if (isStunned(player) && skillId !== 'skip') {
+  if (isStunned(player) && skillId !== SkillId.skip) {
     ack?.({ ok: false });
     return;
   }
 
   const skill = getSkillById(skillId);
-  if (!skill || (skill.type !== 'active' && skill.type !== 'healing')) {
+  if (
+    !skill ||
+    (skill.type !== SkillType.active && skill.type !== SkillType.healing)
+  ) {
     ack?.({ ok: false });
     return;
   }
@@ -156,7 +162,7 @@ export function handleAction(
   ack?: AckFunc
 ): void {
   const room = ctx.getRoomById(payload.roomId) as Room | null;
-  if (!room || room.game !== 'arena') {
+  if (!room || room.game !== GameId.arena) {
     return;
   }
 
