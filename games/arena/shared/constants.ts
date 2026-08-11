@@ -49,16 +49,26 @@ export enum SkillId {
   fanatic = 'fanatic',
   thorns = 'thorns',
   leech = 'leech',
+  pierce = 'pierce',
 }
 
 export enum EffectId {
+  /* Adds hp over time */
   regeneration = 'regeneration',
+  /* Prevents from getting bleed or poison. Doesn't remove active effects */
   resistance = 'resistance',
+  /* Returns part of direct damage back to attacker */
   thorns = 'thorns',
+  /* Returns part of direct damage back to attacker as hp */
   leech = 'leech',
+  /* Applies raw damage over time */
   poison = 'poison',
+  /* Applies damage over time based on player's current hp */
   bleed = 'bleed',
+  /* Removes possibility to use skills. No cooldown reduction */
   stun = 'stun',
+  /* Ignores some amount of opponent's defense */
+  pierce = 'pierce',
 }
 
 export enum SkillType {
@@ -116,7 +126,6 @@ export const SKILLS: Record<SkillId, Skill> = {
         target: ActionTarget.opponent,
         status: EffectId.bleed,
         value: 10,
-        isPercent: true,
         duration: 2,
       },
     ],
@@ -219,14 +228,12 @@ export const SKILLS: Record<SkillId, Skill> = {
         target: ActionTarget.self,
         stat: StatId.hp,
         value: 25,
-        duration: 999,
       },
       {
         type: ActionType.MODIFY_STAT,
         target: ActionTarget.self,
         stat: StatId.armor,
         value: 10,
-        duration: 999,
       },
     ],
   },
@@ -239,14 +246,12 @@ export const SKILLS: Record<SkillId, Skill> = {
         target: ActionTarget.self,
         stat: StatId.armor,
         value: 15,
-        duration: 999,
       },
       {
         type: ActionType.MODIFY_STAT,
         target: ActionTarget.self,
         stat: StatId.attack,
         value: 5,
-        duration: 999,
       },
     ],
   },
@@ -259,14 +264,12 @@ export const SKILLS: Record<SkillId, Skill> = {
         target: ActionTarget.self,
         stat: StatId.dodge,
         value: 10,
-        duration: 999,
       },
       {
         type: ActionType.MODIFY_STAT,
         target: ActionTarget.self,
         stat: StatId.crit,
         value: 15,
-        duration: 999,
       },
     ],
   },
@@ -279,14 +282,12 @@ export const SKILLS: Record<SkillId, Skill> = {
         target: ActionTarget.self,
         stat: StatId.attack,
         value: 15,
-        duration: 999,
       },
       {
         type: ActionType.MODIFY_STAT,
         target: ActionTarget.self,
         stat: StatId.crit,
         value: 5,
-        duration: 999,
       },
     ],
   },
@@ -299,21 +300,18 @@ export const SKILLS: Record<SkillId, Skill> = {
         target: ActionTarget.self,
         stat: StatId.attack,
         value: 10,
-        duration: 999,
       },
       {
         type: ActionType.MODIFY_STAT,
         target: ActionTarget.self,
         stat: StatId.hp,
         value: 15,
-        duration: 999,
       },
       {
         type: ActionType.MODIFY_STAT,
         target: ActionTarget.self,
         stat: StatId.dodge,
         value: 5,
-        duration: 999,
       },
     ],
   },
@@ -325,8 +323,7 @@ export const SKILLS: Record<SkillId, Skill> = {
         type: ActionType.APPLY_STATUS,
         target: ActionTarget.self,
         status: EffectId.thorns,
-        value: 30,
-        duration: 999,
+        value: 40,
       },
     ],
   },
@@ -339,7 +336,18 @@ export const SKILLS: Record<SkillId, Skill> = {
         target: ActionTarget.self,
         status: EffectId.leech,
         value: 30,
-        duration: 999,
+      },
+    ],
+  },
+  [SkillId.pierce]: {
+    id: SkillId.pierce,
+    type: SkillType.passive,
+    actions: [
+      {
+        type: ActionType.APPLY_STATUS,
+        target: ActionTarget.self,
+        status: EffectId.pierce,
+        value: 5,
       },
     ],
   },

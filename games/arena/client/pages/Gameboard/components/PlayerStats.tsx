@@ -2,7 +2,12 @@ import type { ReactElement } from 'react';
 
 import { classNames } from '@game/client-core/utils';
 
-import { Player, StatId, StatusEffect } from '@game/game-arena/shared';
+import {
+  Player,
+  StatId,
+  StatusEffect,
+  EffectId,
+} from '@game/game-arena/shared';
 
 import { useArenaTranslation } from '../../../hooks/useArenaTranslation.js';
 import { getPlayerStats } from '../../../utils/index.js';
@@ -25,11 +30,9 @@ function getStatusLabel(
   statusLabels: Record<string, string>
 ): string {
   const label = statusLabels[status.type] ?? status.type;
-  if (status.permanent) return label;
+  if (status.remainingDuration === undefined) return label;
   return `${label} (${status.remainingDuration})`;
 }
-
-// TODO: display player skills and cd
 
 export default function PlayerStatsDisplay({
   player,
@@ -42,17 +45,18 @@ export default function PlayerStatsDisplay({
   const t = useArenaTranslation();
   const stats = getPlayerStats(player);
   const visibleStatuses = player.statuses.filter(
-    s => !(s.permanent && STAT_TYPES.includes(s.type))
+    s => !(s.remainingDuration === undefined && STAT_TYPES.includes(s.type))
   );
 
-  // TODO: where is leach????
-  const statusLabels: Record<string, string> = {
+  const statusLabels: Record<EffectId, string> = {
     poison: '☠️ Poison',
     bleed: '🩸 Bleed',
     stun: '💫 Stun',
     regeneration: '💚 Regen',
     resistance: '🔰 Resist',
-    thorns: '🌿 Thorns',
+    thorns: '🌵 Thorns',
+    leech: '🧛 Leech',
+    pierce: '🗡️ Pierce',
   };
 
   return (

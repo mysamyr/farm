@@ -1,13 +1,13 @@
 import { GameId } from '@game/shared/constants';
 import type { BasePlayer, BaseRoom, BaseRules } from '@game/shared/types';
 
-import type {
-  ActionTarget,
-  ActionType,
+import {
+  type ActionTarget,
+  type ActionType,
   EffectId,
-  SkillId,
-  SkillType,
-  StatId,
+  type SkillId,
+  type SkillType,
+  type StatId,
 } from './constants.js';
 
 type BaseAction = {
@@ -29,21 +29,64 @@ export type HealAction = BaseAction & {
 
 export type ApplyStatusAction = BaseAction & {
   type: ActionType.APPLY_STATUS;
-  status: EffectId;
-  duration: number;
-  value?: number;
-  isPercent?: boolean;
-};
+  /* If no duration provided - permanent passive effect */
+  duration?: number;
+} & (
+    | {
+        status: EffectId.bleed;
+        duration: number;
+        value: number;
+      }
+    | {
+        status: EffectId.poison;
+        duration: number;
+        value: number;
+        isPercent?: never;
+      }
+    | {
+        status: EffectId.regeneration;
+        duration: number;
+        value: number;
+        isPercent?: boolean;
+      }
+    | {
+        status: EffectId.resistance;
+        duration: number;
+        value?: never;
+        isPercent?: never;
+      }
+    | {
+        status: EffectId.stun;
+        duration: number;
+        value?: never;
+        isPercent?: never;
+      }
+    | {
+        status: EffectId.thorns;
+        value: number;
+        isPercent?: never;
+      }
+    | {
+        status: EffectId.leech;
+        value: number;
+        isPercent?: never;
+      }
+    | {
+        status: EffectId.pierce;
+        value: number;
+        isPercent?: never;
+      }
+  );
 
 export type ModifyStatAction = BaseAction & {
   type: ActionType.MODIFY_STAT;
   stat: StatId;
+  value: number;
+  /* If no duration provided - permanent passive effect */
   duration?: number;
-  value?: number;
-  isPercent?: boolean;
 };
 
-export type LifestealAction = BaseAction & {
+export type LifeStealAction = BaseAction & {
   type: ActionType.LIFE_STEAL;
   target: ActionTarget.self;
   /** % of damage */
@@ -61,7 +104,7 @@ export type GameAction =
   | ApplyStatusAction
   | ModifyStatAction
   | CleanseAction
-  | LifestealAction;
+  | LifeStealAction;
 
 interface BaseSkill {
   id: SkillId;
@@ -86,6 +129,7 @@ export type Skill = ActiveSkill | HealingSkill | PassiveSkill;
 
 // Logs
 
+// TODO: move to enums, create type guards for LogEffect
 export type LogEffectKind =
   | 'damage'
   | 'heal'
@@ -118,9 +162,8 @@ export interface LogStep {
 export interface StatusEffect {
   type: StatId | EffectId;
   value: number;
-  remainingDuration: number;
+  remainingDuration?: number;
   isPercent?: boolean;
-  permanent?: boolean;
 }
 
 export interface PlayerSkill {

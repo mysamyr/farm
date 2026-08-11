@@ -27,6 +27,7 @@ export const arenaGameTranslation: ArenaTranslation = {
     fanatic: 'Фанатик',
     thorns: 'Шипи',
     leech: 'Вампірик',
+    pierce: 'Пробій',
   },
   skillEffectLabels: {
     damage: 'Завдати {value} шкоди',

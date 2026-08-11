@@ -73,7 +73,10 @@ export default function FightPhase(): ReactElement {
           {room.players.map(player => {
             if (player.id !== socketId) return null;
             const isStunned = player.statuses.some(
-              s => s.type === EffectId.stun && s.remainingDuration > 0
+              s =>
+                s.type === EffectId.stun &&
+                s.remainingDuration &&
+                s.remainingDuration > 0
             );
             return (
               <PlayerSkills

@@ -17,7 +17,7 @@ import type {
 export const SKILL_ICONS: Record<SkillId, string> = {
   attack: '⚔️',
   skip: '⏭️',
-  bleed_strike: '🗡️',
+  bleed_strike: '🔪',
   viper_strike: '🐍',
   knockback: '💥',
   heal: '💚',
@@ -32,6 +32,7 @@ export const SKILL_ICONS: Record<SkillId, string> = {
   fanatic: '🔥',
   thorns: '🌵',
   leech: '🩸',
+  pierce: '🗡️',
 };
 
 export function getSkillIcon(skillId: SkillId): string {
@@ -68,10 +69,9 @@ function formatAction(
       return labels.cleanse;
     case ActionType.APPLY_STATUS: {
       const val = action.value !== undefined ? ` (${action.value})` : '';
-      const dur =
-        action.duration < 999
-          ? ` ${labels.durationTurns.replace('{turns}', String(action.duration))}`
-          : ` ${labels.durationPassive}`;
+      const dur = action.duration
+        ? ` ${labels.durationTurns.replace('{turns}', String(action.duration))}`
+        : ` ${labels.durationPassive}`;
       return labels.applyStatus
         .replace('{status}', action.status)
         .replace('{value}', val)

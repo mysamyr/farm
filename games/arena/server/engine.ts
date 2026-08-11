@@ -5,11 +5,14 @@ import {
   ActionTarget,
   ActionType,
   type ActiveSkill,
+  ApplyStatusAction,
   BASE_SKILLS,
+  DamageAction,
   EffectId,
   type GameAction,
   type HealingSkill,
   type LogEffect,
+  ModifyStatAction,
   NEGATIVE_EFFECTS,
   type PassiveSkill,
   type Player,
@@ -26,6 +29,7 @@ import {
   getActivePlayer,
   getLeech,
   getOpponent,
+  getPierce,
   getPlayerMaxHp,
   getPlayerMinHp,
   getPlayerStats,
@@ -33,6 +37,7 @@ import {
   isDead,
   isPlayerResistant,
   isStunned,
+  PlayerStats,
   rollChance,
   skillTargetsOpponent,
 } from './helpers.js';
@@ -105,16 +110,12 @@ export function applySkillSelection(player: Player, skills: SkillId[]): void {
         acc.push({
           type: action.stat,
           value: action.value ?? 0,
-          remainingDuration: 0,
-          permanent: true,
         });
       }
       if (action.type === ActionType.APPLY_STATUS) {
         acc.push({
           type: action.status,
           value: action.value ?? 0,
-          remainingDuration: 0,
-          permanent: true,
         });
       }
       return acc;
@@ -122,31 +123,43 @@ export function applySkillSelection(player: Player, skills: SkillId[]): void {
   );
 }
 
-function applyHeal(player: Player, heal: number): void {
+function applyHeal(player: Player, heal: number): number {
   const maxHp = getPlayerMaxHp(player);
-  player.hp = Math.min(player.hp + heal, maxHp);
+  const startHP = player.hp;
+  const newHP = Math.min(player.hp + heal, maxHp);
+  player.hp = newHP;
+
+  return newHP - startHP;
 }
 
 function applyDamage(player: Player, damage: number): void {
   const minHp = getPlayerMinHp(player);
-  player.hp = Math.max(player.hp - damage, minHp);
+  player.hp = Math.max(player.hp - damage, minHp, 0);
 }
 
-function cleanseNegativeEffects(player: Player): void {
-  player.statuses = player.statuses.filter(
-    s => !NEGATIVE_EFFECTS.includes(s.type as EffectId)
-  );
+function applyCleansing(
+  player: Player,
+  actions: GameAction[],
+  _ctx: TurnContext = NO_CONTEXT
+): void {
+  if (actions.some(a => a.type === ActionType.CLEANSE)) {
+    player.statuses = player.statuses.filter(
+      s => !NEGATIVE_EFFECTS.includes(s.type as EffectId)
+    );
+
+    // TODO: introduce cleansing effect to logs
+    // ctx.addEffect({
+    //   kind: status.type,
+    //   value: damage,
+    //   target: ActionTarget.self,
+    // });
+  }
 }
 
 function processStatusEffects(
   player: Player,
-  actions: GameAction[],
   ctx: TurnContext = NO_CONTEXT
 ): void {
-  // Clear negative effects before processing
-  if (actions.some(a => a.type === ActionType.CLEANSE)) {
-    cleanseNegativeEffects(player);
-  }
   for (const status of player.statuses) {
     const playerHp = getPlayerStats(player).hp;
     switch (status.type) {
@@ -158,6 +171,7 @@ function processStatusEffects(
           value: damage,
           target: ActionTarget.self,
         });
+        if (player.hp === 0) return;
         break;
       }
       case EffectId.bleed: {
@@ -168,17 +182,18 @@ function processStatusEffects(
           value: damage,
           target: ActionTarget.self,
         });
+        if (player.hp === 0) return;
         break;
       }
       case EffectId.regeneration: {
         const heal = status.isPercent
           ? Math.max(Math.floor((playerHp * status.value) / 100), 1)
           : status.value;
-        applyHeal(player, heal);
-        if (heal > 0) {
+        const healed = applyHeal(player, heal);
+        if (healed > 0) {
           ctx.addEffect({
             kind: 'regeneration',
-            value: heal,
+            value: healed,
             target: ActionTarget.self,
           });
         }
@@ -188,12 +203,11 @@ function processStatusEffects(
   }
 }
 
-function applySkillToSelf(
+function applyHealActions(
   player: Player,
   actions: GameAction[],
   ctx: TurnContext = NO_CONTEXT
 ): void {
-  // Only positive effects
   for (const action of actions) {
     if (action.target !== ActionTarget.self) continue;
 
@@ -202,21 +216,39 @@ function applySkillToSelf(
       const heal = action.isPercent
         ? Math.max(Math.floor((playerHp * action.value) / 100), 1)
         : action.value;
-      applyHeal(player, heal);
-      ctx.addEffect({ kind: 'heal', value: heal, target: ActionTarget.self });
-    }
-    if (action.type === ActionType.APPLY_STATUS) {
-      player.statuses.push({
-        type: action.status,
-        value: action.value ?? 0,
-        remainingDuration: action.duration,
-        isPercent: action.isPercent,
-      });
+      const healed = applyHeal(player, heal);
+      if (healed > 0) {
+        ctx.addEffect({
+          kind: 'heal',
+          value: healed,
+          target: ActionTarget.self,
+        });
+      }
     }
   }
 }
 
-function applyLifesteal(
+function applyStatusEffects(
+  player: Player,
+  actions: GameAction[],
+  _ctx: TurnContext = NO_CONTEXT
+): void {
+  for (const action of actions) {
+    if (action.target !== ActionTarget.self) continue;
+
+    if (action.type === ActionType.APPLY_STATUS) {
+      player.statuses.push({
+        type: action.status,
+        value: action.value ?? 0,
+        remainingDuration: action.duration ?? Infinity,
+        isPercent: 'isPercent' in action ? action.isPercent : undefined,
+      });
+      // ctx.addEffect({ kind: 'heal', value: heal, target: ActionTarget.self });
+    }
+  }
+}
+
+function applyLifeSteal(
   player: Player,
   actions: GameAction[],
   damageDealt: number,
@@ -225,12 +257,14 @@ function applyLifesteal(
   for (const action of actions) {
     if (action.type === ActionType.LIFE_STEAL) {
       const heal = Math.max(Math.floor((damageDealt * action.value) / 100), 1);
-      applyHeal(player, heal);
-      ctx.addEffect({
-        kind: 'lifesteal',
-        value: heal,
-        target: ActionTarget.self,
-      });
+      const healed = applyHeal(player, heal);
+      if (healed > 0) {
+        ctx.addEffect({
+          kind: 'lifesteal',
+          value: healed,
+          target: ActionTarget.self,
+        });
+      }
     }
   }
 }
@@ -259,10 +293,12 @@ function applyLeech(
   ctx: TurnContext = NO_CONTEXT
 ): void {
   if (totalDamageDealt <= 0 || leech <= 0) return;
-  // Leech: return % of direct damage as health to attacker
+
   const heal = Math.max(Math.floor((totalDamageDealt * leech) / 100), 1);
-  applyHeal(player, heal);
-  ctx.addEffect({ kind: 'leech', value: heal, target: ActionTarget.self });
+  const healed = applyHeal(player, heal);
+  if (healed > 0) {
+    ctx.addEffect({ kind: 'leech', value: healed, target: ActionTarget.self });
+  }
 }
 
 function applySkillToOpponent(
@@ -280,32 +316,32 @@ function applySkillToOpponent(
   }
 
   const isCrit = rollChance(attackerStats.crit);
-  const hasResistance = isPlayerResistant(opponent);
-  const thorns = getThorns(opponent);
-  const leech = getLeech(player);
 
-  let totalDamageDealt = 0;
+  const [damageActions, statusActions, modifyStatActions] = actions.reduce<
+    [DamageAction[], ApplyStatusAction[], ModifyStatAction[]]
+  >(
+    (acc, action) => {
+      if (action.target !== ActionTarget.opponent) return acc;
 
-  for (const action of actions) {
-    if (action.target !== ActionTarget.opponent) continue;
+      if (action.type === ActionType.DAMAGE) acc[0].push(action);
+      if (action.type === ActionType.APPLY_STATUS) acc[1].push(action);
+      if (action.type === ActionType.MODIFY_STAT) acc[2].push(action);
 
-    if (action.type === ActionType.DAMAGE) {
-      const baseValue = action.isPercent
-        ? Math.floor((defenderStats.hp * action.value) / 100)
-        : action.value;
-      const damage = calculateDamage(
-        baseValue,
-        attackerStats.attack,
-        defenderStats.armor,
-        isCrit
-      );
-      applyDamage(opponent, damage);
-      totalDamageDealt += damage;
-    }
-    if (action.type === ActionType.APPLY_STATUS) {
-      applyStatusToOpponent(opponent, action, hasResistance);
-    }
-  }
+      return acc;
+    },
+    [[], [], []]
+  );
+
+  // Direct damage
+  const pierce = getPierce(player);
+  const totalDamageDealt = applyDamageToOpponent(
+    opponent,
+    damageActions,
+    attackerStats,
+    defenderStats,
+    isCrit,
+    pierce
+  );
 
   if (totalDamageDealt > 0) {
     ctx.addEffect({
@@ -316,64 +352,129 @@ function applySkillToOpponent(
     });
   }
 
+  // Damage reactions
+  const thorns = getThorns(opponent);
   applyThorns(player, totalDamageDealt, thorns, ctx);
 
-  applyLifesteal(player, actions, totalDamageDealt, ctx);
+  // Damage rewards
+  applyLifeSteal(player, actions, totalDamageDealt, ctx);
 
+  const leech = getLeech(player);
   applyLeech(player, totalDamageDealt, leech, ctx);
+
+  // Effects
+  const hasResistance = isPlayerResistant(opponent);
+  applyStatusEffectsToOpponent(opponent, statusActions, hasResistance);
+  applyModifyStats(opponent, modifyStatActions);
 }
 
-function applyStatusToOpponent(
+function applyDamageToOpponent(
   opponent: Player,
-  action: GameAction & { type: ActionType.APPLY_STATUS },
+  actions: DamageAction[],
+  attackerStats: PlayerStats,
+  defenderStats: PlayerStats,
+  isCrit: boolean,
+  pierce: number
+): number {
+  let totalDamageDealt = 0;
+
+  for (const action of actions) {
+    const baseValue = action.isPercent
+      ? Math.floor((defenderStats.hp * action.value) / 100)
+      : action.value;
+    const damage = calculateDamage(
+      baseValue,
+      attackerStats.attack,
+      defenderStats.armor - pierce,
+      isCrit
+    );
+    applyDamage(opponent, damage);
+    totalDamageDealt += damage;
+  }
+
+  return totalDamageDealt;
+}
+
+function applyStatusEffectsToOpponent(
+  opponent: Player,
+  actions: ApplyStatusAction[],
   hasResistance: boolean
 ): void {
-  switch (action.status) {
-    case EffectId.bleed:
-    case EffectId.poison: {
-      if (hasResistance) return;
-      const existing = opponent.statuses.find(s => s.type === action.status);
-      if (existing) {
-        existing.remainingDuration = action.duration;
-      } else {
+  for (const action of actions) {
+    switch (action.status) {
+      case EffectId.bleed: {
+        if (hasResistance) return;
+        const existing = opponent.statuses.find(s => s.type === action.status);
+        if (existing) {
+          existing.remainingDuration = action.duration;
+        } else {
+          opponent.statuses.push({
+            type: action.status,
+            value: action.value,
+            remainingDuration: action.duration,
+            isPercent: true,
+          });
+        }
+        break;
+      }
+      case EffectId.poison: {
+        if (hasResistance) return;
+        const existing = opponent.statuses.find(s => s.type === action.status);
+        if (existing) {
+          existing.remainingDuration = action.duration;
+        } else {
+          opponent.statuses.push({
+            type: action.status,
+            value: action.value,
+            remainingDuration: action.duration,
+          });
+        }
+        break;
+      }
+      case EffectId.stun: {
+        opponent.statuses.push({
+          type: action.status,
+          value: 0,
+          remainingDuration: action.duration,
+        });
+        break;
+      }
+      default: {
         opponent.statuses.push({
           type: action.status,
           value: action.value ?? 0,
-          remainingDuration: action.duration,
+          remainingDuration: action.duration ?? Infinity,
           isPercent: action.isPercent,
         });
       }
-      break;
     }
-    case EffectId.stun: {
-      opponent.statuses.push({
-        type: action.status,
-        value: action.value ?? 0,
-        remainingDuration: action.duration,
-      });
-      break;
-    }
-    default: {
-      opponent.statuses.push({
-        type: action.status,
-        value: action.value ?? 0,
-        remainingDuration: action.duration,
-        isPercent: action.isPercent,
-      });
-    }
+  }
+}
+
+function applyModifyStats(player: Player, actions: ModifyStatAction[]): void {
+  for (const action of actions) {
+    player.statuses.push({
+      type: action.stat,
+      value: action.value ?? 0,
+      remainingDuration: action.duration ?? Infinity,
+    });
   }
 }
 
 export function decrementStatusDurations(player: Player): void {
   player.statuses = player.statuses.filter(s => {
-    if (s.permanent) return true;
+    if (s.remainingDuration === undefined) return true;
     s.remainingDuration -= 1;
     return s.remainingDuration > 0;
   });
 }
 
-export function decrementSkillCooldowns(player: Player): void {
+export function decrementSkillCooldowns(
+  player: Player,
+  skillId: SkillId
+): void {
   for (const skill of player.skills) {
+    if (skill.id === skillId) continue;
     skill.cooldown = Math.max(skill.cooldown - 1, 0);
   }
 }
@@ -387,7 +488,7 @@ export function setSkillCooldown(player: Player, skillId: SkillId): void {
     skillDef?.type === SkillType.active ||
     skillDef?.type === SkillType.healing
   ) {
-    playerSkill.cooldown = skillDef.cooldown + 1; // +1 because cooldown decrements at end of turn
+    playerSkill.cooldown = skillDef.cooldown;
   }
 }
 
@@ -401,17 +502,16 @@ export function processPlayerTurn(
 ): { dead: 'attacker' | 'defender' | null } {
   const player = getActivePlayer(room)!;
   const skill = SKILLS[skillId];
-  if (
-    !skill ||
-    (skill.type !== SkillType.active && skill.type !== SkillType.healing)
-  ) {
-    return { dead: null };
-  }
 
   const effects: LogEffect[] = [];
   const ctx: TurnContext = { addEffect: e => effects.push(e) };
 
-  processStatusEffects(player, skill.actions, ctx);
+  applyCleansing(player, skill.actions);
+
+  applyHealActions(player, skill.actions, ctx);
+
+  processStatusEffects(player, ctx);
+
   if (isDead(player)) {
     room.steps.push({
       step: room.steps.length + 1,
@@ -423,7 +523,7 @@ export function processPlayerTurn(
     return { dead: 'attacker' };
   }
 
-  applySkillToSelf(player, skill.actions, ctx);
+  applyStatusEffects(player, skill.actions, ctx);
 
   let dead: 'attacker' | 'defender' | null = null;
 
@@ -451,10 +551,11 @@ export function processPlayerTurn(
 
   setSkillCooldown(player, skillId);
 
-  decrementStatusDurations(player);
   if (!isStunned(player)) {
-    decrementSkillCooldowns(player);
+    decrementSkillCooldowns(player, skillId);
   }
+
+  decrementStatusDurations(player);
 
   setNextTurn(room);
 

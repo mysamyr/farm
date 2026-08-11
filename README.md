@@ -1,6 +1,6 @@
 # Farm Board game
 
-Header - add centralized leave button
+Header - add centralized leave button -> rewrite how header and pages work
 
 - [ ] generate README.md
 
@@ -8,10 +8,6 @@ review logging on server
 theme button - possibility to add new themes
 
 yellow button with white text...
-
-remove react-router-dom
-
-review possibility to reduce amount of trading events
 
 ## Screen breakpoints
 
@@ -32,10 +28,20 @@ review possibility to reduce amount of trading events
 @media (max-width: 767px) { Below Tablet }
 @media (max-width: 479px) { Below Mobile Large }
 
-- heal and after it DoT
-- -HP issue
-- passive that will ignore 5 armor
+- Cleansing removes negative effects BEFORE it's processing, but healing is applied AFTER negative effects processing.
 - negative status that will ignore 10 armor
-- thorns - 40% instead of 30%
 - regeneration - heal (10HP + effect that will heal based on remaining HP (less HP = more regen))
-- cleansing removes positive effects instead of negative
+
+Обробка ходу:
+
+- очищення (скіл)
+- лікування (активний скіл)
+- активні ефекти
+- (перевірка смерті)
+- накладання ефектів на себе
+
+- Перевірка на ухилення
+- Нанесення шкоди (+крит)
+- Застосування шипів
+- Застосування крадіжки здоровʼя
+- Накладання негативних ефектів на противника

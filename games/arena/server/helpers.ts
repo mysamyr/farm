@@ -23,7 +23,7 @@ export type PlayerStats = Record<StatId, number>;
 
 export function isStunned(player: Player): boolean {
   return player.statuses.some(
-    s => s.type === EffectId.stun && s.remainingDuration > 0
+    s => s.type === EffectId.stun && s.remainingDuration! > 0
   );
 }
 
@@ -62,7 +62,8 @@ export function getPlayerStats(player: Player): PlayerStats {
 export function isPlayerResistant(player: Player): boolean {
   return player.statuses.some(
     s =>
-      s.type === EffectId.resistance && (s.permanent || s.remainingDuration > 0)
+      s.type === EffectId.resistance &&
+      (s.remainingDuration === undefined || s.remainingDuration > 0)
   );
 }
 
@@ -70,7 +71,7 @@ export function getThorns(player: Player): number {
   return player.statuses.reduce((acc, s) => {
     if (
       s.type === EffectId.thorns &&
-      (s.permanent || s.remainingDuration > 0)
+      (s.remainingDuration === undefined || s.remainingDuration > 0)
     ) {
       acc += s.value ?? 0;
     }
@@ -80,7 +81,22 @@ export function getThorns(player: Player): number {
 
 export function getLeech(player: Player): number {
   return player.statuses.reduce((acc, s) => {
-    if (s.type === EffectId.leech && (s.permanent || s.remainingDuration > 0)) {
+    if (
+      s.type === EffectId.leech &&
+      (s.remainingDuration === undefined || s.remainingDuration > 0)
+    ) {
+      acc += s.value ?? 0;
+    }
+    return acc;
+  }, 0);
+}
+
+export function getPierce(player: Player): number {
+  return player.statuses.reduce((acc, s) => {
+    if (
+      s.type === EffectId.pierce &&
+      (s.remainingDuration === undefined || s.remainingDuration > 0)
+    ) {
       acc += s.value ?? 0;
     }
     return acc;
