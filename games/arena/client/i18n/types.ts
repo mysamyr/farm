@@ -1,35 +1,8 @@
-/**
- * Arena game translation types
- */
+import { SkillId, StatId } from '../../shared/index.js';
 
-export interface ArenaStatLabelsTranslation {
-  hp: string;
-  armor: string;
-  attack: string;
-  crit: string;
-  dodge: string;
-}
+export type ArenaStatLabelsTranslation = Record<StatId, string>;
 
-export interface ArenaSkillNamesTranslation {
-  attack: string;
-  skip: string;
-  bleed_strike: string;
-  viper_strike: string;
-  knockback: string;
-  heal: string;
-  regeneration: string;
-  magic_shield: string;
-  cleanse: string;
-  vampiric_strike: string;
-  toughened: string;
-  plating: string;
-  assassin: string;
-  strong: string;
-  fanatic: string;
-  thorns: string;
-  leech: string;
-  [key: string]: string;
-}
+export type ArenaSkillNamesTranslation = Record<SkillId, string>;
 
 export interface ArenaSkillEffectLabelsTranslation {
   damage: string;

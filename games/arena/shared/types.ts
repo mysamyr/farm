@@ -1,61 +1,57 @@
 import type { BasePlayer, BaseRoom, BaseRules } from '@game/shared/types';
 
-export type StatType = 'hp' | 'armor' | 'attack' | 'crit' | 'dodge';
-
-export type ActionTarget = 'self' | 'opponent';
-
-export type NegativeStatusType = 'poison' | 'bleed' | 'stun';
-
-export type PositiveStatusType =
-  | 'regeneration'
-  | 'resistance'
-  | 'thorns'
-  | 'leech';
-
-export type StatusEffectType = NegativeStatusType | PositiveStatusType;
+import type {
+  ActionTarget,
+  ActionType,
+  EffectId,
+  SkillId,
+  SkillType,
+  StatId,
+} from './constants.js';
 
 type BaseAction = {
   target: ActionTarget;
 };
 
 export type DamageAction = BaseAction & {
-  type: 'DAMAGE';
+  type: ActionType.DAMAGE;
+  /* Damage. If isPercent = true - then % of opponent's current HP */
   value: number;
   isPercent?: boolean;
 };
 
 export type HealAction = BaseAction & {
-  type: 'HEAL';
+  type: ActionType.HEAL;
   value: number;
   isPercent?: boolean;
 };
 
 export type ApplyStatusAction = BaseAction & {
-  type: 'APPLY_STATUS';
-  status: StatusEffectType;
+  type: ActionType.APPLY_STATUS;
+  status: EffectId;
   duration: number;
   value?: number;
   isPercent?: boolean;
 };
 
 export type ModifyStatAction = BaseAction & {
-  type: 'MODIFY_STAT';
-  stat: StatType;
+  type: ActionType.MODIFY_STAT;
+  stat: StatId;
   duration?: number;
   value?: number;
   isPercent?: boolean;
 };
 
 export type LifestealAction = BaseAction & {
-  type: 'LIFESTEAL';
-  target: 'self';
+  type: ActionType.LIFE_STEAL;
+  target: ActionTarget.self;
   /** % of damage */
   value: number;
 };
 
 export type CleanseAction = BaseAction & {
-  type: 'CLEANSE';
-  target: 'self';
+  type: ActionType.CLEANSE;
+  target: ActionTarget.self;
 };
 
 export type GameAction =
@@ -67,25 +63,27 @@ export type GameAction =
   | LifestealAction;
 
 interface BaseSkill {
-  id: string;
+  id: SkillId;
   actions: GameAction[];
 }
 
 export interface ActiveSkill extends BaseSkill {
-  type: 'active';
+  type: SkillType.active;
   cooldown: number;
 }
 
 export interface HealingSkill extends BaseSkill {
-  type: 'healing';
+  type: SkillType.healing;
   cooldown: number;
 }
 
 export interface PassiveSkill extends BaseSkill {
-  type: 'passive';
+  type: SkillType.passive;
 }
 
 export type Skill = ActiveSkill | HealingSkill | PassiveSkill;
+
+// Logs
 
 export type LogEffectKind =
   | 'damage'
@@ -102,7 +100,7 @@ export interface LogEffect {
   kind: LogEffectKind;
   /** damage dealt */
   value: number;
-  target: 'self' | 'opponent';
+  target: ActionTarget;
   isCrit?: boolean;
 }
 
@@ -110,12 +108,14 @@ export interface LogStep {
   step: number;
   playerId: string;
   playerName: string;
-  skillId: string;
+  skillId: SkillId;
   effects: LogEffect[];
 }
 
+// Player
+
 export interface StatusEffect {
-  type: StatType | StatusEffectType;
+  type: StatId | EffectId;
   value: number;
   remainingDuration: number;
   isPercent?: boolean;
@@ -123,7 +123,7 @@ export interface StatusEffect {
 }
 
 export interface PlayerSkill {
-  id: string;
+  id: SkillId;
   cooldown: number;
 }
 
@@ -133,6 +133,8 @@ export interface Player extends BasePlayer {
   skills: PlayerSkill[];
   ready: boolean;
 }
+
+// Room
 
 export interface Room extends BaseRoom<Player, BaseRules, 'arena'> {
   order: string[];

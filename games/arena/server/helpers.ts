@@ -1,5 +1,8 @@
 import {
+  ActionTarget,
   BASE_SKILLS,
+  CUSTOM_SKILLS,
+  EffectId,
   type GameAction,
   type Player,
   REQUIRED_ACTIVE_COUNT,
@@ -9,30 +12,31 @@ import {
   type Skill,
   type SkillId,
   SKILLS,
-  type StatType,
+  SkillType,
+  StatId,
   type StatusEffect,
 } from '../shared/index.js';
 
-const STAT_TYPES: StatType[] = ['hp', 'armor', 'attack', 'crit', 'dodge'];
+const STAT_TYPES: StatId[] = Object.values(StatId);
 
-export type PlayerStats = Record<StatType, number>;
+export type PlayerStats = Record<StatId, number>;
 
 export function isStunned(player: Player): boolean {
   return player.statuses.some(
-    s => s.type === 'stun' && s.remainingDuration > 0
+    s => s.type === EffectId.stun && s.remainingDuration > 0
   );
 }
 
 export function getPlayerMaxHp(player: Player): number {
   return player.statuses.reduce((acc: number, status: StatusEffect) => {
-    if (status.type === 'hp') acc += status.value;
+    if (status.type === StatId.hp) acc += status.value;
     return acc;
   }, 100);
 }
 
 export function getPlayerMinHp(player: Player): number {
   return player.statuses.reduce((acc: number, status: StatusEffect) => {
-    if (status.type === 'hp') acc -= status.value;
+    if (status.type === StatId.hp) acc -= status.value;
     return acc;
   }, 0);
 }
@@ -47,8 +51,8 @@ export function getPlayerStats(player: Player): PlayerStats {
   };
 
   for (const status of player.statuses) {
-    if (STAT_TYPES.includes(status.type as StatType)) {
-      stats[status.type as StatType] += status.value;
+    if (STAT_TYPES.includes(status.type as StatId)) {
+      stats[status.type as StatId] += status.value;
     }
   }
 
@@ -57,13 +61,17 @@ export function getPlayerStats(player: Player): PlayerStats {
 
 export function isPlayerResistant(player: Player): boolean {
   return player.statuses.some(
-    s => s.type === 'resistance' && (s.permanent || s.remainingDuration > 0)
+    s =>
+      s.type === EffectId.resistance && (s.permanent || s.remainingDuration > 0)
   );
 }
 
 export function getThorns(player: Player): number {
   return player.statuses.reduce((acc, s) => {
-    if (s.type === 'thorns' && (s.permanent || s.remainingDuration > 0)) {
+    if (
+      s.type === EffectId.thorns &&
+      (s.permanent || s.remainingDuration > 0)
+    ) {
       acc += s.value ?? 0;
     }
     return acc;
@@ -72,7 +80,7 @@ export function getThorns(player: Player): number {
 
 export function getLeech(player: Player): number {
   return player.statuses.reduce((acc, s) => {
-    if (s.type === 'leech' && (s.permanent || s.remainingDuration > 0)) {
+    if (s.type === EffectId.leech && (s.permanent || s.remainingDuration > 0)) {
       acc += s.value ?? 0;
     }
     return acc;
@@ -83,20 +91,26 @@ export function isValidSkillSelection(skills: SkillId[]): boolean {
   const uniqueSkills = new Set(skills);
   if (uniqueSkills.size !== skills.length) return false;
 
-  const baseSkillIds = new Set(BASE_SKILLS.map(s => s.id));
+  const baseSkillIds = new Set(BASE_SKILLS);
   if (skills.some(id => baseSkillIds.has(id))) return false;
 
-  const selectableSkills = SKILLS.filter(s => !baseSkillIds.has(s.id));
-  const validIds = new Set(selectableSkills.map(s => s.id));
-  if (!skills.every(id => validIds.has(id))) return false;
+  if (!skills.every(id => CUSTOM_SKILLS.includes(id))) return false;
 
-  const selectedSkills = skills
-    .map(id => selectableSkills.find(s => s.id === id))
-    .filter((skill): skill is Skill => skill !== undefined);
+  const selectedSkillIds = skills
+    .map(id => CUSTOM_SKILLS.find(s => s === id))
+    .filter((skill): skill is SkillId => skill !== undefined);
 
-  const activeCount = selectedSkills.filter(s => s.type === 'active').length;
-  const healingCount = selectedSkills.filter(s => s.type === 'healing').length;
-  const passiveCount = selectedSkills.filter(s => s.type === 'passive').length;
+  const selectedSkills = selectedSkillIds.map(id => SKILLS[id]);
+
+  const activeCount = selectedSkills.filter(
+    s => s.type === SkillType.active
+  ).length;
+  const healingCount = selectedSkills.filter(
+    s => s.type === SkillType.healing
+  ).length;
+  const passiveCount = selectedSkills.filter(
+    s => s.type === SkillType.passive
+  ).length;
 
   return (
     activeCount === REQUIRED_ACTIVE_COUNT &&
@@ -105,27 +119,8 @@ export function isValidSkillSelection(skills: SkillId[]): boolean {
   );
 }
 
-export function canStartArenaGame(_room: Room): boolean {
-  const baseSkillIds = new Set(BASE_SKILLS.map(s => s.id));
-  const selectableSkills = SKILLS.filter(s => !baseSkillIds.has(s.id));
-
-  const activeCount = selectableSkills.filter(s => s.type === 'active').length;
-  const healingCount = selectableSkills.filter(
-    s => s.type === 'healing'
-  ).length;
-  const passiveCount = selectableSkills.filter(
-    s => s.type === 'passive'
-  ).length;
-
-  return (
-    activeCount >= REQUIRED_ACTIVE_COUNT &&
-    healingCount >= REQUIRED_HEALING_COUNT &&
-    passiveCount >= REQUIRED_PASSIVE_COUNT
-  );
-}
-
 export function getSkillById(id: SkillId): Skill | undefined {
-  return SKILLS.find(s => s.id === id);
+  return SKILLS[id];
 }
 
 export function getActivePlayer(room: Room): Player | undefined {
@@ -138,7 +133,7 @@ export function getOpponent(room: Room, playerId: string): Player | undefined {
 }
 
 export function skillTargetsOpponent(actions: GameAction[]): boolean {
-  return actions.some(a => a.target === 'opponent');
+  return actions.some(a => a.target === ActionTarget.opponent);
 }
 
 export function rollChance(percent: number): boolean {

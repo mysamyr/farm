@@ -4,17 +4,15 @@ import {
   DEFAULT_PLAYER_STATS,
   type Player,
   type Room,
-  type StatType,
+  StatId,
 } from '@game/game-arena/shared';
 
-export type PlayerStats = Record<StatType, number>;
-
-export function getPlayerStats(player: Player): PlayerStats {
-  const stats: PlayerStats = { ...DEFAULT_PLAYER_STATS, hp: player.hp };
+export function getPlayerStats(player: Player): Record<StatId, number> {
+  const stats = { ...DEFAULT_PLAYER_STATS, hp: player.hp };
 
   for (const status of player.statuses) {
     if (status.type in stats) {
-      stats[status.type as StatType] += status.value;
+      stats[status.type as StatId] += status.value;
     }
   }
 

@@ -41,7 +41,7 @@ export enum GAME_RULES {
 }
 
 export const FARM_NOTIFICATION_TYPES = {
-  TRADE_CANCELLED: 'trade_cancelled', // TODO: remove
+  TRADE_CANCELLED: 'trade_cancelled',
 } as const;
 
 export const ANIMALS_DEFAULT_QUANTITY = {

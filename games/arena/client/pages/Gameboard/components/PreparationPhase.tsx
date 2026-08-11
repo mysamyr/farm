@@ -18,6 +18,7 @@ import {
   type Room,
   type Skill,
   type SkillId,
+  SkillType,
 } from '@game/game-arena/shared';
 
 import { getSkillIcon, getSkillName } from '../../../constants/index.js';
@@ -45,23 +46,23 @@ export default function PreparationPhase(): ReactElement {
   const [selectedPassives, setSelectedPassives] = useState<SkillId[]>([]);
   const [detailSkill, setDetailSkill] = useState<Skill | null>(null);
 
-  const baseSkillIds = useMemo(() => new Set(BASE_SKILLS.map(s => s.id)), []);
+  const baseSkillIds = useMemo(() => new Set(BASE_SKILLS), []);
 
   const activeSkills: ActiveSkill[] = useMemo(
     () =>
-      SKILLS.filter(
-        s => s.type === 'active' && !baseSkillIds.has(s.id)
+      Object.values(SKILLS).filter(
+        s => s.type === SkillType.active && !baseSkillIds.has(s.id)
       ) as ActiveSkill[],
     [baseSkillIds]
   );
 
   const healingSkills: HealingSkill[] = useMemo(
-    () => SKILLS.filter(s => s.type === 'healing'),
+    () => Object.values(SKILLS).filter(s => s.type === SkillType.healing),
     []
   );
 
   const passiveSkills: PassiveSkill[] = useMemo(
-    () => SKILLS.filter(s => s.type === 'passive'),
+    () => Object.values(SKILLS).filter(s => s.type === SkillType.passive),
     []
   );
 
@@ -154,9 +155,9 @@ export default function PreparationPhase(): ReactElement {
 
   const handleEquipFromDetail = useCallback(() => {
     if (!detailSkill) return;
-    if (detailSkill.type === 'active') {
+    if (detailSkill.type === SkillType.active) {
       handleSelectActive(detailSkill.id);
-    } else if (detailSkill.type === 'healing') {
+    } else if (detailSkill.type === SkillType.healing) {
       handleSelectHealing(detailSkill.id);
     } else {
       handleSelectPassive(detailSkill.id);
@@ -429,10 +430,10 @@ export default function PreparationPhase(): ReactElement {
                 variant={BUTTON_VARIANT.PRIMARY}
                 onClick={handleEquipFromDetail}
                 disabled={
-                  detailSkill.type === 'active'
+                  detailSkill.type === SkillType.active
                     ? !selectedActives.includes(detailSkill.id) &&
                       activeSlotsFull
-                    : detailSkill.type === 'healing'
+                    : detailSkill.type === SkillType.healing
                       ? !selectedHealing.includes(detailSkill.id) &&
                         healingSlotsFull
                       : !selectedPassives.includes(detailSkill.id) &&
@@ -440,9 +441,9 @@ export default function PreparationPhase(): ReactElement {
                 }
               >
                 {(
-                  detailSkill.type === 'active'
+                  detailSkill.type === SkillType.active
                     ? selectedActives.includes(detailSkill.id)
-                    : detailSkill.type === 'healing'
+                    : detailSkill.type === SkillType.healing
                       ? selectedHealing.includes(detailSkill.id)
                       : selectedPassives.includes(detailSkill.id)
                 )

@@ -1,2 +1,2 @@
-export { type GameConfig, gameRegistry, type RuleConfig } from './registry.js';
+export { gameRegistry } from './registry.js';
 export { GameContainer } from './GameContainer.js';

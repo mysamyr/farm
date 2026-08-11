@@ -79,9 +79,6 @@ gameRegistry.register(
       minPlayers: ARENA_CONFIG.minPlayers,
       maxPlayers: ARENA_CONFIG.maxPlayers,
     },
-    canStartGame: room => {
-      return arena.canStartArenaGame(room);
-    },
     addRoomFields: arena.addRoomFields,
     onPlayerRemoved: (room, playerId) => {
       arena.removePlayerFromOrder(room, playerId);

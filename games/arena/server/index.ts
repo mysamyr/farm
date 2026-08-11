@@ -6,7 +6,6 @@ export { NO_CONTEXT, TURN_START_INDEX } from './constants.js';
 
 export {
   calculateDamage,
-  canStartArenaGame,
   getActivePlayer,
   getLeech,
   getOpponent,

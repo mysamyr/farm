@@ -1,4 +1,11 @@
-import type { GameAction, Skill, StatType } from '@game/game-arena/shared';
+import {
+  ActionType,
+  GameAction,
+  Skill,
+  SkillId,
+  SkillType,
+  StatId,
+} from '@game/game-arena/shared';
 
 import type {
   ArenaSkillEffectLabelsTranslation,
@@ -7,7 +14,7 @@ import type {
 } from '../i18n/index.js';
 
 // ─── Skill icons (visual only, not translatable) ─────────
-export const SKILL_ICONS: Record<string, string> = {
+export const SKILL_ICONS: Record<SkillId, string> = {
   attack: '⚔️',
   skip: '⏭️',
   bleed_strike: '🗡️',
@@ -27,19 +34,19 @@ export const SKILL_ICONS: Record<string, string> = {
   leech: '🩸',
 };
 
-export function getSkillIcon(skillId: string): string {
+export function getSkillIcon(skillId: SkillId): string {
   return SKILL_ICONS[skillId] ?? '✨';
 }
 
 export function getSkillName(
-  skillId: string,
+  skillId: SkillId,
   skillNames: ArenaSkillNamesTranslation
 ): string {
   return skillNames[skillId] ?? skillId.replace(/_/g, ' ');
 }
 
 export function getStatLabel(
-  stat: StatType,
+  stat: StatId,
   statLabels: ArenaStatLabelsTranslation
 ): string {
   return statLabels[stat] ?? stat;
@@ -51,15 +58,15 @@ function formatAction(
   statLabels: ArenaStatLabelsTranslation
 ): string {
   switch (action.type) {
-    case 'DAMAGE':
+    case ActionType.DAMAGE:
       return labels.damage.replace('{value}', String(action.value));
-    case 'HEAL':
+    case ActionType.HEAL:
       return labels.heal.replace('{value}', String(action.value));
-    case 'LIFESTEAL':
+    case ActionType.LIFE_STEAL:
       return labels.lifesteal.replace('{value}', String(action.value));
-    case 'CLEANSE':
+    case ActionType.CLEANSE:
       return labels.cleanse;
-    case 'APPLY_STATUS': {
+    case ActionType.APPLY_STATUS: {
       const val = action.value !== undefined ? ` (${action.value})` : '';
       const dur =
         action.duration < 999
@@ -70,7 +77,7 @@ function formatAction(
         .replace('{value}', val)
         .replace('{duration}', dur);
     }
-    case 'MODIFY_STAT': {
+    case ActionType.MODIFY_STAT: {
       const sign = (action.value ?? 0) >= 0 ? '+' : '';
       return labels.modifyStat
         .replace('{sign}', sign)
@@ -84,7 +91,7 @@ export function getSkillCooldownText(
   skill: Skill,
   labels: ArenaSkillEffectLabelsTranslation
 ): string | null {
-  if (skill.type === 'active' || skill.type === 'healing') {
+  if (skill.type === SkillType.active || skill.type === SkillType.healing) {
     return labels.cooldown.replace('{cooldown}', String(skill.cooldown));
   }
   return null;

@@ -4,10 +4,11 @@ import { Button } from '@game/client-core/components';
 import { BUTTON_VARIANT } from '@game/client-core/constants';
 
 import {
-  BASE_SKILLS,
-  SKILLS,
   type Player,
   type Skill,
+  SkillId,
+  SKILLS,
+  SkillType,
 } from '@game/game-arena/shared';
 
 import { useArenaTranslation } from '../../../hooks/useArenaTranslation.js';
@@ -37,18 +38,18 @@ export default function PlayerSkills({
     currentCooldown: number;
     disabled: boolean;
   } | null>(null);
-  const baseSkillIds = new Set(BASE_SKILLS.map(skill => skill.id));
+  const baseSkillIds = new Set([SkillId.attack, SkillId.skip]);
 
   const skillsByType = player.skills.reduce(
     (acc, playerSkill) => {
-      const skillDef = SKILLS.find(s => s.id === playerSkill.id);
+      const skillDef = SKILLS[playerSkill.id];
       if (!skillDef) return acc;
 
       if (baseSkillIds.has(playerSkill.id)) {
         acc.base.push(playerSkill);
-      } else if (skillDef.type === 'active') {
+      } else if (skillDef.type === SkillType.active) {
         acc.active.push(playerSkill);
-      } else if (skillDef.type === 'healing') {
+      } else if (skillDef.type === SkillType.healing) {
         acc.healing.push(playerSkill);
       }
 
@@ -78,12 +79,14 @@ export default function PlayerSkills({
           ...skillsByType.active,
           ...skillsByType.healing,
         ].map(playerSkill => {
-          const skillDef = SKILLS.find(s => s.id === playerSkill.id);
+          const skillDef = SKILLS[playerSkill.id];
           if (!skillDef) return null;
 
           const disabled =
             !isMyTurn ||
-            (isStunned ? playerSkill.id !== 'skip' : playerSkill.cooldown > 0);
+            (isStunned
+              ? playerSkill.id !== SkillId.skip
+              : playerSkill.cooldown > 0);
 
           return (
             <SkillCard

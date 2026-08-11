@@ -1,11 +1,4 @@
-import type {
-  ActiveSkill,
-  HealingSkill,
-  PassiveSkill,
-  Skill,
-  StatType,
-  StatusEffectType,
-} from './types.js';
+import type { Skill } from './types.js';
 
 export const DEFAULT_CONFIG = {
   maxPlayers: 2,
@@ -25,7 +18,68 @@ export const REQUIRED_ACTIVE_COUNT = 2;
 export const REQUIRED_HEALING_COUNT = 1;
 export const REQUIRED_PASSIVE_COUNT = 2;
 
-export const DEFAULT_PLAYER_STATS: Record<StatType, number> = {
+export enum StatId {
+  hp = 'hp',
+  armor = 'armor',
+  attack = 'attack',
+  crit = 'crit',
+  dodge = 'dodge',
+}
+
+export enum SkillId {
+  attack = 'attack',
+  skip = 'skip',
+
+  bleed_strike = 'bleed_strike',
+  viper_strike = 'viper_strike',
+  vampiric_strike = 'vampiric_strike',
+  knockback = 'knockback',
+  magic_shield = 'magic_shield',
+  cleanse = 'cleanse',
+
+  heal = 'heal',
+  regeneration = 'regeneration',
+
+  toughened = 'toughened',
+  plating = 'plating',
+  assassin = 'assassin',
+  strong = 'strong',
+  fanatic = 'fanatic',
+  thorns = 'thorns',
+  leech = 'leech',
+}
+
+export enum EffectId {
+  regeneration = 'regeneration',
+  resistance = 'resistance',
+  thorns = 'thorns',
+  leech = 'leech',
+  poison = 'poison',
+  bleed = 'bleed',
+  stun = 'stun',
+}
+
+export enum SkillType {
+  active = 'active',
+  healing = 'healing',
+  passive = 'passive',
+}
+
+export enum ActionType {
+  DAMAGE = 'DAMAGE',
+  HEAL = 'HEAL',
+  APPLY_STATUS = 'APPLY_STATUS',
+  MODIFY_STAT = 'MODIFY_STAT',
+  LIFE_STEAL = 'LIFE_STEAL',
+  CLEANSE = 'CLEANSE',
+}
+
+export enum ActionTarget {
+  self = 'self',
+  opponent = 'opponent',
+}
+
+export const DEFAULT_PLAYER_STATS: Record<StatId, number> = {
   hp: 100,
   armor: 0,
   attack: 0,
@@ -33,271 +87,270 @@ export const DEFAULT_PLAYER_STATS: Record<StatType, number> = {
   dodge: 5,
 };
 
-export const BASE_SKILLS: ActiveSkill[] = [
-  {
-    id: 'attack',
-    type: 'active',
+export const SKILLS: Record<SkillId, Skill> = {
+  [SkillId.attack]: {
+    id: SkillId.attack,
+    type: SkillType.active,
     cooldown: 0,
-    actions: [{ type: 'DAMAGE', target: 'opponent', value: 10 }],
+    actions: [
+      { type: ActionType.DAMAGE, target: ActionTarget.opponent, value: 10 },
+    ],
   },
-  {
-    id: 'skip',
-    type: 'active',
+  [SkillId.skip]: {
+    id: SkillId.skip,
+    type: SkillType.active,
     cooldown: 0,
     actions: [],
   },
-];
 
-const ACTIVE_SKILLS: ActiveSkill[] = [
-  {
-    id: 'bleed_strike',
-    type: 'active',
+  [SkillId.bleed_strike]: {
+    id: SkillId.bleed_strike,
+    type: SkillType.active,
     cooldown: 2,
     actions: [
-      { type: 'DAMAGE', target: 'opponent', value: 10 },
+      { type: ActionType.DAMAGE, target: ActionTarget.opponent, value: 10 },
       {
-        type: 'APPLY_STATUS',
-        target: 'opponent',
-        status: 'bleed',
+        type: ActionType.APPLY_STATUS,
+        target: ActionTarget.opponent,
+        status: EffectId.bleed,
         value: 10,
         isPercent: true,
         duration: 2,
       },
     ],
   },
-  {
-    id: 'viper_strike',
-    type: 'active',
+  [SkillId.viper_strike]: {
+    id: SkillId.viper_strike,
+    type: SkillType.active,
     cooldown: 2,
     actions: [
-      { type: 'DAMAGE', target: 'opponent', value: 10 },
+      { type: ActionType.DAMAGE, target: ActionTarget.opponent, value: 10 },
       {
-        type: 'APPLY_STATUS',
-        target: 'opponent',
-        status: 'poison',
+        type: ActionType.APPLY_STATUS,
+        target: ActionTarget.opponent,
+        status: EffectId.poison,
         value: 5,
         duration: 5,
       },
     ],
   },
-  {
-    id: 'vampiric_strike',
-    type: 'active',
+  [SkillId.vampiric_strike]: {
+    id: SkillId.vampiric_strike,
+    type: SkillType.active,
     cooldown: 2,
     actions: [
-      { type: 'DAMAGE', target: 'opponent', value: 12 },
-      { type: 'LIFESTEAL', target: 'self', value: 50 },
+      { type: ActionType.DAMAGE, target: ActionTarget.opponent, value: 12 },
+      { type: ActionType.LIFE_STEAL, target: ActionTarget.self, value: 50 },
     ],
   },
-  {
-    id: 'knockback',
-    type: 'active',
+  [SkillId.knockback]: {
+    id: SkillId.knockback,
+    type: SkillType.active,
     cooldown: 4,
     actions: [
-      { type: 'DAMAGE', target: 'opponent', value: 10 },
+      { type: ActionType.DAMAGE, target: ActionTarget.opponent, value: 10 },
       {
-        type: 'APPLY_STATUS',
-        target: 'opponent',
-        status: 'stun',
+        type: ActionType.APPLY_STATUS,
+        target: ActionTarget.opponent,
+        status: EffectId.stun,
         duration: 1,
       },
     ],
   },
-  {
-    id: 'magic_shield',
-    type: 'active',
+  [SkillId.magic_shield]: {
+    id: SkillId.magic_shield,
+    type: SkillType.active,
     cooldown: 3,
     actions: [
       {
-        type: 'APPLY_STATUS',
-        target: 'self',
-        status: 'resistance',
+        type: ActionType.APPLY_STATUS,
+        target: ActionTarget.self,
+        status: EffectId.resistance,
         duration: 3,
       },
     ],
   },
-  {
-    id: 'cleanse',
-    type: 'active',
+  [SkillId.cleanse]: {
+    id: SkillId.cleanse,
+    type: SkillType.active,
     cooldown: 4,
     actions: [
       {
-        type: 'CLEANSE',
-        target: 'self',
+        type: ActionType.CLEANSE,
+        target: ActionTarget.self,
       },
     ],
   },
-];
 
-const HEALING_SKILLS: HealingSkill[] = [
-  {
-    id: 'heal',
-    type: 'healing',
+  [SkillId.heal]: {
+    id: SkillId.heal,
+    type: SkillType.healing,
     cooldown: 3,
-    actions: [{ type: 'HEAL', target: 'self', value: 20 }],
+    actions: [{ type: ActionType.HEAL, target: ActionTarget.self, value: 20 }],
   },
-  {
-    id: 'regeneration',
-    type: 'healing',
+  [SkillId.regeneration]: {
+    id: SkillId.regeneration,
+    type: SkillType.healing,
     cooldown: 3,
     actions: [
       {
-        type: 'HEAL',
-        target: 'self',
+        type: ActionType.HEAL,
+        target: ActionTarget.self,
         value: 10,
       },
       {
-        type: 'APPLY_STATUS',
-        target: 'self',
-        status: 'regeneration',
+        type: ActionType.APPLY_STATUS,
+        target: ActionTarget.self,
+        status: EffectId.regeneration,
         value: 5,
         duration: 3,
       },
     ],
   },
-];
 
-const PASSIVE_SKILLS: PassiveSkill[] = [
-  {
-    id: 'toughened',
-    type: 'passive',
+  [SkillId.toughened]: {
+    id: SkillId.toughened,
+    type: SkillType.passive,
     actions: [
       {
-        type: 'MODIFY_STAT',
-        target: 'self',
-        stat: 'hp',
+        type: ActionType.MODIFY_STAT,
+        target: ActionTarget.self,
+        stat: StatId.hp,
         value: 25,
         duration: 999,
       },
       {
-        type: 'MODIFY_STAT',
-        target: 'self',
-        stat: 'armor',
+        type: ActionType.MODIFY_STAT,
+        target: ActionTarget.self,
+        stat: StatId.armor,
         value: 10,
         duration: 999,
       },
     ],
   },
-  {
-    id: 'plating',
-    type: 'passive',
+  [SkillId.plating]: {
+    id: SkillId.plating,
+    type: SkillType.passive,
     actions: [
       {
-        type: 'MODIFY_STAT',
-        target: 'self',
-        stat: 'armor',
+        type: ActionType.MODIFY_STAT,
+        target: ActionTarget.self,
+        stat: StatId.armor,
         value: 15,
         duration: 999,
       },
       {
-        type: 'MODIFY_STAT',
-        target: 'self',
-        stat: 'attack',
+        type: ActionType.MODIFY_STAT,
+        target: ActionTarget.self,
+        stat: StatId.attack,
         value: 5,
         duration: 999,
       },
     ],
   },
-  {
-    id: 'assassin',
-    type: 'passive',
+  [SkillId.assassin]: {
+    id: SkillId.assassin,
+    type: SkillType.passive,
     actions: [
       {
-        type: 'MODIFY_STAT',
-        target: 'self',
-        stat: 'dodge',
+        type: ActionType.MODIFY_STAT,
+        target: ActionTarget.self,
+        stat: StatId.dodge,
         value: 10,
         duration: 999,
       },
       {
-        type: 'MODIFY_STAT',
-        target: 'self',
-        stat: 'crit',
+        type: ActionType.MODIFY_STAT,
+        target: ActionTarget.self,
+        stat: StatId.crit,
         value: 15,
         duration: 999,
       },
     ],
   },
-  {
-    id: 'strong',
-    type: 'passive',
+  [SkillId.strong]: {
+    id: SkillId.strong,
+    type: SkillType.passive,
     actions: [
       {
-        type: 'MODIFY_STAT',
-        target: 'self',
-        stat: 'attack',
+        type: ActionType.MODIFY_STAT,
+        target: ActionTarget.self,
+        stat: StatId.attack,
         value: 15,
         duration: 999,
       },
       {
-        type: 'MODIFY_STAT',
-        target: 'self',
-        stat: 'crit',
+        type: ActionType.MODIFY_STAT,
+        target: ActionTarget.self,
+        stat: StatId.crit,
         value: 5,
         duration: 999,
       },
     ],
   },
-  {
-    id: 'fanatic',
-    type: 'passive',
+  [SkillId.fanatic]: {
+    id: SkillId.fanatic,
+    type: SkillType.passive,
     actions: [
       {
-        type: 'MODIFY_STAT',
-        target: 'self',
-        stat: 'attack',
+        type: ActionType.MODIFY_STAT,
+        target: ActionTarget.self,
+        stat: StatId.attack,
         value: 10,
         duration: 999,
       },
       {
-        type: 'MODIFY_STAT',
-        target: 'self',
-        stat: 'hp',
+        type: ActionType.MODIFY_STAT,
+        target: ActionTarget.self,
+        stat: StatId.hp,
         value: 15,
         duration: 999,
       },
       {
-        type: 'MODIFY_STAT',
-        target: 'self',
-        stat: 'dodge',
+        type: ActionType.MODIFY_STAT,
+        target: ActionTarget.self,
+        stat: StatId.dodge,
         value: 5,
         duration: 999,
       },
     ],
   },
-  {
-    id: 'thorns',
-    type: 'passive',
+  [SkillId.thorns]: {
+    id: SkillId.thorns,
+    type: SkillType.passive,
     actions: [
       {
-        type: 'APPLY_STATUS',
-        target: 'self',
-        status: 'thorns',
+        type: ActionType.APPLY_STATUS,
+        target: ActionTarget.self,
+        status: EffectId.thorns,
         value: 30,
         duration: 999,
       },
     ],
   },
-  {
-    id: 'leech',
-    type: 'passive',
+  [SkillId.leech]: {
+    id: SkillId.leech,
+    type: SkillType.passive,
     actions: [
       {
-        type: 'APPLY_STATUS',
-        target: 'self',
-        status: 'leech',
+        type: ActionType.APPLY_STATUS,
+        target: ActionTarget.self,
+        status: EffectId.leech,
         value: 30,
         duration: 999,
       },
     ],
   },
-];
+};
 
-export const SKILLS: Skill[] = [
-  ...BASE_SKILLS,
-  ...ACTIVE_SKILLS,
-  ...HEALING_SKILLS,
-  ...PASSIVE_SKILLS,
-];
+export const BASE_SKILLS: SkillId[] = [SkillId.attack, SkillId.skip];
 
-export const NEGATIVE_EFFECTS: StatusEffectType[] = ['poison', 'bleed', 'stun'];
+export const CUSTOM_SKILLS: SkillId[] = Object.values(SkillId).filter(
+  v => !BASE_SKILLS.includes(v)
+);
+
+export const NEGATIVE_EFFECTS: EffectId[] = [
+  EffectId.poison,
+  EffectId.bleed,
+  EffectId.stun,
+];

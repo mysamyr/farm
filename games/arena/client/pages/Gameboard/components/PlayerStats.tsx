@@ -2,7 +2,7 @@ import type { ReactElement } from 'react';
 
 import { classNames } from '@game/client-core/utils';
 
-import type { Player, StatType, StatusEffect } from '@game/game-arena/shared';
+import { Player, StatId, StatusEffect } from '@game/game-arena/shared';
 
 import { useArenaTranslation } from '../../../hooks/useArenaTranslation.js';
 import { getPlayerStats } from '../../../utils/index.js';
@@ -45,6 +45,7 @@ export default function PlayerStatsDisplay({
     s => !(s.permanent && STAT_TYPES.includes(s.type))
   );
 
+  // TODO: where is leach????
   const statusLabels: Record<string, string> = {
     poison: '☠️ Poison',
     bleed: '🩸 Bleed',
@@ -73,10 +74,12 @@ export default function PlayerStatsDisplay({
         )}
       </div>
       <div className={styles.statsGrid}>
-        {(Object.keys(t.statLabels) as StatType[]).map(stat => (
+        {Object.keys(t.statLabels).map(stat => (
           <div key={stat} className={styles.statItem}>
-            <span className={styles.statLabel}>{t.statLabels[stat]}</span>
-            <span className={styles.statValue}>{stats[stat]}</span>
+            <span className={styles.statLabel}>
+              {t.statLabels[stat as StatId]}
+            </span>
+            <span className={styles.statValue}>{stats[stat as StatId]}</span>
           </div>
         ))}
       </div>
