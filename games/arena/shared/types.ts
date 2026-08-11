@@ -141,6 +141,7 @@ export type LogEffectKind =
   | 'leech'
   | 'dodge';
 
+// TODO: Leech event isn't visible
 export interface LogEffect {
   kind: LogEffectKind;
   /** damage dealt */

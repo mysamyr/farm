@@ -29,7 +29,6 @@ yellow button with white text...
 @media (max-width: 479px) { Below Mobile Large }
 
 - Cleansing removes negative effects BEFORE it's processing, but healing is applied AFTER negative effects processing.
-- negative status that will ignore 10 armor
 - regeneration - heal (10HP + effect that will heal based on remaining HP (less HP = more regen))
 
 Обробка ходу:

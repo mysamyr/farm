@@ -44,6 +44,7 @@ export default function PlayerStatsDisplay({
 }: PlayerStatsProps): ReactElement {
   const t = useArenaTranslation();
   const stats = getPlayerStats(player);
+  // TODO: ignore modify stats
   const visibleStatuses = player.statuses.filter(
     s => !(s.remainingDuration === undefined && STAT_TYPES.includes(s.type))
   );

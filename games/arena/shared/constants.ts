@@ -36,7 +36,8 @@ export enum SkillId {
   viper_strike = 'viper_strike',
   vampiric_strike = 'vampiric_strike',
   knockback = 'knockback',
-  magic_shield = 'magic_shield',
+  corrosion = 'corrosion',
+  resistance = 'resistance',
   cleanse = 'cleanse',
 
   heal = 'heal',
@@ -168,8 +169,22 @@ export const SKILLS: Record<SkillId, Skill> = {
       },
     ],
   },
-  [SkillId.magic_shield]: {
-    id: SkillId.magic_shield,
+  [SkillId.corrosion]: {
+    id: SkillId.corrosion,
+    type: SkillType.active,
+    cooldown: 4,
+    actions: [
+      {
+        type: ActionType.MODIFY_STAT,
+        target: ActionTarget.opponent,
+        stat: StatId.armor,
+        value: -10,
+        duration: 3,
+      },
+    ],
+  },
+  [SkillId.resistance]: {
+    id: SkillId.resistance,
     type: SkillType.active,
     cooldown: 3,
     actions: [
