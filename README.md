@@ -28,8 +28,10 @@ yellow button with white text...
 @media (max-width: 767px) { Below Tablet }
 @media (max-width: 479px) { Below Mobile Large }
 
-- Cleansing removes negative effects BEFORE it's processing, but healing is applied AFTER negative effects processing.
 - regeneration - heal (10HP + effect that will heal based on remaining HP (less HP = more regen))
+- improve battle logs (review and add all needed actions)
+- improve action value modificators ('calculate based on what value')
+- rework skill components on mobile ('i' icon to show more info, click to select)
 
 Обробка ходу:
 

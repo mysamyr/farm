@@ -56,7 +56,7 @@ const createRoomHandler =
       if (ack) {
         ack({
           ok: false,
-          error: ERROR.ROOM_NOT_FOUND, // TODO: add more specific error
+          error: ERROR.GAME_NOT_FOUND,
         });
       }
       return;

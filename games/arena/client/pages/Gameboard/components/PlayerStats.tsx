@@ -23,8 +23,6 @@ type PlayerStatsProps = {
   showStatuses?: boolean;
 };
 
-const STAT_TYPES: string[] = ['hp', 'armor', 'attack', 'crit', 'dodge'];
-
 function getStatusLabel(
   status: StatusEffect,
   statusLabels: Record<string, string>
@@ -44,9 +42,8 @@ export default function PlayerStatsDisplay({
 }: PlayerStatsProps): ReactElement {
   const t = useArenaTranslation();
   const stats = getPlayerStats(player);
-  // TODO: ignore modify stats
   const visibleStatuses = player.statuses.filter(
-    s => !(s.remainingDuration === undefined && STAT_TYPES.includes(s.type))
+    s => !StatId[s.type as StatId]
   );
 
   const statusLabels: Record<EffectId, string> = {

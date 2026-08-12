@@ -1,6 +1,8 @@
-import { SkillId, StatId } from '../../shared/index.js';
+import { SkillId, StatId, EffectId } from '../../shared/index.js';
 
 export type ArenaStatLabelsTranslation = Record<StatId, string>;
+
+export type ArenaEffectLabelsTranslation = Record<EffectId, string>;
 
 export type ArenaSkillNamesTranslation = Record<SkillId, string>;
 
@@ -54,14 +56,21 @@ export interface ArenaBattleLogTranslation {
   used: string;
 }
 
+export interface UtilTranslation {
+  self: string;
+  opponent: string;
+}
+
 export interface ArenaTranslation {
   name: string;
   statLabels: ArenaStatLabelsTranslation;
+  effectLabels: ArenaEffectLabelsTranslation;
   skillNames: ArenaSkillNamesTranslation;
   skillEffectLabels: ArenaSkillEffectLabelsTranslation;
   preparation: ArenaPreparationTranslation;
   fight: ArenaFightTranslation;
   battleLog: ArenaBattleLogTranslation;
+  util: UtilTranslation;
 }
 
 // TODO: Add Arena help

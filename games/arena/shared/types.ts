@@ -47,7 +47,7 @@ export type ApplyStatusAction = BaseAction & {
         status: EffectId.regeneration;
         duration: number;
         value: number;
-        isPercent?: boolean;
+        isPercent?: never;
       }
     | {
         status: EffectId.resistance;
@@ -173,9 +173,13 @@ export interface PlayerSkill {
 }
 
 export interface Player extends BasePlayer {
+  /** The current HP of the player. Can be negative if player has statuses that increase player's HP. */
   hp: number;
+  /** The statuses currently affecting the player. */
   statuses: StatusEffect[];
+  /** The skills the player currently has. */
   skills: PlayerSkill[];
+  /** Whether the player is ready to take their turn. */
   ready: boolean;
 }
 
@@ -184,7 +188,6 @@ export interface Player extends BasePlayer {
 export interface Room extends BaseRoom<Player, BaseRules, GameId.arena> {
   order: string[];
   turn: number;
-  activePlayerId?: string;
   winner?: string;
   steps: LogStep[];
 }

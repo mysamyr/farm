@@ -1,4 +1,5 @@
 import {
+  ActionTarget,
   ActionType,
   GameAction,
   Skill,
@@ -11,6 +12,8 @@ import type {
   ArenaSkillEffectLabelsTranslation,
   ArenaSkillNamesTranslation,
   ArenaStatLabelsTranslation,
+  ArenaEffectLabelsTranslation,
+  UtilTranslation,
 } from '../i18n/index.js';
 
 // ─── Skill icons (visual only, not translatable) ─────────
@@ -25,6 +28,7 @@ export const SKILL_ICONS: Record<SkillId, string> = {
   regeneration: '🌿',
   resistance: '🫧',
   cleanse: '✨',
+  rage: '😡',
   vampiric_strike: '🧛',
   toughened: '🪨',
   plating: '⚙️',
@@ -57,7 +61,9 @@ export function getStatLabel(
 function formatAction(
   action: GameAction,
   labels: ArenaSkillEffectLabelsTranslation,
-  statLabels: ArenaStatLabelsTranslation
+  statLabels: ArenaStatLabelsTranslation,
+  effectLabels: ArenaEffectLabelsTranslation,
+  util: UtilTranslation
 ): string {
   switch (action.type) {
     case ActionType.DAMAGE:
@@ -74,16 +80,24 @@ function formatAction(
         ? ` ${labels.durationTurns.replace('{turns}', String(action.duration))}`
         : ` ${labels.durationPassive}`;
       return labels.applyStatus
-        .replace('{status}', action.status)
+        .replace('{status}', effectLabels[action.status])
         .replace('{value}', val)
+        .replace(
+          '{target}',
+          action.target === ActionTarget.self ? util.self : util.opponent
+        )
         .replace('{duration}', dur);
     }
     case ActionType.MODIFY_STAT: {
-      const sign = (action.value ?? 0) >= 0 ? '+' : '';
+      const sign = action.value >= 0 ? '+' : '';
       return labels.modifyStat
         .replace('{sign}', sign)
         .replace('{value}', String(action.value ?? 0))
-        .replace('{stat}', getStatLabel(action.stat, statLabels));
+        .replace('{stat}', getStatLabel(action.stat, statLabels))
+        .replace(
+          '{target}',
+          action.target === ActionTarget.self ? util.self : util.opponent
+        );
     }
   }
 }
@@ -101,7 +115,11 @@ export function getSkillCooldownText(
 export function getSkillEffects(
   skill: Skill,
   labels: ArenaSkillEffectLabelsTranslation,
-  statLabels: ArenaStatLabelsTranslation
+  statLabels: ArenaStatLabelsTranslation,
+  effectLabels: ArenaEffectLabelsTranslation,
+  util: UtilTranslation
 ): string[] {
-  return skill.actions.map(a => formatAction(a, labels, statLabels));
+  return skill.actions.map(a =>
+    formatAction(a, labels, statLabels, effectLabels, util)
+  );
 }

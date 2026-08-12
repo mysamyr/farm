@@ -7,16 +7,7 @@ import * as en from './en.js';
 import type { ArenaHelpTranslation, ArenaTranslation } from './types.js';
 import * as ua from './ua.js';
 
-export type {
-  ArenaBattleLogTranslation,
-  ArenaFightTranslation,
-  ArenaHelpTranslation,
-  ArenaPreparationTranslation,
-  ArenaSkillEffectLabelsTranslation,
-  ArenaSkillNamesTranslation,
-  ArenaStatLabelsTranslation,
-  ArenaTranslation,
-} from './types.js';
+export type * from './types.js';
 
 const translations: Record<
   LanguageCode,

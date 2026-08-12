@@ -186,10 +186,7 @@ function processStatusEffects(
         break;
       }
       case EffectId.regeneration: {
-        const heal = status.isPercent
-          ? Math.max(Math.floor((playerHp * status.value) / 100), 1)
-          : status.value;
-        const healed = applyHeal(player, heal);
+        const healed = applyHeal(player, status.value);
         if (healed > 0) {
           ctx.addEffect({
             kind: 'regeneration',

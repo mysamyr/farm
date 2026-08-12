@@ -27,7 +27,13 @@ export default function SkillDetailSheet({
 
   const icon = getSkillIcon(skill.id);
   const name = getSkillName(skill.id, t.skillNames);
-  const effects = getSkillEffects(skill, t.skillEffectLabels, t.statLabels);
+  const effects = getSkillEffects(
+    skill,
+    t.skillEffectLabels,
+    t.statLabels,
+    t.effectLabels,
+    t.util
+  );
   const cooldownText = getSkillCooldownText(skill, t.skillEffectLabels);
 
   return (

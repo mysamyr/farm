@@ -9,6 +9,16 @@ export const arenaGameTranslation: ArenaTranslation = {
     crit: '🎯 Crit',
     dodge: '💨 Evade',
   },
+  effectLabels: {
+    regeneration: 'Regeneration',
+    resistance: 'Resistance',
+    thorns: 'Thorns',
+    leech: 'Leech',
+    poison: 'Poison',
+    bleed: 'Bleed',
+    stun: 'Stun',
+    pierce: 'Pierce',
+  },
   skillNames: {
     attack: 'Attack',
     skip: 'Skip',
@@ -20,6 +30,7 @@ export const arenaGameTranslation: ArenaTranslation = {
     regeneration: 'Regeneration',
     resistance: 'Magic Shield',
     cleanse: 'Cleanse',
+    rage: 'Rage',
     vampiric_strike: 'Vampiric Strike',
     toughened: 'Toughened',
     plating: 'Plating',
@@ -36,7 +47,7 @@ export const arenaGameTranslation: ArenaTranslation = {
     lifesteal: 'Lifesteal {value}% of damage',
     cleanse: 'Cleanse all negative effects',
     applyStatus: 'Apply {status}{value}{duration}',
-    modifyStat: '{sign}{value} {stat}',
+    modifyStat: '{sign}{value} {stat} to {target}',
     durationTurns: 'for {turns} turns',
     durationPassive: '(passive)',
     cooldown: 'Cooldown: {cooldown}',
@@ -75,6 +86,10 @@ export const arenaGameTranslation: ArenaTranslation = {
     noActionsYet: 'No actions yet.',
     turnLabel: 'Turn',
     used: 'used',
+  },
+  util: {
+    self: 'Self',
+    opponent: 'Opponent',
   },
 };
 

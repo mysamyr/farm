@@ -29,20 +29,27 @@ export enum StatId {
 }
 
 export enum SkillId {
+  // Base
   attack = 'attack',
   skip = 'skip',
 
+  // Active strikes
   bleed_strike = 'bleed_strike',
   viper_strike = 'viper_strike',
   vampiric_strike = 'vampiric_strike',
+  // Active debuffs
   knockback = 'knockback',
   corrosion = 'corrosion',
+  // Active buffs
   resistance = 'resistance',
   cleanse = 'cleanse',
+  rage = 'rage',
 
+  // Healing
   heal = 'heal',
   regeneration = 'regeneration',
 
+  // Passive
   toughened = 'toughened',
   plating = 'plating',
   assassin = 'assassin',
@@ -54,21 +61,21 @@ export enum SkillId {
 }
 
 export enum EffectId {
-  /* Adds hp over time */
+  /** Adds hp over time */
   regeneration = 'regeneration',
-  /* Prevents from getting bleed or poison. Doesn't remove active effects */
+  /** Prevents from getting bleed or poison. Doesn't remove active effects */
   resistance = 'resistance',
-  /* Returns part of direct damage back to attacker */
+  /** Returns part of direct damage back to attacker */
   thorns = 'thorns',
-  /* Returns part of direct damage back to attacker as hp */
+  /** Returns part of direct damage back to attacker as hp */
   leech = 'leech',
-  /* Applies raw damage over time */
+  /** Applies constant damage over time */
   poison = 'poison',
-  /* Applies damage over time based on player's current hp */
+  /** Applies damage over time based on player's current hp */
   bleed = 'bleed',
-  /* Removes possibility to use skills. No cooldown reduction */
+  /** Removes possibility to use skills. No cooldown reduction */
   stun = 'stun',
-  /* Ignores some amount of opponent's defense */
+  /** Ignores some amount of opponent's defense */
   pierce = 'pierce',
 }
 
@@ -126,7 +133,7 @@ export const SKILLS: Record<SkillId, Skill> = {
         type: ActionType.APPLY_STATUS,
         target: ActionTarget.opponent,
         status: EffectId.bleed,
-        value: 10,
+        value: 20,
         duration: 2,
       },
     ],
@@ -207,6 +214,20 @@ export const SKILLS: Record<SkillId, Skill> = {
       },
     ],
   },
+  [SkillId.rage]: {
+    id: SkillId.rage,
+    type: SkillType.active,
+    cooldown: 4,
+    actions: [
+      {
+        type: ActionType.MODIFY_STAT,
+        target: ActionTarget.self,
+        stat: StatId.attack,
+        value: 10,
+        duration: 3,
+      },
+    ],
+  },
 
   [SkillId.heal]: {
     id: SkillId.heal,
@@ -228,7 +249,7 @@ export const SKILLS: Record<SkillId, Skill> = {
         type: ActionType.APPLY_STATUS,
         target: ActionTarget.self,
         status: EffectId.regeneration,
-        value: 5,
+        value: 8,
         duration: 3,
       },
     ],
