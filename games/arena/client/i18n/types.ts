@@ -54,6 +54,21 @@ export interface ArenaBattleLogTranslation {
   noActionsYet: string;
   turnLabel: string;
   used: string;
+  damage: string;
+  crit: string;
+  dodge: string;
+  heal: string;
+  lifesteal: string;
+  bleed: string;
+  poison: string;
+  regeneration: string;
+  thorns: string;
+  leech: string;
+  cleanse: string;
+  resist: string;
+  applyStatus: string;
+  modifyStat: string;
+  durationTurns: string;
 }
 
 export interface UtilTranslation {

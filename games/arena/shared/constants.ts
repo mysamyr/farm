@@ -99,6 +99,22 @@ export enum ActionTarget {
   opponent = 'opponent',
 }
 
+export enum LogEffectKind {
+  damage = 'damage',
+  heal = 'heal',
+  lifesteal = 'lifesteal',
+  bleed = 'bleed',
+  poison = 'poison',
+  regeneration = 'regeneration',
+  thorns = 'thorns',
+  leech = 'leech',
+  dodge = 'dodge',
+  apply_status = 'apply_status',
+  modify_stat = 'modify_stat',
+  cleanse = 'cleanse',
+  resist = 'resist',
+}
+
 export const DEFAULT_PLAYER_STATS: Record<StatId, number> = {
   hp: 100,
   armor: 0,

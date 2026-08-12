@@ -2,9 +2,21 @@ import { useState, type ReactElement } from 'react';
 
 import { classNames } from '@game/client-core/utils';
 
-import type { LogEffect, LogStep } from '@game/game-arena/shared';
+import {
+  ActionTarget,
+  LogEffectKind,
+  type LogEffect,
+  type LogStep,
+} from '@game/game-arena/shared';
 
-import { useArenaTranslation } from '../../../hooks/useArenaTranslation.js';
+import { getSkillName, getStatLabel } from '../../../constants/index.js';
+import {
+  useArenaTranslation,
+  type ArenaBattleLogTranslation,
+  type ArenaEffectLabelsTranslation,
+  type ArenaStatLabelsTranslation,
+  type UtilTranslation,
+} from '../../../hooks/useArenaTranslation.js';
 
 import styles from './BattleLog.module.css';
 
@@ -12,71 +24,129 @@ type BattleLogProps = {
   steps: LogStep[];
 };
 
-function formatSkillId(id: string): string {
-  return id.replace(/_/g, ' ');
+function getTargetLabel(
+  target: ActionTarget,
+  util: UtilTranslation
+): string {
+  return target === ActionTarget.self ? util.self : util.opponent;
 }
 
-function getEffectText(effect: LogEffect): string {
+function formatDuration(
+  duration: number | undefined,
+  t: ArenaBattleLogTranslation
+): string {
+  if (duration === undefined || !Number.isFinite(duration)) return '';
+  return t.durationTurns.replace('{turns}', String(duration));
+}
+
+function getEffectText(
+  effect: LogEffect,
+  t: ArenaBattleLogTranslation,
+  effectLabels: ArenaEffectLabelsTranslation,
+  statLabels: ArenaStatLabelsTranslation,
+  util: UtilTranslation
+): string {
   switch (effect.kind) {
-    case 'damage':
-      return `Opponent: ${effect.value} damage${effect.isCrit ? ' (crit)' : ''}`;
-    case 'dodge':
-      return 'Opponent: dodged';
-    case 'heal':
-      return `+${effect.value} heal`;
-    case 'lifesteal':
-      return `+${effect.value} lifesteal`;
-    case 'bleed':
-      return `-${effect.value} bleed`;
-    case 'poison':
-      return `-${effect.value} poison`;
-    case 'regeneration':
-      return `+${effect.value} regeneration`;
-    case 'thorns':
-      return `-${effect.value} thorns`;
-    default:
-      return '';
+    case LogEffectKind.damage:
+      return t.damage
+        .replace('{target}', getTargetLabel(effect.target, util))
+        .replace('{value}', String(effect.value))
+        .replace('{crit}', effect.isCrit ? t.crit : '');
+    case LogEffectKind.dodge:
+      return t.dodge.replace(
+        '{target}',
+        getTargetLabel(effect.target, util)
+      );
+    case LogEffectKind.heal:
+      return t.heal.replace('{value}', String(effect.value));
+    case LogEffectKind.lifesteal:
+      return t.lifesteal.replace('{value}', String(effect.value));
+    case LogEffectKind.bleed:
+      return t.bleed.replace('{value}', String(effect.value));
+    case LogEffectKind.poison:
+      return t.poison.replace('{value}', String(effect.value));
+    case LogEffectKind.regeneration:
+      return t.regeneration.replace('{value}', String(effect.value));
+    case LogEffectKind.thorns:
+      return t.thorns.replace('{value}', String(effect.value));
+    case LogEffectKind.leech:
+      return t.leech.replace('{value}', String(effect.value));
+    case LogEffectKind.cleanse:
+      return t.cleanse;
+    case LogEffectKind.resist:
+      return t.resist
+        .replace('{target}', getTargetLabel(effect.target, util))
+        .replace('{status}', effectLabels[effect.status]);
+    case LogEffectKind.apply_status: {
+      const value =
+        'value' in effect && effect.value !== undefined
+          ? ` (${effect.value})`
+          : '';
+      const duration = formatDuration(
+        'duration' in effect ? effect.duration : undefined,
+        t
+      );
+      return t.applyStatus
+        .replace('{target}', getTargetLabel(effect.target, util))
+        .replace('{status}', effectLabels[effect.status])
+        .replace('{value}', value)
+        .replace('{duration}', duration);
+    }
+    case LogEffectKind.modify_stat: {
+      const sign = effect.value >= 0 ? '+' : '';
+      return t.modifyStat
+        .replace('{target}', getTargetLabel(effect.target, util))
+        .replace('{sign}', sign)
+        .replace('{value}', String(effect.value))
+        .replace('{stat}', getStatLabel(effect.stat, statLabels))
+        .replace('{duration}', formatDuration(effect.duration, t));
+    }
   }
 }
 
 function getEffectClass(effect: LogEffect): string | undefined {
   switch (effect.kind) {
-    case 'damage':
-    case 'bleed':
-    case 'poison':
-    case 'thorns':
+    case LogEffectKind.damage:
+    case LogEffectKind.bleed:
+    case LogEffectKind.poison:
+    case LogEffectKind.thorns:
       return styles.negative;
-    case 'heal':
-    case 'lifesteal':
-    case 'regeneration':
+    case LogEffectKind.heal:
+    case LogEffectKind.lifesteal:
+    case LogEffectKind.regeneration:
+    case LogEffectKind.leech:
       return styles.positive;
-    case 'dodge':
+    case LogEffectKind.dodge:
+    case LogEffectKind.resist:
       return styles.dodge;
-    default:
-      return '';
+    case LogEffectKind.cleanse:
+    case LogEffectKind.apply_status:
+    case LogEffectKind.modify_stat:
+      return undefined;
   }
 }
 
 export default function BattleLog({ steps }: BattleLogProps): ReactElement {
-  const { battleLog: t } = useArenaTranslation();
+  const t = useArenaTranslation();
+  const { battleLog, effectLabels, statLabels, skillNames, util } = t;
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <div className={styles.panel}>
       <button className={styles.toggle} onClick={() => setIsOpen(o => !o)}>
-        <span>{t.title}</span>
+        <span>{battleLog.title}</span>
         <span>{isOpen ? '▴' : '▾'}</span>
       </button>
       {isOpen && (
         <div className={styles.content}>
           {steps.length === 0 ? (
-            <p className={styles.empty}>{t.noActionsYet}</p>
+            <p className={styles.empty}>{battleLog.noActionsYet}</p>
           ) : (
             [...steps].reverse().map(step => (
               <div key={step.step} className={styles.stepSection}>
                 <p className={styles.stepHeader}>
-                  {t.turnLabel} {step.step} &mdash; {step.playerName} {t.used}{' '}
-                  {formatSkillId(step.skillId)}
+                  {battleLog.turnLabel} {step.step} &mdash; {step.playerName}{' '}
+                  {battleLog.used} {getSkillName(step.skillId, skillNames)}
                 </p>
                 {step.effects.map((effect, i) => (
                   <p
@@ -86,7 +156,13 @@ export default function BattleLog({ steps }: BattleLogProps): ReactElement {
                       getEffectClass(effect)
                     )}
                   >
-                    {getEffectText(effect)}
+                    {getEffectText(
+                      effect,
+                      battleLog,
+                      effectLabels,
+                      statLabels,
+                      util
+                    )}
                   </p>
                 ))}
               </div>

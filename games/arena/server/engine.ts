@@ -12,6 +12,7 @@ import {
   type GameAction,
   type HealingSkill,
   type LogEffect,
+  LogEffectKind,
   ModifyStatAction,
   NEGATIVE_EFFECTS,
   type PassiveSkill,
@@ -140,19 +141,17 @@ function applyDamage(player: Player, damage: number): void {
 function applyCleansing(
   player: Player,
   actions: GameAction[],
-  _ctx: TurnContext = NO_CONTEXT
+  ctx: TurnContext = NO_CONTEXT
 ): void {
   if (actions.some(a => a.type === ActionType.CLEANSE)) {
     player.statuses = player.statuses.filter(
       s => !NEGATIVE_EFFECTS.includes(s.type as EffectId)
     );
 
-    // TODO: introduce cleansing effect to logs
-    // ctx.addEffect({
-    //   kind: status.type,
-    //   value: damage,
-    //   target: ActionTarget.self,
-    // });
+    ctx.addEffect({
+      kind: LogEffectKind.cleanse,
+      target: ActionTarget.self,
+    });
   }
 }
 
@@ -167,7 +166,7 @@ function processStatusEffects(
         const damage = status.value;
         applyDamage(player, damage);
         ctx.addEffect({
-          kind: status.type,
+          kind: LogEffectKind.poison,
           value: damage,
           target: ActionTarget.self,
         });
@@ -178,7 +177,7 @@ function processStatusEffects(
         const damage = Math.max(Math.floor((playerHp * status.value) / 100), 1);
         applyDamage(player, damage);
         ctx.addEffect({
-          kind: status.type,
+          kind: LogEffectKind.bleed,
           value: damage,
           target: ActionTarget.self,
         });
@@ -189,7 +188,7 @@ function processStatusEffects(
         const healed = applyHeal(player, status.value);
         if (healed > 0) {
           ctx.addEffect({
-            kind: 'regeneration',
+            kind: LogEffectKind.regeneration,
             value: healed,
             target: ActionTarget.self,
           });
@@ -216,7 +215,7 @@ function applyHealActions(
       const healed = applyHeal(player, heal);
       if (healed > 0) {
         ctx.addEffect({
-          kind: 'heal',
+          kind: LogEffectKind.heal,
           value: healed,
           target: ActionTarget.self,
         });
@@ -225,10 +224,10 @@ function applyHealActions(
   }
 }
 
-function applyStatusEffects(
+function applyStatusEffectsToSelf(
   player: Player,
   actions: GameAction[],
-  _ctx: TurnContext = NO_CONTEXT
+  ctx: TurnContext = NO_CONTEXT
 ): void {
   for (const action of actions) {
     if (action.target !== ActionTarget.self) continue;
@@ -240,7 +239,13 @@ function applyStatusEffects(
         remainingDuration: action.duration ?? Infinity,
         isPercent: 'isPercent' in action ? action.isPercent : undefined,
       });
-      // ctx.addEffect({ kind: 'heal', value: heal, target: ActionTarget.self });
+      ctx.addEffect({
+        kind: LogEffectKind.apply_status,
+        target: ActionTarget.self,
+        status: action.status,
+        duration: action.duration ?? Infinity,
+        value: action.value ?? 0,
+      } as LogEffect);
     }
   }
 }
@@ -257,7 +262,7 @@ function applyLifeSteal(
       const healed = applyHeal(player, heal);
       if (healed > 0) {
         ctx.addEffect({
-          kind: 'lifesteal',
+          kind: LogEffectKind.lifesteal,
           value: healed,
           target: ActionTarget.self,
         });
@@ -277,7 +282,7 @@ function applyThorns(
   const reflected = Math.max(Math.floor((totalDamageDealt * thorns) / 100), 1);
   applyDamage(attacker, reflected);
   ctx.addEffect({
-    kind: 'thorns',
+    kind: LogEffectKind.thorns,
     value: reflected,
     target: ActionTarget.self,
   });
@@ -294,7 +299,11 @@ function applyLeech(
   const heal = Math.max(Math.floor((totalDamageDealt * leech) / 100), 1);
   const healed = applyHeal(player, heal);
   if (healed > 0) {
-    ctx.addEffect({ kind: 'leech', value: healed, target: ActionTarget.self });
+    ctx.addEffect({
+      kind: LogEffectKind.leech,
+      value: healed,
+      target: ActionTarget.self,
+    });
   }
 }
 
@@ -308,7 +317,7 @@ function applySkillToOpponent(
   const defenderStats = getPlayerStats(opponent);
 
   if (rollChance(defenderStats.dodge)) {
-    ctx.addEffect({ kind: 'dodge', value: 0, target: ActionTarget.opponent });
+    ctx.addEffect({ kind: LogEffectKind.dodge, target: ActionTarget.opponent });
     return;
   }
 
@@ -342,7 +351,7 @@ function applySkillToOpponent(
 
   if (totalDamageDealt > 0) {
     ctx.addEffect({
-      kind: 'damage',
+      kind: LogEffectKind.damage,
       value: totalDamageDealt,
       target: ActionTarget.opponent,
       isCrit,
@@ -361,8 +370,8 @@ function applySkillToOpponent(
 
   // Effects
   const hasResistance = isPlayerResistant(opponent);
-  applyStatusEffectsToOpponent(opponent, statusActions, hasResistance);
-  applyModifyStats(opponent, modifyStatActions);
+  applyStatusEffectsToOpponent(opponent, statusActions, hasResistance, ctx);
+  applyModifyStats(opponent, modifyStatActions, ctx);
 }
 
 function applyDamageToOpponent(
@@ -395,12 +404,20 @@ function applyDamageToOpponent(
 function applyStatusEffectsToOpponent(
   opponent: Player,
   actions: ApplyStatusAction[],
-  hasResistance: boolean
+  hasResistance: boolean,
+  ctx: TurnContext = NO_CONTEXT
 ): void {
   for (const action of actions) {
     switch (action.status) {
       case EffectId.bleed: {
-        if (hasResistance) return;
+        if (hasResistance) {
+          ctx.addEffect({
+            kind: LogEffectKind.resist,
+            status: action.status,
+            target: ActionTarget.opponent,
+          });
+          return;
+        }
         const existing = opponent.statuses.find(s => s.type === action.status);
         if (existing) {
           existing.remainingDuration = action.duration;
@@ -412,10 +429,24 @@ function applyStatusEffectsToOpponent(
             isPercent: true,
           });
         }
+        ctx.addEffect({
+          kind: LogEffectKind.apply_status,
+          target: ActionTarget.opponent,
+          status: action.status,
+          duration: action.duration,
+          value: action.value,
+        });
         break;
       }
       case EffectId.poison: {
-        if (hasResistance) return;
+        if (hasResistance) {
+          ctx.addEffect({
+            kind: LogEffectKind.resist,
+            status: action.status,
+            target: ActionTarget.opponent,
+          });
+          return;
+        }
         const existing = opponent.statuses.find(s => s.type === action.status);
         if (existing) {
           existing.remainingDuration = action.duration;
@@ -426,6 +457,13 @@ function applyStatusEffectsToOpponent(
             remainingDuration: action.duration,
           });
         }
+        ctx.addEffect({
+          kind: LogEffectKind.apply_status,
+          target: ActionTarget.opponent,
+          status: action.status,
+          duration: action.duration,
+          value: action.value,
+        });
         break;
       }
       case EffectId.stun: {
@@ -433,6 +471,12 @@ function applyStatusEffectsToOpponent(
           type: action.status,
           value: 0,
           remainingDuration: action.duration,
+        });
+        ctx.addEffect({
+          kind: LogEffectKind.apply_status,
+          target: ActionTarget.opponent,
+          status: action.status,
+          duration: action.duration,
         });
         break;
       }
@@ -443,17 +487,35 @@ function applyStatusEffectsToOpponent(
           remainingDuration: action.duration ?? Infinity,
           isPercent: action.isPercent,
         });
+        ctx.addEffect({
+          kind: LogEffectKind.apply_status,
+          target: ActionTarget.opponent,
+          status: action.status,
+          duration: action.duration ?? Infinity,
+          value: action.value ?? 0,
+        } as LogEffect);
       }
     }
   }
 }
 
-function applyModifyStats(player: Player, actions: ModifyStatAction[]): void {
+function applyModifyStats(
+  player: Player,
+  actions: ModifyStatAction[],
+  ctx: TurnContext = NO_CONTEXT
+): void {
   for (const action of actions) {
     player.statuses.push({
       type: action.stat,
       value: action.value ?? 0,
       remainingDuration: action.duration ?? Infinity,
+    });
+    ctx.addEffect({
+      kind: LogEffectKind.modify_stat,
+      target: action.target,
+      stat: action.stat,
+      value: action.value ?? 0,
+      duration: action.duration,
     });
   }
 }
@@ -503,7 +565,7 @@ export function processPlayerTurn(
   const effects: LogEffect[] = [];
   const ctx: TurnContext = { addEffect: e => effects.push(e) };
 
-  applyCleansing(player, skill.actions);
+  applyCleansing(player, skill.actions, ctx);
 
   applyHealActions(player, skill.actions, ctx);
 
@@ -520,7 +582,13 @@ export function processPlayerTurn(
     return { dead: 'attacker' };
   }
 
-  applyStatusEffects(player, skill.actions, ctx);
+  applyStatusEffectsToSelf(player, skill.actions, ctx);
+
+  const selfModifyStatActions = skill.actions.filter(
+    (a): a is ModifyStatAction =>
+      a.type === ActionType.MODIFY_STAT && a.target === ActionTarget.self
+  );
+  applyModifyStats(player, selfModifyStatActions, ctx);
 
   let dead: 'attacker' | 'defender' | null = null;
 

@@ -6,16 +6,7 @@ import {
   getArenaTranslations,
 } from '../i18n/index.js';
 
-export type {
-  ArenaBattleLogTranslation,
-  ArenaFightTranslation,
-  ArenaHelpTranslation,
-  ArenaPreparationTranslation,
-  ArenaSkillEffectLabelsTranslation,
-  ArenaSkillNamesTranslation,
-  ArenaStatLabelsTranslation,
-  ArenaTranslation,
-} from '../i18n/index.js';
+export type * from '../i18n/index.js';
 
 export function useArenaTranslation(): ArenaTranslation {
   const { language } = useLanguage();

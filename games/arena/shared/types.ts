@@ -5,6 +5,7 @@ import {
   type ActionTarget,
   type ActionType,
   EffectId,
+  LogEffectKind,
   type SkillId,
   type SkillType,
   type StatId,
@@ -129,26 +130,74 @@ export type Skill = ActiveSkill | HealingSkill | PassiveSkill;
 
 // Logs
 
-// TODO: move to enums, create type guards for LogEffect
-export type LogEffectKind =
-  | 'damage'
-  | 'heal'
-  | 'lifesteal'
-  | 'bleed'
-  | 'poison'
-  | 'regeneration'
-  | 'thorns'
-  | 'leech'
-  | 'dodge';
+type BaseLogEffect = { target: ActionTarget };
 
-// TODO: Leech event isn't visible
-export interface LogEffect {
-  kind: LogEffectKind;
-  /** damage dealt */
-  value: number;
-  target: ActionTarget;
-  isCrit?: boolean;
-}
+export type ApplyStatusLogEffect = BaseLogEffect & {
+  kind: LogEffectKind.apply_status;
+} & (
+    | {
+        status: EffectId.bleed;
+        duration: number;
+        value: number;
+      }
+    | {
+        status: EffectId.poison;
+        duration: number;
+        value: number;
+      }
+    | {
+        status: EffectId.regeneration;
+        duration: number;
+        value: number;
+      }
+    | {
+        status: EffectId.resistance;
+        duration: number;
+      }
+    | {
+        status: EffectId.stun;
+        duration: number;
+      }
+    | {
+        status: EffectId.thorns;
+        value: number;
+      }
+    | {
+        status: EffectId.leech;
+        value: number;
+      }
+    | {
+        status: EffectId.pierce;
+        value: number;
+      }
+  );
+
+export type LogEffect =
+  | (BaseLogEffect & {
+      kind: LogEffectKind.damage;
+      value: number;
+      isCrit?: boolean;
+    })
+  | (BaseLogEffect & { kind: LogEffectKind.heal; value: number })
+  | (BaseLogEffect & { kind: LogEffectKind.lifesteal; value: number })
+  | (BaseLogEffect & { kind: LogEffectKind.bleed; value: number })
+  | (BaseLogEffect & { kind: LogEffectKind.poison; value: number })
+  | (BaseLogEffect & { kind: LogEffectKind.regeneration; value: number })
+  | (BaseLogEffect & { kind: LogEffectKind.thorns; value: number })
+  | (BaseLogEffect & { kind: LogEffectKind.leech; value: number })
+  | (BaseLogEffect & { kind: LogEffectKind.dodge; value?: never })
+  | ApplyStatusLogEffect
+  | (BaseLogEffect & {
+      kind: LogEffectKind.modify_stat;
+      stat: StatId;
+      value: number;
+      duration?: number;
+    })
+  | (BaseLogEffect & { kind: LogEffectKind.cleanse })
+  | (BaseLogEffect & {
+      kind: LogEffectKind.resist;
+      status: EffectId.bleed | EffectId.poison;
+    });
 
 export interface LogStep {
   step: number;

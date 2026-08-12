@@ -29,9 +29,10 @@ yellow button with white text...
 @media (max-width: 479px) { Below Mobile Large }
 
 - regeneration - heal (10HP + effect that will heal based on remaining HP (less HP = more regen))
-- improve battle logs (review and add all needed actions)
 - improve action value modificators ('calculate based on what value')
 - rework skill components on mobile ('i' icon to show more info, click to select)
+- on preparation phase display stats (modified by selected passives in realtime)
+- on battle phase display hp as line with numbers instead of just numbers
 
 Обробка ходу:
 
