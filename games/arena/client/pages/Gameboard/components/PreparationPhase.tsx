@@ -15,6 +15,7 @@ import {
   type ActiveSkill,
   type HealingSkill,
   type PassiveSkill,
+  type Player,
   type Room,
   type Skill,
   type SkillId,
@@ -23,9 +24,10 @@ import {
 
 import { getSkillIcon, getSkillName } from '../../../constants/index.js';
 import { useArenaTranslation } from '../../../hooks/useArenaTranslation.js';
-import { getCurrentPlayer } from '../../../utils/index.js';
+import { getCurrentPlayer, getPreviewPlayer } from '../../../utils/index.js';
 
 import styles from './PreparationPhase.module.css';
+import PlayerStatsDisplay from './PlayerStats.js';
 import SkillCard from './SkillCard.js';
 import SkillDetailSheet from './SkillDetailSheet.js';
 
@@ -40,6 +42,7 @@ export default function PreparationPhase(): ReactElement {
   }
 
   const currentPlayer = getCurrentPlayer(room);
+  const isLocked = Boolean(currentPlayer?.ready);
 
   const [selectedActives, setSelectedActives] = useState<SkillId[]>([]);
   const [selectedHealing, setSelectedHealing] = useState<SkillId[]>([]);
@@ -66,8 +69,19 @@ export default function PreparationPhase(): ReactElement {
     []
   );
 
+  const previewPlayer: Player | null = useMemo(() => {
+    if (!currentPlayer) return null;
+    const skillIds = [
+      ...selectedActives,
+      ...selectedHealing,
+      ...selectedPassives,
+    ];
+    return getPreviewPlayer(currentPlayer, skillIds);
+  }, [currentPlayer, selectedActives, selectedHealing, selectedPassives]);
+
   const handleSelectActive = useCallback(
     (skillId: SkillId) => {
+      if (isLocked) return;
       setSelectedActives(prev => {
         if (prev.includes(skillId)) {
           return prev.filter(id => id !== skillId);
@@ -80,11 +94,12 @@ export default function PreparationPhase(): ReactElement {
         return [...prev, skillId];
       });
     },
-    [showSnackbar]
+    [isLocked, showSnackbar, t.preparation.activeSkillsFull]
   );
 
   const handleSelectPassive = useCallback(
     (skillId: SkillId) => {
+      if (isLocked) return;
       setSelectedPassives(prev => {
         if (prev.includes(skillId)) {
           return prev.filter(id => id !== skillId);
@@ -97,11 +112,12 @@ export default function PreparationPhase(): ReactElement {
         return [...prev, skillId];
       });
     },
-    [showSnackbar]
+    [isLocked, showSnackbar, t.preparation.passiveSkillsFull]
   );
 
   const handleSelectHealing = useCallback(
     (skillId: SkillId) => {
+      if (isLocked) return;
       setSelectedHealing(prev => {
         if (prev.includes(skillId)) {
           return prev.filter(id => id !== skillId);
@@ -114,22 +130,34 @@ export default function PreparationPhase(): ReactElement {
         return [...prev, skillId];
       });
     },
-    [showSnackbar]
+    [isLocked, showSnackbar, t.preparation.healingSkillFull]
   );
 
-  const handleClear = useCallback(() => {
+  const handleReset = useCallback(() => {
+    if (isLocked) {
+      emitGameEvent(
+        EVENTS.GAME_ACTION,
+        { roomId: room.id, action: { type: 'PLAYER_UPDATE', ready: false } },
+        (res: { ok: boolean }) => {
+          if (!res.ok) {
+            showSnackbar(t.preparation.failedToReady);
+          }
+        }
+      );
+      return;
+    }
     setSelectedActives([]);
     setSelectedHealing([]);
     setSelectedPassives([]);
-  }, []);
+  }, [isLocked, room.id, showSnackbar, t.preparation.failedToReady]);
 
-  const isReady =
+  const isSelectionComplete =
     selectedActives.length === REQUIRED_ACTIVE_COUNT &&
     selectedHealing.length === REQUIRED_HEALING_COUNT &&
     selectedPassives.length === REQUIRED_PASSIVE_COUNT;
 
   const handleReady = useCallback(() => {
-    if (!isReady) return;
+    if (!isSelectionComplete || isLocked) return;
     const skills = [
       ...selectedActives,
       ...selectedHealing,
@@ -137,7 +165,10 @@ export default function PreparationPhase(): ReactElement {
     ];
     emitGameEvent(
       EVENTS.GAME_ACTION,
-      { roomId: room.id, action: { type: 'PLAYER_READY', skills } },
+      {
+        roomId: room.id,
+        action: { type: 'PLAYER_UPDATE', ready: true, skills },
+      },
       (res: { ok: boolean }) => {
         if (!res.ok) {
           showSnackbar(t.preparation.failedToReady);
@@ -145,12 +176,14 @@ export default function PreparationPhase(): ReactElement {
       }
     );
   }, [
-    isReady,
+    isSelectionComplete,
+    isLocked,
     selectedActives,
     selectedHealing,
     selectedPassives,
     room.id,
     showSnackbar,
+    t.preparation.failedToReady,
   ]);
 
   if (room.winner) {
@@ -184,155 +217,158 @@ export default function PreparationPhase(): ReactElement {
     );
   }
 
-  if (currentPlayer?.ready) {
-    return (
-      <div className={styles.container}>
-        <p className={styles.waitingMessage}>
-          {t.preparation.waitingForOpponent}
-        </p>
-      </div>
-    );
-  }
-
   const activeSlotsFull = selectedActives.length >= REQUIRED_ACTIVE_COUNT;
   const healingSlotsFull = selectedHealing.length >= REQUIRED_HEALING_COUNT;
   const passiveSlotsFull = selectedPassives.length >= REQUIRED_PASSIVE_COUNT;
 
   return (
     <div className={styles.container}>
-      {/* Equipped section */}
       <div className={styles.equippedSection}>
-        <div className={styles.slotGroup}>
-          <div className={styles.slotGroupHeader}>
-            <span className={styles.slotGroupLabel}>
-              {t.preparation.activeSkillsLabel}
-            </span>
-            <span className={styles.slotCounter}>
-              {selectedActives.length}/{REQUIRED_ACTIVE_COUNT}
-            </span>
+        {previewPlayer && (
+          <div className={styles.statsPreview}>
+            <PlayerStatsDisplay
+              player={previewPlayer}
+              isActive={false}
+              showStatuses
+            />
           </div>
-          <div className={styles.activeSlots}>
-            {Array.from({ length: REQUIRED_ACTIVE_COUNT }).map((_, i) => {
-              const skillId = selectedActives[i];
-              return (
-                <div
-                  key={`active-${i}`}
-                  className={`${styles.slot} ${styles.equippedSlot} ${skillId ? styles.slotFilled : ''}`}
-                  onClick={() => {
-                    if (skillId) {
+        )}
+
+        <div className={styles.slotGroups}>
+          <div className={styles.slotGroup}>
+            <div className={styles.slotGroupHeader}>
+              <span className={styles.slotGroupLabel}>
+                {t.preparation.activeSkillsLabel}
+              </span>
+              <span className={styles.slotCounter}>
+                {selectedActives.length}/{REQUIRED_ACTIVE_COUNT}
+              </span>
+            </div>
+            <div className={styles.activeSlots}>
+              {Array.from({ length: REQUIRED_ACTIVE_COUNT }).map((_, i) => {
+                const skillId = selectedActives[i];
+                return (
+                  <div
+                    key={`active-${i}`}
+                    className={`${styles.slot} ${styles.equippedSlot} ${skillId ? styles.slotFilled : ''} ${isLocked ? styles.slotLocked : ''}`}
+                    onClick={() => {
+                      if (isLocked || !skillId) return;
                       setSelectedActives(prev =>
                         prev.filter((_, idx) => idx !== i)
                       );
-                    }
-                  }}
-                >
-                  {skillId ? (
-                    <>
-                      <span className={styles.slotIcon}>
-                        {getSkillIcon(skillId)}
-                      </span>
-                      <span className={styles.slotName}>
-                        {getSkillName(skillId, t.skillNames)}
-                      </span>
-                      <span className={styles.slotRemove}>×</span>
-                    </>
-                  ) : (
-                    <span className={styles.slotPlus}>+</span>
-                  )}
-                </div>
-              );
-            })}
+                    }}
+                  >
+                    {skillId ? (
+                      <>
+                        <span className={styles.slotIcon}>
+                          {getSkillIcon(skillId)}
+                        </span>
+                        <span className={styles.slotName}>
+                          {getSkillName(skillId, t.skillNames)}
+                        </span>
+                        {!isLocked && (
+                          <span className={styles.slotRemove}>×</span>
+                        )}
+                      </>
+                    ) : (
+                      <span className={styles.slotPlus}>+</span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
-        </div>
 
-        <div className={styles.slotGroup}>
-          <div className={styles.slotGroupHeader}>
-            <span className={styles.slotGroupLabel}>
-              {t.preparation.healingSkillsLabel}
-            </span>
-            <span className={styles.slotCounter}>
-              {selectedHealing.length}/{REQUIRED_HEALING_COUNT}
-            </span>
-          </div>
-          <div className={styles.healingSlots}>
-            {Array.from({ length: REQUIRED_HEALING_COUNT }).map((_, i) => {
-              const skillId = selectedHealing[i];
-              return (
-                <div
-                  key={`healing-${i}`}
-                  className={`${styles.slot} ${styles.equippedSlot} ${skillId ? styles.slotFilled : ''}`}
-                  onClick={() => {
-                    if (skillId) {
+          <div className={styles.slotGroup}>
+            <div className={styles.slotGroupHeader}>
+              <span className={styles.slotGroupLabel}>
+                {t.preparation.healingSkillsLabel}
+              </span>
+              <span className={styles.slotCounter}>
+                {selectedHealing.length}/{REQUIRED_HEALING_COUNT}
+              </span>
+            </div>
+            <div className={styles.healingSlots}>
+              {Array.from({ length: REQUIRED_HEALING_COUNT }).map((_, i) => {
+                const skillId = selectedHealing[i];
+                return (
+                  <div
+                    key={`healing-${i}`}
+                    className={`${styles.slot} ${styles.equippedSlot} ${skillId ? styles.slotFilled : ''} ${isLocked ? styles.slotLocked : ''}`}
+                    onClick={() => {
+                      if (isLocked || !skillId) return;
                       setSelectedHealing(prev =>
                         prev.filter((_, idx) => idx !== i)
                       );
-                    }
-                  }}
-                >
-                  {skillId ? (
-                    <>
-                      <span className={styles.slotIcon}>
-                        {getSkillIcon(skillId)}
-                      </span>
-                      <span className={styles.slotName}>
-                        {getSkillName(skillId, t.skillNames)}
-                      </span>
-                      <span className={styles.slotRemove}>×</span>
-                    </>
-                  ) : (
-                    <span className={styles.slotPlus}>+</span>
-                  )}
-                </div>
-              );
-            })}
+                    }}
+                  >
+                    {skillId ? (
+                      <>
+                        <span className={styles.slotIcon}>
+                          {getSkillIcon(skillId)}
+                        </span>
+                        <span className={styles.slotName}>
+                          {getSkillName(skillId, t.skillNames)}
+                        </span>
+                        {!isLocked && (
+                          <span className={styles.slotRemove}>×</span>
+                        )}
+                      </>
+                    ) : (
+                      <span className={styles.slotPlus}>+</span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
-        </div>
 
-        <div className={styles.slotGroup}>
-          <div className={styles.slotGroupHeader}>
-            <span className={styles.slotGroupLabel}>
-              {t.preparation.passiveSkillsLabel}
-            </span>
-            <span className={styles.slotCounter}>
-              {selectedPassives.length}/{REQUIRED_PASSIVE_COUNT}
-            </span>
-          </div>
-          <div className={styles.passiveSlots}>
-            {Array.from({ length: REQUIRED_PASSIVE_COUNT }).map((_, i) => {
-              const skillId = selectedPassives[i];
-              return (
-                <div
-                  key={`passive-${i}`}
-                  className={`${styles.slot} ${styles.equippedSlot} ${skillId ? styles.slotFilled : ''}`}
-                  onClick={() => {
-                    if (skillId) {
+          <div className={styles.slotGroup}>
+            <div className={styles.slotGroupHeader}>
+              <span className={styles.slotGroupLabel}>
+                {t.preparation.passiveSkillsLabel}
+              </span>
+              <span className={styles.slotCounter}>
+                {selectedPassives.length}/{REQUIRED_PASSIVE_COUNT}
+              </span>
+            </div>
+            <div className={styles.passiveSlots}>
+              {Array.from({ length: REQUIRED_PASSIVE_COUNT }).map((_, i) => {
+                const skillId = selectedPassives[i];
+                return (
+                  <div
+                    key={`passive-${i}`}
+                    className={`${styles.slot} ${styles.equippedSlot} ${skillId ? styles.slotFilled : ''} ${isLocked ? styles.slotLocked : ''}`}
+                    onClick={() => {
+                      if (isLocked || !skillId) return;
                       setSelectedPassives(prev =>
                         prev.filter((_, idx) => idx !== i)
                       );
-                    }
-                  }}
-                >
-                  {skillId ? (
-                    <>
-                      <span className={styles.slotIcon}>
-                        {getSkillIcon(skillId)}
-                      </span>
-                      <span className={styles.slotName}>
-                        {getSkillName(skillId, t.skillNames)}
-                      </span>
-                      <span className={styles.slotRemove}>×</span>
-                    </>
-                  ) : (
-                    <span className={styles.slotPlus}>+</span>
-                  )}
-                </div>
-              );
-            })}
+                    }}
+                  >
+                    {skillId ? (
+                      <>
+                        <span className={styles.slotIcon}>
+                          {getSkillIcon(skillId)}
+                        </span>
+                        <span className={styles.slotName}>
+                          {getSkillName(skillId, t.skillNames)}
+                        </span>
+                        {!isLocked && (
+                          <span className={styles.slotRemove}>×</span>
+                        )}
+                      </>
+                    ) : (
+                      <span className={styles.slotPlus}>+</span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Active skill grid */}
       <div className={styles.section}>
         <h3 className={styles.sectionTitle}>
           {t.preparation.activeSkillsLabel}
@@ -343,7 +379,10 @@ export default function PreparationPhase(): ReactElement {
               key={skill.id}
               skill={skill}
               selected={selectedActives.includes(skill.id)}
-              disabled={!selectedActives.includes(skill.id) && activeSlotsFull}
+              disabled={
+                isLocked ||
+                (!selectedActives.includes(skill.id) && activeSlotsFull)
+              }
               onClick={() => handleSelectActive(skill.id)}
               onOpenDetail={setDetailSkill}
             />
@@ -351,7 +390,6 @@ export default function PreparationPhase(): ReactElement {
         </div>
       </div>
 
-      {/* Healing skill grid */}
       <div className={styles.section}>
         <h3 className={styles.sectionTitle}>
           {t.preparation.healingSkillsLabel}
@@ -362,7 +400,10 @@ export default function PreparationPhase(): ReactElement {
               key={skill.id}
               skill={skill}
               selected={selectedHealing.includes(skill.id)}
-              disabled={!selectedHealing.includes(skill.id) && healingSlotsFull}
+              disabled={
+                isLocked ||
+                (!selectedHealing.includes(skill.id) && healingSlotsFull)
+              }
               onClick={() => handleSelectHealing(skill.id)}
               onOpenDetail={setDetailSkill}
             />
@@ -370,7 +411,6 @@ export default function PreparationPhase(): ReactElement {
         </div>
       </div>
 
-      {/* Passive skill grid */}
       <div className={styles.section}>
         <h3 className={styles.sectionTitle}>
           {t.preparation.passiveSkillsLabel}
@@ -382,7 +422,8 @@ export default function PreparationPhase(): ReactElement {
               skill={skill}
               selected={selectedPassives.includes(skill.id)}
               disabled={
-                !selectedPassives.includes(skill.id) && passiveSlotsFull
+                isLocked ||
+                (!selectedPassives.includes(skill.id) && passiveSlotsFull)
               }
               onClick={() => handleSelectPassive(skill.id)}
               onOpenDetail={setDetailSkill}
@@ -392,17 +433,23 @@ export default function PreparationPhase(): ReactElement {
       </div>
 
       <div className={styles.actions}>
-        <Button
-          variant={BUTTON_VARIANT.PRIMARY}
-          onClick={handleReady}
-          disabled={!isReady}
-        >
-          {t.preparation.readyButton}
-        </Button>
-        <Button onClick={handleClear}>{t.preparation.clearButton}</Button>
+        {isLocked && (
+          <p className={styles.waitingMessage}>
+            {t.preparation.waitingForOpponent}
+          </p>
+        )}
+        <div className={styles.actionButtons}>
+          <Button
+            variant={BUTTON_VARIANT.PRIMARY}
+            onClick={handleReady}
+            disabled={!isSelectionComplete || isLocked}
+          >
+            {t.preparation.readyButton}
+          </Button>
+          <Button onClick={handleReset}>{t.preparation.resetButton}</Button>
+        </div>
       </div>
 
-      {/* Mobile detail bottom sheet */}
       {detailSkill && (
         <SkillDetailSheet
           skill={detailSkill}

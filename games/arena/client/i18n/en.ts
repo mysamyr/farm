@@ -64,7 +64,7 @@ export const arenaGameTranslation: ArenaTranslation = {
     waitingForOpponent: 'Waiting for opponent to select skills...',
     failedToReady: 'Failed to ready up',
     readyButton: 'Ready',
-    clearButton: 'Clear',
+    resetButton: 'Reset',
     victoryTitle: '🎉 Victory!',
     victoryMessage: 'Opponent left the room. You win by default!',
     opponentLeftTitle: '😞 Opponent Left',

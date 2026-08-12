@@ -64,7 +64,7 @@ export const arenaGameTranslation: ArenaTranslation = {
     waitingForOpponent: 'Очікуємо вибір навичок суперника...',
     failedToReady: 'Неможливо підтвердити готовність',
     readyButton: 'Готово',
-    clearButton: 'Очистити',
+    resetButton: 'Скинути',
     victoryTitle: '🎉 Перемога!',
     victoryMessage: 'Суперник покинув кімнату. Ви перемогли!',
     opponentLeftTitle: '😞 Суперник пішов',

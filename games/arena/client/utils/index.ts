@@ -4,8 +4,11 @@ import {
   DEFAULT_PLAYER_STATS,
   type Player,
   type Room,
+  type SkillId,
   StatId,
 } from '@game/game-arena/shared';
+
+import { getStatusesFromSkills } from '../../shared/helpers.js';
 
 export function getPlayerStats(player: Player): Record<StatId, number> {
   const stats = { ...DEFAULT_PLAYER_STATS, hp: player.hp };
@@ -30,4 +33,12 @@ export function getActivePlayerId(room: Room): string | undefined {
 
 export function isAllPlayersReady(room: Room): boolean {
   return room.players.every(p => p.ready);
+}
+
+export function getPreviewPlayer(player: Player, skillIds: SkillId[]): Player {
+  return {
+    ...player,
+    hp: DEFAULT_PLAYER_STATS.hp,
+    statuses: getStatusesFromSkills(skillIds),
+  };
 }

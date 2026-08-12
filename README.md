@@ -29,7 +29,6 @@ yellow button with white text...
 @media (max-width: 479px) { Below Mobile Large }
 
 - improve action value modificators ('calculate based on what value')
-- on preparation phase display stats (modified by selected passives in realtime)
 
 Обробка ходу:
 

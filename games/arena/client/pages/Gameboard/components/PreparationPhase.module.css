@@ -8,6 +8,19 @@
 .equippedSection {
   display: flex;
   gap: 16px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.statsPreview {
+  flex: 0 0 220px;
+  min-width: 200px;
+}
+
+.slotGroups {
+  display: flex;
+  gap: 16px;
+  flex: 1;
   flex-wrap: wrap;
 }
 
@@ -16,7 +29,7 @@
   flex-direction: column;
   gap: 8px;
   flex: 1;
-  min-width: 180px;
+  min-width: 120px;
 }
 
 .slotGroupHeader {
@@ -64,7 +77,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 2px;
   cursor: pointer;
   transition:
     border-color 0.15s ease,
@@ -74,11 +87,12 @@
 }
 
 .equippedSlot {
-  width: 88px;
-  height: 88px;
+  width: 56px;
+  height: 56px;
   border-radius: var(--radius-sm);
   border: 2px dashed var(--border-base);
   flex-direction: column;
+  padding: 2px;
 }
 
 .slot.slotFilled {
@@ -88,37 +102,41 @@
   box-shadow: 0 0 0 2px var(--accent-shadow);
 }
 
-.slot:hover.slotFilled {
+.slot:hover.slotFilled:not(.slotLocked) {
   box-shadow:
     0 0 0 2px var(--accent-shadow),
     var(--shadow-hover-card);
 }
 
+.slotLocked {
+  cursor: default;
+}
+
 .slotPlus {
-  font-size: 1.4rem;
+  font-size: 1.1rem;
   color: var(--border-base);
   line-height: 1;
 }
 
 .slotIcon {
-  font-size: 1.2rem;
+  font-size: 0.95rem;
   line-height: 1;
 }
 
 .slotName {
-  font-size: 0.65rem;
+  font-size: 0.5rem;
   font-weight: 600;
   color: var(--accent);
   text-align: center;
   word-break: break-word;
-  line-height: 1.2;
+  line-height: 1.1;
 }
 
 .slotRemove {
   position: absolute;
-  top: 2px;
-  right: 4px;
-  font-size: 0.7rem;
+  top: 1px;
+  right: 3px;
+  font-size: 0.65rem;
   color: var(--text-muted);
   font-weight: 700;
   line-height: 1;
@@ -153,6 +171,13 @@
 /* ─── Actions ────────────────────────────────────────────── */
 .actions {
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.actionButtons {
+  display: flex;
   justify-content: center;
   gap: 12px;
 }
@@ -160,7 +185,8 @@
 /* ─── Waiting state ──────────────────────────────────────── */
 .waitingMessage {
   text-align: center;
-  padding: 16px;
+  padding: 0;
+  margin: 0;
   color: var(--text-muted);
   font-style: italic;
 }
@@ -197,12 +223,22 @@
     flex-direction: column;
   }
 
+  .statsPreview {
+    flex: 1 1 auto;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .slotGroups {
+    width: 100%;
+  }
+
   .skillGrid {
     grid-template-columns: repeat(2, 1fr);
   }
 
   .equippedSlot {
-    width: 76px;
-    height: 76px;
+    width: 48px;
+    height: 48px;
   }
 }

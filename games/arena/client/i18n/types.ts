@@ -29,7 +29,7 @@ export interface ArenaPreparationTranslation {
   waitingForOpponent: string;
   failedToReady: string;
   readyButton: string;
-  clearButton: string;
+  resetButton: string;
   victoryTitle: string;
   victoryMessage: string;
   opponentLeftTitle: string;

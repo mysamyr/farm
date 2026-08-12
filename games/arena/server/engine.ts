@@ -3,7 +3,6 @@ import { shuffleArray } from '@game/shared/utils';
 
 import {
   ActionTarget,
-  ActionType,
   type ActiveSkill,
   ApplyStatusAction,
   CleanseAction,
@@ -14,18 +13,17 @@ import {
   EffectId,
   type GameAction,
   getPlayerMaxHp,
+  getStatusesFromSkills,
   type HealingSkill,
   type LogEffect,
   LogEffectKind,
   ModifyStatAction,
   NEGATIVE_EFFECTS,
-  type PassiveSkill,
   type Player,
   type Room,
   type SkillId,
   SKILLS,
   SkillType,
-  type StatusEffect,
 } from '../shared/index.js';
 
 import { NO_CONTEXT, TURN_START_INDEX } from './constants.js';
@@ -91,18 +89,17 @@ export function markWinner(room: Room, player: Player): void {
 }
 
 export function applySkillSelection(player: Player, skills: SkillId[]): void {
-  const [activeSkills, healingSkills, passiveSkills] = skills.reduce<
-    [ActiveSkill[], HealingSkill[], PassiveSkill[]]
+  const [activeSkills, healingSkills] = skills.reduce<
+    [ActiveSkill[], HealingSkill[]]
   >(
     (acc, id) => {
       const skill = SKILLS[id];
       if (!skill) return acc;
       if (skill.type === SkillType.active) acc[0].push(skill);
       else if (skill.type === SkillType.healing) acc[1].push(skill);
-      else if (skill.type === SkillType.passive) acc[2].push(skill);
       return acc;
     },
-    [[], [], []]
+    [[], []]
   );
 
   player.skills = [
@@ -110,23 +107,7 @@ export function applySkillSelection(player: Player, skills: SkillId[]): void {
     ...activeSkills.map(s => ({ id: s.id, cooldown: s.cooldown })),
     ...healingSkills.map(s => ({ id: s.id, cooldown: s.cooldown })),
   ];
-  player.statuses = passiveSkills.flatMap(s =>
-    s.actions.reduce((acc: StatusEffect[], action: GameAction) => {
-      if (action.type === ActionType.MODIFY_STAT) {
-        acc.push({
-          type: action.stat,
-          value: action.value ?? 0,
-        });
-      }
-      if (action.type === ActionType.APPLY_STATUS) {
-        acc.push({
-          type: action.status,
-          value: action.value ?? 0,
-        });
-      }
-      return acc;
-    }, [])
-  );
+  player.statuses = getStatusesFromSkills(skills);
 }
 
 function applyHeal(player: Player, heal: number): number {

@@ -49,14 +49,14 @@ function winnerHandler(
   });
 }
 
-const playerReadyHandler = (
+const playerUpdateHandler = (
   ctx: GameHandlerContext,
-  req: Extract<ArenaGameActionPayload['action'], { type: 'PLAYER_READY' }> &
+  req: Extract<ArenaGameActionPayload['action'], { type: 'PLAYER_UPDATE' }> &
     Pick<ArenaGameActionPayload, 'roomId'>,
   ack?: AckFunc
 ): void => {
-  const { roomId, skills } = req;
-  ctx.log('event:arena:playerReady', { socketId: ctx.socketId, roomId });
+  const { roomId } = req;
+  ctx.log('event:arena:playerUpdate', { socketId: ctx.socketId, roomId });
 
   const room = ctx.getRoomById(roomId) as Room;
   if (!room) {
@@ -73,19 +73,27 @@ const playerReadyHandler = (
     ack?.({ ok: false, error: ERROR.PLAYER_NOT_FOUND });
     return;
   }
-  if (player.ready) {
+
+  if (room.players.every(p => p.ready)) {
     ack?.({ ok: false });
     return;
   }
 
-  if (!isValidSkillSelection(skills)) {
-    ack?.({ ok: false });
-    return;
-  }
+  if (req.ready) {
+    if (!isValidSkillSelection(req.skills)) {
+      ack?.({ ok: false });
+      return;
+    }
 
-  player.ready = true;
-  player.hp = DEFAULT_PLAYER_STATS.hp;
-  applySkillSelection(player, skills);
+    player.ready = true;
+    player.hp = DEFAULT_PLAYER_STATS.hp;
+    applySkillSelection(player, req.skills);
+  } else {
+    player.ready = false;
+    player.hp = DEFAULT_PLAYER_STATS.hp;
+    player.skills = [];
+    player.statuses = [];
+  }
 
   ctx.emitToRoom(room.id, EVENTS.GAME_STATE_UPDATE, { state: room });
   ack?.({ ok: true });
@@ -169,8 +177,8 @@ export function handleAction(
   const action = payload.action as ArenaGameActionPayload['action'];
 
   switch (action.type) {
-    case 'PLAYER_READY':
-      playerReadyHandler(
+    case 'PLAYER_UPDATE':
+      playerUpdateHandler(
         ctx,
         {
           roomId: payload.roomId,
