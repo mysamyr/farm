@@ -11,6 +11,9 @@ COPY package.json package-lock.json ./
 COPY apps/server/package.json apps/server/package.json
 COPY apps/client/package.json apps/client/package.json
 COPY packages/shared/package.json packages/shared/package.json
+COPY packages/client-core/package.json packages/client-core/package.json
+COPY games/farm/package.json games/farm/package.json
+COPY games/arena/package.json games/arena/package.json
 
 RUN --mount=type=cache,target=/root/.npm \
     npm ci
@@ -28,6 +31,9 @@ COPY package.json package-lock.json ./
 COPY apps/server/package.json apps/server/package.json
 COPY apps/client/package.json apps/client/package.json
 COPY packages/shared/package.json packages/shared/package.json
+COPY packages/client-core/package.json packages/client-core/package.json
+COPY games/farm/package.json games/farm/package.json
+COPY games/arena/package.json games/arena/package.json
 
 RUN --mount=type=cache,target=/root/.npm \
     npm ci --omit=dev --ignore-scripts
@@ -41,12 +47,17 @@ ENV NODE_ENV=production
 COPY --from=builder /app/apps/server/dist ./apps/server/dist
 COPY --from=builder /app/apps/client/dist ./apps/client/dist
 COPY --from=builder /app/packages/shared/dist ./packages/shared/dist
+COPY --from=builder /app/games/farm/dist ./games/farm/dist
+COPY --from=builder /app/games/arena/dist ./games/arena/dist
 COPY --from=builder /app/apps/server/package.json ./apps/server/package.json
 COPY --from=builder /app/apps/client/package.json ./apps/client/package.json
 COPY --from=builder /app/packages/shared/package.json ./packages/shared/package.json
+COPY --from=builder /app/packages/client-core/package.json ./packages/client-core/package.json
+COPY --from=builder /app/games/farm/package.json ./games/farm/package.json
+COPY --from=builder /app/games/arena/package.json ./games/arena/package.json
 COPY --from=builder /app/package.json ./package.json
 COPY --from=prod-deps /app/node_modules ./node_modules
 
 USER node
 
-CMD ["node", "apps/server/dist/apps/server/src/index.js"]
+CMD ["node", "apps/server/dist/index.js"]
