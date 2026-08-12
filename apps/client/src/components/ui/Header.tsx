@@ -10,23 +10,16 @@ import { Button, Dropdown, Sidebar } from '@game/client-core/components';
 import {
   BUTTON_VARIANT,
   LANGUAGES_CONFIG,
-  PATHS,
   THEME,
 } from '@game/client-core/constants';
 import {
   useConnection,
   useLanguage,
   useModal,
-  useRoom,
-  useSnackbar,
   useTheme,
 } from '@game/client-core/hooks';
-import { emitEvent } from '@game/client-core/socket';
 import type { Language } from '@game/client-core/types';
-import { classNames, resolveErrorMessage } from '@game/client-core/utils';
-
-import { EVENTS, ROOM_STATES } from '@game/shared/constants';
-import { useNavigate } from 'react-router-dom';
+import { classNames } from '@game/client-core/utils';
 
 import styles from './Header.module.css';
 
@@ -48,12 +41,9 @@ export function Header({
 }: MainHeaderProps): ReactElement {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const navigate = useNavigate();
   const { online } = useConnection();
-  const { currentRoom, setCurrentRoom } = useRoom();
   const { showModal } = useModal();
-  const { showSnackbar } = useSnackbar();
-  const { setLanguage, translation } = useLanguage();
+  const { setLanguage } = useLanguage();
   const { theme, setTheme } = useTheme();
 
   const languageItems = LANGUAGES_CONFIG.map((item: Language) => ({
@@ -71,21 +61,6 @@ export function Header({
     showModal({ component: helpModal });
   }
 
-  function navigateToDashboard() {
-    if (
-      currentRoom?.state !== ROOM_STATES.RUNNING ||
-      window.confirm('Leave the arena?')
-    ) {
-      emitEvent(EVENTS.ROOM_LEAVE, { roomId: currentRoom!.id }, (res: { ok: boolean; error?: string }) => {
-        if (!res.ok) {
-          showSnackbar(resolveErrorMessage(res.error, translation));
-        }
-        setCurrentRoom(null);
-      });
-    }
-    void navigate(PATHS.DASHBOARD);
-  }
-
   function toggleTheme() {
     setTheme(theme === THEME.LIGHT ? THEME.DARK : THEME.LIGHT);
   }
@@ -93,7 +68,7 @@ export function Header({
   const defaultLeftSlot = useMemo(
     () => (
       <>
-        <div className={styles.logo} onClick={navigateToDashboard}>Game Hub</div>
+        <div className={styles.logo}>Game Hub</div>
         <div className={styles.onlineIndicator}>
           <span className={styles.dot} />
           <span>{online} Online</span>

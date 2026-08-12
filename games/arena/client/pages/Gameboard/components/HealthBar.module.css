@@ -1,0 +1,82 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.8rem;
+}
+
+.label {
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.value {
+  font-weight: 600;
+  color: var(--text-main);
+  font-variant-numeric: tabular-nums;
+}
+
+.track {
+  position: relative;
+  height: 12px;
+  border-radius: 99px;
+  overflow: hidden;
+  background: var(--bg-surface-subtle);
+}
+
+.fill {
+  height: 100%;
+  border-radius: 99px 0 0 99px;
+  background: var(--status-error);
+}
+
+.delta {
+  position: absolute;
+  top: 0;
+  height: 100%;
+}
+
+.damage {
+  width: var(--delta-width);
+  background: var(--status-highlight);
+  animation: drain 450ms ease-in 350ms forwards;
+}
+
+.heal {
+  width: 0;
+  background: var(--status-success);
+  animation: refill 450ms ease-out forwards;
+}
+
+@keyframes drain {
+  from {
+    width: var(--delta-width);
+  }
+  to {
+    width: 0;
+  }
+}
+
+@keyframes refill {
+  from {
+    width: 0;
+  }
+  to {
+    width: var(--delta-width);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .damage,
+  .heal {
+    animation-duration: 1ms;
+    animation-delay: 0ms;
+  }
+}

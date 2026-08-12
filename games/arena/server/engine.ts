@@ -13,6 +13,7 @@ import {
   DamageAction,
   EffectId,
   type GameAction,
+  getPlayerMaxHp,
   type HealingSkill,
   type LogEffect,
   LogEffectKind,
@@ -34,7 +35,6 @@ import {
   getLeech,
   getOpponent,
   getPierce,
-  getPlayerMaxHp,
   getPlayerMinHp,
   getPlayerStats,
   getThorns,
@@ -140,7 +140,7 @@ function applyHeal(player: Player, heal: number): number {
 
 function applyDamage(player: Player, damage: number): void {
   const minHp = getPlayerMinHp(player);
-  player.hp = Math.max(player.hp - damage, minHp, 0);
+  player.hp = Math.max(player.hp - damage, minHp);
 }
 
 function applyCleansing(

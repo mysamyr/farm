@@ -1,4 +1,9 @@
-export { BASE_SKILLS, DEFAULT_CONFIG, SKILLS } from '../shared/index.js';
+export {
+  BASE_SKILLS,
+  DEFAULT_CONFIG,
+  getPlayerMaxHp,
+  SKILLS,
+} from '../shared/index.js';
 
 export type { TurnContext } from './types.js';
 
@@ -9,7 +14,6 @@ export {
   getActivePlayer,
   getLeech,
   getOpponent,
-  getPlayerMaxHp,
   getPlayerMinHp,
   getPlayerStats,
   getSkillById,

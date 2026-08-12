@@ -30,7 +30,6 @@ yellow button with white text...
 
 - improve action value modificators ('calculate based on what value')
 - on preparation phase display stats (modified by selected passives in realtime)
-- on battle phase display hp as line with numbers instead of just numbers
 
 Обробка ходу:
 

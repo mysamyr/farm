@@ -24,6 +24,7 @@ export function useGameSubscriptions({
   useEffect(() => {
     const handleGameUpdate = ({ state }: GameStateUpdatePayload): void => {
       setCurrentRoom(state);
+      console.log('Game state updated', state);
     };
 
     const handleNotification = ({ type, data }: ServerNotification): void => {

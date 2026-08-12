@@ -3,6 +3,7 @@ import type { ReactElement } from 'react';
 import { classNames } from '@game/client-core/utils';
 
 import {
+  getPlayerMaxHp,
   Player,
   StatId,
   StatusEffect,
@@ -12,7 +13,15 @@ import {
 import { useArenaTranslation } from '../../../hooks/useArenaTranslation.js';
 import { getPlayerStats } from '../../../utils/index.js';
 
+import HealthBar from './HealthBar.js';
 import styles from './PlayerStats.module.css';
+
+const GRID_STATS: StatId[] = [
+  StatId.attack,
+  StatId.crit,
+  StatId.armor,
+  StatId.dodge,
+];
 
 type PlayerStatsProps = {
   player: Player;
@@ -75,13 +84,16 @@ export default function PlayerStatsDisplay({
           <span className={styles.winnerBadge}>{t.fight.winnerBadge}</span>
         )}
       </div>
+      <HealthBar
+        current={stats.hp}
+        max={getPlayerMaxHp(player)}
+        label={t.statLabels.hp}
+      />
       <div className={styles.statsGrid}>
-        {Object.keys(t.statLabels).map(stat => (
+        {GRID_STATS.map(stat => (
           <div key={stat} className={styles.statItem}>
-            <span className={styles.statLabel}>
-              {t.statLabels[stat as StatId]}
-            </span>
-            <span className={styles.statValue}>{stats[stat as StatId]}</span>
+            <span className={styles.statLabel}>{t.statLabels[stat]}</span>
+            <span className={styles.statValue}>{stats[stat]}</span>
           </div>
         ))}
       </div>

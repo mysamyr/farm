@@ -35,17 +35,6 @@ export function isStunned(player: Player): boolean {
 }
 
 /**
- * Get the maximum HP of a player based on their statuses.
- * @param player The player whose maximum HP is being calculated.
- */
-export function getPlayerMaxHp(player: Player): number {
-  return player.statuses.reduce((acc: number, status: StatusEffect) => {
-    if (status.type === StatId.hp) acc += status.value;
-    return acc;
-  }, 100);
-}
-
-/**
  * Get the minimum HP value of a player based on their statuses.
  * @param player The player whose minimum HP is being calculated.
  */
