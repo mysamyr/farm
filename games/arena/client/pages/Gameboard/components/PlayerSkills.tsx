@@ -1,8 +1,5 @@
 import { type ReactElement, useState } from 'react';
 
-import { Button } from '@game/client-core/components';
-import { BUTTON_VARIANT } from '@game/client-core/constants';
-
 import {
   type Player,
   type Skill,
@@ -20,7 +17,6 @@ import SkillDetailSheet from './SkillDetailSheet.js';
 type PlayerSkillsProps = {
   player: Player;
   isMyTurn: boolean;
-  isGameOver: boolean;
   isStunned: boolean;
   onUseSkill: (skillId: string) => void;
 };
@@ -28,16 +24,11 @@ type PlayerSkillsProps = {
 export default function PlayerSkills({
   player,
   isMyTurn,
-  isGameOver,
   isStunned,
   onUseSkill,
 }: PlayerSkillsProps): ReactElement {
-  const { fight: t } = useArenaTranslation();
-  const [detailSkill, setDetailSkill] = useState<{
-    def: Skill;
-    currentCooldown: number;
-    disabled: boolean;
-  } | null>(null);
+  const t = useArenaTranslation();
+  const [detailSkill, setDetailSkill] = useState<Skill | null>(null);
   const baseSkillIds = new Set([SkillId.attack, SkillId.skip]);
 
   const skillsByType = player.skills.reduce(
@@ -65,12 +56,7 @@ export default function PlayerSkills({
   return (
     <div className={styles.section}>
       <div className={styles.sectionHeader}>
-        <span className={styles.sectionLabel}>{t.yourSkillsLabel}</span>
-        {!isMyTurn && (
-          <span className={styles.waitingBadge}>
-            {isGameOver ? t.gameOverBadge : t.opponentTurnBadge}
-          </span>
-        )}
+        <span className={styles.sectionLabel}>{t.fight.yourSkillsLabel}</span>
       </div>
 
       <div className={styles.skillsGrid}>
@@ -95,13 +81,7 @@ export default function PlayerSkills({
               cooldown={playerSkill.cooldown}
               disabled={disabled}
               onClick={() => onUseSkill(playerSkill.id)}
-              onOpenDetail={skill =>
-                setDetailSkill({
-                  def: skill,
-                  currentCooldown: playerSkill.cooldown,
-                  disabled,
-                })
-              }
+              onOpenDetail={setDetailSkill}
             />
           );
         })}
@@ -109,29 +89,8 @@ export default function PlayerSkills({
 
       {detailSkill && (
         <SkillDetailSheet
-          skill={detailSkill.def}
+          skill={detailSkill}
           onClose={() => setDetailSkill(null)}
-          actions={
-            <>
-              <Button
-                variant={BUTTON_VARIANT.PRIMARY}
-                disabled={detailSkill.disabled}
-                style={{ flex: 1 }}
-                onClick={() => {
-                  onUseSkill(detailSkill.def.id);
-                  setDetailSkill(null);
-                }}
-              >
-                {t.useButton}
-              </Button>
-              <Button
-                variant={BUTTON_VARIANT.SECONDARY}
-                onClick={() => setDetailSkill(null)}
-              >
-                {t.closeButton}
-              </Button>
-            </>
-          }
         />
       )}
     </div>

@@ -6,6 +6,9 @@ import {
   ActionType,
   type ActiveSkill,
   ApplyStatusAction,
+  CleanseAction,
+  HealAction,
+  LifeStealAction,
   BASE_SKILLS,
   DamageAction,
   EffectId,
@@ -41,6 +44,8 @@ import {
   PlayerStats,
   rollChance,
   skillTargetsOpponent,
+  splitOpponentActions,
+  splitSelfActions,
 } from './helpers.js';
 import type { TurnContext } from './types.js';
 
@@ -140,10 +145,10 @@ function applyDamage(player: Player, damage: number): void {
 
 function applyCleansing(
   player: Player,
-  actions: GameAction[],
+  actions: CleanseAction[],
   ctx: TurnContext = NO_CONTEXT
 ): void {
-  if (actions.some(a => a.type === ActionType.CLEANSE)) {
+  if (actions.length) {
     player.statuses = player.statuses.filter(
       s => !NEGATIVE_EFFECTS.includes(s.type as EffectId)
     );
@@ -201,72 +206,58 @@ function processStatusEffects(
 
 function applyHealActions(
   player: Player,
-  actions: GameAction[],
+  actions: HealAction[],
   ctx: TurnContext = NO_CONTEXT
 ): void {
   for (const action of actions) {
-    if (action.target !== ActionTarget.self) continue;
-
-    if (action.type === ActionType.HEAL) {
-      const playerHp = getPlayerStats(player).hp;
-      const heal = action.isPercent
-        ? Math.max(Math.floor((playerHp * action.value) / 100), 1)
-        : action.value;
-      const healed = applyHeal(player, heal);
-      if (healed > 0) {
-        ctx.addEffect({
-          kind: LogEffectKind.heal,
-          value: healed,
-          target: ActionTarget.self,
-        });
-      }
+    const healed = applyHeal(player, action.value);
+    if (healed > 0) {
+      ctx.addEffect({
+        kind: LogEffectKind.heal,
+        value: healed,
+        target: ActionTarget.self,
+      });
     }
   }
 }
 
 function applyStatusEffectsToSelf(
   player: Player,
-  actions: GameAction[],
+  actions: ApplyStatusAction[],
   ctx: TurnContext = NO_CONTEXT
 ): void {
   for (const action of actions) {
-    if (action.target !== ActionTarget.self) continue;
-
-    if (action.type === ActionType.APPLY_STATUS) {
-      player.statuses.push({
-        type: action.status,
-        value: action.value ?? 0,
-        remainingDuration: action.duration ?? Infinity,
-        isPercent: 'isPercent' in action ? action.isPercent : undefined,
-      });
-      ctx.addEffect({
-        kind: LogEffectKind.apply_status,
-        target: ActionTarget.self,
-        status: action.status,
-        duration: action.duration ?? Infinity,
-        value: action.value ?? 0,
-      } as LogEffect);
-    }
+    player.statuses.push({
+      type: action.status,
+      value: action.value ?? 0,
+      remainingDuration: action.duration ?? Infinity,
+      isPercent: 'isPercent' in action ? action.isPercent : undefined,
+    });
+    ctx.addEffect({
+      kind: LogEffectKind.apply_status,
+      target: ActionTarget.self,
+      status: action.status,
+      duration: action.duration ?? Infinity,
+      value: action.value ?? 0,
+    } as LogEffect);
   }
 }
 
 function applyLifeSteal(
   player: Player,
-  actions: GameAction[],
+  actions: LifeStealAction[],
   damageDealt: number,
   ctx: TurnContext = NO_CONTEXT
 ): void {
   for (const action of actions) {
-    if (action.type === ActionType.LIFE_STEAL) {
-      const heal = Math.max(Math.floor((damageDealt * action.value) / 100), 1);
-      const healed = applyHeal(player, heal);
-      if (healed > 0) {
-        ctx.addEffect({
-          kind: LogEffectKind.lifesteal,
-          value: healed,
-          target: ActionTarget.self,
-        });
-      }
+    const heal = Math.max(Math.floor((damageDealt * action.value) / 100), 1);
+    const healed = applyHeal(player, heal);
+    if (healed > 0) {
+      ctx.addEffect({
+        kind: LogEffectKind.lifesteal,
+        value: healed,
+        target: ActionTarget.self,
+      });
     }
   }
 }
@@ -307,6 +298,51 @@ function applyLeech(
   }
 }
 
+function applyDamageToOpponent(
+  player: Player,
+  opponent: Player,
+  actions: DamageAction[],
+  lifeStealActions: LifeStealAction[],
+  attackerStats: PlayerStats,
+  defenderStats: PlayerStats,
+  ctx: TurnContext = NO_CONTEXT
+): void {
+  const isCrit = rollChance(attackerStats.crit);
+  const pierce = getPierce(player);
+
+  let totalDamageDealt = 0;
+
+  for (const action of actions) {
+    const damage = calculateDamage(
+      action.value,
+      attackerStats.attack,
+      defenderStats.armor - pierce,
+      isCrit
+    );
+    applyDamage(opponent, damage);
+    totalDamageDealt += damage;
+  }
+
+  if (totalDamageDealt === 0) return;
+
+  ctx.addEffect({
+    kind: LogEffectKind.damage,
+    value: totalDamageDealt,
+    target: ActionTarget.opponent,
+    isCrit,
+  });
+
+  // Damage reactions
+  const thorns = getThorns(opponent);
+  applyThorns(player, totalDamageDealt, thorns, ctx);
+
+  // Damage rewards
+  applyLifeSteal(player, lifeStealActions, totalDamageDealt, ctx);
+
+  const leech = getLeech(player);
+  applyLeech(player, totalDamageDealt, leech, ctx);
+}
+
 function applySkillToOpponent(
   player: Player,
   opponent: Player,
@@ -321,92 +357,31 @@ function applySkillToOpponent(
     return;
   }
 
-  const isCrit = rollChance(attackerStats.crit);
-
-  const [damageActions, statusActions, modifyStatActions] = actions.reduce<
-    [DamageAction[], ApplyStatusAction[], ModifyStatAction[]]
-  >(
-    (acc, action) => {
-      if (action.target !== ActionTarget.opponent) return acc;
-
-      if (action.type === ActionType.DAMAGE) acc[0].push(action);
-      if (action.type === ActionType.APPLY_STATUS) acc[1].push(action);
-      if (action.type === ActionType.MODIFY_STAT) acc[2].push(action);
-
-      return acc;
-    },
-    [[], [], []]
-  );
+  const [damageActions, lifeStealActions, statusActions, modifyStatActions] =
+    splitOpponentActions(actions);
 
   // Direct damage
-  const pierce = getPierce(player);
-  const totalDamageDealt = applyDamageToOpponent(
+  applyDamageToOpponent(
+    player,
     opponent,
     damageActions,
+    lifeStealActions,
     attackerStats,
     defenderStats,
-    isCrit,
-    pierce
+    ctx
   );
 
-  if (totalDamageDealt > 0) {
-    ctx.addEffect({
-      kind: LogEffectKind.damage,
-      value: totalDamageDealt,
-      target: ActionTarget.opponent,
-      isCrit,
-    });
-  }
-
-  // Damage reactions
-  const thorns = getThorns(opponent);
-  applyThorns(player, totalDamageDealt, thorns, ctx);
-
-  // Damage rewards
-  applyLifeSteal(player, actions, totalDamageDealt, ctx);
-
-  const leech = getLeech(player);
-  applyLeech(player, totalDamageDealt, leech, ctx);
-
   // Effects
-  const hasResistance = isPlayerResistant(opponent);
-  applyStatusEffectsToOpponent(opponent, statusActions, hasResistance, ctx);
+  applyStatusEffectsToOpponent(opponent, statusActions, ctx);
   applyModifyStats(opponent, modifyStatActions, ctx);
-}
-
-function applyDamageToOpponent(
-  opponent: Player,
-  actions: DamageAction[],
-  attackerStats: PlayerStats,
-  defenderStats: PlayerStats,
-  isCrit: boolean,
-  pierce: number
-): number {
-  let totalDamageDealt = 0;
-
-  for (const action of actions) {
-    const baseValue = action.isPercent
-      ? Math.floor((defenderStats.hp * action.value) / 100)
-      : action.value;
-    const damage = calculateDamage(
-      baseValue,
-      attackerStats.attack,
-      defenderStats.armor - pierce,
-      isCrit
-    );
-    applyDamage(opponent, damage);
-    totalDamageDealt += damage;
-  }
-
-  return totalDamageDealt;
 }
 
 function applyStatusEffectsToOpponent(
   opponent: Player,
   actions: ApplyStatusAction[],
-  hasResistance: boolean,
   ctx: TurnContext = NO_CONTEXT
 ): void {
+  const hasResistance = isPlayerResistant(opponent);
   for (const action of actions) {
     switch (action.status) {
       case EffectId.bleed: {
@@ -520,7 +495,7 @@ function applyModifyStats(
   }
 }
 
-export function decrementStatusDurations(player: Player): void {
+function decrementStatusDurations(player: Player): void {
   player.statuses = player.statuses.filter(s => {
     if (s.remainingDuration === undefined) return true;
     s.remainingDuration -= 1;
@@ -528,17 +503,14 @@ export function decrementStatusDurations(player: Player): void {
   });
 }
 
-export function decrementSkillCooldowns(
-  player: Player,
-  skillId: SkillId
-): void {
+function decrementSkillCooldowns(player: Player, skillId: SkillId): void {
   for (const skill of player.skills) {
     if (skill.id === skillId) continue;
     skill.cooldown = Math.max(skill.cooldown - 1, 0);
   }
 }
 
-export function setSkillCooldown(player: Player, skillId: SkillId): void {
+function resetSkillCooldown(player: Player, skillId: SkillId): void {
   const playerSkill = player.skills.find(s => s.id === skillId);
   if (!playerSkill) return;
 
@@ -565,9 +537,10 @@ export function processPlayerTurn(
   const effects: LogEffect[] = [];
   const ctx: TurnContext = { addEffect: e => effects.push(e) };
 
-  applyCleansing(player, skill.actions, ctx);
+  const [applyStatusActions, modifyStatActions, healActions, cleanseActions] =
+    splitSelfActions(skill.actions);
 
-  applyHealActions(player, skill.actions, ctx);
+  applyCleansing(player, cleanseActions, ctx);
 
   processStatusEffects(player, ctx);
 
@@ -581,14 +554,9 @@ export function processPlayerTurn(
     });
     return { dead: 'attacker' };
   }
-
-  applyStatusEffectsToSelf(player, skill.actions, ctx);
-
-  const selfModifyStatActions = skill.actions.filter(
-    (a): a is ModifyStatAction =>
-      a.type === ActionType.MODIFY_STAT && a.target === ActionTarget.self
-  );
-  applyModifyStats(player, selfModifyStatActions, ctx);
+  applyHealActions(player, healActions, ctx);
+  applyStatusEffectsToSelf(player, applyStatusActions, ctx);
+  applyModifyStats(player, modifyStatActions, ctx);
 
   let dead: 'attacker' | 'defender' | null = null;
 
@@ -614,7 +582,7 @@ export function processPlayerTurn(
 
   if (dead) return { dead };
 
-  setSkillCooldown(player, skillId);
+  resetSkillCooldown(player, skillId);
 
   if (!isStunned(player)) {
     decrementSkillCooldowns(player, skillId);

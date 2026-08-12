@@ -28,22 +28,26 @@ yellow button with white text...
 @media (max-width: 767px) { Below Tablet }
 @media (max-width: 479px) { Below Mobile Large }
 
-- regeneration - heal (10HP + effect that will heal based on remaining HP (less HP = more regen))
 - improve action value modificators ('calculate based on what value')
-- rework skill components on mobile ('i' icon to show more info, click to select)
 - on preparation phase display stats (modified by selected passives in realtime)
 - on battle phase display hp as line with numbers instead of just numbers
 
 Обробка ходу:
 
-- очищення (скіл)
-- лікування (активний скіл)
-- активні ефекти
+- Очищення (скіл)
+- Обробити активні ефекти на собі
 - (перевірка смерті)
-- накладання ефектів на себе
+- Лікування та накладання ефектів на себе
+- Накладання зміни статів на себе
 
 - Перевірка на ухилення
 - Нанесення шкоди (+крит)
 - Застосування шипів
 - Застосування крадіжки здоровʼя
-- Накладання негативних ефектів на противника
+- Накладання ефектів на противника
+- Накладання зміни статів на противника
+
+- (перевірка смерті)
+- Зкинути кулдаун навички, що оброблялася
+- Зменшити кулдауни вибраних навичок (якщо не застанений)
+- Зменшити тривалість активних ефектів (видалити ті, що закінчились)

@@ -1,9 +1,16 @@
 import {
   ActionTarget,
+  ActionType,
+  ApplyStatusAction,
   BASE_SKILLS,
+  CleanseAction,
   CUSTOM_SKILLS,
+  DamageAction,
   EffectId,
   type GameAction,
+  HealAction,
+  LifeStealAction,
+  ModifyStatAction,
   type Player,
   REQUIRED_ACTIVE_COUNT,
   REQUIRED_HEALING_COUNT,
@@ -177,4 +184,52 @@ export function calculateDamage(
 
 export function isDead(player: Player): boolean {
   return getPlayerStats(player).hp <= 0;
+}
+
+export function splitOpponentActions(
+  actions: GameAction[]
+): [
+  DamageAction[],
+  LifeStealAction[],
+  ApplyStatusAction[],
+  ModifyStatAction[],
+] {
+  return actions.reduce<
+    [DamageAction[], LifeStealAction[], ApplyStatusAction[], ModifyStatAction[]]
+  >(
+    (acc, action) => {
+      if (
+        action.target === ActionTarget.self &&
+        action.type === ActionType.LIFE_STEAL
+      )
+        acc[1].push(action);
+      if (action.target === ActionTarget.self) return acc;
+
+      if (action.type === ActionType.DAMAGE) acc[0].push(action);
+      if (action.type === ActionType.APPLY_STATUS) acc[2].push(action);
+      if (action.type === ActionType.MODIFY_STAT) acc[3].push(action);
+
+      return acc;
+    },
+    [[], [], [], []]
+  );
+}
+
+export function splitSelfActions(
+  actions: GameAction[]
+): [ApplyStatusAction[], ModifyStatAction[], HealAction[], CleanseAction[]] {
+  return actions.reduce<
+    [ApplyStatusAction[], ModifyStatAction[], HealAction[], CleanseAction[]]
+  >(
+    (acc, action) => {
+      if (action.target === ActionTarget.opponent) return acc;
+
+      if (action.type === ActionType.APPLY_STATUS) acc[0].push(action);
+      if (action.type === ActionType.MODIFY_STAT) acc[1].push(action);
+      if (action.type === ActionType.HEAL) acc[2].push(action);
+      if (action.type === ActionType.CLEANSE) acc[3].push(action);
+      return acc;
+    },
+    [[], [], [], []]
+  );
 }

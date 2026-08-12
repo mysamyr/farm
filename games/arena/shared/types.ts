@@ -13,19 +13,17 @@ import {
 
 type BaseAction = {
   target: ActionTarget;
+  type: ActionType;
 };
 
 export type DamageAction = BaseAction & {
   type: ActionType.DAMAGE;
-  /* Damage. If isPercent = true - then % of opponent's current HP */
   value: number;
-  isPercent?: boolean;
 };
 
 export type HealAction = BaseAction & {
   type: ActionType.HEAL;
   value: number;
-  isPercent?: boolean;
 };
 
 export type ApplyStatusAction = BaseAction & {

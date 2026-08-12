@@ -26,13 +26,10 @@ export {
 export {
   addRoomFields,
   applySkillSelection,
-  decrementSkillCooldowns,
-  decrementStatusDurations,
   initGameState,
   markWinner,
   processPlayerTurn,
   removePlayerFromOrder,
-  setSkillCooldown,
   updateRoomOrderId,
 } from './engine.js';
 

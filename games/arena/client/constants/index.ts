@@ -119,6 +119,9 @@ export function getSkillEffects(
   effectLabels: ArenaEffectLabelsTranslation,
   util: UtilTranslation
 ): string[] {
+  if (skill.actions.length === 0) {
+    return [labels.noEffects];
+  }
   return skill.actions.map(a =>
     formatAction(a, labels, statLabels, effectLabels, util)
   );

@@ -83,7 +83,6 @@ export default function FightPhase(): ReactElement {
                 key={player.id}
                 player={player}
                 isMyTurn={isMyTurn}
-                isGameOver={isGameOver}
                 isStunned={isStunned}
                 onUseSkill={handleUseSkill}
               />

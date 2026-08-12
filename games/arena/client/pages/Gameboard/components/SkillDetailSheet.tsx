@@ -1,4 +1,4 @@
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactElement } from 'react';
 
 import type { Skill } from '@game/game-arena/shared';
 
@@ -15,13 +15,11 @@ import styles from './SkillDetailSheet.module.css';
 type SkillDetailSheetProps = {
   skill: Skill;
   onClose: () => void;
-  actions?: ReactNode;
 };
 
 export default function SkillDetailSheet({
   skill,
   onClose,
-  actions,
 }: SkillDetailSheetProps): ReactElement {
   const t = useArenaTranslation();
 
@@ -54,7 +52,6 @@ export default function SkillDetailSheet({
             </li>
           )}
         </ul>
-        {actions && <div className={styles.sheetActions}>{actions}</div>}
       </div>
     </>
   );

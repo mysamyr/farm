@@ -153,23 +153,6 @@ export default function PreparationPhase(): ReactElement {
     showSnackbar,
   ]);
 
-  const handleEquipFromDetail = useCallback(() => {
-    if (!detailSkill) return;
-    if (detailSkill.type === SkillType.active) {
-      handleSelectActive(detailSkill.id);
-    } else if (detailSkill.type === SkillType.healing) {
-      handleSelectHealing(detailSkill.id);
-    } else {
-      handleSelectPassive(detailSkill.id);
-    }
-    setDetailSkill(null);
-  }, [
-    detailSkill,
-    handleSelectActive,
-    handleSelectHealing,
-    handleSelectPassive,
-  ]);
-
   if (room.winner) {
     const isCurrentPlayerWinner = room.winner === currentPlayer?.id;
     return (
@@ -424,40 +407,6 @@ export default function PreparationPhase(): ReactElement {
         <SkillDetailSheet
           skill={detailSkill}
           onClose={() => setDetailSkill(null)}
-          actions={
-            <>
-              <Button
-                variant={BUTTON_VARIANT.PRIMARY}
-                onClick={handleEquipFromDetail}
-                disabled={
-                  detailSkill.type === SkillType.active
-                    ? !selectedActives.includes(detailSkill.id) &&
-                      activeSlotsFull
-                    : detailSkill.type === SkillType.healing
-                      ? !selectedHealing.includes(detailSkill.id) &&
-                        healingSlotsFull
-                      : !selectedPassives.includes(detailSkill.id) &&
-                        passiveSlotsFull
-                }
-              >
-                {(
-                  detailSkill.type === SkillType.active
-                    ? selectedActives.includes(detailSkill.id)
-                    : detailSkill.type === SkillType.healing
-                      ? selectedHealing.includes(detailSkill.id)
-                      : selectedPassives.includes(detailSkill.id)
-                )
-                  ? t.preparation.unequipButton
-                  : t.preparation.equipButton}
-              </Button>
-              <Button
-                variant={BUTTON_VARIANT.SECONDARY}
-                onClick={() => setDetailSkill(null)}
-              >
-                {t.preparation.closeButton}
-              </Button>
-            </>
-          }
         />
       )}
     </div>

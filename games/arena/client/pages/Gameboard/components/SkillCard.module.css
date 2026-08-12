@@ -44,7 +44,7 @@
 .card.disabled .icon,
 .card.disabled .name,
 .card.disabled .badge {
-  opacity: 0.4;
+  opacity: 0.3;
   filter: grayscale(60%);
 }
 
@@ -85,13 +85,32 @@
   color: var(--status-success);
 }
 
-.checkmark {
+.infoButton {
   position: absolute;
-  top: 4px;
-  right: 6px;
-  font-size: 0.7rem;
-  color: var(--accent);
+  top: 2px;
+  right: 2px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 0.8rem;
+  font-style: italic;
   font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .infoButton {
+    display: none;
+  }
 }
 
 /* ─── Tooltip ────────────────────────────────────────────── */
@@ -197,7 +216,7 @@
 .cooldownBadge {
   position: absolute;
   top: 4px;
-  right: 6px;
+  left: 4px;
   font-size: 0.62rem;
   font-weight: 700;
   color: var(--text-main);

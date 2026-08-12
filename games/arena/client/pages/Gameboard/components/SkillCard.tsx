@@ -1,4 +1,10 @@
-import { type ReactElement, useCallback, useRef, useState } from 'react';
+import {
+  type MouseEvent,
+  type ReactElement,
+  useCallback,
+  useRef,
+  useState,
+} from 'react';
 
 import { classNames } from '@game/client-core/utils';
 
@@ -64,13 +70,16 @@ export default function SkillCard({
   const onCooldown = cooldown !== undefined && cooldown > 0;
 
   const handleClick = useCallback(() => {
-    const isCoarse = window.matchMedia('(pointer: coarse)').matches;
-    if (isCoarse && onOpenDetail) {
-      onOpenDetail(skill);
-    } else if (onClick) {
-      onClick();
-    }
-  }, [skill, onClick, onOpenDetail]);
+    onClick?.();
+  }, [onClick]);
+
+  const handleInfoClick = useCallback(
+    (event: MouseEvent<HTMLButtonElement>) => {
+      event.stopPropagation();
+      onOpenDetail?.(skill);
+    },
+    [skill, onOpenDetail]
+  );
 
   const icon = getSkillIcon(skill.id);
   const name = getSkillName(skill.id, t.skillNames);
@@ -92,12 +101,7 @@ export default function SkillCard({
         disabled && styles.disabled,
         onCooldown && styles.onCooldown
       )}
-      onClick={
-        (!disabled && !onCooldown) ||
-        (window.matchMedia('(pointer: coarse)').matches && onOpenDetail)
-          ? handleClick
-          : undefined
-      }
+      onClick={!disabled && !onCooldown ? handleClick : undefined}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
@@ -115,9 +119,18 @@ export default function SkillCard({
       >
         {skill.type}
       </span>
-      {selected && <span className={styles.checkmark}>✓</span>}
       {onCooldown && (
         <span className={styles.cooldownBadge}>CD: {cooldown}</span>
+      )}
+      {onOpenDetail && (
+        <button
+          type="button"
+          className={styles.infoButton}
+          aria-label={t.skillInfoLabel}
+          onClick={handleInfoClick}
+        >
+          i
+        </button>
       )}
 
       {tooltipVisible && (

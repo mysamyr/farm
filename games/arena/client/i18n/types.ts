@@ -16,6 +16,7 @@ export interface ArenaSkillEffectLabelsTranslation {
   durationTurns: string;
   durationPassive: string;
   cooldown: string;
+  noEffects: string;
 }
 
 export interface ArenaPreparationTranslation {
@@ -33,9 +34,6 @@ export interface ArenaPreparationTranslation {
   victoryMessage: string;
   opponentLeftTitle: string;
   opponentLeftMessage: string;
-  equipButton: string;
-  unequipButton: string;
-  closeButton: string;
 }
 
 export interface ArenaFightTranslation {
@@ -43,8 +41,6 @@ export interface ArenaFightTranslation {
   opponentTurnBadge: string;
   gameOverBadge: string;
   failedToUseSkill: string;
-  useButton: string;
-  closeButton: string;
   turnBadge: string;
   winnerBadge: string;
 }
@@ -82,6 +78,7 @@ export interface ArenaTranslation {
   effectLabels: ArenaEffectLabelsTranslation;
   skillNames: ArenaSkillNamesTranslation;
   skillEffectLabels: ArenaSkillEffectLabelsTranslation;
+  skillInfoLabel: string;
   preparation: ArenaPreparationTranslation;
   fight: ArenaFightTranslation;
   battleLog: ArenaBattleLogTranslation;

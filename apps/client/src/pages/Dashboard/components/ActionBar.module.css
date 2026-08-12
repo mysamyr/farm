@@ -21,6 +21,7 @@
   transition: border-color 0.2s;
   background-color: var(--surface-input-bg);
   color: var(--surface-input-text);
+  width: 242px;
 }
 
 .usernameInput::placeholder {
