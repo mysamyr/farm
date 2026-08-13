@@ -1,4 +1,6 @@
-export interface FarmTradeTranslation {
+import type { GAME_RULES } from '../../shared/index.js';
+
+interface FarmTradeTranslation {
   buttonLabel: string;
   modalTitle: string;
   youGive: string;
@@ -21,6 +23,12 @@ export interface FarmTranslation {
     throwDice: string;
   };
   trade: FarmTradeTranslation;
+  ruleLabels: Record<GAME_RULES, string>;
+}
+
+interface FarmHelpRule {
+  ruleName: GAME_RULES;
+  description: string;
 }
 
 export interface FarmHelpTranslation {
@@ -39,5 +47,5 @@ export interface FarmHelpTranslation {
   protectionHeader: string;
   protection: string[];
   rulesHeader: string;
-  rules: string[];
+  rules: FarmHelpRule[];
 }

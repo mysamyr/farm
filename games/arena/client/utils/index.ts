@@ -39,6 +39,6 @@ export function getPreviewPlayer(player: Player, skillIds: SkillId[]): Player {
   return {
     ...player,
     hp: DEFAULT_PLAYER_STATS.hp,
-    statuses: getStatusesFromSkills(skillIds),
+    statuses: getStatusesFromSkills(skillIds, player),
   };
 }

@@ -29,7 +29,6 @@ export type Translation = {
     noActiveRooms: string;
     roomRules: string;
     players: string;
-    rules: Record<string, string>;
   };
   roomButton: {
     full: string;

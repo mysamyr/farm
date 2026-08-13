@@ -4,4 +4,12 @@
   align-items: flex-start;
   gap: 0;
   padding: 16px;
+  max-height: 80vh;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.container::-webkit-scrollbar {
+  display: none;
 }

@@ -6,11 +6,7 @@ import {
   getFarmTranslations,
 } from '../i18n/index.js';
 
-export type {
-  FarmHelpTranslation,
-  FarmTranslation,
-  FarmTradeTranslation,
-} from '../i18n/index.js';
+export type * from '../i18n/index.js';
 
 export function useFarmTranslation(): FarmTranslation {
   const { language } = useLanguage();

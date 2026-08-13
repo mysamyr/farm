@@ -133,18 +133,3 @@
   opacity: 0.4;
   cursor: not-allowed;
 }
-
-.exchangeBtn {
-  padding: 8px 16px;
-  border-radius: var(--radius-sm);
-  border: none;
-  background: var(--status-highlight);
-  color: var(--accent-contrast);
-  cursor: pointer;
-  font-weight: 600;
-}
-
-.exchangeBtn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}

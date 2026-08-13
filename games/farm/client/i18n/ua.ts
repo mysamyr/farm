@@ -1,3 +1,5 @@
+import { GAME_RULES } from '../../shared/index.js';
+
 import type { FarmHelpTranslation, FarmTranslation } from './types.js';
 
 export const farmGameTranslation: FarmTranslation = {
@@ -20,6 +22,12 @@ export const farmGameTranslation: FarmTranslation = {
     waitingForOpponent: 'Очікуємо фіксації суперника...',
     opponentLocked: 'Суперник зафіксував пропозицію!',
     bothLocked: 'Зафіксовано — підтвердіть обмін!',
+  },
+  ruleLabels: {
+    [GAME_RULES.EXTRA_DUCK]: 'Додаткова качка на старті',
+    [GAME_RULES.ONE_EXCHANGE]: 'Один обмін за хід',
+    [GAME_RULES.UNLIMITED_CARDS]: 'Безкінечна кількість карт',
+    [GAME_RULES.ALLOW_PLAYER_TRADE]: 'Обмін між гравцями',
   },
 };
 
@@ -64,8 +72,24 @@ export const farmHelpTranslation: FarmHelpTranslation = {
   ],
   rulesHeader: 'Правила',
   rules: [
-    'Додаткова качка на старті: кожен гравець починає з 1 🦆 (але 🦊 так чи інакше зʼїдає всіх 🦆).',
-    'Один обмін за хід: перед кидком кубиків можливий лише 1 обмін з головним стадом.',
-    'Безкінечна кількість карт: ліміт карт тварин не застосовується (можна мати більше 60-ти 🦆, 24-ти 🐐...).',
+    {
+      ruleName: GAME_RULES.EXTRA_DUCK,
+      description:
+        'Кожен гравець починає з 1 🦆 (але 🦊 так чи інакше зʼїдає всіх 🦆).',
+    },
+    {
+      ruleName: GAME_RULES.ONE_EXCHANGE,
+      description:
+        'Перед кидком кубиків можливий лише 1 обмін з головним стадом.',
+    },
+    {
+      ruleName: GAME_RULES.UNLIMITED_CARDS,
+      description:
+        'Ліміт карт тварин не застосовується (можна мати більше 60-ти 🦆, 24-ти 🐐...).',
+    },
+    {
+      ruleName: GAME_RULES.ALLOW_PLAYER_TRADE,
+      description: 'Гравці можуть обмінюватися тваринами між собою.',
+    },
   ],
 };

@@ -4,6 +4,7 @@ import type { BasePlayer, BaseRoom, BaseRules } from '@game/shared/types';
 import {
   type ActionTarget,
   type ActionType,
+  ActionValueSource,
   EffectId,
   LogEffectKind,
   type SkillId,
@@ -11,19 +12,58 @@ import {
   type StatId,
 } from './constants.js';
 
+// Actions
+
 type BaseAction = {
   target: ActionTarget;
   type: ActionType;
 };
 
+export type RawActionValue = {
+  source: ActionValueSource.raw;
+  amount: number;
+};
+
+export type CurrentHpActionValue = {
+  source: ActionValueSource.currentHp;
+  actor: ActionTarget;
+  percent: number;
+};
+
+export type MaxHpActionValue = {
+  source: ActionValueSource.maxHp;
+  actor: ActionTarget;
+  percent: number;
+};
+
+export type StatActionValue = {
+  source: ActionValueSource.stat;
+  actor: ActionTarget;
+  stat: StatId;
+  percent: number;
+};
+
+export type DamageDealtActionValue = {
+  source: ActionValueSource.damageDealt;
+  percent: number;
+};
+
+export type InstantActionValue =
+  | RawActionValue
+  | CurrentHpActionValue
+  | MaxHpActionValue
+  | StatActionValue;
+
+export type ReactiveActionValue = InstantActionValue | DamageDealtActionValue;
+
 export type DamageAction = BaseAction & {
   type: ActionType.DAMAGE;
-  value: number;
+  value: InstantActionValue;
 };
 
 export type HealAction = BaseAction & {
   type: ActionType.HEAL;
-  value: number;
+  value: InstantActionValue;
 };
 
 export type ApplyStatusAction = BaseAction & {
@@ -34,53 +74,46 @@ export type ApplyStatusAction = BaseAction & {
     | {
         status: EffectId.bleed;
         duration: number;
-        value: number;
+        value: ReactiveActionValue;
       }
     | {
         status: EffectId.poison;
         duration: number;
-        value: number;
-        isPercent?: never;
+        value: ReactiveActionValue;
       }
     | {
         status: EffectId.regeneration;
         duration: number;
-        value: number;
-        isPercent?: never;
+        value: ReactiveActionValue;
       }
     | {
         status: EffectId.resistance;
         duration: number;
         value?: never;
-        isPercent?: never;
       }
     | {
         status: EffectId.stun;
         duration: number;
         value?: never;
-        isPercent?: never;
       }
     | {
         status: EffectId.thorns;
-        value: number;
-        isPercent?: never;
+        value: ReactiveActionValue;
       }
     | {
         status: EffectId.leech;
-        value: number;
-        isPercent?: never;
+        value: ReactiveActionValue;
       }
     | {
         status: EffectId.pierce;
-        value: number;
-        isPercent?: never;
+        value: ReactiveActionValue;
       }
   );
 
 export type ModifyStatAction = BaseAction & {
   type: ActionType.MODIFY_STAT;
   stat: StatId;
-  value: number;
+  value: InstantActionValue;
   /* If no duration provided - permanent passive effect */
   duration?: number;
 };
@@ -88,8 +121,7 @@ export type ModifyStatAction = BaseAction & {
 export type LifeStealAction = BaseAction & {
   type: ActionType.LIFE_STEAL;
   target: ActionTarget.self;
-  /** % of damage */
-  value: number;
+  value: ReactiveActionValue;
 };
 
 export type CleanseAction = BaseAction & {
@@ -104,6 +136,8 @@ export type GameAction =
   | ModifyStatAction
   | CleanseAction
   | LifeStealAction;
+
+// Skills
 
 interface BaseSkill {
   id: SkillId;
@@ -211,7 +245,6 @@ export interface StatusEffect {
   type: StatId | EffectId;
   value: number;
   remainingDuration?: number;
-  isPercent?: boolean;
 }
 
 export interface PlayerSkill {

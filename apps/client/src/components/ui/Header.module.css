@@ -34,9 +34,6 @@
   color: var(--text-main);
   white-space: nowrap;
 }
-.logo:hover {
-  cursor: pointer;
-}
 
 .onlineIndicator {
   display: flex;

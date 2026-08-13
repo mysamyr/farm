@@ -1,4 +1,9 @@
-import { ERROR, GameId, EVENTS } from '@game/shared/constants';
+import {
+  ERROR,
+  GameId,
+  EVENTS,
+  NOTIFICATION_TYPES,
+} from '@game/shared/constants';
 import type { GameHandlerContext } from '@game/shared/engine';
 import type { GameActionPayload, SocketAck } from '@game/shared/types';
 
@@ -40,7 +45,7 @@ function winnerHandler(
     winnerName: player.name,
   });
   ctx.emitToRoom(room.id, EVENTS.NOTIFICATION, {
-    type: 'GAME_FINISHED',
+    type: NOTIFICATION_TYPES.GAME_FINISHED,
     data: player.name,
   });
 }

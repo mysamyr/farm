@@ -261,7 +261,7 @@ export default function TradeModal(): ReactElement {
         {bothLocked && (
           <button
             type="button"
-            className={styles.exchangeBtn}
+            className={styles.applyBtn}
             onClick={handleConfirm}
           >
             {farmT.trade.confirm}

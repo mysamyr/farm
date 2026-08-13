@@ -2,11 +2,11 @@ import type { ComponentType } from 'react';
 
 import type { GameId } from '@game/shared/constants';
 
-import type { AccentColor } from '../constants/index.js';
+import type { AccentColor, LanguageCode } from '../constants/index.js';
 
 export interface RuleConfig {
   key: string;
-  label: (t: Record<string, string>) => string;
+  label: (language: LanguageCode) => string;
 }
 
 export interface GameConfig {

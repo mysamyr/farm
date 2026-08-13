@@ -20,10 +20,12 @@ import {
   ModifyStatAction,
   NEGATIVE_EFFECTS,
   type Player,
+  resolveActionValue,
   type Room,
   type SkillId,
   SKILLS,
   SkillType,
+  type ValueContext,
 } from '../shared/index.js';
 
 import { NO_CONTEXT, TURN_START_INDEX } from './constants.js';
@@ -107,7 +109,7 @@ export function applySkillSelection(player: Player, skills: SkillId[]): void {
     ...activeSkills.map(s => ({ id: s.id, cooldown: s.cooldown })),
     ...healingSkills.map(s => ({ id: s.id, cooldown: s.cooldown })),
   ];
-  player.statuses = getStatusesFromSkills(skills);
+  player.statuses = getStatusesFromSkills(skills, player);
 }
 
 function applyHeal(player: Player, heal: number): number {
@@ -188,10 +190,14 @@ function processStatusEffects(
 function applyHealActions(
   player: Player,
   actions: HealAction[],
+  valueCtx: ValueContext,
   ctx: TurnContext = NO_CONTEXT
 ): void {
   for (const action of actions) {
-    const healed = applyHeal(player, action.value);
+    const healed = applyHeal(
+      player,
+      resolveActionValue(action.value, valueCtx)
+    );
     if (healed > 0) {
       ctx.addEffect({
         kind: LogEffectKind.heal,
@@ -205,21 +211,22 @@ function applyHealActions(
 function applyStatusEffectsToSelf(
   player: Player,
   actions: ApplyStatusAction[],
+  valueCtx: ValueContext,
   ctx: TurnContext = NO_CONTEXT
 ): void {
   for (const action of actions) {
+    const value = action.value ? resolveActionValue(action.value, valueCtx) : 0;
     player.statuses.push({
       type: action.status,
-      value: action.value ?? 0,
-      remainingDuration: action.duration ?? Infinity,
-      isPercent: 'isPercent' in action ? action.isPercent : undefined,
+      value,
+      remainingDuration: (action.duration ?? Infinity) + 1, // + 1 to prevent immediate removal on duration 1
     });
     ctx.addEffect({
       kind: LogEffectKind.apply_status,
       target: ActionTarget.self,
       status: action.status,
       duration: action.duration ?? Infinity,
-      value: action.value ?? 0,
+      value,
     } as LogEffect);
   }
 }
@@ -227,11 +234,11 @@ function applyStatusEffectsToSelf(
 function applyLifeSteal(
   player: Player,
   actions: LifeStealAction[],
-  damageDealt: number,
+  valueCtx: ValueContext,
   ctx: TurnContext = NO_CONTEXT
 ): void {
   for (const action of actions) {
-    const heal = Math.max(Math.floor((damageDealt * action.value) / 100), 1);
+    const heal = Math.max(resolveActionValue(action.value, valueCtx), 1);
     const healed = applyHeal(player, heal);
     if (healed > 0) {
       ctx.addEffect({
@@ -286,8 +293,9 @@ function applyDamageToOpponent(
   lifeStealActions: LifeStealAction[],
   attackerStats: PlayerStats,
   defenderStats: PlayerStats,
+  valueCtx: ValueContext,
   ctx: TurnContext = NO_CONTEXT
-): void {
+): number {
   const isCrit = rollChance(attackerStats.crit);
   const pierce = getPierce(player);
 
@@ -295,7 +303,7 @@ function applyDamageToOpponent(
 
   for (const action of actions) {
     const damage = calculateDamage(
-      action.value,
+      resolveActionValue(action.value, valueCtx),
       attackerStats.attack,
       defenderStats.armor - pierce,
       isCrit
@@ -304,7 +312,7 @@ function applyDamageToOpponent(
     totalDamageDealt += damage;
   }
 
-  if (totalDamageDealt === 0) return;
+  if (totalDamageDealt === 0) return 0;
 
   ctx.addEffect({
     kind: LogEffectKind.damage,
@@ -318,10 +326,17 @@ function applyDamageToOpponent(
   applyThorns(player, totalDamageDealt, thorns, ctx);
 
   // Damage rewards
-  applyLifeSteal(player, lifeStealActions, totalDamageDealt, ctx);
+  applyLifeSteal(
+    player,
+    lifeStealActions,
+    { ...valueCtx, damageDealt: totalDamageDealt },
+    ctx
+  );
 
   const leech = getLeech(player);
   applyLeech(player, totalDamageDealt, leech, ctx);
+
+  return totalDamageDealt;
 }
 
 function applySkillToOpponent(
@@ -341,25 +356,34 @@ function applySkillToOpponent(
   const [damageActions, lifeStealActions, statusActions, modifyStatActions] =
     splitOpponentActions(actions);
 
+  const valueCtx: ValueContext = { self: player, opponent };
+
   // Direct damage
-  applyDamageToOpponent(
+  const totalDamageDealt = applyDamageToOpponent(
     player,
     opponent,
     damageActions,
     lifeStealActions,
     attackerStats,
     defenderStats,
+    valueCtx,
     ctx
   );
 
   // Effects
-  applyStatusEffectsToOpponent(opponent, statusActions, ctx);
-  applyModifyStats(opponent, modifyStatActions, ctx);
+  applyStatusEffectsToOpponent(
+    opponent,
+    statusActions,
+    { ...valueCtx, damageDealt: totalDamageDealt },
+    ctx
+  );
+  applyModifyStats(opponent, modifyStatActions, valueCtx, ctx);
 }
 
 function applyStatusEffectsToOpponent(
   opponent: Player,
   actions: ApplyStatusAction[],
+  valueCtx: ValueContext,
   ctx: TurnContext = NO_CONTEXT
 ): void {
   const hasResistance = isPlayerResistant(opponent);
@@ -374,15 +398,15 @@ function applyStatusEffectsToOpponent(
           });
           return;
         }
+        const value = resolveActionValue(action.value, valueCtx);
         const existing = opponent.statuses.find(s => s.type === action.status);
         if (existing) {
           existing.remainingDuration = action.duration;
         } else {
           opponent.statuses.push({
             type: action.status,
-            value: action.value,
+            value,
             remainingDuration: action.duration,
-            isPercent: true,
           });
         }
         ctx.addEffect({
@@ -390,7 +414,7 @@ function applyStatusEffectsToOpponent(
           target: ActionTarget.opponent,
           status: action.status,
           duration: action.duration,
-          value: action.value,
+          value,
         });
         break;
       }
@@ -403,13 +427,14 @@ function applyStatusEffectsToOpponent(
           });
           return;
         }
+        const value = resolveActionValue(action.value, valueCtx);
         const existing = opponent.statuses.find(s => s.type === action.status);
         if (existing) {
           existing.remainingDuration = action.duration;
         } else {
           opponent.statuses.push({
             type: action.status,
-            value: action.value,
+            value,
             remainingDuration: action.duration,
           });
         }
@@ -418,7 +443,7 @@ function applyStatusEffectsToOpponent(
           target: ActionTarget.opponent,
           status: action.status,
           duration: action.duration,
-          value: action.value,
+          value,
         });
         break;
       }
@@ -437,18 +462,20 @@ function applyStatusEffectsToOpponent(
         break;
       }
       default: {
+        const value = action.value
+          ? resolveActionValue(action.value, valueCtx)
+          : 0;
         opponent.statuses.push({
           type: action.status,
-          value: action.value ?? 0,
+          value,
           remainingDuration: action.duration ?? Infinity,
-          isPercent: action.isPercent,
         });
         ctx.addEffect({
           kind: LogEffectKind.apply_status,
           target: ActionTarget.opponent,
           status: action.status,
           duration: action.duration ?? Infinity,
-          value: action.value ?? 0,
+          value,
         } as LogEffect);
       }
     }
@@ -458,19 +485,21 @@ function applyStatusEffectsToOpponent(
 function applyModifyStats(
   player: Player,
   actions: ModifyStatAction[],
+  valueCtx: ValueContext,
   ctx: TurnContext = NO_CONTEXT
 ): void {
   for (const action of actions) {
+    const value = resolveActionValue(action.value, valueCtx);
     player.statuses.push({
       type: action.stat,
-      value: action.value ?? 0,
-      remainingDuration: action.duration ?? Infinity,
+      value,
+      remainingDuration: (action.duration ?? Infinity) + 1, // + 1 to prevent immediate removal on duration 1
     });
     ctx.addEffect({
       kind: LogEffectKind.modify_stat,
       target: action.target,
       stat: action.stat,
-      value: action.value ?? 0,
+      value,
       duration: action.duration,
     });
   }
@@ -521,23 +550,16 @@ export function processPlayerTurn(
   const [applyStatusActions, modifyStatActions, healActions, cleanseActions] =
     splitSelfActions(skill.actions);
 
+  const valueCtx: ValueContext = {
+    self: player,
+    opponent: getOpponent(room, player.id),
+  };
+
   applyCleansing(player, cleanseActions, ctx);
+  applyHealActions(player, healActions, valueCtx, ctx);
 
-  processStatusEffects(player, ctx);
-
-  if (isDead(player)) {
-    room.steps.push({
-      step: room.steps.length + 1,
-      playerId: player.id,
-      playerName: player.name,
-      skillId,
-      effects,
-    });
-    return { dead: 'attacker' };
-  }
-  applyHealActions(player, healActions, ctx);
-  applyStatusEffectsToSelf(player, applyStatusActions, ctx);
-  applyModifyStats(player, modifyStatActions, ctx);
+  applyStatusEffectsToSelf(player, applyStatusActions, valueCtx, ctx);
+  applyModifyStats(player, modifyStatActions, valueCtx, ctx);
 
   let dead: 'attacker' | 'defender' | null = null;
 
@@ -551,6 +573,11 @@ export function processPlayerTurn(
     } else if (isDead(player)) {
       dead = 'attacker';
     }
+  }
+
+  processStatusEffects(player, ctx);
+  if (isDead(player)) {
+    dead = 'attacker';
   }
 
   room.steps.push({

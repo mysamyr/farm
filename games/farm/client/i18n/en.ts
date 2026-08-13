@@ -1,3 +1,5 @@
+import { GAME_RULES } from '../../shared/index.js';
+
 import type { FarmHelpTranslation, FarmTranslation } from './types.js';
 
 export const farmGameTranslation: FarmTranslation = {
@@ -20,6 +22,12 @@ export const farmGameTranslation: FarmTranslation = {
     waitingForOpponent: 'Waiting for opponent to lock...',
     opponentLocked: 'Opponent locked their offer!',
     bothLocked: 'Locked — confirm to trade!',
+  },
+  ruleLabels: {
+    [GAME_RULES.EXTRA_DUCK]: 'Extra duck on start',
+    [GAME_RULES.ONE_EXCHANGE]: 'One exchange per turn',
+    [GAME_RULES.UNLIMITED_CARDS]: 'Unlimited cards',
+    [GAME_RULES.ALLOW_PLAYER_TRADE]: 'Allow player trade',
   },
 };
 
@@ -64,8 +72,23 @@ export const farmHelpTranslation: FarmHelpTranslation = {
   ],
   rulesHeader: 'Rules',
   rules: [
-    'Extra duck on start: each player begins with 1 🦆 (but 🦊 still eats ALL ducks).',
-    'One exchange per turn: only 1 exchange with the main herd before rolling.',
-    'Unlimited cards: no limit to animal cards (you may have more than main herd counts).',
+    {
+      ruleName: GAME_RULES.EXTRA_DUCK,
+      description:
+        'Each player begins with 1 🦆 (but 🦊 still eats ALL ducks).',
+    },
+    {
+      ruleName: GAME_RULES.ONE_EXCHANGE,
+      description: 'Only 1 exchange with the main herd before rolling.',
+    },
+    {
+      ruleName: GAME_RULES.UNLIMITED_CARDS,
+      description:
+        'No limit to animal cards (you may have more than main herd counts).',
+    },
+    {
+      ruleName: GAME_RULES.ALLOW_PLAYER_TRADE,
+      description: 'Players can trade animals with each other.',
+    },
   ],
 };

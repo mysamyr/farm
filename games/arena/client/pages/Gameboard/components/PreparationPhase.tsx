@@ -26,8 +26,8 @@ import { getSkillIcon, getSkillName } from '../../../constants/index.js';
 import { useArenaTranslation } from '../../../hooks/useArenaTranslation.js';
 import { getCurrentPlayer, getPreviewPlayer } from '../../../utils/index.js';
 
-import styles from './PreparationPhase.module.css';
 import PlayerStatsDisplay from './PlayerStats.js';
+import styles from './PreparationPhase.module.css';
 import SkillCard from './SkillCard.js';
 import SkillDetailSheet from './SkillDetailSheet.js';
 

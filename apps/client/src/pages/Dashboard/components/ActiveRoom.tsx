@@ -22,7 +22,7 @@ export default function ActiveRoom(): ReactElement {
   const navigate = useNavigate();
   const { activeGame, cleanupCurrentIdleRoom } = useActiveGame();
   const room = useRoom();
-  const { translation } = useLanguage();
+  const { language, translation } = useLanguage();
   const { showSnackbar } = useSnackbar();
   const { getGame } = useGames();
   const { config: gameConfig } = useGameConfig(activeGame);
@@ -130,7 +130,7 @@ export default function ActiveRoom(): ReactElement {
               {rules.map(rule => (
                 <Slider
                   key={rule.key}
-                  label={rule.label(translation.dashboard.rules)}
+                  label={rule.label(language)}
                   checked={!!currentRoom.rules[rule.key]}
                   onChange={event => {
                     emitEvent(
@@ -159,7 +159,7 @@ export default function ActiveRoom(): ReactElement {
                 .filter(rule => currentRoom.rules[rule.key])
                 .map(rule => (
                   <Tag key={rule.key}>
-                    {rule.label(translation.dashboard.rules)}
+                    {rule.label(language)}
                   </Tag>
                 ))}
             </div>

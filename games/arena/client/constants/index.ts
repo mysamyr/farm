@@ -1,7 +1,10 @@
 import {
   ActionTarget,
   ActionType,
+  ActionValueSource,
+  EffectId,
   GameAction,
+  type ReactiveActionValue,
   Skill,
   SkillId,
   SkillType,
@@ -44,6 +47,21 @@ export function getSkillIcon(skillId: SkillId): string {
   return SKILL_ICONS[skillId] ?? '✨';
 }
 
+export const EFFECT_ICONS: Record<EffectId, string> = {
+  poison: '☠️',
+  bleed: '🩸',
+  stun: '💫',
+  regeneration: '💚',
+  resistance: '🔰',
+  thorns: '🌵',
+  leech: '🧛',
+  pierce: '🗡️',
+};
+
+export function getEffectIcon(effectId: EffectId): string {
+  return EFFECT_ICONS[effectId] ?? '✨';
+}
+
 export function getSkillName(
   skillId: SkillId,
   skillNames: ArenaSkillNamesTranslation
@@ -58,6 +76,58 @@ export function getStatLabel(
   return statLabels[stat] ?? stat;
 }
 
+function formatActionValue(
+  value: ReactiveActionValue,
+  labels: ArenaSkillEffectLabelsTranslation,
+  statLabels: ArenaStatLabelsTranslation,
+  util: UtilTranslation
+): string {
+  switch (value.source) {
+    case ActionValueSource.raw:
+      return String(value.amount);
+    case ActionValueSource.currentHp:
+      return labels.valueCurrentHp
+        .replace('{percent}', String(value.percent))
+        .replace(
+          '{actor}',
+          value.actor === ActionTarget.self ? util.self : util.opponent
+        );
+    case ActionValueSource.maxHp:
+      return labels.valueMaxHp
+        .replace('{percent}', String(value.percent))
+        .replace(
+          '{actor}',
+          value.actor === ActionTarget.self ? util.self : util.opponent
+        );
+    case ActionValueSource.stat:
+      return labels.valueStat
+        .replace('{percent}', String(value.percent))
+        .replace(
+          '{actor}',
+          value.actor === ActionTarget.self ? util.self : util.opponent
+        )
+        .replace('{stat}', getStatLabel(value.stat, statLabels));
+    case ActionValueSource.damageDealt:
+      return labels.valueDamageDealt.replace(
+        '{percent}',
+        String(value.percent)
+      );
+  }
+}
+
+function getValueCoefficient(value: ReactiveActionValue): number {
+  return value.source === ActionValueSource.raw ? value.amount : value.percent;
+}
+
+function formatDuration(
+  duration: number | undefined,
+  labels: ArenaSkillEffectLabelsTranslation
+): string {
+  return duration
+    ? ` ${labels.durationTurns.replace('{turns}', String(duration))}`
+    : ` ${labels.durationPassive}`;
+}
+
 function formatAction(
   action: GameAction,
   labels: ArenaSkillEffectLabelsTranslation,
@@ -67,18 +137,27 @@ function formatAction(
 ): string {
   switch (action.type) {
     case ActionType.DAMAGE:
-      return labels.damage.replace('{value}', String(action.value));
+      return labels.damage.replace(
+        '{value}',
+        formatActionValue(action.value, labels, statLabels, util)
+      );
     case ActionType.HEAL:
-      return labels.heal.replace('{value}', String(action.value));
+      return labels.heal.replace(
+        '{value}',
+        formatActionValue(action.value, labels, statLabels, util)
+      );
     case ActionType.LIFE_STEAL:
-      return labels.lifesteal.replace('{value}', String(action.value));
+      return labels.lifesteal.replace(
+        '{value}',
+        formatActionValue(action.value, labels, statLabels, util)
+      );
     case ActionType.CLEANSE:
       return labels.cleanse;
     case ActionType.APPLY_STATUS: {
-      const val = action.value !== undefined ? ` (${action.value})` : '';
-      const dur = action.duration
-        ? ` ${labels.durationTurns.replace('{turns}', String(action.duration))}`
-        : ` ${labels.durationPassive}`;
+      const val =
+        action.value !== undefined
+          ? ` (${formatActionValue(action.value, labels, statLabels, util)})`
+          : '';
       return labels.applyStatus
         .replace('{status}', effectLabels[action.status])
         .replace('{value}', val)
@@ -86,18 +165,22 @@ function formatAction(
           '{target}',
           action.target === ActionTarget.self ? util.self : util.opponent
         )
-        .replace('{duration}', dur);
+        .replace('{duration}', formatDuration(action.duration, labels));
     }
     case ActionType.MODIFY_STAT: {
-      const sign = action.value >= 0 ? '+' : '';
+      const sign = getValueCoefficient(action.value) >= 0 ? '+' : '';
       return labels.modifyStat
         .replace('{sign}', sign)
-        .replace('{value}', String(action.value ?? 0))
+        .replace(
+          '{value}',
+          formatActionValue(action.value, labels, statLabels, util)
+        )
         .replace('{stat}', getStatLabel(action.stat, statLabels))
         .replace(
           '{target}',
           action.target === ActionTarget.self ? util.self : util.opponent
-        );
+        )
+        .replace('{duration}', formatDuration(action.duration, labels));
     }
   }
 }

@@ -10,6 +10,7 @@ import {
   EffectId,
 } from '@game/game-arena/shared';
 
+import { getEffectIcon } from '../../../constants/index.js';
 import { useArenaTranslation } from '../../../hooks/useArenaTranslation.js';
 import { getPlayerStats } from '../../../utils/index.js';
 
@@ -34,9 +35,10 @@ type PlayerStatsProps = {
 
 function getStatusLabel(
   status: StatusEffect,
-  statusLabels: Record<string, string>
+  effectLabels: Record<EffectId, string>
 ): string {
-  const label = statusLabels[status.type] ?? status.type;
+  const effectId = status.type as EffectId;
+  const label = `${getEffectIcon(effectId)} ${effectLabels[effectId] ?? status.type}`;
   if (status.remainingDuration === undefined) return label;
   return `${label} (${status.remainingDuration})`;
 }
@@ -54,17 +56,6 @@ export default function PlayerStatsDisplay({
   const visibleStatuses = player.statuses.filter(
     s => !StatId[s.type as StatId]
   );
-
-  const statusLabels: Record<EffectId, string> = {
-    poison: '☠️ Poison',
-    bleed: '🩸 Bleed',
-    stun: '💫 Stun',
-    regeneration: '💚 Regen',
-    resistance: '🔰 Resist',
-    thorns: '🌵 Thorns',
-    leech: '🧛 Leech',
-    pierce: '🗡️ Pierce',
-  };
 
   return (
     <div
@@ -101,7 +92,7 @@ export default function PlayerStatsDisplay({
         <div className={styles.statusList}>
           {visibleStatuses.map((status, i) => (
             <span key={`${status.type}-${i}`} className={styles.statusBadge}>
-              {getStatusLabel(status, statusLabels)}
+              {getStatusLabel(status, t.effectLabels)}
             </span>
           ))}
         </div>

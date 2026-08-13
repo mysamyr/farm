@@ -17,6 +17,10 @@ export interface ArenaSkillEffectLabelsTranslation {
   durationPassive: string;
   cooldown: string;
   noEffects: string;
+  valueCurrentHp: string;
+  valueMaxHp: string;
+  valueStat: string;
+  valueDamageDealt: string;
 }
 
 export interface ArenaPreparationTranslation {
@@ -85,8 +89,25 @@ export interface ArenaTranslation {
   util: UtilTranslation;
 }
 
-// TODO: Add Arena help
+export type ArenaHelpStatDescriptions = Record<StatId, string>;
+
+export type ArenaHelpEffectDescriptions = Record<EffectId, string>;
+
 export interface ArenaHelpTranslation {
   title: string;
   goal: string;
+  statsHeader: string;
+  statsIntro: string;
+  stats: ArenaHelpStatDescriptions;
+  skillsHeader: string;
+  skillsIntro: string;
+  activeSkills: string;
+  healingSkills: string;
+  passiveSkills: string;
+  effectsHeader: string;
+  effectsIntro: string;
+  effects: ArenaHelpEffectDescriptions;
+  turnHeader: string;
+  turnIntro: string;
+  turnSteps: string[];
 }

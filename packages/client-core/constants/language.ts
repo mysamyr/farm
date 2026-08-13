@@ -64,12 +64,6 @@ const translations: Record<LanguageCode, Translation> = {
       noActiveRooms: 'Create new room.',
       roomRules: 'Rules',
       players: 'Players',
-      rules: {
-        extra_duck: 'Extra duck on start',
-        one_exchange_per_turn: 'One exchange per turn',
-        unlimited_cards: 'Unlimited cards',
-        allow_player_trade: 'Allow player trade',
-      },
     },
     roomButton: {
       full: 'Full',
@@ -135,12 +129,6 @@ const translations: Record<LanguageCode, Translation> = {
       noActiveRooms: 'Створіть нову кімнату.',
       roomRules: 'Правила',
       players: 'Гравців',
-      rules: {
-        extra_duck: 'Додаткова качка на старті',
-        one_exchange_per_turn: 'Один обмін за хід',
-        unlimited_cards: 'Безкінечна кількість карт',
-        allow_player_trade: 'Обмін між гравцями',
-      },
     },
     roomButton: {
       full: 'Повна',

@@ -32,7 +32,7 @@ export default function RoomCard({
   usernameInput,
 }: RoomCardProps): ReactElement {
   const navigate = useNavigate();
-  const { translation } = useLanguage();
+  const { language, translation } = useLanguage();
   const { currentRoom } = useRoom();
   const { showSnackbar } = useSnackbar();
   const { getGame } = useGames();
@@ -83,7 +83,7 @@ export default function RoomCard({
               .filter(rule => room.rules[rule.key])
               .map(rule => (
                 <Tag key={rule.key}>
-                  {rule.label(translation.dashboard.rules)}
+                  {rule.label(language)}
                 </Tag>
               ))}
           </div>

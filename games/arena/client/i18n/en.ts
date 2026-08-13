@@ -44,14 +44,18 @@ export const arenaGameTranslation: ArenaTranslation = {
   skillEffectLabels: {
     damage: 'Deal {value} damage',
     heal: 'Heal for {value}',
-    lifesteal: 'Lifesteal {value}% of damage',
+    lifesteal: 'Lifesteal {value}',
     cleanse: 'Cleanse all negative effects',
     applyStatus: 'Apply {status}{value}{duration}',
-    modifyStat: '{sign}{value} {stat} to {target}',
+    modifyStat: '{sign}{value} {stat} to {target}{duration}',
     durationTurns: 'for {turns} turns',
     durationPassive: '(passive)',
     cooldown: 'Cooldown: {cooldown}',
     noEffects: 'Skip turn',
+    valueCurrentHp: "{percent}% of {actor}'s current HP",
+    valueMaxHp: '{percent}% of {actor} max HP',
+    valueStat: '{percent}% of {actor} {stat}',
+    valueDamageDealt: '{percent}% of damage',
   },
   skillInfoLabel: 'Skill info',
   preparation: {
@@ -107,5 +111,58 @@ export const arenaGameTranslation: ArenaTranslation = {
 
 export const arenaHelpTranslation: ArenaHelpTranslation = {
   title: 'Game Goal',
-  goal: "Be the first who lower opponent's hp to 0 by creating build and using skills",
+  goal: "Reduce your opponent's HP to 0. Pick a loadout, then take turns using skills until one fighter falls.",
+  statsHeader: 'Stats',
+  statsIntro: 'Stats are the numbers that define your fighter in combat.',
+  stats: {
+    hp: 'Current health. The fight ends when it reaches 0.',
+    attack: "Adds to the skill's base damage.",
+    armor: 'Reduces incoming damage.',
+    dodge: "Chance to ignore the opponent's action completely.",
+    crit: 'Chance to double the total damage.',
+  },
+  skillsHeader: 'Skills',
+  skillsIntro:
+    'Before the fight, choose 2 active skills, 1 healing skill, and 2 passive skills. Attack and Skip are always available.',
+  activeSkills:
+    'Active skills are used on your turn and have a cooldown. They can deal damage, apply effects, buff you, or weaken the opponent.',
+  healingSkills:
+    'Healing skills restore HP immediately and may apply Regeneration. They also have a cooldown.',
+  passiveSkills:
+    'Passive skills are always on. They change your stats or grant permanent effects.',
+  effectsHeader: 'Effects',
+  effectsIntro:
+    'Effects are statuses on a fighter. Some last a number of turns; others stay for the whole fight (passives).',
+  effects: {
+    regeneration: 'Restore HP at the end of your turn.',
+    resistance:
+      'Block new Bleed and Poison. Does not remove effects already applied.',
+    thorns: 'Reflect a portion of direct damage back to the attacker.',
+    leech: 'Heal a portion of the direct damage you deal.',
+    poison: 'Take a fixed amount of damage each turn.',
+    bleed: 'Take damage each turn based on current HP.',
+    stun: 'Cannot use skills (only Skip). Skill cooldowns do not tick down.',
+    pierce: "Ignore part of the opponent's Armor.",
+  },
+  turnHeader: 'Turn processing',
+  turnIntro: 'Each turn runs in a fixed order:',
+  turnSteps: [
+    'Cleanse (if the skill has it)',
+    'Active heal',
+    'Apply effects to yourself',
+    'Apply stat changes to yourself',
+    'Dodge check — if the opponent dodges, skip the rest of the attack',
+    'Deal damage (can crit)',
+    'Apply Thorns',
+    'Apply lifesteal / Leech',
+    'Apply effects to the opponent',
+    'Apply stat changes to the opponent',
+    'Death check',
+    'Process your active effects (DoT / Regeneration)',
+    'Death check',
+    'Reset the cooldown of the skill you used',
+    'Reduce other skill cooldowns (skipped if you are stunned)',
+    'Reduce duration of active effects and remove those that expired',
+    'Next turn',
+  ],
 };

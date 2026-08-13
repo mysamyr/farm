@@ -4,11 +4,7 @@ import * as en from './en.js';
 import type { FarmHelpTranslation, FarmTranslation } from './types.js';
 import * as ua from './ua.js';
 
-export type {
-  FarmHelpTranslation,
-  FarmTranslation,
-  FarmTradeTranslation,
-} from './types.js';
+export type * from './types.js';
 
 const translations: Record<
   LanguageCode,
