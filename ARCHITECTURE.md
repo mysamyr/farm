@@ -19,20 +19,42 @@ routing. Individual games act as isolated plugins implementing a strict contract
 │   │   └── shared/         # Game-specific types and event constants
 │   └── arena/              # Game Plugin: Arena
 └── packages/
-    └── shared/             # Core types ONLY (User, Room, BaseEngine, Socket protocols)
+    ├── shared/             # Core types ONLY (User, Room, BaseEngine, Socket protocols)
+    └── client-core/        # Shared client utilities (components, hooks, stores, socket, utils)
 ```
 
 ## 3. Server Architecture
 
-- **Game Engine Interface (`BaseGameEngine`):** Standard interface for game plugins:
-  - `onGameStart(roomId, players)`
-  - `handleAction(roomId, playerId, action)`
-  - `onPlayerLeave(roomId, playerId)`
-  - `getState(roomId)`
-- **Game Registry:** Server loads all available games at startup and maps `gameType` to its corresponding
-  `BaseGameEngine`.
-- **Socket Router:** Global socket listeners intercept `game:action` payloads, resolve the active game engine via
-  `roomId`, and forward the payload to `engine.handleAction()`.
+- **Game Handler Context (`GameHandlerContext`):** Abstraction layer that bridges Socket.io to game-agnostic handler code:
+  - `on(event, handler)` – Register event listeners
+  - `emitToRoom(roomId, event, payload)` – Broadcast to a room
+  - `emitToSocket(socketId, event, payload)` – Send to specific socket
+  - `getRoomById(roomId)` – Access room state
+  - `getSocketData(key)` / `setSocketData(key, value)` – Socket session storage
+  - `log(message, data)` – Structured logging
+
+- **Server Game Module Interface (`ServerGameModule`):** Standard contract for game plugins:
+  - `config: { minPlayers, maxPlayers }`
+  - `metadata: GameMetadata` – Client-consumable game info
+  - `canStartGame?(room)` – Validation before game start
+  - `addRoomFields()` – Initialize game-specific room fields
+  - `onGameStart?(io, room)` – Lifecycle hook when game begins
+  - `onPlayerRemoved?(room, playerId)` – Handle player departure
+  - `onPlayerReconnected?(room, oldPlayerId, newPlayerId)` – Handle reconnection
+  - `onPlayerWin?(io, room, player)` – Handle win condition
+  - `handleAction?(ctx, payload, ack)` – Process game actions via `GameHandlerContext`
+
+- **Game Registry:** Centralized registry that loads all game modules at startup and provides:
+  - `register(module)` – Register a game module
+  - `get(gameId)` – Retrieve module by ID
+  - `getAll()` / `getAllMetadata()` – Access all games
+  - Type-safe game lookups
+
+- **Unified Game Action Router:** `registerAllGameFeatures()` intercepts `game:action` socket events and:
+  1. Looks up the room by ID
+  2. Retrieves the game module from the registry
+  3. Creates a `GameHandlerContext` adapter (bridges Socket.io ↔ generic interface)
+  4. Invokes `gameModule.handleAction(ctx, payload, ack)` with optional acknowledgment callback
 
 ## 4. Client Architecture
 

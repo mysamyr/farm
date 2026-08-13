@@ -39,11 +39,4 @@ export interface BaseRoom<
   rules: TRules;
 }
 
-export type {
-  ActionResult,
-  BaseGameEngine,
-  BaseGameState,
-  GameModule,
-} from '../engine/index.js';
-
 export * from './socket.js';

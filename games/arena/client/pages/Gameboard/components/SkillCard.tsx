@@ -26,10 +26,10 @@ type TooltipAlign = 'left' | 'center' | 'right';
 type SkillCardProps = {
   skill: Skill;
   selected?: boolean;
-  disabled?: boolean;
+  disabled: boolean;
   cooldown?: number; // active CD in fight phase
-  onClick?: () => void;
-  onOpenDetail?: (skill: Skill) => void;
+  onClick: () => void;
+  onOpenDetail: (skill: Skill) => void;
 };
 
 export default function SkillCard({
@@ -47,6 +47,7 @@ export default function SkillCard({
   const cardRef = useRef<HTMLDivElement>(null);
 
   const handleMouseEnter = useCallback(() => {
+    if (window.matchMedia('(hover: none)').matches) return;
     if (cardRef.current) {
       const rect = cardRef.current.getBoundingClientRect();
       setTooltipPos(rect.top > 180 ? 'above' : 'below');
@@ -70,13 +71,13 @@ export default function SkillCard({
   const onCooldown = cooldown !== undefined && cooldown > 0;
 
   const handleClick = useCallback(() => {
-    onClick?.();
+    onClick();
   }, [onClick]);
 
   const handleInfoClick = useCallback(
     (event: MouseEvent<HTMLButtonElement>) => {
       event.stopPropagation();
-      onOpenDetail?.(skill);
+      onOpenDetail(skill);
     },
     [skill, onOpenDetail]
   );
@@ -122,16 +123,14 @@ export default function SkillCard({
       {onCooldown && (
         <span className={styles.cooldownBadge}>CD: {cooldown}</span>
       )}
-      {onOpenDetail && (
-        <button
-          type="button"
-          className={styles.infoButton}
-          aria-label={t.skillInfoLabel}
-          onClick={handleInfoClick}
-        >
-          i
-        </button>
-      )}
+      <button
+        type="button"
+        className={styles.infoButton}
+        aria-label={t.skillInfoLabel}
+        onClick={handleInfoClick}
+      >
+        i
+      </button>
 
       {tooltipVisible && (
         <div

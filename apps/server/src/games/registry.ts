@@ -124,5 +124,4 @@ class GameRegistry {
   }
 }
 
-// Singleton instance
 export const gameRegistry = new GameRegistry();

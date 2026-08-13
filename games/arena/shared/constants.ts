@@ -37,6 +37,7 @@ export enum SkillId {
   bleed_strike = 'bleed_strike',
   viper_strike = 'viper_strike',
   vampiric_strike = 'vampiric_strike',
+  bash_strike = 'bash_strike',
   // Active debuffs
   knockback = 'knockback',
   corrosion = 'corrosion',
@@ -44,6 +45,7 @@ export enum SkillId {
   resistance = 'resistance',
   cleanse = 'cleanse',
   rage = 'rage',
+  spiked_armor = 'spiked_armor',
 
   // Healing
   heal = 'heal',
@@ -178,7 +180,7 @@ export const SKILLS: Record<SkillId, Skill> = {
       {
         type: ActionType.DAMAGE,
         target: ActionTarget.opponent,
-        value: { source: ActionValueSource.raw, amount: 10 },
+        value: { source: ActionValueSource.raw, amount: 8 },
       },
       {
         type: ActionType.APPLY_STATUS,
@@ -203,6 +205,25 @@ export const SKILLS: Record<SkillId, Skill> = {
         type: ActionType.LIFE_STEAL,
         target: ActionTarget.self,
         value: { source: ActionValueSource.damageDealt, percent: 50 },
+      },
+    ],
+  },
+  [SkillId.bash_strike]: {
+    id: SkillId.bash_strike,
+    type: SkillType.active,
+    cooldown: 2,
+    actions: [
+      {
+        type: ActionType.DAMAGE,
+        target: ActionTarget.opponent,
+        value: { source: ActionValueSource.raw, amount: 15 },
+      },
+      {
+        type: ActionType.MODIFY_STAT,
+        target: ActionTarget.opponent,
+        stat: StatId.attack,
+        value: { source: ActionValueSource.raw, amount: -10 },
+        duration: 2,
       },
     ],
   },
@@ -273,6 +294,20 @@ export const SKILLS: Record<SkillId, Skill> = {
         stat: StatId.attack,
         value: { source: ActionValueSource.raw, amount: 10 },
         duration: 3,
+      },
+    ],
+  },
+  [SkillId.spiked_armor]: {
+    id: SkillId.spiked_armor,
+    type: SkillType.active,
+    cooldown: 3,
+    actions: [
+      {
+        type: ActionType.APPLY_STATUS,
+        target: ActionTarget.self,
+        status: EffectId.thorns,
+        value: { source: ActionValueSource.damageDealt, percent: 60 },
+        duration: 2,
       },
     ],
   },
@@ -413,7 +448,7 @@ export const SKILLS: Record<SkillId, Skill> = {
         type: ActionType.APPLY_STATUS,
         target: ActionTarget.self,
         status: EffectId.thorns,
-        value: { source: ActionValueSource.raw, amount: 40 },
+        value: { source: ActionValueSource.damageDealt, percent: 40 },
       },
     ],
   },
