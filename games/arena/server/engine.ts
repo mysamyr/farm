@@ -5,17 +5,18 @@ import {
   ActionTarget,
   type ActiveSkill,
   ApplyStatusAction,
-  CleanseAction,
-  HealAction,
-  LifeStealAction,
   BASE_SKILLS,
+  CleanseAction,
   DamageAction,
   DEFAULT_PLAYER_STATS,
   EffectId,
+  GAME_RULES,
   type GameAction,
   getPlayerMaxHp,
   getStatusesFromSkills,
+  HealAction,
   type HealingSkill,
+  LifeStealAction,
   type LogEffect,
   LogEffectKind,
   ModifyStatAction,
@@ -56,7 +57,13 @@ export function addRoomFields(): Pick<
 > {
   return {
     order: [],
-    rules: {},
+    rules: Object.values(GAME_RULES).reduce(
+      (acc, rule) => {
+        acc[rule] = false;
+        return acc;
+      },
+      {} as Record<GAME_RULES, boolean>
+    ),
     turn: TURN_START_INDEX,
     steps: [],
   };
@@ -100,7 +107,11 @@ export function markWinner(room: Room, player: Player): void {
   room.winner = player.id;
 }
 
-export function applySkillSelection(player: Player, skills: SkillId[]): void {
+export function applySkillSelection(
+  player: Player,
+  skills: SkillId[],
+  zeroCd: boolean
+): void {
   const [activeSkills, healingSkills] = skills.reduce<
     [ActiveSkill[], HealingSkill[]]
   >(
@@ -116,8 +127,14 @@ export function applySkillSelection(player: Player, skills: SkillId[]): void {
 
   player.skills = [
     ...BASE_SKILLS.map(id => ({ id, cooldown: 0 })),
-    ...activeSkills.map(s => ({ id: s.id, cooldown: s.cooldown })),
-    ...healingSkills.map(s => ({ id: s.id, cooldown: s.cooldown })),
+    ...activeSkills.map(s => ({
+      id: s.id,
+      cooldown: zeroCd ? 0 : s.cooldown,
+    })),
+    ...healingSkills.map(s => ({
+      id: s.id,
+      cooldown: zeroCd ? 0 : s.cooldown,
+    })),
   ];
   player.statuses = getStatusesFromSkills(skills, player);
 }

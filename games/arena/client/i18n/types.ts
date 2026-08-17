@@ -1,4 +1,4 @@
-import { SkillId, StatId, EffectId } from '../../shared/index.js';
+import { SkillId, StatId, EffectId, GAME_RULES } from '../../shared/index.js';
 
 export type ArenaStatLabelsTranslation = Record<StatId, string>;
 
@@ -71,6 +71,8 @@ export interface ArenaBattleLogTranslation {
   durationTurns: string;
 }
 
+export type ArenaRuleLabelsTranslation = Record<GAME_RULES, string>;
+
 export interface UtilTranslation {
   self: string;
   opponent: string;
@@ -86,6 +88,7 @@ export interface ArenaTranslation {
   preparation: ArenaPreparationTranslation;
   fight: ArenaFightTranslation;
   battleLog: ArenaBattleLogTranslation;
+  ruleLabels: ArenaRuleLabelsTranslation;
   util: UtilTranslation;
 }
 

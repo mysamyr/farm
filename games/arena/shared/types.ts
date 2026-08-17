@@ -1,11 +1,12 @@
 import { GameId } from '@game/shared/constants';
-import type { BasePlayer, BaseRoom, BaseRules } from '@game/shared/types';
+import type { BasePlayer, BaseRoom } from '@game/shared/types';
 
 import {
   type ActionTarget,
   type ActionType,
   ActionValueSource,
   EffectId,
+  GAME_RULES,
   LogEffectKind,
   type SkillId,
   type SkillType,
@@ -98,7 +99,7 @@ export type ApplyStatusAction = BaseAction & {
       }
     | {
         status: EffectId.thorns;
-        value: ReactiveActionValue;
+        value: InstantActionValue;
       }
     | {
         status: EffectId.leech;
@@ -264,8 +265,9 @@ export interface Player extends BasePlayer {
 }
 
 // Room
+export type Rules = Record<GAME_RULES, boolean>;
 
-export interface Room extends BaseRoom<Player, BaseRules, GameId.arena> {
+export interface Room extends BaseRoom<Player, Rules, GameId.arena> {
   order: string[];
   turn: number;
   winner?: string;

@@ -211,10 +211,7 @@ export default function ActiveRoom(): ReactElement {
             {translation.roomButton.startGame}
           </Button>
         )}
-        <Button
-          variant={ButtonVariant.DANGER}
-          onClick={cleanupCurrentIdleRoom}
-        >
+        <Button variant={ButtonVariant.DANGER} onClick={cleanupCurrentIdleRoom}>
           {isOwner
             ? translation.roomButton.closeRoom
             : translation.roomButton.leaveRoom}

@@ -87,7 +87,7 @@ const playerUpdateHandler = (
 
     player.ready = true;
     player.hp = DEFAULT_PLAYER_STATS.hp;
-    applySkillSelection(player, req.skills);
+    applySkillSelection(player, req.skills, room.rules.zero_cooldown);
   } else {
     player.ready = false;
     player.hp = DEFAULT_PLAYER_STATS.hp;

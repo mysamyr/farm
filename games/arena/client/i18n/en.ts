@@ -1,3 +1,5 @@
+import { GAME_RULES } from '../../shared/index.js';
+
 import type { ArenaHelpTranslation, ArenaTranslation } from './types.js';
 
 export const arenaGameTranslation: ArenaTranslation = {
@@ -104,6 +106,9 @@ export const arenaGameTranslation: ArenaTranslation = {
     applyStatus: '{target}: applied {status}{value}{duration}',
     modifyStat: '{target}: {sign}{value} {stat}{duration}',
     durationTurns: ' for {turns} turns',
+  },
+  ruleLabels: {
+    [GAME_RULES.ZERO_COOLDOWN]: 'Zero Cooldown at start',
   },
   util: {
     self: 'Self',

@@ -1,4 +1,4 @@
-import { GameId, GameColor } from '@game/shared/constants';
+import { GameColor, GameId } from '@game/shared/constants';
 import type { GameMetadata } from '@game/shared/types';
 
 import type { Skill } from './types.js';
@@ -307,7 +307,7 @@ export const SKILLS: Record<SkillId, Skill> = {
         type: ActionType.APPLY_STATUS,
         target: ActionTarget.self,
         status: EffectId.thorns,
-        value: { source: ActionValueSource.damageDealt, percent: 60 },
+        value: { source: ActionValueSource.raw, amount: 60 },
         duration: 2,
       },
     ],
@@ -449,7 +449,7 @@ export const SKILLS: Record<SkillId, Skill> = {
         type: ActionType.APPLY_STATUS,
         target: ActionTarget.self,
         status: EffectId.thorns,
-        value: { source: ActionValueSource.damageDealt, percent: 40 },
+        value: { source: ActionValueSource.raw, amount: 40 },
       },
     ],
   },
@@ -490,3 +490,7 @@ export const NEGATIVE_EFFECTS: EffectId[] = [
   EffectId.bleed,
   EffectId.stun,
 ];
+
+export enum GAME_RULES {
+  ZERO_COOLDOWN = 'zero_cooldown',
+}
