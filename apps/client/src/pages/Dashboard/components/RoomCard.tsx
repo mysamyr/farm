@@ -12,6 +12,7 @@ import { emitEvent, getSocketId } from '@game/client-core/socket';
 import {
   classNames,
   getOwnerName,
+  getUserId,
   resolveErrorMessage,
 } from '@game/client-core/utils';
 import { EVENTS, ROOM_STATES } from '@game/shared/constants';
@@ -50,6 +51,7 @@ export default function RoomCard({
   const canJoinState = room.state === ROOM_STATES.IDLE;
   const canJoinName = !!usernameInput.trim();
   const canEnterGame = isInRoom && room.state === ROOM_STATES.RUNNING;
+  const isKicked = (room.blacklist ?? []).includes(getUserId());
   const isBtnDisabled =
     !canEnterGame &&
     (isAlreadyInRoom ||
@@ -57,7 +59,11 @@ export default function RoomCard({
       isOwner ||
       isInRoom ||
       !canJoinState ||
-      !canJoinName);
+      !canJoinName ||
+      isKicked);
+  const disabledTitle = isKicked
+    ? translation.errors.cannotJoinKicked
+    : undefined;
 
   return (
     <div key={room.id} className={styles.container}>
@@ -82,45 +88,49 @@ export default function RoomCard({
             {rules
               .filter(rule => room.rules[rule.key])
               .map(rule => (
-                <Tag key={rule.key}>
-                  {rule.label(language)}
-                </Tag>
+                <Tag key={rule.key}>{rule.label(language)}</Tag>
               ))}
           </div>
         )}
       </div>
 
-      <Button
-        variant={
-          isBtnDisabled ? BUTTON_VARIANT.SECONDARY : BUTTON_VARIANT.PRIMARY
-        }
-        disabled={isBtnDisabled}
-        onClick={() => {
-          if (canEnterGame) {
-            void navigate(`${PATHS.GAME_BOARD}?game=${room.game}`);
-            return;
+      <span title={disabledTitle} className={styles.joinButtonWrap}>
+        <Button
+          variant={
+            isBtnDisabled ? BUTTON_VARIANT.SECONDARY : BUTTON_VARIANT.PRIMARY
           }
-
-          if (isBtnDisabled) {
-            showSnackbar(translation.errors.cannotJoin);
-            return;
-          }
-
-          emitEvent(EVENTS.ROOM_JOIN, { roomId: room.id }, res => {
-            if (!res.ok) {
-              showSnackbar(resolveErrorMessage(res.error, translation));
+          disabled={isBtnDisabled}
+          onClick={() => {
+            if (canEnterGame) {
+              void navigate(`${PATHS.GAME_BOARD}?game=${room.game}`);
+              return;
             }
-          });
-        }}
-      >
-        {canEnterGame
-          ? translation.roomButton.enter
-          : isFull
-            ? translation.roomButton.full
-            : isInRoom
-              ? translation.roomButton.joined
-              : translation.roomButton.join}
-      </Button>
+
+            if (isBtnDisabled) {
+              showSnackbar(
+                isKicked
+                  ? translation.errors.cannotJoinKicked
+                  : translation.errors.cannotJoin
+              );
+              return;
+            }
+
+            emitEvent(EVENTS.ROOM_JOIN, { roomId: room.id }, res => {
+              if (!res.ok) {
+                showSnackbar(resolveErrorMessage(res.error, translation));
+              }
+            });
+          }}
+        >
+          {canEnterGame
+            ? translation.roomButton.enter
+            : isFull
+              ? translation.roomButton.full
+              : isInRoom
+                ? translation.roomButton.joined
+                : translation.roomButton.join}
+        </Button>
+      </span>
     </div>
   );
 }

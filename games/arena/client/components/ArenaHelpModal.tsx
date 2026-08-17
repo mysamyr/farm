@@ -51,9 +51,9 @@ export default function ArenaHelpModal(): ReactElement {
       <h2>{help.turnHeader}</h2>
       <p>{help.turnIntro}</p>
       <ol>
-      {help.turnSteps.map((step, index) => (
-        <li key={index}>{step}</li>
-      ))}
+        {help.turnSteps.map((step, index) => (
+          <li key={index}>{step}</li>
+        ))}
       </ol>
     </HelpModal>
   );

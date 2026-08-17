@@ -9,6 +9,7 @@ export type Language = {
 
 type ClientErrorKeys = {
   cannotJoin: string;
+  cannotJoinKicked: string;
   userNameTooShort: string;
   userNameTooLong: string;
   apiErrorOnCreatingRoom: string;
@@ -38,6 +39,13 @@ export type Translation = {
     startGame: string;
     closeRoom: string;
     leaveRoom: string;
+    kick: string;
+  };
+  kick: {
+    confirmTitle: string;
+    confirmMessage: (playerName: string) => string;
+    confirmButton: string;
+    cancelButton: string;
   };
   you: string;
   owner: string;
@@ -50,6 +58,8 @@ export type Translation = {
   notifications: {
     playerJoined: (playerName: string) => string;
     playerLeft: (playerName: string) => string;
+    playerKicked: (playerName: string) => string;
+    youWereKicked: string;
     roomClosed: (playerName: string) => string;
     gameFinished: (winnerName: string) => string;
     tradeCancelled: (playerName: string) => string;

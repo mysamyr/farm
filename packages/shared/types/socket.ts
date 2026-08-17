@@ -20,6 +20,10 @@ export type RoomIdPayload = {
   roomId: string;
 };
 
+export type RoomKickPayload = RoomIdPayload & {
+  playerId: string;
+};
+
 export type RoomCreatePayload = {
   game: GameId;
 };
@@ -66,6 +70,10 @@ export type CoreClientToServerEvents = {
   ) => void;
   [EVENTS.ROOM_LEAVE]: (
     payload: RoomIdPayload,
+    ack?: (response: SocketAck) => void
+  ) => void;
+  [EVENTS.ROOM_KICK]: (
+    payload: RoomKickPayload,
     ack?: (response: SocketAck) => void
   ) => void;
   [EVENTS.ROOM_CLOSE]: (

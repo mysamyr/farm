@@ -5,6 +5,7 @@ import { BUTTON_VARIANT, PATHS } from '@game/client-core/constants';
 import {
   useActiveGame,
   useGames,
+  useKickPlayer,
   useLanguage,
   useRoom,
   useSnackbar,
@@ -26,6 +27,7 @@ export default function ActiveRoom(): ReactElement {
   const { showSnackbar } = useSnackbar();
   const { getGame } = useGames();
   const { config: gameConfig } = useGameConfig(activeGame);
+  const kickPlayer = useKickPlayer();
 
   const currentRoom = room.currentRoom!;
   const gameMetadata = getGame(activeGame);
@@ -104,6 +106,7 @@ export default function ActiveRoom(): ReactElement {
         {currentRoom.players.map(player => {
           const isSelf = player.id === getSocketId();
           const isPlayerOwner = player.id === currentRoom.ownerId;
+          const canKick = isOwner && !isSelf && !isPlayerOwner;
 
           return (
             <div
@@ -117,7 +120,20 @@ export default function ActiveRoom(): ReactElement {
                 {player.name}
                 {isSelf ? ` (${translation.you})` : ''}
               </span>
-              <span>{isPlayerOwner ? '⭐' : ''}</span>
+              <span className={styles.playerActions}>
+                {isPlayerOwner ? '⭐' : null}
+                {canKick ? (
+                  <Button
+                    variant={BUTTON_VARIANT.DANGER}
+                    className={styles.kickButton}
+                    onClick={() => {
+                      kickPlayer(currentRoom.id, player);
+                    }}
+                  >
+                    {translation.roomButton.kick}
+                  </Button>
+                ) : null}
+              </span>
             </div>
           );
         })}
@@ -158,9 +174,7 @@ export default function ActiveRoom(): ReactElement {
               {rules
                 .filter(rule => currentRoom.rules[rule.key])
                 .map(rule => (
-                  <Tag key={rule.key}>
-                    {rule.label(language)}
-                  </Tag>
+                  <Tag key={rule.key}>{rule.label(language)}</Tag>
                 ))}
             </div>
           )}

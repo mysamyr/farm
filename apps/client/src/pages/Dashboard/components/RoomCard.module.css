@@ -58,3 +58,12 @@
   display: flex;
   gap: 5px;
 }
+
+.joinButtonWrap {
+  display: block;
+  width: 100%;
+}
+
+.joinButtonWrap > * {
+  width: 100%;
+}

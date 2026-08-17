@@ -23,6 +23,12 @@ export interface GameHandlerContext {
   /** Get a room by ID */
   getRoomById(roomId: string): BaseRoom | null;
 
+  /**
+   * Kick a player from a room (blacklist + remove).
+   * Games can call this without going through the owner-only socket event.
+   */
+  kickPlayer(roomId: string, playerId: string): boolean;
+
   /** Log a message */
   log(message: string, data?: Record<string, unknown>): void;
 

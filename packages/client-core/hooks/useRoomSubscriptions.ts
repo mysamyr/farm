@@ -76,6 +76,15 @@ export function useRoomSubscriptions(): void {
         const name = window.localStorage.getItem(LOCAL_STORAGE_KEY.USERNAME);
         const isCurrentUser = name === data;
 
+        if (type === NOTIFICATION_TYPES.PLAYER_KICKED) {
+          if (isCurrentUser) {
+            showSnackbar(translation.notifications.youWereKicked);
+          } else {
+            showSnackbar(translation.notifications.playerKicked(data));
+          }
+          return;
+        }
+
         if (isCurrentUser) return;
 
         switch (type) {

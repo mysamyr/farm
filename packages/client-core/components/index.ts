@@ -10,3 +10,4 @@ export { WinningAnimation } from './WinningAnimation.js';
 
 // Modals
 export { default as HelpModal } from './modals/HelpModal.js';
+export { default as ConfirmationModal } from './modals/ConfirmationModal.js';

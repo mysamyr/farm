@@ -7,6 +7,7 @@ import type {
 } from '@game/shared/types';
 
 import { LogLevel } from '../constants/index.js';
+import { kickPlayerFromRoom } from '../features/room/room.service.js';
 import { getRoomById } from '../features/room/room.store.js';
 import { log } from '../services/logger.js';
 import type { AppServer, AppSocket } from '../types/index.js';
@@ -57,6 +58,14 @@ function createHandlerContext(
 
     getRoomById(roomId: string): BaseRoom | null {
       return getRoomById(roomId);
+    },
+
+    kickPlayer(roomId: string, playerId: string): boolean {
+      const room = getRoomById(roomId);
+      if (!room) {
+        return false;
+      }
+      return kickPlayerFromRoom(io, room, playerId);
     },
 
     log(message: string, meta?: Record<string, unknown>): void {

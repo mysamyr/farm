@@ -24,10 +24,7 @@ type BattleLogProps = {
   steps: LogStep[];
 };
 
-function getTargetLabel(
-  target: ActionTarget,
-  util: UtilTranslation
-): string {
+function getTargetLabel(target: ActionTarget, util: UtilTranslation): string {
   return target === ActionTarget.self ? util.self : util.opponent;
 }
 
@@ -53,10 +50,7 @@ function getEffectText(
         .replace('{value}', String(effect.value))
         .replace('{crit}', effect.isCrit ? t.crit : '');
     case LogEffectKind.dodge:
-      return t.dodge.replace(
-        '{target}',
-        getTargetLabel(effect.target, util)
-      );
+      return t.dodge.replace('{target}', getTargetLabel(effect.target, util));
     case LogEffectKind.heal:
       return t.heal.replace('{value}', String(effect.value));
     case LogEffectKind.lifesteal:

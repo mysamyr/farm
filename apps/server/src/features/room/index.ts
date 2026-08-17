@@ -15,6 +15,7 @@ import type {
 import type {
   RejoinRoomAck,
   RoomIdPayload,
+  RoomKickPayload,
   RoomUpdatePayload,
 } from '@game/shared/types';
 
@@ -31,6 +32,7 @@ import {
   deleteRoom,
   getActiveRoom,
   getRoomById,
+  kickPlayerFromRoom,
   leaveRoom,
   listRooms,
   removePlayerFromRoom,
@@ -153,6 +155,10 @@ const joinRoomHandler =
       if (ack) ack({ ok: false, error: ERROR.GAME_IN_PROGRESS });
       return;
     }
+    if (room.blacklist.includes(socket.data.userId)) {
+      if (ack) ack({ ok: false, error: ERROR.PLAYER_KICKED });
+      return;
+    }
     const gameConfig = gameRegistry.getConfig(room.game);
     if (room.players.length >= gameConfig.maxPlayers) {
       if (ack) ack({ ok: false, error: ERROR.ROOM_FULL });
@@ -201,6 +207,42 @@ const leaveRoomHandler =
       type: NOTIFICATION_TYPES.PLAYER_LEFT,
       data: socket.data.player.name,
     });
+
+    if (ack) ack({ ok: true });
+  };
+
+const kickRoomHandler =
+  (io: AppServer, socket: AppSocket) =>
+  (req: RoomKickPayload, ack?: AckFunc): void => {
+    log(LogLevel.DEBUG, 'event:room:kick', {
+      socketId: socket.id,
+      roomId: req.roomId,
+      playerId: req.playerId,
+    });
+
+    const room = getRoomById(req.roomId);
+    if (!room) {
+      if (ack) ack({ ok: false, error: ERROR.ROOM_NOT_FOUND });
+      return;
+    }
+    if (room.ownerId !== socket.id) {
+      if (ack) ack({ ok: false, error: ERROR.NOT_OWNER });
+      return;
+    }
+    if (req.playerId === room.ownerId || req.playerId === socket.id) {
+      if (ack) ack({ ok: false, error: ERROR.CANNOT_KICK });
+      return;
+    }
+    if (!room.players.some(p => p.id === req.playerId)) {
+      if (ack) ack({ ok: false, error: ERROR.PLAYER_NOT_FOUND });
+      return;
+    }
+
+    const ok = kickPlayerFromRoom(io, room, req.playerId);
+    if (!ok) {
+      if (ack) ack({ ok: false, error: ERROR.CANNOT_KICK });
+      return;
+    }
 
     if (ack) ack({ ok: true });
   };
@@ -309,6 +351,7 @@ export function registerRoomFeature(io: AppServer, socket: AppSocket): void {
   socket.on(EVENTS.ROOM_UPDATE, updateRoomHandler(io, socket));
   socket.on(EVENTS.ROOM_JOIN, joinRoomHandler(io, socket));
   socket.on(EVENTS.ROOM_LEAVE, leaveRoomHandler(io, socket));
+  socket.on(EVENTS.ROOM_KICK, kickRoomHandler(io, socket));
   socket.on(EVENTS.ROOM_CLOSE, closeRoomHandler(io, socket));
   socket.on(EVENTS.ROOM_REJOIN, rejoinRoomHandler(io, socket));
   socket.on(EVENTS.GAME_START, startGameHandler(io, socket));

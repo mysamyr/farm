@@ -37,6 +37,8 @@ export interface BaseRoom<
   state: ROOM_STATES;
   players: TPlayer[];
   rules: TRules;
+  /** Stable userIds that are not allowed to rejoin this room */
+  blacklist: string[];
 }
 
 export * from './socket.js';

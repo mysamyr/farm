@@ -10,9 +10,10 @@ import type { BaseRoom } from '@game/shared/types';
 import { uuid } from '@game/shared/utils';
 
 import { LogLevel } from '../../constants/index.js';
-import { gameRegistry } from '../../games/index.js';
+import { gameRegistry } from '../../games/registry.js';
 import { log } from '../../services/logger.js';
 import type { AppServer, AppSocket } from '../../types/index.js';
+import { findPendingDisconnectBySocketId } from '../connection/connection.store.js';
 
 import {
   generateRoomName,
@@ -48,6 +49,7 @@ export function createRoom(ownerId: string, game: GameId): BaseRoom {
     game,
     state: ROOM_STATES.IDLE,
     players: [],
+    blacklist: [],
     ...roomFields,
   };
   setRoom(room);
@@ -106,6 +108,67 @@ export function removePlayerFromRoom(
   updateRoomsList(io);
 
   log(LogLevel.INFO, 'room:left', { roomId: room.id, socketId: socket.id });
+}
+
+/**
+ * Kick a player from a room: blacklist their stable userId, notify, then remove.
+ * Returns false if the target player is not in the room.
+ */
+export function kickPlayerFromRoom(
+  io: AppServer,
+  room: BaseRoom,
+  playerId: string
+): boolean {
+  const player = room.players.find(p => p.id === playerId);
+  if (!player) {
+    return false;
+  }
+
+  const targetSocket = io.sockets.sockets.get(playerId);
+  let userId = targetSocket?.data.userId;
+
+  if (!userId) {
+    const pending = findPendingDisconnectBySocketId(playerId);
+    userId = pending?.userId;
+  }
+
+  if (userId && !room.blacklist.includes(userId)) {
+    room.blacklist.push(userId);
+  }
+
+  io.to(room.id).emit(EVENTS.NOTIFICATION, {
+    type: NOTIFICATION_TYPES.PLAYER_KICKED,
+    data: player.name,
+  });
+
+  if (targetSocket) {
+    removePlayerFromRoom(io, room, targetSocket);
+  } else {
+    // Player is in reconnect grace period — remove by id without a live socket
+    const idx = room.players.findIndex(p => p.id === playerId);
+    if (idx !== -1) {
+      room.players.splice(idx, 1);
+      const gameModule = gameRegistry.get(room.game);
+      gameModule.onPlayerRemoved?.(room, playerId);
+      if (shouldAutowin(room)) {
+        gameModule.onPlayerWin?.(io, room, room.players[0]!);
+      } else if (shouldDeleteRoom(room, playerId)) {
+        deleteRoom(room.id);
+      } else if (room.ownerId === playerId) {
+        assignNewOwner(room);
+      }
+      updateRoomsList(io);
+    }
+  }
+
+  log(LogLevel.INFO, 'room:kicked', {
+    roomId: room.id,
+    playerId,
+    userId,
+    playerName: player.name,
+  });
+
+  return true;
 }
 
 export function removePlayerFromAllRooms(io: AppServer, socket: AppSocket) {

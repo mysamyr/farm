@@ -38,6 +38,8 @@ const translations: Record<LanguageCode, Translation> = {
       [ERROR.INVALID_ROOM_NAME]: 'Enter room name.',
       [ERROR.NOT_OWNER]: 'You are not the room owner.',
       [ERROR.CANNOT_START]: 'Cannot start the game.',
+      [ERROR.CANNOT_KICK]: 'Cannot kick this player.',
+      [ERROR.PLAYER_KICKED]: 'You have been kicked from this room.',
       [ERROR.GAME_IN_PROGRESS]: 'Cannot join. Game is in progress.',
       [ERROR.GAME_NOT_RUNNING]: 'Game is not running.',
       [ERROR.NOT_YOUR_TURN]: 'It is not your turn.',
@@ -55,6 +57,7 @@ const translations: Record<LanguageCode, Translation> = {
       userNameTooShort: `Name must be at least ${VALIDATION.USER_NAME.MIN_LENGTH} characters.`,
       userNameTooLong: `Name must be at most ${VALIDATION.USER_NAME.MAX_LENGTH} characters.`,
       cannotJoin: 'Cannot join.',
+      cannotJoinKicked: 'You have been kicked from this room.',
       apiErrorOnCreatingRoom: 'Error creating room: ',
     },
     dashboard: {
@@ -73,6 +76,14 @@ const translations: Record<LanguageCode, Translation> = {
       startGame: 'Start Game',
       closeRoom: 'Close Room',
       leaveRoom: 'Leave Room',
+      kick: 'Kick',
+    },
+    kick: {
+      confirmTitle: 'Kick player',
+      confirmMessage: (name: string): string =>
+        `Are you sure you want to kick ${name}? They will not be able to rejoin this room.`,
+      confirmButton: 'Kick',
+      cancelButton: 'Cancel',
     },
     roomState: {
       idle: 'Idle',
@@ -85,6 +96,8 @@ const translations: Record<LanguageCode, Translation> = {
     notifications: {
       playerJoined: (name: string): string => `${name} joined the room.`,
       playerLeft: (name: string): string => `${name} left the room.`,
+      playerKicked: (name: string): string => `${name} has been kicked.`,
+      youWereKicked: 'You have been kicked from the room.',
       roomClosed: (name: string): string => `${name} closed the room.`,
       gameFinished: (name: string): string => `Game over! Winner: ${name}`,
       tradeCancelled: (name: string): string => `${name} cancelled the trade.`,
@@ -103,6 +116,8 @@ const translations: Record<LanguageCode, Translation> = {
       [ERROR.INVALID_ROOM_NAME]: 'Введіть назву кімнати.',
       [ERROR.NOT_OWNER]: 'Ви не власник кімнати.',
       [ERROR.CANNOT_START]: 'Неможливо розпочати.',
+      [ERROR.CANNOT_KICK]: 'Неможливо вигнати цього гравця.',
+      [ERROR.PLAYER_KICKED]: 'Вас вигнали з цієї кімнати.',
       [ERROR.GAME_IN_PROGRESS]: 'Неможливо приєднатися. Гра в процесі.',
       [ERROR.GAME_NOT_RUNNING]: 'Гра не запущена.',
       [ERROR.NOT_YOUR_TURN]: 'Це не ваша черга.',
@@ -120,6 +135,7 @@ const translations: Record<LanguageCode, Translation> = {
       userNameTooShort: `Імʼя має містити щонайменше ${VALIDATION.USER_NAME.MIN_LENGTH} символи.`,
       userNameTooLong: `Імʼя має містити щонайбільше ${VALIDATION.USER_NAME.MAX_LENGTH} символів.`,
       cannotJoin: 'Неможливо приєднатися.',
+      cannotJoinKicked: 'Вас вигнали з цієї кімнати.',
       apiErrorOnCreatingRoom: 'Помилка при створенні кімнати: ',
     },
     dashboard: {
@@ -138,6 +154,14 @@ const translations: Record<LanguageCode, Translation> = {
       startGame: 'Розпочати Гру',
       closeRoom: 'Закрити Кімнату',
       leaveRoom: 'Залишити Кімнату',
+      kick: 'Вигнати',
+    },
+    kick: {
+      confirmTitle: 'Вигнати гравця',
+      confirmMessage: (name: string): string =>
+        `Ви впевнені, що хочете вигнати ${name}? Вони не зможуть повернутися до цієї кімнати.`,
+      confirmButton: 'Вигнати',
+      cancelButton: 'Скасувати',
     },
     roomState: {
       idle: 'В очікуванні',
@@ -150,6 +174,8 @@ const translations: Record<LanguageCode, Translation> = {
     notifications: {
       playerJoined: (name: string): string => `${name} приєднався до кімнати.`,
       playerLeft: (name: string): string => `${name} покинув кімнату.`,
+      playerKicked: (name: string): string => `${name} був вигнаний.`,
+      youWereKicked: 'Вас вигнали з кімнати.',
       roomClosed: (name: string): string => `${name} закрив кімнату.`,
       gameFinished: (name: string): string =>
         `Гра закінчена! Переможець: ${name}`,

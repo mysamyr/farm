@@ -53,10 +53,23 @@ h3.roomName {
   align-items: center;
   padding: 8px 0;
   border-bottom: 1px solid var(--bg-surface-subtle);
+  gap: 8px;
 }
 
 .playerItem:last-child {
   border-bottom: none;
+}
+
+.playerActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.kickButton {
+  padding: 4px 10px;
+  font-size: 0.75rem;
 }
 
 .currentUser {

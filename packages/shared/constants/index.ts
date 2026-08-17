@@ -18,6 +18,7 @@ export const EVENTS = {
   ROOM_UPDATE: 'room:update',
   ROOM_JOIN: 'room:join',
   ROOM_LEAVE: 'room:leave',
+  ROOM_KICK: 'room:kick',
   ROOM_CLOSE: 'room:close',
   ROOM_REJOIN: 'room:rejoin',
   PLAYER_RENAME: 'player:rename',
@@ -37,6 +38,7 @@ export const EVENTS = {
 export const NOTIFICATION_TYPES = {
   PLAYER_JOINED: 'player_joined',
   PLAYER_LEFT: 'player_left',
+  PLAYER_KICKED: 'player_kicked',
   CLOSE_ROOM: 'close_room',
   GAME_FINISHED: 'game_finished',
 } as const;
