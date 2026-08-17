@@ -1,7 +1,7 @@
 import { ReactElement, useState } from 'react';
 
 import { Button, Slider, Tag } from '@game/client-core/components';
-import { BUTTON_VARIANT, PATHS } from '@game/client-core/constants';
+import { ButtonVariant, PATHS } from '@game/client-core/constants';
 import {
   useActiveGame,
   useGames,
@@ -124,7 +124,7 @@ export default function ActiveRoom(): ReactElement {
                 {isPlayerOwner ? '⭐' : null}
                 {canKick ? (
                   <Button
-                    variant={BUTTON_VARIANT.DANGER}
+                    variant={ButtonVariant.DANGER}
                     className={styles.kickButton}
                     onClick={() => {
                       kickPlayer(currentRoom.id, player);
@@ -184,7 +184,7 @@ export default function ActiveRoom(): ReactElement {
       <div className={styles.actions}>
         {canEnterGame && (
           <Button
-            variant={BUTTON_VARIANT.SUCCESS}
+            variant={ButtonVariant.SUCCESS}
             onClick={() => {
               void navigate(`${PATHS.GAME_BOARD}?game=${currentRoom.game}`);
             }}
@@ -194,7 +194,7 @@ export default function ActiveRoom(): ReactElement {
         )}
         {isOwner && !canEnterGame && (
           <Button
-            variant={BUTTON_VARIANT.SUCCESS}
+            variant={ButtonVariant.SUCCESS}
             disabled={!canStartGame}
             onClick={() => {
               if (!canStartGame) {
@@ -212,7 +212,7 @@ export default function ActiveRoom(): ReactElement {
           </Button>
         )}
         <Button
-          variant={BUTTON_VARIANT.DANGER}
+          variant={ButtonVariant.DANGER}
           onClick={cleanupCurrentIdleRoom}
         >
           {isOwner

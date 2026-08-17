@@ -7,6 +7,7 @@ export { default as Slider } from './Slider.js';
 export { Snackbar } from './Snackbar.js';
 export { default as Tag } from './Tag.js';
 export { WinningAnimation } from './WinningAnimation.js';
+export { PostGameOverlay } from './PostGameOverlay.js';
 
 // Modals
 export { default as HelpModal } from './modals/HelpModal.js';

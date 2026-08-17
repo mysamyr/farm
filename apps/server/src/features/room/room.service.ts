@@ -16,6 +16,11 @@ import type { AppServer, AppSocket } from '../../types/index.js';
 import { findPendingDisconnectBySocketId } from '../connection/connection.store.js';
 
 import {
+  clearRematchTimer,
+  onPlayerLeftDuringRematch,
+  remapRematchPlayerId,
+} from './rematch.service.js';
+import {
   generateRoomName,
   shouldAutowin,
   shouldDeleteRoom,
@@ -34,6 +39,7 @@ export const getRoomById = getRoomByIdFromStore;
 export const listRooms = listRoomsFromStore;
 
 export function deleteRoom(roomId: string): void {
+  clearRematchTimer(roomId);
   if (removeRoom(roomId)) {
     log(LogLevel.INFO, 'room:delete', { roomId });
   }
@@ -90,6 +96,9 @@ export function removePlayerFromRoom(
   const idx = room.players.findIndex(p => p.id === socket.id);
   if (idx === -1) return;
 
+  const wasInRematch =
+    room.state === ROOM_STATES.FINISHED && Boolean(room.rematch);
+
   room.players.splice(idx, 1);
   leaveRoom(io, room.id, socket.id);
   const gameModule = gameRegistry.get(room.game);
@@ -105,6 +114,11 @@ export function removePlayerFromRoom(
   } else if (room.ownerId === socket.id) {
     assignNewOwner(room);
   }
+
+  if (wasInRematch && getRoomById(room.id)) {
+    onPlayerLeftDuringRematch(io, room, socket.id);
+  }
+
   updateRoomsList(io);
 
   log(LogLevel.INFO, 'room:left', { roomId: room.id, socketId: socket.id });
@@ -147,6 +161,8 @@ export function kickPlayerFromRoom(
     // Player is in reconnect grace period — remove by id without a live socket
     const idx = room.players.findIndex(p => p.id === playerId);
     if (idx !== -1) {
+      const wasInRematch =
+        room.state === ROOM_STATES.FINISHED && Boolean(room.rematch);
       room.players.splice(idx, 1);
       const gameModule = gameRegistry.get(room.game);
       gameModule.onPlayerRemoved?.(room, playerId);
@@ -156,6 +172,9 @@ export function kickPlayerFromRoom(
         deleteRoom(room.id);
       } else if (room.ownerId === playerId) {
         assignNewOwner(room);
+      }
+      if (wasInRematch && getRoomById(room.id)) {
+        onPlayerLeftDuringRematch(io, room, playerId);
       }
       updateRoomsList(io);
     }
@@ -208,6 +227,7 @@ export function reassignPlayerInRooms(
       gameRegistry
         .get(room.game)
         .onPlayerReconnected?.(room, oldSocketId, newSocket.id);
+      remapRematchPlayerId(room, oldSocketId, newSocket.id);
 
       void newSocket.join(room.id);
 

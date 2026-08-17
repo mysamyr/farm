@@ -1,7 +1,7 @@
 import { ERROR } from '@game/shared/constants';
 
 import { LOCAL_STORAGE_KEY } from '../constants/index.js';
-import { DEFAULT_LANGUAGE, LanguageCode } from '../constants/language.js';
+import { LanguageCode } from '../constants/language.js';
 
 import type { Translation } from '../types/index.js';
 
@@ -17,8 +17,8 @@ export function getLanguage(): LanguageCode {
     LOCAL_STORAGE_KEY.LANGUAGE
   );
   if (!isLanguageCode(storedLanguage)) {
-    setLanguage(DEFAULT_LANGUAGE);
-    return DEFAULT_LANGUAGE;
+    setLanguage(LanguageCode.EN);
+    return LanguageCode.EN;
   }
 
   return storedLanguage;

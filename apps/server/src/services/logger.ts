@@ -22,7 +22,11 @@ export function log(
   console.log(`[${time}] [${level.toUpperCase()}] ${msg}${payload}`);
 }
 
-export function httpLogger(req: Request, res: Response, next: NextFunction) {
+export function loggingMiddleware(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   const start = Date.now();
   res.on('finish', () => {
     const ms = Date.now() - start;

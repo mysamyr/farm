@@ -32,7 +32,11 @@ const disconnectHandler =
     });
     const room = getActiveRoom(socket.id);
 
-    if (room && room.state === ROOM_STATES.RUNNING) {
+    if (
+      room &&
+      (room.state === ROOM_STATES.RUNNING ||
+        room.state === ROOM_STATES.FINISHED)
+    ) {
       gracefulDisconnect(io, socket, socket.data.userId, ip);
       return;
     }

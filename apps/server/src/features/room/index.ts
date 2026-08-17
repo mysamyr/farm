@@ -25,6 +25,11 @@ import { log } from '../../services/logger.js';
 import type { AckFunc, AppServer, AppSocket } from '../../types/index.js';
 import { checkIfPlayerAlreadyInRoom } from '../player/player.helpers.js';
 
+import {
+  returnRoomToLobby,
+  startRoomGame,
+  voteRematch,
+} from './rematch.service.js';
 import { canStartGame } from './room.helpers.js';
 
 import {
@@ -336,14 +341,60 @@ const startGameHandler =
       return;
     }
 
-    room.state = ROOM_STATES.RUNNING;
-
-    gameModule.onGameStart?.(io, room);
-
-    updateRoomsList(io);
-    io.to(room.id).emit(EVENTS.GAME_STARTED, { room });
+    startRoomGame(io, room);
     ack?.({ ok: true });
-    log(LogLevel.INFO, 'game:started', { room });
+  };
+
+const rematchHandler =
+  (io: AppServer, socket: AppSocket) =>
+  (req: RoomIdPayload, ack?: AckFunc): void => {
+    log(LogLevel.DEBUG, 'event:game:rematch', {
+      socketId: socket.id,
+      roomId: req.roomId,
+    });
+
+    const room = getRoomById(req.roomId);
+    if (!room) {
+      ack?.({ ok: false, error: ERROR.ROOM_NOT_FOUND });
+      return;
+    }
+    if (room.state !== ROOM_STATES.FINISHED || !room.rematch) {
+      ack?.({ ok: false, error: ERROR.GAME_NOT_RUNNING });
+      return;
+    }
+    if (!room.players.some(player => player.id === socket.id)) {
+      ack?.({ ok: false, error: ERROR.PLAYER_NOT_FOUND });
+      return;
+    }
+
+    const ok = voteRematch(io, room, socket.id);
+    ack?.({ ok });
+  };
+
+const returnToLobbyHandler =
+  (io: AppServer, socket: AppSocket) =>
+  (req: RoomIdPayload, ack?: AckFunc): void => {
+    log(LogLevel.DEBUG, 'event:game:return_to_lobby', {
+      socketId: socket.id,
+      roomId: req.roomId,
+    });
+
+    const room = getRoomById(req.roomId);
+    if (!room) {
+      ack?.({ ok: false, error: ERROR.ROOM_NOT_FOUND });
+      return;
+    }
+    if (room.state !== ROOM_STATES.FINISHED) {
+      ack?.({ ok: false, error: ERROR.GAME_NOT_RUNNING });
+      return;
+    }
+    if (!room.players.some(player => player.id === socket.id)) {
+      ack?.({ ok: false, error: ERROR.PLAYER_NOT_FOUND });
+      return;
+    }
+
+    returnRoomToLobby(io, room);
+    ack?.({ ok: true });
   };
 
 export function registerRoomFeature(io: AppServer, socket: AppSocket): void {
@@ -355,4 +406,6 @@ export function registerRoomFeature(io: AppServer, socket: AppSocket): void {
   socket.on(EVENTS.ROOM_CLOSE, closeRoomHandler(io, socket));
   socket.on(EVENTS.ROOM_REJOIN, rejoinRoomHandler(io, socket));
   socket.on(EVENTS.GAME_START, startGameHandler(io, socket));
+  socket.on(EVENTS.GAME_REMATCH, rematchHandler(io, socket));
+  socket.on(EVENTS.GAME_RETURN_TO_LOBBY, returnToLobbyHandler(io, socket));
 }

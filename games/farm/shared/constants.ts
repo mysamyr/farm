@@ -1,4 +1,5 @@
-import { GameId } from '@game/shared/constants';
+import { GameId, GameColor } from '@game/shared/constants';
+import type { GameMetadata } from '@game/shared/types';
 
 export const DEFAULT_CONFIG = {
   maxPlayers: 4,
@@ -9,10 +10,10 @@ export const GAME_METADATA = {
   id: GameId.farm,
   name: 'Super Farm',
   emoji: '🐄',
-  color: 'orange',
+  color: GameColor.orange,
   minPlayers: DEFAULT_CONFIG.minPlayers,
   maxPlayers: DEFAULT_CONFIG.maxPlayers,
-};
+} satisfies GameMetadata;
 
 export const EMOTES = [
   { id: 'laugh', emoji: '😂' },

@@ -23,7 +23,12 @@ export function shouldDeleteRoom(room: BaseRoom, socketId: string): boolean {
 }
 
 export function shouldAutowin(room: BaseRoom): boolean {
-  return room.state === ROOM_STATES.RUNNING && room.players.length === 1;
+  const minPlayers = gameRegistry.getConfig(room.game).minPlayers;
+  return (
+    room.state === ROOM_STATES.RUNNING &&
+    room.players.length > 0 &&
+    room.players.length < minPlayers
+  );
 }
 
 export function generateRoomName(rooms: Map<string, BaseRoom>): string {

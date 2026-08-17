@@ -10,6 +10,7 @@ import {
   LifeStealAction,
   BASE_SKILLS,
   DamageAction,
+  DEFAULT_PLAYER_STATS,
   EffectId,
   type GameAction,
   getPlayerMaxHp,
@@ -67,6 +68,15 @@ function setOrder(room: Room): void {
 
 export function initGameState(room: Room): void {
   setOrder(room);
+  delete room.winner;
+  room.steps = [];
+
+  room.players.forEach(player => {
+    player.hp = DEFAULT_PLAYER_STATS.hp;
+    player.skills = [];
+    player.statuses = [];
+    player.ready = false;
+  });
 }
 
 export function removePlayerFromOrder(room: Room, playerId: string): void {

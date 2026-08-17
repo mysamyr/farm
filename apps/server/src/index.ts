@@ -7,7 +7,7 @@ import { Server } from 'socket.io';
 import config from './config/index.js';
 import { LogLevel } from './constants/index.js';
 import { gameRegistry } from './games/index.js';
-import { httpLogger, log } from './services/logger.js';
+import { loggingMiddleware, log } from './services/logger.js';
 import { registerSocketHandlers } from './socket/handlers.js';
 
 import type { AppServer } from './types/index.js';
@@ -22,7 +22,7 @@ const io: AppServer = new Server(server, {
   },
 });
 
-app.use(httpLogger);
+app.use(loggingMiddleware);
 
 // API endpoint to get available games
 app.get('/api/games', (_req, res) => {
@@ -39,7 +39,5 @@ app.get(/.*/, (_, res) => {
 });
 
 server.listen(config.PORT, (): void => {
-  log(LogLevel.INFO, `Server started: http://localhost:${config.PORT}`, {
-    port: config.PORT,
-  });
+  log(LogLevel.INFO, `Server started on port ${config.PORT}`);
 });

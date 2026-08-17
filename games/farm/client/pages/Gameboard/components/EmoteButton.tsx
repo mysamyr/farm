@@ -8,7 +8,7 @@ import {
 } from 'react';
 
 import { Dropdown } from '@game/client-core/components';
-import { BUTTON_VARIANT } from '@game/client-core/constants';
+import { ButtonVariant } from '@game/client-core/constants';
 import { emitGameEvent } from '@game/client-core/socket';
 import { EVENTS } from '@game/shared/constants';
 
@@ -86,7 +86,7 @@ export default function EmoteButton({
         }
         triggerTitle="Send an emote"
         items={dropdownItems}
-        triggerVariant={BUTTON_VARIANT.SECONDARY}
+        triggerVariant={ButtonVariant.SECONDARY}
         triggerClassName={styles.triggerButton}
         align="left"
         disabled={isThrottled}

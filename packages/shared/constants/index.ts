@@ -5,6 +5,13 @@ export enum GameId {
   arena = 'arena',
 }
 
+export enum GameColor {
+  purple = 'purple',
+  orange = 'orange',
+  blue = 'blue',
+  teal = 'teal',
+}
+
 export enum ROOM_STATES {
   IDLE = 'idle',
   RUNNING = 'running',
@@ -33,7 +40,11 @@ export const EVENTS = {
   GAME_STATE_UPDATE: 'game:state_update',
   GAME_EFFECT: 'game:effect',
   GAME_ERROR: 'game:error',
+  GAME_REMATCH: 'game:rematch',
+  GAME_RETURN_TO_LOBBY: 'game:return_to_lobby',
 } as const;
+
+export const REMATCH_TIMEOUT_MS = 20_000;
 
 export const NOTIFICATION_TYPES = {
   PLAYER_JOINED: 'player_joined',

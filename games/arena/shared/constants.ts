@@ -1,4 +1,5 @@
-import { GameId } from '@game/shared/constants';
+import { GameId, GameColor } from '@game/shared/constants';
+import type { GameMetadata } from '@game/shared/types';
 
 import type { Skill } from './types.js';
 
@@ -11,10 +12,10 @@ export const GAME_METADATA = {
   id: GameId.arena,
   name: 'Arena',
   emoji: '⚔️',
-  color: 'blue',
+  color: GameColor.blue,
   minPlayers: DEFAULT_CONFIG.minPlayers,
   maxPlayers: DEFAULT_CONFIG.maxPlayers,
-};
+} satisfies GameMetadata;
 
 export const REQUIRED_ACTIVE_COUNT = 2;
 export const REQUIRED_HEALING_COUNT = 1;

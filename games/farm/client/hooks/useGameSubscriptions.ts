@@ -37,9 +37,7 @@ export function useGameSubscriptions({
         const name = window.localStorage.getItem(LOCAL_STORAGE_KEY.USERNAME);
         const isCurrentUser = name === data;
 
-        if (!isCurrentUser) {
-          showSnackbar(translation.notifications.gameFinished(data));
-        } else {
+        if (isCurrentUser) {
           onCurrentUserWon();
         }
         return;

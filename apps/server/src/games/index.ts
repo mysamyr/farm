@@ -7,6 +7,7 @@ import type {
 } from '@game/shared/types';
 
 import { LogLevel } from '../constants/index.js';
+import { beginPostGame } from '../features/room/rematch.service.js';
 import { kickPlayerFromRoom } from '../features/room/room.service.js';
 import { getRoomById } from '../features/room/room.store.js';
 import { log } from '../services/logger.js';
@@ -121,6 +122,11 @@ export function registerAllGameFeatures(
       };
 
       gameModule.handleAction(ctx, payload, wrappedAck);
+
+      const updatedRoom = getRoomById(payload.roomId);
+      if (updatedRoom) {
+        beginPostGame(io, updatedRoom);
+      }
     }
   );
 }

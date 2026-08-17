@@ -1,6 +1,6 @@
 import { ReactElement, ReactNode, useEffect, useRef, useState } from 'react';
 
-import { BUTTON_VARIANT, ButtonVariant } from '../constants/index.js';
+import { ButtonVariant } from '../constants/index.js';
 import { classNames } from '../utils/index.js';
 
 import Button from './Button.js';
@@ -29,7 +29,7 @@ export default function Dropdown({
   trigger,
   triggerTitle,
   items,
-  triggerVariant = BUTTON_VARIANT.PRIMARY,
+  triggerVariant = ButtonVariant.PRIMARY,
   triggerClassName,
   menuClassName,
   align = 'left',

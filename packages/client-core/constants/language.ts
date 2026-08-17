@@ -7,8 +7,6 @@ export enum LanguageCode {
   UA = 'ua',
 }
 
-export const DEFAULT_LANGUAGE = LanguageCode.EN;
-
 export const LANGUAGES_CONFIG: Language[] = [
   {
     name: 'English',
@@ -93,6 +91,18 @@ const translations: Record<LanguageCode, Translation> = {
     you: 'You',
     owner: 'by',
     youWin: 'You win!',
+    postGame: {
+      title: 'Game over',
+      winner: (name: string): string => `Winner: ${name}`,
+      rematch: 'Quick rematch',
+      lobby: 'To lobby',
+      leave: 'Leave room',
+      minimize: 'Minimize',
+      expand: 'Expand',
+      ready: 'Ready',
+      waiting: 'Waiting',
+      seconds: (count: number): string => `${count}s`,
+    },
     notifications: {
       playerJoined: (name: string): string => `${name} joined the room.`,
       playerLeft: (name: string): string => `${name} left the room.`,
@@ -171,6 +181,18 @@ const translations: Record<LanguageCode, Translation> = {
     you: 'Ви',
     owner: 'Власник',
     youWin: 'Ви виграли!',
+    postGame: {
+      title: 'Гра завершена',
+      winner: (name: string): string => `Переможець: ${name}`,
+      rematch: 'Швидкий реванш',
+      lobby: 'У лобі',
+      leave: 'Покинути кімнату',
+      minimize: 'Згорнути',
+      expand: 'Розгорнути',
+      ready: 'Готовий',
+      waiting: 'Очікує',
+      seconds: (count: number): string => `${count}с`,
+    },
     notifications: {
       playerJoined: (name: string): string => `${name} приєднався до кімнати.`,
       playerLeft: (name: string): string => `${name} покинув кімнату.`,

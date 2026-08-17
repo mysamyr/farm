@@ -3,7 +3,7 @@ import { type ReactElement, useCallback, useEffect } from 'react';
 import { Header } from '@game/client/components';
 import { Button, WinningAnimation } from '@game/client-core/components';
 
-import { BUTTON_VARIANT, PATHS } from '@game/client-core/constants';
+import { ButtonVariant, getDashboardPath } from '@game/client-core/constants';
 import {
   useLanguage,
   useModal,
@@ -13,7 +13,7 @@ import {
 import { emitGameEvent, getSocketId } from '@game/client-core/socket';
 import { resolveErrorMessage } from '@game/client-core/utils';
 import { EVENTS, ROOM_STATES } from '@game/shared/constants';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 
 import { GAME_RULES, type Room } from '@game/game-farm/shared';
 
@@ -33,6 +33,7 @@ import styles from './Gameboard.module.css';
 
 export default function Gameboard(): ReactElement {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { currentRoom: rawCurrentRoom, setCurrentRoom } = useRoom();
   const { showModal, closeModal } = useModal();
   const { translation } = useLanguage();
@@ -53,7 +54,7 @@ export default function Gameboard(): ReactElement {
           showSnackbar(resolveErrorMessage(res.error, translation));
         }
         setCurrentRoom(null);
-        void navigate(PATHS.DASHBOARD);
+        void navigate(getDashboardPath(rawCurrentRoom.game));
       }
     );
   }, [rawCurrentRoom, navigate, setCurrentRoom, showSnackbar, translation]);
@@ -91,7 +92,12 @@ export default function Gameboard(): ReactElement {
   }, [currentRoom?.trade, currentRoom?.id, showModal, closeModal]);
 
   if (!currentRoom) {
-    return <Navigate to={PATHS.DASHBOARD} replace />;
+    return (
+      <Navigate
+        to={getDashboardPath(searchParams.get('game') ?? undefined)}
+        replace
+      />
+    );
   }
 
   const currentPlayerId = getCurrentPlayerTurnId(currentRoom);
@@ -109,7 +115,7 @@ export default function Gameboard(): ReactElement {
         helpModal={FarmHelpModal}
         additionalActions={
           <Button
-            variant={BUTTON_VARIANT.SECONDARY}
+            variant={ButtonVariant.SECONDARY}
             className={styles.leaveHeaderButton}
             onClick={onLeaveClick}
           >

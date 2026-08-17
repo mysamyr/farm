@@ -3,13 +3,13 @@ import { type ReactElement, useCallback } from 'react';
 import { Header } from '@game/client/components';
 import { Button, WinningAnimation } from '@game/client-core/components';
 
-import { BUTTON_VARIANT, PATHS } from '@game/client-core/constants';
+import { ButtonVariant, getDashboardPath } from '@game/client-core/constants';
 import { useLanguage, useRoom, useSnackbar } from '@game/client-core/hooks';
 import { emitGameEvent } from '@game/client-core/socket';
 import { resolveErrorMessage } from '@game/client-core/utils';
 
 import { EVENTS, ROOM_STATES } from '@game/shared/constants';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 
 import { type Room } from '@game/game-arena/shared';
 
@@ -24,6 +24,7 @@ import styles from './Gameboard.module.css';
 
 export default function Gameboard(): ReactElement {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { currentRoom: rawCurrentRoom, setCurrentRoom } = useRoom();
   const { translation } = useLanguage();
   const { showSnackbar } = useSnackbar();
@@ -40,7 +41,7 @@ export default function Gameboard(): ReactElement {
           showSnackbar(resolveErrorMessage(res.error, translation));
         }
         setCurrentRoom(null);
-        void navigate(PATHS.DASHBOARD);
+        void navigate(getDashboardPath(rawCurrentRoom.game));
       }
     );
   }, [rawCurrentRoom, navigate, setCurrentRoom, showSnackbar, translation]);
@@ -55,10 +56,15 @@ export default function Gameboard(): ReactElement {
   }
 
   if (!currentRoom) {
-    return <Navigate to={PATHS.DASHBOARD} replace />;
+    return (
+      <Navigate
+        to={getDashboardPath(searchParams.get('game') ?? undefined)}
+        replace
+      />
+    );
   }
 
-  const isFightPhase = isAllPlayersReady(currentRoom);
+  const isPreparationPhase = !isAllPlayersReady(currentRoom);
 
   return (
     <div className={styles.container}>
@@ -67,7 +73,7 @@ export default function Gameboard(): ReactElement {
         helpModal={ArenaHelpModal}
         additionalActions={
           <Button
-            variant={BUTTON_VARIANT.SECONDARY}
+            variant={ButtonVariant.SECONDARY}
             className={styles.leaveHeaderButton}
             onClick={onLeaveClick}
           >
@@ -75,7 +81,7 @@ export default function Gameboard(): ReactElement {
           </Button>
         }
       />
-      {isFightPhase ? <FightPhase /> : <PreparationPhase />}
+      {isPreparationPhase ? <PreparationPhase /> : <FightPhase />}
       <WinningAnimation />
     </div>
   );

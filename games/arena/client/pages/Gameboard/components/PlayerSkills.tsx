@@ -18,6 +18,7 @@ type PlayerSkillsProps = {
   player: Player;
   isMyTurn: boolean;
   isStunned: boolean;
+  disabled?: boolean;
   onUseSkill: (skillId: string) => void;
 };
 
@@ -25,6 +26,7 @@ export default function PlayerSkills({
   player,
   isMyTurn,
   isStunned,
+  disabled = false,
   onUseSkill,
 }: PlayerSkillsProps): ReactElement {
   const t = useArenaTranslation();
@@ -68,7 +70,8 @@ export default function PlayerSkills({
           const skillDef = SKILLS[playerSkill.id];
           if (!skillDef) return null;
 
-          const disabled =
+          const skillDisabled =
+            disabled ||
             !isMyTurn ||
             (isStunned
               ? playerSkill.id !== SkillId.skip
@@ -79,7 +82,7 @@ export default function PlayerSkills({
               key={playerSkill.id}
               skill={skillDef}
               cooldown={playerSkill.cooldown}
-              disabled={disabled}
+              disabled={skillDisabled}
               onClick={() => onUseSkill(playerSkill.id)}
               onOpenDetail={setDetailSkill}
             />

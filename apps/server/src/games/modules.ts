@@ -16,6 +16,7 @@ import { EVENTS, GameId, NOTIFICATION_TYPES } from '@game/shared/constants';
 import type { BasePlayer, BaseRoom } from '@game/shared/types';
 
 import { LogLevel } from '../constants/index.js';
+import { beginPostGame } from '../features/room/rematch.service.js';
 import { log } from '../services/logger.js';
 import type { AppServer } from '../types/index.js';
 
@@ -45,6 +46,8 @@ function createWinnerHandler<
       type: NOTIFICATION_TYPES.GAME_FINISHED,
       data: player.name,
     });
+
+    beginPostGame(io, room);
   };
 }
 

@@ -92,6 +92,14 @@ export type CoreClientToServerEvents = {
     payload: GameActionPayload,
     ack?: (response: SocketAck) => void
   ) => void;
+  [EVENTS.GAME_REMATCH]: (
+    payload: RoomIdPayload,
+    ack?: (response: SocketAck) => void
+  ) => void;
+  [EVENTS.GAME_RETURN_TO_LOBBY]: (
+    payload: RoomIdPayload,
+    ack?: (response: SocketAck) => void
+  ) => void;
 };
 
 /**

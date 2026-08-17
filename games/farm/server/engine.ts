@@ -37,8 +37,12 @@ function setOrder(room: Room): void {
 
 export function initGameState(room: Room): void {
   setOrder(room);
+  delete room.winner;
+  delete room.dice;
+  delete room.trade;
 
   room.players.forEach(player => {
+    player.exchangedThisTurn = false;
     player.animals = {
       [ANIMALS.DUCK]: getInitDuckValue(room.rules),
       [ANIMALS.GOAT]: 0,

@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 
 import { LOCAL_STORAGE_KEY } from '@game/client-core/constants';
-import { useLanguage, useRoom, useSnackbar } from '@game/client-core/hooks';
+import { useRoom } from '@game/client-core/hooks';
 import { subscribe, unsubscribe } from '@game/client-core/socket';
 
 import { EVENTS, GameId, NOTIFICATION_TYPES } from '@game/shared/constants';
@@ -18,13 +18,10 @@ export function useGameSubscriptions({
   onCurrentUserWon,
 }: UseGameSubscriptionsArgs): void {
   const { currentRoom, setCurrentRoom } = useRoom();
-  const { showSnackbar } = useSnackbar();
-  const { translation } = useLanguage();
 
   useEffect(() => {
     const handleGameUpdate = ({ state }: GameStateUpdatePayload): void => {
       setCurrentRoom(state);
-      console.log('Game state updated', state);
     };
 
     const handleNotification = ({ type, data }: ServerNotification): void => {
@@ -36,9 +33,7 @@ export function useGameSubscriptions({
         const name = window.localStorage.getItem(LOCAL_STORAGE_KEY.USERNAME);
         const isCurrentUser = name === data;
 
-        if (!isCurrentUser) {
-          showSnackbar(translation.notifications.gameFinished(data));
-        } else {
+        if (isCurrentUser) {
           onCurrentUserWon();
         }
         return;

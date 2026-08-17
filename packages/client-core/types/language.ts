@@ -50,6 +50,18 @@ export type Translation = {
   you: string;
   owner: string;
   youWin: string;
+  postGame: {
+    title: string;
+    winner: (winnerName: string) => string;
+    rematch: string;
+    lobby: string;
+    leave: string;
+    minimize: string;
+    expand: string;
+    ready: string;
+    waiting: string;
+    seconds: (count: number) => string;
+  };
   roomState: {
     idle: string;
     running: string;

@@ -1,8 +1,7 @@
 import { useEffect } from 'react';
 
-import { Modal, Snackbar } from '@game/client-core/components';
-import { PATHS } from '@game/client-core/constants';
-import type { AccentColor } from '@game/client-core/constants';
+import { Modal, PostGameOverlay, Snackbar } from '@game/client-core/components';
+import { PATHS, getDashboardPath } from '@game/client-core/constants';
 import {
   useActiveGame,
   useGames,
@@ -15,6 +14,7 @@ import {
   useUnloadWarning,
 } from '@game/client-core/hooks';
 import { applyAccentColor } from '@game/client-core/utils';
+import { GameColor } from '@game/shared/constants';
 import {
   BrowserRouter,
   Navigate,
@@ -26,6 +26,12 @@ import {
 import { GameSubscriptions } from './components/GameSubscriptions.js';
 import { GameContainer } from './games/index.js';
 import Dashboard from './pages/Dashboard/index.js';
+
+function DashboardFallback() {
+  const location = useLocation();
+  const gameId = new URLSearchParams(location.search).get('game') ?? undefined;
+  return <Navigate to={getDashboardPath(gameId)} replace />;
+}
 
 function AppContent() {
   const { open: modalOpen, modal, requestCloseModal } = useModal();
@@ -44,7 +50,7 @@ function AppContent() {
 
   // Get accent color from the loaded game metadata
   const gameMetadata = getGame(activeGame);
-  const accentColor = (gameMetadata?.color ?? 'orange') as AccentColor;
+  const accentColor = gameMetadata?.color ?? GameColor.orange;
 
   // Load games from server on mount
   useGamesLoader();
@@ -104,6 +110,7 @@ function AppContent() {
   return (
     <>
       <GameSubscriptions key={activeGame} gameId={activeGame} />
+      <PostGameOverlay />
       <Routes>
         <Route path={PATHS.DASHBOARD} element={<Dashboard />} />
         {currentRoom && (
@@ -112,7 +119,7 @@ function AppContent() {
             element={<GameContainer gameId={activeGame} />}
           />
         )}
-        <Route path="*" element={<Navigate to={PATHS.DASHBOARD} replace />} />
+        <Route path="*" element={<DashboardFallback />} />
       </Routes>
 
       {snackbarOpen && <Snackbar message={message} onClose={closeSnackbar} />}

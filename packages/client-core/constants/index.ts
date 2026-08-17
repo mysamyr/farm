@@ -11,23 +11,18 @@ export const PATHS = {
   GAME_BOARD: '/game',
 } as const;
 
-export const BUTTON_VARIANT = {
-  PRIMARY: 'primary',
-  SECONDARY: 'secondary',
-  DANGER: 'danger',
-  SUCCESS: 'success',
-  ICON: 'icon',
-} as const;
+export function getDashboardPath(gameId?: string): string {
+  return gameId ? `${PATHS.DASHBOARD}?game=${gameId}` : PATHS.DASHBOARD;
+}
 
-export type ButtonVariant =
-  (typeof BUTTON_VARIANT)[keyof typeof BUTTON_VARIANT];
+export enum ButtonVariant {
+  PRIMARY = 'primary',
+  SECONDARY = 'secondary',
+  DANGER = 'danger',
+  SUCCESS = 'success',
+  ICON = 'icon',
+}
 
-// Re-export from other constant files
-export { type LanguageCode, LANGUAGES_CONFIG } from './language.js';
-export {
-  ACCENT_COLOR,
-  type AccentColor,
-  THEME,
-  type ThemeCode,
-} from './theme.js';
+export * from './language.js';
+export * from './theme.js';
 export * from './events.js';

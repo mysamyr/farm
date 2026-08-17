@@ -1,6 +1,6 @@
 import type { ReactElement } from 'react';
 
-import { BUTTON_VARIANT } from '../../constants/index.js';
+import { ButtonVariant } from '../../constants/index.js';
 import { useModal } from '../../hooks/useModal.js';
 
 import Button from '../Button.js';
@@ -30,7 +30,7 @@ function ConfirmationModal({
       <p className={styles.message}>{message}</p>
       <div className={styles.actions}>
         <Button
-          variant={BUTTON_VARIANT.SECONDARY}
+          variant={ButtonVariant.SECONDARY}
           onClick={() => {
             closeModal();
           }}
@@ -38,7 +38,7 @@ function ConfirmationModal({
           {cancelLabel}
         </Button>
         <Button
-          variant={BUTTON_VARIANT.DANGER}
+          variant={ButtonVariant.DANGER}
           onClick={() => {
             closeModal();
             onConfirm();

@@ -12,8 +12,6 @@
   overflow: hidden;
   animation: 300ms ease-out forwards slide-up;
   z-index: 10;
-  -webkit-user-select: none;
-  user-select: none;
 }
 
 .label {

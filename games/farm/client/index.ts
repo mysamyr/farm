@@ -1,5 +1,5 @@
 import type { GameConfig } from '@game/client-core/types';
-import { GameId } from '@game/shared/constants';
+import { GameId, GameColor } from '@game/shared/constants';
 
 import { DEFAULT_CONFIG, GAME_RULES } from '@game/game-farm/shared';
 
@@ -12,7 +12,7 @@ export const farmConfig: GameConfig = {
   id: GameId.farm,
   maxPlayers: DEFAULT_CONFIG.maxPlayers,
   minPlayers: DEFAULT_CONFIG.minPlayers,
-  color: 'orange',
+  color: GameColor.orange,
   emoji: '🐄',
   rules: [
     {

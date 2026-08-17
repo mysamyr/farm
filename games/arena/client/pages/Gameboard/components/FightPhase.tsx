@@ -27,7 +27,8 @@ export default function FightPhase(): ReactElement {
 
   const socketId = getSocketId();
   const activePlayerId = getActivePlayerId(room);
-  const isGameOver = room.state === ROOM_STATES.FINISHED;
+  const isGameOver =
+    room.state === ROOM_STATES.FINISHED || Boolean(room.winner);
   const isMyTurn = !isGameOver && activePlayerId === socketId;
   const opponentId = room.players.find(p => p.id !== socketId)?.id ?? '';
 
@@ -84,6 +85,7 @@ export default function FightPhase(): ReactElement {
                 player={player}
                 isMyTurn={isMyTurn}
                 isStunned={isStunned}
+                disabled={isGameOver}
                 onUseSkill={handleUseSkill}
               />
             );

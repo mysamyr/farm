@@ -1,7 +1,7 @@
 import { ReactElement } from 'react';
 
 import { Button, Tag } from '@game/client-core/components';
-import { BUTTON_VARIANT, PATHS } from '@game/client-core/constants';
+import { ButtonVariant, PATHS } from '@game/client-core/constants';
 import {
   useGames,
   useLanguage,
@@ -97,7 +97,7 @@ export default function RoomCard({
       <span title={disabledTitle} className={styles.joinButtonWrap}>
         <Button
           variant={
-            isBtnDisabled ? BUTTON_VARIANT.SECONDARY : BUTTON_VARIANT.PRIMARY
+            isBtnDisabled ? ButtonVariant.SECONDARY : ButtonVariant.PRIMARY
           }
           disabled={isBtnDisabled}
           onClick={() => {

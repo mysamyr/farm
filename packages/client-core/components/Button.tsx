@@ -1,6 +1,6 @@
 import type { ButtonHTMLAttributes, ReactElement, ReactNode } from 'react';
 
-import { BUTTON_VARIANT, ButtonVariant } from '../constants/index.js';
+import { ButtonVariant } from '../constants/index.js';
 import { classNames } from '../utils/index.js';
 
 import styles from './Button.module.css';
@@ -11,17 +11,17 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 };
 
 const variantClassMap: Record<ButtonVariant, string | undefined> = {
-  [BUTTON_VARIANT.PRIMARY]: styles.primary,
-  [BUTTON_VARIANT.SECONDARY]: styles.secondary,
-  [BUTTON_VARIANT.DANGER]: styles.danger,
-  [BUTTON_VARIANT.SUCCESS]: styles.success,
-  [BUTTON_VARIANT.ICON]: styles.icon,
+  [ButtonVariant.PRIMARY]: styles.primary,
+  [ButtonVariant.SECONDARY]: styles.secondary,
+  [ButtonVariant.DANGER]: styles.danger,
+  [ButtonVariant.SUCCESS]: styles.success,
+  [ButtonVariant.ICON]: styles.icon,
 };
 
 export default function Button({
   children,
   className,
-  variant = BUTTON_VARIANT.PRIMARY,
+  variant = ButtonVariant.PRIMARY,
   type = 'button',
   ...props
 }: ButtonProps): ReactElement {

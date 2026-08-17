@@ -8,9 +8,9 @@ import {
 
 import { Button, Dropdown, Sidebar } from '@game/client-core/components';
 import {
-  BUTTON_VARIANT,
+  ButtonVariant,
   LANGUAGES_CONFIG,
-  THEME,
+  Theme,
 } from '@game/client-core/constants';
 import {
   useConnection,
@@ -62,7 +62,7 @@ export function Header({
   }
 
   function toggleTheme() {
-    setTheme(theme === THEME.LIGHT ? THEME.DARK : THEME.LIGHT);
+    setTheme(theme === Theme.LIGHT ? Theme.DARK : Theme.LIGHT);
   }
 
   const defaultLeftSlot = useMemo(
@@ -81,7 +81,7 @@ export function Header({
   const defaultDesktopRightSlot = (
     <>
       <Dropdown
-        triggerVariant={BUTTON_VARIANT.ICON}
+        triggerVariant={ButtonVariant.ICON}
         triggerTitle="Change Language"
         trigger="🌐"
         items={languageItems}
@@ -89,15 +89,15 @@ export function Header({
       />
 
       <Button
-        variant={BUTTON_VARIANT.ICON}
+        variant={ButtonVariant.ICON}
         title="Toggle Theme"
         onClick={toggleTheme}
       >
-        {theme === THEME.LIGHT ? '🌙' : '☀️'}
+        {theme === Theme.LIGHT ? '🌙' : '☀️'}
       </Button>
 
       <Button
-        variant={BUTTON_VARIANT.ICON}
+        variant={ButtonVariant.ICON}
         title="Show Rules"
         onClick={openHelp}
       >
@@ -109,7 +109,7 @@ export function Header({
   const defaultSidebarRightSlot = (
     <>
       <Dropdown
-        triggerVariant={BUTTON_VARIANT.SECONDARY}
+        triggerVariant={ButtonVariant.SECONDARY}
         triggerTitle="Change Language"
         trigger="🌐 Language"
         items={languageItems}
@@ -117,18 +117,18 @@ export function Header({
       />
 
       <Button
-        variant={BUTTON_VARIANT.SECONDARY}
+        variant={ButtonVariant.SECONDARY}
         className={styles.sidebarControl}
         onClick={() => {
           toggleTheme();
           setSidebarOpen(false);
         }}
       >
-        {theme === THEME.LIGHT ? '🌙 Dark Mode' : '☀️ Light Mode'}
+        {theme === Theme.LIGHT ? '🌙 Dark Mode' : '☀️ Light Mode'}
       </Button>
 
       <Button
-        variant={BUTTON_VARIANT.SECONDARY}
+        variant={ButtonVariant.SECONDARY}
         className={styles.sidebarControl}
         onClick={openHelp}
       >
@@ -156,7 +156,7 @@ export function Header({
       </div>
 
       <Button
-        variant={BUTTON_VARIANT.ICON}
+        variant={ButtonVariant.ICON}
         className={classNames(styles.burger)}
         title="Open menu"
         onClick={() => setSidebarOpen(true)}

@@ -32,9 +32,12 @@ export function useActiveGame(): {
 
   const gameParam = searchParams.get(GAME_QUERY_PARAM);
   const defaultGameId = getDefaultGameId();
+  const roomGame = currentRoom?.game ?? null;
   const activeGame = isValidGameId(gameParam)
     ? gameParam
-    : (defaultGameId ?? GameId.farm); // fallback for initial load
+    : isValidGameId(roomGame)
+      ? roomGame
+      : (defaultGameId ?? GameId.farm);
 
   const cleanupCurrentIdleRoom = useCallback((): void => {
     if (!currentRoom || currentRoom.state !== ROOM_STATES.IDLE) {
@@ -62,6 +65,10 @@ export function useActiveGame(): {
   );
 
   useEffect(() => {
+    if (games.length === 0) {
+      return;
+    }
+
     if (searchParams.get(GAME_QUERY_PARAM) === activeGame) {
       return;
     }
@@ -69,7 +76,7 @@ export function useActiveGame(): {
     const nextParams = new URLSearchParams(searchParams);
     nextParams.set(GAME_QUERY_PARAM, activeGame);
     setSearchParams(nextParams, { replace: true });
-  }, [activeGame, searchParams, setSearchParams]);
+  }, [activeGame, games.length, searchParams, setSearchParams]);
 
   return {
     activeGame,

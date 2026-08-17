@@ -15,7 +15,6 @@
     transform 0.15s ease;
   min-height: 44px;
   text-align: center;
-  user-select: none;
   z-index: 1;
 }
 

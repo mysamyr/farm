@@ -4,7 +4,7 @@ import type { GameId } from '@game/shared/constants';
 import type { BaseRoom, GameMetadata } from '@game/shared/types';
 import { create } from 'zustand';
 
-import type { ThemeCode } from '../constants/index.js';
+import type { Theme } from '../constants/index.js';
 import languageMap, { LanguageCode } from '../constants/language.js';
 import type { Translation } from '../types/index.js';
 import {
@@ -34,8 +34,8 @@ export const useLanguageStore = create<LanguageSlice>((set, get) => ({
 // ─── Theme ──────────────────────────────────────────────────────────────────
 
 interface ThemeSlice {
-  theme: ThemeCode;
-  setTheme: (nextTheme: ThemeCode) => void;
+  theme: Theme;
+  setTheme: (nextTheme: Theme) => void;
 }
 
 export const useThemeStore = create<ThemeSlice>((set, get) => ({

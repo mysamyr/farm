@@ -1,10 +1,10 @@
 import { type ReactElement, useCallback, useMemo, useState } from 'react';
 
 import { Button } from '@game/client-core/components';
-import { BUTTON_VARIANT } from '@game/client-core/constants';
+import { ButtonVariant } from '@game/client-core/constants';
 import { useRoom, useSnackbar } from '@game/client-core/hooks';
 import { emitGameEvent } from '@game/client-core/socket';
-import { EVENTS } from '@game/shared/constants';
+import { EVENTS, ROOM_STATES } from '@game/shared/constants';
 
 import {
   BASE_SKILLS,
@@ -42,7 +42,9 @@ export default function PreparationPhase(): ReactElement {
   }
 
   const currentPlayer = getCurrentPlayer(room);
-  const isLocked = Boolean(currentPlayer?.ready);
+  const isGameOver =
+    room.state === ROOM_STATES.FINISHED || Boolean(room.winner);
+  const isLocked = isGameOver || Boolean(currentPlayer?.ready);
 
   const [selectedActives, setSelectedActives] = useState<SkillId[]>([]);
   const [selectedHealing, setSelectedHealing] = useState<SkillId[]>([]);
@@ -134,6 +136,7 @@ export default function PreparationPhase(): ReactElement {
   );
 
   const handleReset = useCallback(() => {
+    if (isGameOver) return;
     if (isLocked) {
       emitGameEvent(
         EVENTS.GAME_ACTION,
@@ -149,7 +152,13 @@ export default function PreparationPhase(): ReactElement {
     setSelectedActives([]);
     setSelectedHealing([]);
     setSelectedPassives([]);
-  }, [isLocked, room.id, showSnackbar, t.preparation.failedToReady]);
+  }, [
+    isGameOver,
+    isLocked,
+    room.id,
+    showSnackbar,
+    t.preparation.failedToReady,
+  ]);
 
   const isSelectionComplete =
     selectedActives.length === REQUIRED_ACTIVE_COUNT &&
@@ -157,7 +166,7 @@ export default function PreparationPhase(): ReactElement {
     selectedPassives.length === REQUIRED_PASSIVE_COUNT;
 
   const handleReady = useCallback(() => {
-    if (!isSelectionComplete || isLocked) return;
+    if (isGameOver || !isSelectionComplete || isLocked) return;
     const skills = [
       ...selectedActives,
       ...selectedHealing,
@@ -176,6 +185,7 @@ export default function PreparationPhase(): ReactElement {
       }
     );
   }, [
+    isGameOver,
     isSelectionComplete,
     isLocked,
     selectedActives,
@@ -185,37 +195,6 @@ export default function PreparationPhase(): ReactElement {
     showSnackbar,
     t.preparation.failedToReady,
   ]);
-
-  if (room.winner) {
-    const isCurrentPlayerWinner = room.winner === currentPlayer?.id;
-    return (
-      <div className={styles.container}>
-        <div className={styles.congratsScreen}>
-          <div className={styles.congratsContent}>
-            {isCurrentPlayerWinner ? (
-              <>
-                <h2 className={styles.congratsTitle}>
-                  {t.preparation.victoryTitle}
-                </h2>
-                <p className={styles.congratsMessage}>
-                  {t.preparation.victoryMessage}
-                </p>
-              </>
-            ) : (
-              <>
-                <h2 className={styles.congratsTitle}>
-                  {t.preparation.opponentLeftTitle}
-                </h2>
-                <p className={styles.congratsMessage}>
-                  {t.preparation.opponentLeftMessage}
-                </p>
-              </>
-            )}
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   const activeSlotsFull = selectedActives.length >= REQUIRED_ACTIVE_COUNT;
   const healingSlotsFull = selectedHealing.length >= REQUIRED_HEALING_COUNT;
@@ -432,23 +411,25 @@ export default function PreparationPhase(): ReactElement {
         </div>
       </div>
 
-      <div className={styles.actions}>
-        {isLocked && (
-          <p className={styles.waitingMessage}>
-            {t.preparation.waitingForOpponent}
-          </p>
-        )}
-        <div className={styles.actionButtons}>
-          <Button
-            variant={BUTTON_VARIANT.PRIMARY}
-            onClick={handleReady}
-            disabled={!isSelectionComplete || isLocked}
-          >
-            {t.preparation.readyButton}
-          </Button>
-          <Button onClick={handleReset}>{t.preparation.resetButton}</Button>
+      {!isGameOver && (
+        <div className={styles.actions}>
+          {isLocked && (
+            <p className={styles.waitingMessage}>
+              {t.preparation.waitingForOpponent}
+            </p>
+          )}
+          <div className={styles.actionButtons}>
+            <Button
+              variant={ButtonVariant.PRIMARY}
+              onClick={handleReady}
+              disabled={!isSelectionComplete || isLocked}
+            >
+              {t.preparation.readyButton}
+            </Button>
+            <Button onClick={handleReset}>{t.preparation.resetButton}</Button>
+          </div>
         </div>
-      </div>
+      )}
 
       {detailSkill && (
         <SkillDetailSheet

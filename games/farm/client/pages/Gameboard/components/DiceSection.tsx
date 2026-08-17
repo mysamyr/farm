@@ -1,7 +1,7 @@
 import type { ReactElement } from 'react';
 
 import { Button } from '@game/client-core/components';
-import { BUTTON_VARIANT } from '@game/client-core/constants';
+import { ButtonVariant } from '@game/client-core/constants';
 import { useLanguage, useRoom, useSnackbar } from '@game/client-core/hooks';
 import { emitGameEvent } from '@game/client-core/socket';
 import { classNames, resolveErrorMessage } from '@game/client-core/utils';
@@ -73,7 +73,7 @@ export default function DiceSection({
 
       <div className={styles.actions}>
         <Button
-          variant={BUTTON_VARIANT.PRIMARY}
+          variant={ButtonVariant.PRIMARY}
           disabled={!isYourTurn || !!room.trade}
           onClick={onRoll}
         >
