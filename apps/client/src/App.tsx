@@ -1,7 +1,12 @@
 import { useEffect } from 'react';
 
-import { Modal, PostGameOverlay, Snackbar } from '@game/client-core/components';
-import { PATHS, getDashboardPath } from '@game/client-core/constants';
+import {
+  ChangeNameModal,
+  Modal,
+  PostGameOverlay,
+  Snackbar,
+} from '@game/client-core/components';
+import { PATHS, getCatalogPath } from '@game/client-core/constants';
 import {
   useActiveGame,
   useGames,
@@ -12,6 +17,7 @@ import {
   useSnackbar,
   useTheme,
   useUnloadWarning,
+  useUsername,
 } from '@game/client-core/hooks';
 import { applyAccentColor } from '@game/client-core/utils';
 import { GameColor } from '@game/shared/constants';
@@ -25,20 +31,27 @@ import {
 
 import { GameSubscriptions } from './components/GameSubscriptions.js';
 import { GameContainer } from './games/index.js';
-import Dashboard from './pages/Dashboard/index.js';
+import CatalogPage from './pages/Catalog/index.js';
+import GamePage from './pages/GamePage/index.js';
 
-function DashboardFallback() {
-  const location = useLocation();
-  const gameId = new URLSearchParams(location.search).get('game') ?? undefined;
-  return <Navigate to={getDashboardPath(gameId)} replace />;
+function GamePlayPage() {
+  const { activeGame } = useActiveGame();
+
+  if (!activeGame) {
+    return <Navigate to={getCatalogPath()} replace />;
+  }
+
+  return <GameContainer gameId={activeGame} />;
 }
 
 function AppContent() {
-  const { open: modalOpen, modal, requestCloseModal } = useModal();
+  const { open: modalOpen, modal, requestCloseModal, showModal } = useModal();
   const { open: snackbarOpen, message, closeSnackbar } = useSnackbar();
   const { currentRoom } = useRoom();
   const { activeGame } = useActiveGame();
   const { theme } = useTheme();
+  const { isValid: hasUsername } = useUsername();
+  const location = useLocation();
   const {
     games,
     loading: gamesLoading,
@@ -46,13 +59,9 @@ function AppContent() {
     getGame,
   } = useGames();
 
-  const location = useLocation();
+  const gameMetadata = activeGame ? getGame(activeGame) : undefined;
+  const accentColor = gameMetadata?.color ?? GameColor.purple;
 
-  // Get accent color from the loaded game metadata
-  const gameMetadata = getGame(activeGame);
-  const accentColor = gameMetadata?.color ?? GameColor.orange;
-
-  // Load games from server on mount
   useGamesLoader();
 
   useRoomSubscriptions();
@@ -63,16 +72,33 @@ function AppContent() {
     applyAccentColor(accentColor);
   }, [accentColor]);
 
-  // Sync theme with DOM
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
 
   useEffect(() => {
+    if (modal?.closeOnNavigate === false) {
+      return;
+    }
     requestCloseModal();
-  }, [location.pathname, requestCloseModal]);
+  }, [location.pathname, modal?.closeOnNavigate, requestCloseModal]);
 
-  // Show loading state while fetching games
+  useEffect(() => {
+    if (hasUsername) {
+      return;
+    }
+    if (modalOpen && modal?.component === ChangeNameModal) {
+      return;
+    }
+    showModal({
+      component: ChangeNameModal,
+      props: { required: true },
+      closeOnBackdrop: false,
+      closeOnEscape: false,
+      closeOnNavigate: false,
+    });
+  }, [hasUsername, modal?.component, modalOpen, showModal]);
+
   if (gamesLoading && games.length === 0) {
     return (
       <div
@@ -88,7 +114,6 @@ function AppContent() {
     );
   }
 
-  // Show error state if games failed to load
   if (gamesError && games.length === 0) {
     return (
       <div
@@ -109,17 +134,13 @@ function AppContent() {
 
   return (
     <>
-      <GameSubscriptions key={activeGame} gameId={activeGame} />
+      {activeGame && <GameSubscriptions key={activeGame} gameId={activeGame} />}
       <PostGameOverlay />
       <Routes>
-        <Route path={PATHS.DASHBOARD} element={<Dashboard />} />
-        {currentRoom && (
-          <Route
-            path={PATHS.GAME_BOARD}
-            element={<GameContainer gameId={activeGame} />}
-          />
-        )}
-        <Route path="*" element={<DashboardFallback />} />
+        <Route path={PATHS.CATALOG} element={<CatalogPage />} />
+        <Route path={PATHS.GAME_BOARD} element={<GamePlayPage />} />
+        <Route path={PATHS.GAME} element={<GamePage />} />
+        <Route path="*" element={<Navigate to={getCatalogPath()} replace />} />
       </Routes>
 
       {snackbarOpen && <Snackbar message={message} onClose={closeSnackbar} />}

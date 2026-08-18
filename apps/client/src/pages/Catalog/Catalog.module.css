@@ -1,0 +1,25 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.title {
+  margin: 0 5px;
+  font-size: 1.8rem;
+  color: var(--accent);
+}
+
+.empty {
+  margin: 0 5px;
+  color: var(--text-muted);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  padding: 0 5px;
+}

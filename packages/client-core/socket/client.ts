@@ -19,6 +19,10 @@ export function getSocketId(): string | null {
   return socket.id || null;
 }
 
+export function isSocketConnected(): boolean {
+  return socket.connected;
+}
+
 export function reconnectSocket(): void {
   try {
     socket.connect();

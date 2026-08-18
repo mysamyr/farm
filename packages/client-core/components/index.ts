@@ -12,3 +12,5 @@ export { PostGameOverlay } from './PostGameOverlay.js';
 // Modals
 export { default as HelpModal } from './modals/HelpModal.js';
 export { default as ConfirmationModal } from './modals/ConfirmationModal.js';
+export { default as ChangeNameModal } from './modals/ChangeNameModal.js';
+export { default as SiteRulesModal } from './modals/SiteRulesModal.js';

@@ -15,7 +15,7 @@
   },
   "scripts": {
     "start": "node apps/server/dist/index.js",
-    "clean": "rimraf apps/*/dist games/*/dist packages/*/dist",
+    "clean": "rimraf apps/*/dist games/*/dist packages/*/dist apps/*/*.tsbuildinfo games/*/*.tsbuildinfo packages/*/*.tsbuildinfo",
     "dev": "concurrently -n api,client -c cyan,magenta \"npm run dev:api\" \"npm run dev:client\"",
     "dev:api": "npm -w @game/server run dev",
     "dev:client": "npm -w @game/client run dev",

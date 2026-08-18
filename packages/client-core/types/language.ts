@@ -23,8 +23,28 @@ type ErrorMessages = ClientErrorKeys & Record<ERROR, string>;
  */
 export type Translation = {
   errors: ErrorMessages;
+  catalog: {
+    title: string;
+    roomsCount: (count: number) => string;
+    playersRange: (min: number, max: number) => string;
+    empty: string;
+  };
+  siteRules: {
+    title: string;
+    intro: string;
+    sections: Array<{ heading: string; body: string }>;
+  };
+  changeName: {
+    title: string;
+    placeholder: string;
+    save: string;
+    cancel: string;
+  };
+  header: {
+    setName: string;
+  };
   dashboard: {
-    usernameInputLabel: string;
+    backToGames: string;
     createRoomBtn: string;
     openRoomsHeader: string;
     noActiveRooms: string;

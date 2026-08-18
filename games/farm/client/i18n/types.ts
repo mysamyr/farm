@@ -15,6 +15,7 @@ interface FarmTradeTranslation {
 
 export interface FarmTranslation {
   name: string;
+  shortDescription: string;
   roomLeaveConfirmation: string;
   exchangeAnimalsHeader: string;
   winner: string;

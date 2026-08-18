@@ -6,20 +6,29 @@ import {
   useState,
 } from 'react';
 
-import { Button, Dropdown, Sidebar } from '@game/client-core/components';
+import {
+  Button,
+  ChangeNameModal,
+  Dropdown,
+  Sidebar,
+} from '@game/client-core/components';
 import {
   ButtonVariant,
+  getCatalogPath,
   LANGUAGES_CONFIG,
   Theme,
 } from '@game/client-core/constants';
 import {
+  useActiveGame,
   useConnection,
   useLanguage,
   useModal,
   useTheme,
+  useUsername,
 } from '@game/client-core/hooks';
 import type { Language } from '@game/client-core/types';
 import { classNames } from '@game/client-core/utils';
+import { Link } from 'react-router-dom';
 
 import styles from './Header.module.css';
 
@@ -43,8 +52,10 @@ export function Header({
 
   const { online } = useConnection();
   const { showModal } = useModal();
-  const { setLanguage } = useLanguage();
+  const { setLanguage, translation } = useLanguage();
   const { theme, setTheme } = useTheme();
+  const { username } = useUsername();
+  const { cleanupCurrentIdleRoom } = useActiveGame();
 
   const languageItems = LANGUAGES_CONFIG.map((item: Language) => ({
     key: item.code,
@@ -61,21 +72,45 @@ export function Header({
     showModal({ component: helpModal });
   }
 
+  function openChangeName() {
+    setSidebarOpen(false);
+    showModal({ component: ChangeNameModal });
+  }
+
   function toggleTheme() {
     setTheme(theme === Theme.LIGHT ? Theme.DARK : Theme.LIGHT);
   }
 
+  const displayName = username.trim() || translation.header.setName;
+
+  const usernameControl = (
+    <button
+      type="button"
+      className={styles.username}
+      onClick={openChangeName}
+      title={translation.changeName.title}
+    >
+      {displayName}
+    </button>
+  );
+
   const defaultLeftSlot = useMemo(
     () => (
       <>
-        <div className={styles.logo}>Game Hub</div>
+        <Link
+          to={getCatalogPath()}
+          className={styles.logo}
+          onClick={() => cleanupCurrentIdleRoom()}
+        >
+          Game Hub
+        </Link>
         <div className={styles.onlineIndicator}>
           <span className={styles.dot} />
           <span>{online} Online</span>
         </div>
       </>
     ),
-    [online]
+    [cleanupCurrentIdleRoom, online]
   );
 
   const defaultDesktopRightSlot = (
@@ -103,6 +138,8 @@ export function Header({
       >
         ❓
       </Button>
+
+      {usernameControl}
     </>
   );
 
@@ -134,6 +171,15 @@ export function Header({
       >
         ❓ Rules
       </Button>
+
+      <button
+        type="button"
+        className={classNames(styles.username, styles.sidebarUsername)}
+        onClick={openChangeName}
+        title={translation.changeName.title}
+      >
+        {displayName}
+      </button>
     </>
   );
 

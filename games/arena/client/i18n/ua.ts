@@ -4,6 +4,7 @@ import type { ArenaHelpTranslation, ArenaTranslation } from './types.js';
 
 export const arenaGameTranslation: ArenaTranslation = {
   name: 'Арена',
+  shortDescription: 'Обирай вміння та бийся в покроковій дуелі 1 на 1.',
   statLabels: {
     hp: '❤️ HP',
     armor: '🛡️ Броня',

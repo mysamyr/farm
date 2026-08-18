@@ -1,43 +1,36 @@
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { EVENTS, GameId, ROOM_STATES } from '@game/shared/constants';
 
-import { useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
+import { getGameIdFromPathname, getGamePath } from '../constants/index.js';
 import { emitEvent } from '../socket/index.js';
 import { useGamesStore } from '../store/index.js';
 
 import { useRoom } from './useRoom.js';
 
-const GAME_QUERY_PARAM = 'game';
-
 export function useActiveGame(): {
-  activeGame: GameId;
+  activeGame: GameId | null;
   cleanupCurrentIdleRoom: () => void;
   setActiveGame: (gameId: GameId) => void;
 } {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const location = useLocation();
   const { currentRoom, clearCurrentRoom } = useRoom();
-  const { games, getDefaultGameId } = useGamesStore();
+  const { games } = useGamesStore();
 
-  // Get valid game IDs from the loaded games
   const gameIdSet = useMemo(() => new Set(games.map(g => g.id)), [games]);
 
   const isValidGameId = useCallback(
-    (value: string | null): value is GameId => {
+    (value: string | undefined): value is GameId => {
       return !!value && gameIdSet.has(value as GameId);
     },
     [gameIdSet]
   );
 
-  const gameParam = searchParams.get(GAME_QUERY_PARAM);
-  const defaultGameId = getDefaultGameId();
-  const roomGame = currentRoom?.game ?? null;
-  const activeGame = isValidGameId(gameParam)
-    ? gameParam
-    : isValidGameId(roomGame)
-      ? roomGame
-      : (defaultGameId ?? GameId.farm);
+  const gameParam = getGameIdFromPathname(location.pathname);
+  const activeGame = isValidGameId(gameParam) ? gameParam : null;
 
   const cleanupCurrentIdleRoom = useCallback((): void => {
     if (!currentRoom || currentRoom.state !== ROOM_STATES.IDLE) {
@@ -57,26 +50,10 @@ export function useActiveGame(): {
         cleanupCurrentIdleRoom();
       }
 
-      const nextParams = new URLSearchParams(searchParams);
-      nextParams.set(GAME_QUERY_PARAM, gameId);
-      setSearchParams(nextParams, { replace: true });
+      void navigate(getGamePath(gameId));
     },
-    [activeGame, cleanupCurrentIdleRoom, searchParams, setSearchParams]
+    [activeGame, cleanupCurrentIdleRoom, navigate]
   );
-
-  useEffect(() => {
-    if (games.length === 0) {
-      return;
-    }
-
-    if (searchParams.get(GAME_QUERY_PARAM) === activeGame) {
-      return;
-    }
-
-    const nextParams = new URLSearchParams(searchParams);
-    nextParams.set(GAME_QUERY_PARAM, activeGame);
-    setSearchParams(nextParams, { replace: true });
-  }, [activeGame, games.length, searchParams, setSearchParams]);
 
   return {
     activeGame,

@@ -3,7 +3,7 @@ import { type ReactElement, useCallback, useEffect, useState } from 'react';
 import { ROOM_STATES, EVENTS } from '@game/shared/constants';
 import { useNavigate } from 'react-router-dom';
 
-import { ButtonVariant, getDashboardPath } from '../constants/index.js';
+import { ButtonVariant, getGamePath } from '../constants/index.js';
 import { useLanguage } from '../hooks/useLanguage.js';
 import { useRoom } from '../hooks/useRoom.js';
 import { useServerCountdown } from '../hooks/useServerCountdown.js';
@@ -38,7 +38,7 @@ export function PostGameOverlay(): ReactElement | null {
         showSnackbar(resolveErrorMessage(res.error, translation));
       }
       setCurrentRoom(null);
-      void navigate(getDashboardPath(currentRoom.game));
+      void navigate(getGamePath(currentRoom.game));
     });
   }, [currentRoom, navigate, setCurrentRoom, showSnackbar, translation]);
 

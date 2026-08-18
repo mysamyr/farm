@@ -14,6 +14,9 @@ export const farmConfig: GameConfig = {
   minPlayers: DEFAULT_CONFIG.minPlayers,
   color: GameColor.orange,
   emoji: '🐄',
+  bannerUrl: '/assets/banners/farm.jpeg',
+  title: lang => getFarmTranslations(lang).game.name,
+  shortDescription: lang => getFarmTranslations(lang).game.shortDescription,
   rules: [
     {
       key: GAME_RULES.EXTRA_DUCK,

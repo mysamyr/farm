@@ -1,6 +1,9 @@
 import { Component, type ErrorInfo, type ReactNode, Suspense } from 'react';
 
+import { getGamePath } from '@game/client-core/constants';
+import { useConnection, useRoom } from '@game/client-core/hooks';
 import type { GameId } from '@game/shared/constants';
+import { Navigate } from 'react-router-dom';
 
 import styles from './GameContainer.module.css';
 import { gameRegistry } from './registry.js';
@@ -93,6 +96,16 @@ class GameErrorBoundary extends Component<
  * Includes error boundary for handling load failures.
  */
 export function GameContainer({ gameId }: GameContainerProps) {
+  const { currentRoom } = useRoom();
+  const { rejoinSettled } = useConnection();
+
+  if (!currentRoom) {
+    if (!rejoinSettled) {
+      return <GameLoadingFallback />;
+    }
+    return <Navigate to={getGamePath(gameId)} replace />;
+  }
+
   // Check if we have a loader for this game
   if (!gameRegistry.hasLoader(gameId)) {
     return (

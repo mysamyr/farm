@@ -6,7 +6,9 @@ export function useConnection() {
   return useConnectionStore(
     useShallow(s => ({
       online: s.online,
+      rejoinSettled: s.rejoinSettled,
       setOnline: s.setOnline,
+      setRejoinSettled: s.setRejoinSettled,
     }))
   );
 }

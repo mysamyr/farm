@@ -1,0 +1,62 @@
+.container {
+  background: var(--bg-card);
+  padding: 10px 12px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-elevation);
+  border: 1px solid transparent;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  flex: 1;
+}
+
+.roomName {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.2;
+}
+
+.roomOwner {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.rules {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.online {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.joinButtonWrap {
+  display: flex;
+  align-items: center;
+}
+
+.cta {
+  padding: 6px 14px;
+  font-size: 0.85rem;
+}

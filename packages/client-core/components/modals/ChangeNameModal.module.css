@@ -1,18 +1,24 @@
 .container {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  padding: 0 5px;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  min-width: min(360px, 80vw);
 }
 
-.usernameLabel {
-  display: block;
+.title {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.label {
   font-size: 0.8rem;
   color: var(--text-muted);
-  margin-bottom: 5px;
 }
 
-.usernameInput {
+.input {
   padding: 9px 12px;
   border-radius: 12px;
   border: 2px solid var(--border-base);
@@ -21,35 +27,35 @@
   transition: border-color 0.2s;
   background-color: var(--surface-input-bg);
   color: var(--surface-input-text);
-  width: 242px;
 }
 
-.usernameInput::placeholder {
+.input::placeholder {
   color: var(--surface-input-placeholder);
 }
 
-.usernameInput:focus {
+.input:focus {
   border-color: var(--accent);
 }
 
-.usernameInputError {
-  border-color: var(--error, #e53e3e);
-}
-
-.usernameInputError:focus {
-  border-color: var(--error, #e53e3e);
-}
-
 .inputError {
-  margin-top: 4px;
+  border-color: var(--error, #e53e3e);
+}
+
+.inputError:focus {
+  border-color: var(--error, #e53e3e);
+}
+
+.error {
+  margin: 0;
   font-size: 0.75rem;
   color: var(--error, #e53e3e);
 }
 
-@media (max-width: 479px) {
-  .container {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 15px;
-  }
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.actions > * {
+  flex: 1 1 0;
 }

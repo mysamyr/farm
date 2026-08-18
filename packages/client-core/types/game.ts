@@ -15,6 +15,9 @@ export interface GameConfig {
   minPlayers: number;
   color: GameColor;
   emoji: string;
+  bannerUrl: string;
+  title: (language: LanguageCode) => string;
+  shortDescription: (language: LanguageCode) => string;
   rules: RuleConfig[];
   GameboardPage: ComponentType;
   HelpModal: ComponentType;

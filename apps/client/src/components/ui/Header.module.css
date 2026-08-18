@@ -33,6 +33,29 @@
   font-weight: 800;
   color: var(--text-main);
   white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.username {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: var(--text-main);
+  text-decoration: underline;
+  cursor: pointer;
+  white-space: nowrap;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebarUsername {
+  width: 100%;
+  text-align: left;
+  max-width: none;
+  padding: 8px 0;
 }
 
 .onlineIndicator {

@@ -80,6 +80,7 @@ export interface UtilTranslation {
 
 export interface ArenaTranslation {
   name: string;
+  shortDescription: string;
   statLabels: ArenaStatLabelsTranslation;
   effectLabels: ArenaEffectLabelsTranslation;
   skillNames: ArenaSkillNamesTranslation;

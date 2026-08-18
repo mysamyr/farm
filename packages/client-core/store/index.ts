@@ -1,10 +1,10 @@
 import { ComponentType, Dispatch, SetStateAction } from 'react';
 
-import type { GameId } from '@game/shared/constants';
+import { VALIDATION, type GameId } from '@game/shared/constants';
 import type { BaseRoom, GameMetadata } from '@game/shared/types';
 import { create } from 'zustand';
 
-import type { Theme } from '../constants/index.js';
+import { LOCAL_STORAGE_KEY, type Theme } from '../constants/index.js';
 import languageMap, { LanguageCode } from '../constants/language.js';
 import type { Translation } from '../types/index.js';
 import {
@@ -116,6 +116,7 @@ export interface ModalConfig<
   onClose?: (reason: ModalCloseReason) => boolean | void;
   closeOnBackdrop?: boolean;
   closeOnEscape?: boolean;
+  closeOnNavigate?: boolean;
 }
 
 let modalUnmountTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -173,12 +174,33 @@ export const useModalStore = create<ModalSlice>((set, get) => ({
 
 interface ConnectionSlice {
   online: number;
+  rejoinSettled: boolean;
   setOnline: (online: number) => void;
+  setRejoinSettled: (settled: boolean) => void;
 }
 
 export const useConnectionStore = create<ConnectionSlice>(set => ({
   online: 0,
+  rejoinSettled: false,
   setOnline: online => set({ online: Math.max(online, 1) }),
+  setRejoinSettled: settled => set({ rejoinSettled: settled }),
+}));
+
+// ─── Username ────────────────────────────────────────────────────────────────
+
+function readStoredUsername(): string {
+  const stored = window.localStorage.getItem(LOCAL_STORAGE_KEY.USERNAME) ?? '';
+  return [...stored].slice(0, VALIDATION.USER_NAME.MAX_LENGTH).join('');
+}
+
+interface UsernameSlice {
+  username: string;
+  setUsername: (username: string) => void;
+}
+
+export const useUsernameStore = create<UsernameSlice>(set => ({
+  username: readStoredUsername(),
+  setUsername: username => set({ username }),
 }));
 
 // ─── Games ───────────────────────────────────────────────────────────────────

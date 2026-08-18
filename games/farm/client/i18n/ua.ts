@@ -4,6 +4,8 @@ import type { FarmHelpTranslation, FarmTranslation } from './types.js';
 
 export const farmGameTranslation: FarmTranslation = {
   name: 'Весела Ферма',
+  shortDescription:
+    'Збирай тварин, уникай хижаків і першим заповни свою ферму.',
   roomLeaveConfirmation: 'Ви впевнені, що хочете залишити кімнату?',
   exchangeAnimalsHeader: 'Обмін Тваринами',
   winner: 'ПЕРЕМОЖЕЦЬ',

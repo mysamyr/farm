@@ -1,7 +1,7 @@
 import { ReactElement, useState } from 'react';
 
 import { Button, Slider, Tag } from '@game/client-core/components';
-import { ButtonVariant, PATHS } from '@game/client-core/constants';
+import { ButtonVariant, getGameBoardPath } from '@game/client-core/constants';
 import {
   useActiveGame,
   useGames,
@@ -21,16 +21,16 @@ import styles from './ActiveRoom.module.css';
 
 export default function ActiveRoom(): ReactElement {
   const navigate = useNavigate();
-  const { activeGame, cleanupCurrentIdleRoom } = useActiveGame();
+  const { cleanupCurrentIdleRoom } = useActiveGame();
   const room = useRoom();
   const { language, translation } = useLanguage();
   const { showSnackbar } = useSnackbar();
   const { getGame } = useGames();
-  const { config: gameConfig } = useGameConfig(activeGame);
   const kickPlayer = useKickPlayer();
 
   const currentRoom = room.currentRoom!;
-  const gameMetadata = getGame(activeGame);
+  const { config: gameConfig } = useGameConfig(currentRoom.game);
+  const gameMetadata = getGame(currentRoom.game);
 
   const [roomName, setRoomName] = useState(currentRoom.name);
 
@@ -186,7 +186,7 @@ export default function ActiveRoom(): ReactElement {
           <Button
             variant={ButtonVariant.SUCCESS}
             onClick={() => {
-              void navigate(`${PATHS.GAME_BOARD}?game=${currentRoom.game}`);
+              void navigate(getGameBoardPath(currentRoom.game));
             }}
           >
             {translation.roomButton.enter}

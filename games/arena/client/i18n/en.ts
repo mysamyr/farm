@@ -4,6 +4,7 @@ import type { ArenaHelpTranslation, ArenaTranslation } from './types.js';
 
 export const arenaGameTranslation: ArenaTranslation = {
   name: 'Arena',
+  shortDescription: 'Draft skills and duel in a turn-based 1v1 arena.',
   statLabels: {
     hp: '❤️ HP',
     armor: '🛡️ Armor',

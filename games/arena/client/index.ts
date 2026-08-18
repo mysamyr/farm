@@ -14,6 +14,9 @@ export const arenaConfig: GameConfig = {
   minPlayers: 2,
   color: GameColor.blue,
   emoji: '⚔️',
+  bannerUrl: '/assets/banners/arena.jpeg',
+  title: lang => getArenaTranslations(lang).game.name,
+  shortDescription: lang => getArenaTranslations(lang).game.shortDescription,
   rules: [
     {
       key: GAME_RULES.ZERO_COOLDOWN,

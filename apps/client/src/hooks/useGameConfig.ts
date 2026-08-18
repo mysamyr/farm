@@ -9,18 +9,25 @@ import { gameRegistry } from '../games/registry.js';
  * Hook to load a game plugin configuration.
  * Returns the config once loaded, undefined while loading.
  */
-export function useGameConfig(gameId: GameId): {
+export function useGameConfig(gameId: GameId | null): {
   config: GameConfig | undefined;
   loading: boolean;
   error: Error | null;
 } {
   const [config, setConfig] = useState<GameConfig | undefined>(() =>
-    gameRegistry.getConfig(gameId)
+    gameId ? gameRegistry.getConfig(gameId) : undefined
   );
-  const [loading, setLoading] = useState(!config);
+  const [loading, setLoading] = useState(!!gameId && !config);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
+    if (!gameId) {
+      setConfig(undefined);
+      setLoading(false);
+      setError(null);
+      return;
+    }
+
     // If already loaded, return early
     if (gameRegistry.isLoaded(gameId)) {
       setConfig(gameRegistry.getConfig(gameId));

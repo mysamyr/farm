@@ -3,7 +3,7 @@ import { type ReactElement, useCallback, useEffect } from 'react';
 import { Header } from '@game/client/components';
 import { Button, WinningAnimation } from '@game/client-core/components';
 
-import { ButtonVariant, getDashboardPath } from '@game/client-core/constants';
+import { ButtonVariant, getGamePath } from '@game/client-core/constants';
 import {
   useLanguage,
   useModal,
@@ -13,7 +13,7 @@ import {
 import { emitGameEvent, getSocketId } from '@game/client-core/socket';
 import { resolveErrorMessage } from '@game/client-core/utils';
 import { EVENTS, ROOM_STATES } from '@game/shared/constants';
-import { Navigate, useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { GAME_RULES, type Room } from '@game/game-farm/shared';
 
@@ -33,7 +33,6 @@ import styles from './Gameboard.module.css';
 
 export default function Gameboard(): ReactElement {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const { currentRoom: rawCurrentRoom, setCurrentRoom } = useRoom();
   const { showModal, closeModal } = useModal();
   const { translation } = useLanguage();
@@ -54,7 +53,7 @@ export default function Gameboard(): ReactElement {
           showSnackbar(resolveErrorMessage(res.error, translation));
         }
         setCurrentRoom(null);
-        void navigate(getDashboardPath(rawCurrentRoom.game));
+        void navigate(getGamePath(rawCurrentRoom.game));
       }
     );
   }, [rawCurrentRoom, navigate, setCurrentRoom, showSnackbar, translation]);
@@ -92,12 +91,7 @@ export default function Gameboard(): ReactElement {
   }, [currentRoom?.trade, currentRoom?.id, showModal, closeModal]);
 
   if (!currentRoom) {
-    return (
-      <Navigate
-        to={getDashboardPath(searchParams.get('game') ?? undefined)}
-        replace
-      />
-    );
+    return <></>;
   }
 
   const currentPlayerId = getCurrentPlayerTurnId(currentRoom);

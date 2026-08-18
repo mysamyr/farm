@@ -58,11 +58,51 @@ const translations: Record<LanguageCode, Translation> = {
       cannotJoinKicked: 'You have been kicked from this room.',
       apiErrorOnCreatingRoom: 'Error creating room: ',
     },
+    catalog: {
+      title: 'Choose a game',
+      roomsCount: (count: number): string =>
+        count === 1 ? '1 room' : `${count} rooms`,
+      playersRange: (min: number, max: number): string =>
+        min === max ? `${min} players` : `${min}–${max} players`,
+      empty: 'No games available right now.',
+    },
+    siteRules: {
+      title: 'Game Hub Rules',
+      intro:
+        'Welcome to Game Hub — a place to play together in real time. Please follow these guidelines so everyone has a fair and fun session.',
+      sections: [
+        {
+          heading: 'Your name',
+          body: 'Pick a display name that others can recognize. Keep it respectful. You can change it anytime from the header.',
+        },
+        {
+          heading: 'How to play',
+          body: 'Open a game from the catalog, then create a room or join an open one. The room owner starts the match when enough players are ready.',
+        },
+        {
+          heading: 'Fair play',
+          body: 'Do not harass other players, spam rooms, or disrupt games. Room owners may kick players who break these rules.',
+        },
+        {
+          heading: 'Need help?',
+          body: 'Each game has its own rules. Open a game and tap the help button to see how that game is played.',
+        },
+      ],
+    },
+    changeName: {
+      title: 'Your name',
+      placeholder: 'Enter your name',
+      save: 'Save',
+      cancel: 'Cancel',
+    },
+    header: {
+      setName: 'Set name',
+    },
     dashboard: {
-      usernameInputLabel: 'Your Name:',
+      backToGames: 'Back to games',
       createRoomBtn: 'Create Room',
       openRoomsHeader: 'Open Rooms',
-      noActiveRooms: 'Create new room.',
+      noActiveRooms: 'No open rooms.',
       roomRules: 'Rules',
       players: 'Players',
     },
@@ -148,11 +188,58 @@ const translations: Record<LanguageCode, Translation> = {
       cannotJoinKicked: 'Вас вигнали з цієї кімнати.',
       apiErrorOnCreatingRoom: 'Помилка при створенні кімнати: ',
     },
+    catalog: {
+      title: 'Оберіть гру',
+      roomsCount: (count: number): string => {
+        const n = count % 10;
+        const n100 = count % 100;
+        if (n === 1 && n100 !== 11) return `${count} кімната`;
+        if (n >= 2 && n <= 4 && (n100 < 12 || n100 > 14)) {
+          return `${count} кімнати`;
+        }
+        return `${count} кімнат`;
+      },
+      playersRange: (min: number, max: number): string =>
+        min === max ? `${min} гравці` : `${min}–${max} гравців`,
+      empty: 'Наразі немає доступних ігор.',
+    },
+    siteRules: {
+      title: 'Правила Game Hub',
+      intro:
+        'Ласкаво просимо до Game Hub — місця для спільної гри в реальному часі. Дотримуйтесь цих правил, щоб усім було комфортно.',
+      sections: [
+        {
+          heading: 'Ваше імʼя',
+          body: 'Оберіть імʼя, за яким вас можна впізнати. Будьте ввічливі. Змінити його можна будь-коли в шапці сайту.',
+        },
+        {
+          heading: 'Як грати',
+          body: 'Оберіть гру в каталозі, потім створіть кімнату або приєднайтесь до відкритої. Власник кімнати запускає гру, коли набереться достатньо гравців.',
+        },
+        {
+          heading: 'Чесна гра',
+          body: 'Не ображайте інших гравців, не спамте кімнати і не зривайте ігри. Власник кімнати може вигнати гравця, який порушує правила.',
+        },
+        {
+          heading: 'Потрібна допомога?',
+          body: 'У кожної гри свої правила. Відкрийте гру і натисніть кнопку допомоги, щоб дізнатися, як у неї грати.',
+        },
+      ],
+    },
+    changeName: {
+      title: 'Ваше імʼя',
+      placeholder: 'Введіть ваше імʼя',
+      save: 'Зберегти',
+      cancel: 'Скасувати',
+    },
+    header: {
+      setName: 'Вказати імʼя',
+    },
     dashboard: {
-      usernameInputLabel: 'Ваше імʼя:',
+      backToGames: 'Назад до ігор',
       createRoomBtn: 'Створити кімнату',
       openRoomsHeader: 'Відкриті кімнати',
-      noActiveRooms: 'Створіть нову кімнату.',
+      noActiveRooms: 'Немає відкритих кімнат.',
       roomRules: 'Правила',
       players: 'Гравців',
     },

@@ -3,13 +3,13 @@ import { type ReactElement, useCallback } from 'react';
 import { Header } from '@game/client/components';
 import { Button, WinningAnimation } from '@game/client-core/components';
 
-import { ButtonVariant, getDashboardPath } from '@game/client-core/constants';
+import { ButtonVariant, getGamePath } from '@game/client-core/constants';
 import { useLanguage, useRoom, useSnackbar } from '@game/client-core/hooks';
 import { emitGameEvent } from '@game/client-core/socket';
 import { resolveErrorMessage } from '@game/client-core/utils';
 
 import { EVENTS, ROOM_STATES } from '@game/shared/constants';
-import { Navigate, useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { type Room } from '@game/game-arena/shared';
 
@@ -24,7 +24,6 @@ import styles from './Gameboard.module.css';
 
 export default function Gameboard(): ReactElement {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const { currentRoom: rawCurrentRoom, setCurrentRoom } = useRoom();
   const { translation } = useLanguage();
   const { showSnackbar } = useSnackbar();
@@ -41,7 +40,7 @@ export default function Gameboard(): ReactElement {
           showSnackbar(resolveErrorMessage(res.error, translation));
         }
         setCurrentRoom(null);
-        void navigate(getDashboardPath(rawCurrentRoom.game));
+        void navigate(getGamePath(rawCurrentRoom.game));
       }
     );
   }, [rawCurrentRoom, navigate, setCurrentRoom, showSnackbar, translation]);
@@ -56,12 +55,7 @@ export default function Gameboard(): ReactElement {
   }
 
   if (!currentRoom) {
-    return (
-      <Navigate
-        to={getDashboardPath(searchParams.get('game') ?? undefined)}
-        replace
-      />
-    );
+    return <></>;
   }
 
   const isPreparationPhase = !isAllPlayersReady(currentRoom);

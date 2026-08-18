@@ -16,10 +16,18 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 import {
   LOCAL_STORAGE_KEY,
-  PATHS,
-  getDashboardPath,
+  getGameBoardPath,
+  getGameIdFromPathname,
+  getGamePath,
+  isCatalogPathname,
+  isGameBoardPathname,
 } from '../constants/index.js';
-import { emitEvent, getSocketId, subscribe } from '../socket/index.js';
+import {
+  emitEvent,
+  getSocketId,
+  isSocketConnected,
+  subscribe,
+} from '../socket/index.js';
 import { resolveErrorMessage } from '../utils/index.js';
 
 import { useConnection } from './useConnection.js';
@@ -35,24 +43,37 @@ export function useRoomSubscriptions(): void {
   const { setRooms, setCurrentRoom } = useRoom();
   const { showSnackbar } = useSnackbar();
   const { translation } = useLanguage();
-  const { setOnline } = useConnection();
+  const { setOnline, setRejoinSettled } = useConnection();
   const previousRoomStateRef = useRef<ROOM_STATES | null>(null);
 
   useEffect(() => {
+    const navigateIfNeeded = (
+      to: string,
+      options?: { replace?: boolean }
+    ): void => {
+      if (locationRef.current.pathname === to) {
+        return;
+      }
+      void navigate(to, options);
+    };
+
     const navigateToLobbyIfFinished = (
       nextState: ROOM_STATES,
       gameId?: string
     ): void => {
       if (
         previousRoomStateRef.current === ROOM_STATES.FINISHED &&
-        nextState === ROOM_STATES.IDLE
+        nextState === ROOM_STATES.IDLE &&
+        gameId
       ) {
-        void navigate(getDashboardPath(gameId));
+        navigateIfNeeded(getGamePath(gameId));
       }
       previousRoomStateRef.current = nextState;
     };
 
-    subscribe(EVENTS.CONNECT, (): void => {
+    const handleConnect = (): void => {
+      setRejoinSettled(false);
+
       const name = window.localStorage.getItem(LOCAL_STORAGE_KEY.USERNAME);
       if (name) {
         emitEvent(EVENTS.PLAYER_RENAME, { name });
@@ -62,25 +83,35 @@ export function useRoomSubscriptions(): void {
         if (res.ok && res.room) {
           setCurrentRoom(res.room);
           previousRoomStateRef.current = res.room.state;
+          setRejoinSettled(true);
           if (res.room.state === ROOM_STATES.IDLE) {
-            void navigate(getDashboardPath(res.room.game));
+            navigateIfNeeded(getGamePath(res.room.game), { replace: true });
           } else {
-            void navigate(
-              `${PATHS.GAME_BOARD}?game=${res.room.game}&roomId=${res.room.id}`
-            );
+            navigateIfNeeded(getGameBoardPath(res.room.game), {
+              replace: true,
+            });
           }
-        } else {
-          previousRoomStateRef.current = null;
-          const { pathname, search } = locationRef.current;
-          if (pathname === PATHS.DASHBOARD) {
-            return;
-          }
+          return;
+        }
 
-          const gameId = new URLSearchParams(search).get('game') ?? undefined;
-          void navigate(getDashboardPath(gameId), { replace: true });
+        previousRoomStateRef.current = null;
+        setRejoinSettled(true);
+        const { pathname } = locationRef.current;
+        if (isCatalogPathname(pathname) || !isGameBoardPathname(pathname)) {
+          return;
+        }
+
+        const gameId = getGameIdFromPathname(pathname);
+        if (gameId) {
+          navigateIfNeeded(getGamePath(gameId), { replace: true });
         }
       });
-    });
+    };
+
+    subscribe(EVENTS.CONNECT, handleConnect);
+    if (isSocketConnected()) {
+      handleConnect();
+    }
 
     subscribe(EVENTS.ROOMS_LIST, (nextRooms): void => {
       setRooms(prevRooms => {
@@ -112,7 +143,7 @@ export function useRoomSubscriptions(): void {
     subscribe(EVENTS.GAME_STARTED, ({ room }: RoomPayload): void => {
       previousRoomStateRef.current = room.state;
       setCurrentRoom(room);
-      void navigate(`${PATHS.GAME_BOARD}?game=${room.game}&roomId=${room.id}`);
+      navigateIfNeeded(getGameBoardPath(room.game));
     });
 
     subscribe(
