@@ -71,6 +71,11 @@ function getEffectText(
       return t.resist
         .replace('{target}', getTargetLabel(effect.target, util))
         .replace('{status}', effectLabels[effect.status]);
+    case LogEffectKind.reflect:
+      return t.reflect.replace(
+        '{target}',
+        getTargetLabel(effect.target, util)
+      );
     case LogEffectKind.apply_status: {
       const value =
         'value' in effect && effect.value !== undefined
@@ -112,6 +117,7 @@ function getEffectClass(effect: LogEffect): string | undefined {
       return styles.positive;
     case LogEffectKind.dodge:
     case LogEffectKind.resist:
+    case LogEffectKind.reflect:
       return styles.dodge;
     case LogEffectKind.cleanse:
     case LogEffectKind.apply_status:

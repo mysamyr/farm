@@ -15,6 +15,7 @@ import {
   REQUIRED_ACTIVE_COUNT,
   REQUIRED_HEALING_COUNT,
   REQUIRED_PASSIVE_COUNT,
+  NEGATIVE_EFFECTS,
   type Room,
   type Skill,
   type SkillId,
@@ -69,6 +70,39 @@ export function isPlayerResistant(player: Player): boolean {
       s.type === EffectId.resistance &&
       (s.remainingDuration === undefined || s.remainingDuration > 0)
   );
+}
+
+export function isPlayerReflecting(player: Player): boolean {
+  return player.statuses.some(
+    s =>
+      s.type === EffectId.reflection &&
+      (s.remainingDuration === undefined || s.remainingDuration > 0)
+  );
+}
+
+function isDeferredStatus(status: StatusEffect): boolean {
+  if (status.type === EffectId.regeneration) return true;
+  if (NEGATIVE_EFFECTS.includes(status.type as EffectId)) return true;
+  if (STAT_TYPES.includes(status.type as StatId) && status.value < 0) {
+    return true;
+  }
+  return false;
+}
+
+export function isSameTurnDeferred(
+  status: StatusEffect,
+  currentTurnId: number
+): boolean {
+  return status.appliedTurn === currentTurnId && isDeferredStatus(status);
+}
+
+export function stampDeferredAppliedTurn(
+  status: StatusEffect,
+  currentTurnId: number
+): void {
+  if (isDeferredStatus(status)) {
+    status.appliedTurn = currentTurnId;
+  }
 }
 
 export function getThorns(player: Player): number {

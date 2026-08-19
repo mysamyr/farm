@@ -33,6 +33,7 @@ export const SKILL_ICONS: Record<SkillId, string> = {
   cleanse: '✨',
   rage: '😡',
   spiked_armor: '✴️',
+  reflect: '🪞',
   vampiric_strike: '🧛',
   bash_strike: '🔨',
   toughened: '🪨',
@@ -58,6 +59,7 @@ export const EFFECT_ICONS: Record<EffectId, string> = {
   thorns: '🌵',
   leech: '🧛',
   pierce: '🗡️',
+  reflection: '🪞',
 };
 
 export function getEffectIcon(effectId: EffectId): string {

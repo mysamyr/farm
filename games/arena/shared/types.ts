@@ -93,6 +93,11 @@ export type ApplyStatusAction = BaseAction & {
         value?: never;
       }
     | {
+        status: EffectId.reflection;
+        duration: number;
+        value?: never;
+      }
+    | {
         status: EffectId.stun;
         duration: number;
         value?: never;
@@ -188,6 +193,10 @@ export type ApplyStatusLogEffect = BaseLogEffect & {
         duration: number;
       }
     | {
+        status: EffectId.reflection;
+        duration: number;
+      }
+    | {
         status: EffectId.stun;
         duration: number;
       }
@@ -230,7 +239,8 @@ export type LogEffect =
   | (BaseLogEffect & {
       kind: LogEffectKind.resist;
       status: EffectId.bleed | EffectId.poison;
-    });
+    })
+  | (BaseLogEffect & { kind: LogEffectKind.reflect });
 
 export interface LogStep {
   step: number;
@@ -245,7 +255,10 @@ export interface LogStep {
 export interface StatusEffect {
   type: StatId | EffectId;
   value: number;
+  /** The remaining duration of the status. If not provided - permanent passive effect. */
   remainingDuration?: number;
+  /** Combat step index when this status was applied; used to skip same-turn ticks. */
+  appliedTurn?: number;
 }
 
 export interface PlayerSkill {

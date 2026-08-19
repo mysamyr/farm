@@ -27,6 +27,7 @@ import {
   type SkillId,
   SKILLS,
   SkillType,
+  type StatusEffect,
   type ValueContext,
 } from '../shared/index.js';
 
@@ -41,13 +42,16 @@ import {
   getPlayerStats,
   getThorns,
   isDead,
+  isPlayerReflecting,
   isPlayerResistant,
+  isSameTurnDeferred,
   isStunned,
   PlayerStats,
   rollChance,
   skillTargetsOpponent,
   splitOpponentActions,
   splitSelfActions,
+  stampDeferredAppliedTurn,
 } from './helpers.js';
 import type { TurnContext } from './types.js';
 
@@ -172,9 +176,11 @@ function applyCleansing(
 
 function processStatusEffects(
   player: Player,
-  ctx: TurnContext = NO_CONTEXT
+  ctx: TurnContext = NO_CONTEXT,
+  currentTurnId = -1
 ): void {
   for (const status of player.statuses) {
+    if (isSameTurnDeferred(status, currentTurnId)) continue;
     const playerHp = getPlayerStats(player).hp;
     switch (status.type) {
       case EffectId.poison: {
@@ -239,15 +245,18 @@ function applyStatusEffectsToSelf(
   player: Player,
   actions: ApplyStatusAction[],
   valueCtx: ValueContext,
-  ctx: TurnContext = NO_CONTEXT
+  ctx: TurnContext = NO_CONTEXT,
+  currentTurnId = -1
 ): void {
   for (const action of actions) {
     const value = action.value ? resolveActionValue(action.value, valueCtx) : 0;
-    player.statuses.push({
+    const status: StatusEffect = {
       type: action.status,
       value,
-      remainingDuration: (action.duration ?? Infinity) + 1, // + 1 to prevent immediate removal on duration 1
-    });
+      remainingDuration: action.duration ?? Infinity,
+    };
+    stampDeferredAppliedTurn(status, currentTurnId);
+    player.statuses.push(status);
     ctx.addEffect({
       kind: LogEffectKind.apply_status,
       target: ActionTarget.self,
@@ -370,7 +379,8 @@ function applySkillToOpponent(
   player: Player,
   opponent: Player,
   actions: GameAction[],
-  ctx: TurnContext = NO_CONTEXT
+  ctx: TurnContext = NO_CONTEXT,
+  currentTurnId = -1
 ): void {
   const attackerStats = getPlayerStats(player);
   const defenderStats = getPlayerStats(opponent);
@@ -397,23 +407,88 @@ function applySkillToOpponent(
     ctx
   );
 
-  // Effects
-  applyStatusEffectsToOpponent(
-    opponent,
-    statusActions,
-    { ...valueCtx, damageDealt: totalDamageDealt },
-    ctx
+  const statusValueCtx = { ...valueCtx, damageDealt: totalDamageDealt };
+  const statusDebuffs = statusActions.filter(a =>
+    NEGATIVE_EFFECTS.includes(a.status)
   );
-  applyModifyStats(opponent, modifyStatActions, valueCtx, ctx);
+  const otherStatuses = statusActions.filter(
+    a => !NEGATIVE_EFFECTS.includes(a.status)
+  );
+  const statDebuffs = modifyStatActions.filter(
+    a => resolveActionValue(a.value, valueCtx) < 0
+  );
+  const otherStatMods = modifyStatActions.filter(
+    a => resolveActionValue(a.value, valueCtx) >= 0
+  );
+
+  const reflecting = isPlayerReflecting(opponent);
+  if (reflecting && (statusDebuffs.length > 0 || statDebuffs.length > 0)) {
+    ctx.addEffect({
+      kind: LogEffectKind.reflect,
+      target: ActionTarget.opponent,
+    });
+    applyStatusEffectsToTarget(
+      player,
+      statusDebuffs,
+      statusValueCtx,
+      ctx,
+      ActionTarget.self,
+      currentTurnId
+    );
+    applyModifyStats(
+      player,
+      statDebuffs,
+      valueCtx,
+      ctx,
+      ActionTarget.self,
+      currentTurnId
+    );
+  } else {
+    applyStatusEffectsToTarget(
+      opponent,
+      statusDebuffs,
+      statusValueCtx,
+      ctx,
+      ActionTarget.opponent,
+      currentTurnId
+    );
+    applyModifyStats(
+      opponent,
+      statDebuffs,
+      valueCtx,
+      ctx,
+      ActionTarget.opponent,
+      currentTurnId
+    );
+  }
+
+  applyStatusEffectsToTarget(
+    opponent,
+    otherStatuses,
+    statusValueCtx,
+    ctx,
+    ActionTarget.opponent,
+    currentTurnId
+  );
+  applyModifyStats(
+    opponent,
+    otherStatMods,
+    valueCtx,
+    ctx,
+    ActionTarget.opponent,
+    currentTurnId
+  );
 }
 
-function applyStatusEffectsToOpponent(
-  opponent: Player,
+function applyStatusEffectsToTarget(
+  target: Player,
   actions: ApplyStatusAction[],
   valueCtx: ValueContext,
-  ctx: TurnContext = NO_CONTEXT
+  ctx: TurnContext = NO_CONTEXT,
+  logTarget: ActionTarget = ActionTarget.opponent,
+  currentTurnId = -1
 ): void {
-  const hasResistance = isPlayerResistant(opponent);
+  const hasResistance = isPlayerResistant(target);
   for (const action of actions) {
     switch (action.status) {
       case EffectId.bleed: {
@@ -421,24 +496,27 @@ function applyStatusEffectsToOpponent(
           ctx.addEffect({
             kind: LogEffectKind.resist,
             status: action.status,
-            target: ActionTarget.opponent,
+            target: logTarget,
           });
-          return;
+          break;
         }
         const value = resolveActionValue(action.value, valueCtx);
-        const existing = opponent.statuses.find(s => s.type === action.status);
+        const existing = target.statuses.find(s => s.type === action.status);
         if (existing) {
           existing.remainingDuration = action.duration;
+          stampDeferredAppliedTurn(existing, currentTurnId);
         } else {
-          opponent.statuses.push({
+          const status: StatusEffect = {
             type: action.status,
             value,
             remainingDuration: action.duration,
-          });
+          };
+          stampDeferredAppliedTurn(status, currentTurnId);
+          target.statuses.push(status);
         }
         ctx.addEffect({
           kind: LogEffectKind.apply_status,
-          target: ActionTarget.opponent,
+          target: logTarget,
           status: action.status,
           duration: action.duration,
           value,
@@ -450,24 +528,27 @@ function applyStatusEffectsToOpponent(
           ctx.addEffect({
             kind: LogEffectKind.resist,
             status: action.status,
-            target: ActionTarget.opponent,
+            target: logTarget,
           });
-          return;
+          break;
         }
         const value = resolveActionValue(action.value, valueCtx);
-        const existing = opponent.statuses.find(s => s.type === action.status);
+        const existing = target.statuses.find(s => s.type === action.status);
         if (existing) {
           existing.remainingDuration = action.duration;
+          stampDeferredAppliedTurn(existing, currentTurnId);
         } else {
-          opponent.statuses.push({
+          const status: StatusEffect = {
             type: action.status,
             value,
             remainingDuration: action.duration,
-          });
+          };
+          stampDeferredAppliedTurn(status, currentTurnId);
+          target.statuses.push(status);
         }
         ctx.addEffect({
           kind: LogEffectKind.apply_status,
-          target: ActionTarget.opponent,
+          target: logTarget,
           status: action.status,
           duration: action.duration,
           value,
@@ -475,14 +556,16 @@ function applyStatusEffectsToOpponent(
         break;
       }
       case EffectId.stun: {
-        opponent.statuses.push({
+        const status: StatusEffect = {
           type: action.status,
           value: 0,
           remainingDuration: action.duration,
-        });
+        };
+        stampDeferredAppliedTurn(status, currentTurnId);
+        target.statuses.push(status);
         ctx.addEffect({
           kind: LogEffectKind.apply_status,
-          target: ActionTarget.opponent,
+          target: logTarget,
           status: action.status,
           duration: action.duration,
         });
@@ -492,14 +575,16 @@ function applyStatusEffectsToOpponent(
         const value = action.value
           ? resolveActionValue(action.value, valueCtx)
           : 0;
-        opponent.statuses.push({
+        const status: StatusEffect = {
           type: action.status,
           value,
           remainingDuration: action.duration ?? Infinity,
-        });
+        };
+        stampDeferredAppliedTurn(status, currentTurnId);
+        target.statuses.push(status);
         ctx.addEffect({
           kind: LogEffectKind.apply_status,
-          target: ActionTarget.opponent,
+          target: logTarget,
           status: action.status,
           duration: action.duration ?? Infinity,
           value,
@@ -513,18 +598,22 @@ function applyModifyStats(
   player: Player,
   actions: ModifyStatAction[],
   valueCtx: ValueContext,
-  ctx: TurnContext = NO_CONTEXT
+  ctx: TurnContext = NO_CONTEXT,
+  logTarget?: ActionTarget,
+  currentTurnId = -1
 ): void {
   for (const action of actions) {
     const value = resolveActionValue(action.value, valueCtx);
-    player.statuses.push({
+    const status: StatusEffect = {
       type: action.stat,
       value,
-      remainingDuration: (action.duration ?? Infinity) + 1, // + 1 to prevent immediate removal on duration 1
-    });
+      remainingDuration: (action.duration ?? Infinity) + 1,
+    };
+    stampDeferredAppliedTurn(status, currentTurnId);
+    player.statuses.push(status);
     ctx.addEffect({
       kind: LogEffectKind.modify_stat,
-      target: action.target,
+      target: logTarget ?? action.target,
       stat: action.stat,
       value,
       duration: action.duration,
@@ -532,9 +621,10 @@ function applyModifyStats(
   }
 }
 
-function decrementStatusDurations(player: Player): void {
+function decrementStatusDurations(player: Player, currentTurnId = -1): void {
   player.statuses = player.statuses.filter(s => {
     if (s.remainingDuration === undefined) return true;
+    if (isSameTurnDeferred(s, currentTurnId)) return true;
     s.remainingDuration -= 1;
     return s.remainingDuration > 0;
   });
@@ -582,18 +672,33 @@ export function processPlayerTurn(
     opponent: getOpponent(room, player.id),
   };
 
+  const currentTurnId = room.steps.length;
+
   applyCleansing(player, cleanseActions, ctx);
   applyHealActions(player, healActions, valueCtx, ctx);
 
-  applyStatusEffectsToSelf(player, applyStatusActions, valueCtx, ctx);
-  applyModifyStats(player, modifyStatActions, valueCtx, ctx);
+  applyStatusEffectsToSelf(
+    player,
+    applyStatusActions,
+    valueCtx,
+    ctx,
+    currentTurnId
+  );
+  applyModifyStats(
+    player,
+    modifyStatActions,
+    valueCtx,
+    ctx,
+    ActionTarget.self,
+    currentTurnId
+  );
 
   let dead: 'attacker' | 'defender' | null = null;
 
   if (skillTargetsOpponent(skill.actions)) {
     const opponent = getOpponent(room, player.id)!;
 
-    applySkillToOpponent(player, opponent, skill.actions, ctx);
+    applySkillToOpponent(player, opponent, skill.actions, ctx, currentTurnId);
 
     if (isDead(opponent)) {
       dead = 'defender';
@@ -602,7 +707,7 @@ export function processPlayerTurn(
     }
   }
 
-  processStatusEffects(player, ctx);
+  processStatusEffects(player, ctx, currentTurnId);
   if (isDead(player)) {
     dead = 'attacker';
   }
@@ -623,7 +728,7 @@ export function processPlayerTurn(
     decrementSkillCooldowns(player, skillId);
   }
 
-  decrementStatusDurations(player);
+  decrementStatusDurations(player, currentTurnId);
 
   setNextTurn(room);
 

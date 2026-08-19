@@ -47,6 +47,7 @@ export enum SkillId {
   cleanse = 'cleanse',
   rage = 'rage',
   spiked_armor = 'spiked_armor',
+  reflect = 'reflect',
 
   // Healing
   heal = 'heal',
@@ -80,6 +81,8 @@ export enum EffectId {
   stun = 'stun',
   /** Ignores some amount of opponent's defense */
   pierce = 'pierce',
+  /** Redirects incoming debuffs to the attacker */
+  reflection = 'reflection',
 }
 
 export enum SkillType {
@@ -124,6 +127,7 @@ export enum LogEffectKind {
   modify_stat = 'modify_stat',
   cleanse = 'cleanse',
   resist = 'resist',
+  reflect = 'reflect',
 }
 
 export const DEFAULT_PLAYER_STATS: Record<StatId, number> = {
@@ -308,6 +312,19 @@ export const SKILLS: Record<SkillId, Skill> = {
         target: ActionTarget.self,
         status: EffectId.thorns,
         value: { source: ActionValueSource.raw, amount: 60 },
+        duration: 2,
+      },
+    ],
+  },
+  [SkillId.reflect]: {
+    id: SkillId.reflect,
+    type: SkillType.active,
+    cooldown: 4,
+    actions: [
+      {
+        type: ActionType.APPLY_STATUS,
+        target: ActionTarget.self,
+        status: EffectId.reflection,
         duration: 2,
       },
     ],

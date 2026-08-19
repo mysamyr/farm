@@ -66,6 +66,7 @@ export interface ArenaBattleLogTranslation {
   leech: string;
   cleanse: string;
   resist: string;
+  reflect: string;
   applyStatus: string;
   modifyStat: string;
   durationTurns: string;
