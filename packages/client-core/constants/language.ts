@@ -97,6 +97,16 @@ const translations: Record<LanguageCode, Translation> = {
     },
     header: {
       setName: 'Set name',
+      leaveRoomConfirmation: 'Are you sure you want to leave the room?',
+      changeLanguage: 'Change language',
+      toggleTheme: 'Toggle theme',
+      showRules: 'Show rules',
+      openMenu: 'Open menu',
+      language: 'Language',
+      darkMode: 'Dark mode',
+      lightMode: 'Light mode',
+      rules: 'Rules',
+      online: (count: number): string => `${count} Online`,
     },
     dashboard: {
       backToGames: 'Back to games',
@@ -234,6 +244,16 @@ const translations: Record<LanguageCode, Translation> = {
     },
     header: {
       setName: 'Вказати імʼя',
+      leaveRoomConfirmation: 'Ви впевнені, що хочете залишити кімнату?',
+      changeLanguage: 'Змінити мову',
+      toggleTheme: 'Змінити тему',
+      showRules: 'Показати правила',
+      openMenu: 'Відкрити меню',
+      language: 'Мова',
+      darkMode: 'Темна тема',
+      lightMode: 'Світла тема',
+      rules: 'Правила',
+      online: (count: number): string => `${count} онлайн`,
     },
     dashboard: {
       backToGames: 'Назад до ігор',

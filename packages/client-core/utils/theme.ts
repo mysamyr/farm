@@ -17,3 +17,7 @@ export function setTheme(theme: Theme): void {
 export function applyAccentColor(color: GameColor): void {
   document.documentElement.setAttribute('data-accent', color);
 }
+
+export function applyTheme(theme: Theme): void {
+  document.documentElement.setAttribute('data-theme', theme);
+}

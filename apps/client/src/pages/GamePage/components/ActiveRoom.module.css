@@ -9,11 +9,20 @@
   border: 2px solid var(--accent);
 }
 
+.header {
+  display: flex;
+  flex-direction: column;
+}
+
 .roomName {
   font-size: 1.2rem;
   font-weight: 700;
   width: 100%;
-  margin-bottom: 5px;
+  margin: 0 0 5px;
+}
+
+.playerCount {
+  color: var(--text-muted);
 }
 
 input.roomName {
@@ -91,7 +100,17 @@ h3.roomName {
 
 .rulesTags {
   display: flex;
-  gap: 5px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rulesTags > li {
+  min-width: 0;
+  max-width: 100%;
 }
 
 .actions {

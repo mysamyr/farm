@@ -1,0 +1,11 @@
+.shell {
+  max-width: 1200px;
+  margin: 0 auto 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.main {
+  min-width: 0;
+}

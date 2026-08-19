@@ -1,11 +1,12 @@
-import { type FormEvent, type ReactElement, useState } from 'react';
+import { type SubmitEvent, type ReactElement, useState } from 'react';
 
 import { VALIDATION } from '@game/shared/constants';
 
 import { ButtonVariant } from '../../constants/index.js';
 import { useLanguage } from '../../hooks/useLanguage.js';
 import { useModal } from '../../hooks/useModal.js';
-import { isValidUsername, useUsername } from '../../hooks/useUsername.js';
+import { useUsername } from '../../hooks/useUsername.js';
+import { isValidUsername } from '../../utils/validation.js';
 
 import Button from '../Button.js';
 
@@ -37,7 +38,7 @@ function ChangeNameModal({
           ? translation.errors.userNameTooLong
           : null;
 
-  function onSubmit(event: FormEvent): void {
+  function onSubmit(event: SubmitEvent): void {
     event.preventDefault();
     if (!isValidUsername(draft)) {
       return;

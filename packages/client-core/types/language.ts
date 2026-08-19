@@ -42,6 +42,16 @@ export type Translation = {
   };
   header: {
     setName: string;
+    leaveRoomConfirmation: string;
+    changeLanguage: string;
+    toggleTheme: string;
+    showRules: string;
+    openMenu: string;
+    language: string;
+    darkMode: string;
+    lightMode: string;
+    rules: string;
+    online: (count: number) => string;
   };
   dashboard: {
     backToGames: string;

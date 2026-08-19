@@ -10,6 +10,6 @@ export { useRoomSubscriptions } from './useRoomSubscriptions.js';
 export { useServerCountdown } from './useServerCountdown.js';
 export { useSnackbar } from './useSnackbar.js';
 export { useTheme } from './useTheme.js';
-export { isValidUsername, useUsername } from './useUsername.js';
+export { useUsername } from './useUsername.js';
 export { useUnloadWarning } from './useUnloadWarning.js';
 export { useWinningAnimation } from './useWinningAnimation.js';

@@ -6,7 +6,6 @@ export const farmGameTranslation: FarmTranslation = {
   name: 'Super Farm',
   shortDescription:
     'Collect animals, dodge predators, and be the first to complete your farm.',
-  roomLeaveConfirmation: 'Are you sure you want to leave room?',
   exchangeAnimalsHeader: 'Exchange Animals',
   winner: 'WINNER',
   yourTurn: 'YOUR TURN',

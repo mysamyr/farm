@@ -19,7 +19,7 @@ import {
   useUnloadWarning,
   useUsername,
 } from '@game/client-core/hooks';
-import { applyAccentColor } from '@game/client-core/utils';
+import { applyAccentColor, applyTheme } from '@game/client-core/utils';
 import { GameColor } from '@game/shared/constants';
 import {
   BrowserRouter,
@@ -30,6 +30,7 @@ import {
 } from 'react-router-dom';
 
 import { GameSubscriptions } from './components/GameSubscriptions.js';
+import { MainLayout } from './components/layout/MainLayout.js';
 import { GameContainer } from './games/index.js';
 import CatalogPage from './pages/Catalog/index.js';
 import GamePage from './pages/GamePage/index.js';
@@ -73,7 +74,7 @@ function AppContent() {
   }, [accentColor]);
 
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
+    applyTheme(theme);
   }, [theme]);
 
   useEffect(() => {
@@ -137,9 +138,11 @@ function AppContent() {
       {activeGame && <GameSubscriptions key={activeGame} gameId={activeGame} />}
       <PostGameOverlay />
       <Routes>
-        <Route path={PATHS.CATALOG} element={<CatalogPage />} />
-        <Route path={PATHS.GAME_BOARD} element={<GamePlayPage />} />
-        <Route path={PATHS.GAME} element={<GamePage />} />
+        <Route element={<MainLayout />}>
+          <Route path={PATHS.CATALOG} element={<CatalogPage />} />
+          <Route path={PATHS.GAME_BOARD} element={<GamePlayPage />} />
+          <Route path={PATHS.GAME} element={<GamePage />} />
+        </Route>
         <Route path="*" element={<Navigate to={getCatalogPath()} replace />} />
       </Routes>
 

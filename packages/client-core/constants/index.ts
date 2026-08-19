@@ -44,6 +44,7 @@ export enum ButtonVariant {
   DANGER = 'danger',
   SUCCESS = 'success',
   ICON = 'icon',
+  TEXT = 'text',
 }
 
 export * from './language.js';

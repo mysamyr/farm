@@ -1,19 +1,12 @@
 import { useCallback } from 'react';
 
-import { EVENTS, VALIDATION } from '@game/shared/constants';
+import { EVENTS } from '@game/shared/constants';
 import { useShallow } from 'zustand/react/shallow';
 
 import { LOCAL_STORAGE_KEY } from '../constants/index.js';
 import { emitEvent } from '../socket/index.js';
 import { useUsernameStore } from '../store/index.js';
-
-export function isValidUsername(name: string): boolean {
-  const length = [...name.trim()].length;
-  return (
-    length >= VALIDATION.USER_NAME.MIN_LENGTH &&
-    length <= VALIDATION.USER_NAME.MAX_LENGTH
-  );
-}
+import { isValidUsername } from '../utils/validation.js';
 
 export function useUsername(): {
   username: string;

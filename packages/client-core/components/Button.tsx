@@ -16,6 +16,7 @@ const variantClassMap: Record<ButtonVariant, string | undefined> = {
   [ButtonVariant.DANGER]: styles.danger,
   [ButtonVariant.SUCCESS]: styles.success,
   [ButtonVariant.ICON]: styles.icon,
+  [ButtonVariant.TEXT]: styles.text,
 };
 
 export default function Button({

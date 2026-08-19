@@ -1,20 +1,17 @@
-import {
-  type ComponentType,
-  type ReactElement,
-  type ReactNode,
-  useMemo,
-  useState,
-} from 'react';
+import { type ReactElement, type ReactNode, useState } from 'react';
 
 import {
   Button,
   ChangeNameModal,
   Dropdown,
   Sidebar,
+  SiteRulesModal,
 } from '@game/client-core/components';
 import {
   ButtonVariant,
   getCatalogPath,
+  getGamePath,
+  isGameBoardPathname,
   LANGUAGES_CONFIG,
   Theme,
 } from '@game/client-core/constants';
@@ -23,41 +20,46 @@ import {
   useConnection,
   useLanguage,
   useModal,
+  useRoom,
+  useSnackbar,
   useTheme,
   useUsername,
 } from '@game/client-core/hooks';
-import type { Language } from '@game/client-core/types';
-import { classNames } from '@game/client-core/utils';
-import { Link } from 'react-router-dom';
+import { emitEvent } from '@game/client-core/socket';
+import { classNames, resolveErrorMessage } from '@game/client-core/utils';
+import { EVENTS, ROOM_STATES } from '@game/shared/constants';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+
+import { useGameConfig } from '../../hooks/index.js';
 
 import styles from './Header.module.css';
 
-export interface MainHeaderProps {
-  leftSlot?: ReactNode;
-  centerSlot?: ReactNode;
-  rightSlot?: ReactNode;
+type HeaderProps = {
   additionalActions?: ReactNode;
-  /** Help modal component to show when help button is clicked */
-  helpModal?: ComponentType;
-}
+};
 
-export function Header({
-  leftSlot,
-  centerSlot,
-  rightSlot,
-  additionalActions,
-  helpModal,
-}: MainHeaderProps): ReactElement {
+export function Header({ additionalActions }: HeaderProps): ReactElement {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const { online } = useConnection();
   const { showModal } = useModal();
   const { setLanguage, translation } = useLanguage();
   const { theme, setTheme } = useTheme();
   const { username } = useUsername();
-  const { cleanupCurrentIdleRoom } = useActiveGame();
+  const { activeGame, cleanupCurrentIdleRoom } = useActiveGame();
+  const { currentRoom, setCurrentRoom } = useRoom();
+  const { showSnackbar } = useSnackbar();
+  const { config: gameConfig } = useGameConfig(activeGame);
 
-  const languageItems = LANGUAGES_CONFIG.map((item: Language) => ({
+  const headerCopy = translation.header;
+  const helpModal = activeGame ? gameConfig?.HelpModal : SiteRulesModal;
+  const showLeaveRoom = isGameBoardPathname(location.pathname) && !!currentRoom;
+  const displayName = username.trim() || headerCopy.setName;
+  const isLightTheme = theme === Theme.LIGHT;
+
+  const languageItems = LANGUAGES_CONFIG.map(item => ({
     key: item.code,
     label: item.name,
     onSelect: () => {
@@ -66,37 +68,137 @@ export function Header({
     },
   }));
 
-  function openHelp() {
-    if (!helpModal) return;
+  function closeSidebar() {
     setSidebarOpen(false);
+  }
+
+  function openHelp() {
+    if (!helpModal) {
+      return;
+    }
+    closeSidebar();
     showModal({ component: helpModal });
   }
 
   function openChangeName() {
-    setSidebarOpen(false);
+    closeSidebar();
     showModal({ component: ChangeNameModal });
   }
 
   function toggleTheme() {
-    setTheme(theme === Theme.LIGHT ? Theme.DARK : Theme.LIGHT);
+    setTheme(isLightTheme ? Theme.DARK : Theme.LIGHT);
   }
 
-  const displayName = username.trim() || translation.header.setName;
+  function handleLeaveRoom() {
+    if (!currentRoom) {
+      return;
+    }
 
-  const usernameControl = (
-    <button
-      type="button"
-      className={styles.username}
-      onClick={openChangeName}
-      title={translation.changeName.title}
-    >
-      {displayName}
-    </button>
-  );
+    if (
+      currentRoom.state === ROOM_STATES.RUNNING &&
+      !window.confirm(headerCopy.leaveRoomConfirmation)
+    ) {
+      return;
+    }
 
-  const defaultLeftSlot = useMemo(
-    () => (
+    const { id: roomId, game } = currentRoom;
+
+    emitEvent(EVENTS.ROOM_LEAVE, { roomId }, res => {
+      if (!res.ok) {
+        showSnackbar(resolveErrorMessage(res.error, translation));
+      }
+      setCurrentRoom(null);
+      void navigate(getGamePath(game));
+    });
+  }
+
+  function renderTools(placement: 'desktop' | 'sidebar') {
+    const inSidebar = placement === 'sidebar';
+    const toolVariant = inSidebar ? ButtonVariant.SECONDARY : ButtonVariant.ICON;
+    const toolClassName = inSidebar ? styles.sidebarControl : undefined;
+    const themeIcon = isLightTheme ? '🌙' : '☀️';
+    const themeLabel = isLightTheme ? headerCopy.darkMode : headerCopy.lightMode;
+
+    return (
       <>
+        <Button
+          variant={ButtonVariant.TEXT}
+          className={classNames(
+            styles.username,
+            inSidebar && styles.sidebarControl
+          )}
+          title={translation.changeName.title}
+          onClick={openChangeName}
+        >
+          {displayName}
+        </Button>
+
+        <Dropdown
+          triggerVariant={toolVariant}
+          triggerTitle={headerCopy.changeLanguage}
+          trigger={inSidebar ? `🌐 ${headerCopy.language}` : '🌐'}
+          items={languageItems}
+          align={inSidebar ? 'left' : 'right'}
+          triggerClassName={toolClassName}
+        />
+
+        <Button
+          variant={toolVariant}
+          className={toolClassName}
+          title={headerCopy.toggleTheme}
+          onClick={() => {
+            toggleTheme();
+            if (inSidebar) {
+              closeSidebar();
+            }
+          }}
+        >
+          {inSidebar ? `${themeIcon} ${themeLabel}` : themeIcon}
+        </Button>
+
+        <Button
+          variant={toolVariant}
+          className={toolClassName}
+          title={headerCopy.showRules}
+          onClick={openHelp}
+          disabled={!helpModal}
+        >
+          {inSidebar ? `❓ ${headerCopy.rules}` : '❓'}
+        </Button>
+      </>
+    );
+  }
+
+  function renderExtraActions(inSidebar: boolean) {
+    if (!showLeaveRoom && !additionalActions) {
+      return null;
+    }
+
+    return (
+      <>
+        {showLeaveRoom ? (
+          <Button
+            variant={ButtonVariant.SECONDARY}
+            className={inSidebar ? styles.sidebarControl : undefined}
+            onClick={() => {
+              closeSidebar();
+              handleLeaveRoom();
+            }}
+          >
+            {translation.roomButton.leaveRoom}
+          </Button>
+        ) : null}
+        {additionalActions}
+      </>
+    );
+  }
+
+  const extraActionsDesktop = renderExtraActions(false);
+  const extraActionsSidebar = renderExtraActions(true);
+
+  return (
+    <header className={styles.container}>
+      <div className={styles.left}>
         <Link
           to={getCatalogPath()}
           className={styles.logo}
@@ -106,116 +208,32 @@ export function Header({
         </Link>
         <div className={styles.onlineIndicator}>
           <span className={styles.dot} />
-          <span>{online} Online</span>
+          <span>{headerCopy.online(online)}</span>
         </div>
-      </>
-    ),
-    [cleanupCurrentIdleRoom, online]
-  );
-
-  const defaultDesktopRightSlot = (
-    <>
-      <Dropdown
-        triggerVariant={ButtonVariant.ICON}
-        triggerTitle="Change Language"
-        trigger="🌐"
-        items={languageItems}
-        align="right"
-      />
-
-      <Button
-        variant={ButtonVariant.ICON}
-        title="Toggle Theme"
-        onClick={toggleTheme}
-      >
-        {theme === Theme.LIGHT ? '🌙' : '☀️'}
-      </Button>
-
-      <Button
-        variant={ButtonVariant.ICON}
-        title="Show Rules"
-        onClick={openHelp}
-      >
-        ❓
-      </Button>
-
-      {usernameControl}
-    </>
-  );
-
-  const defaultSidebarRightSlot = (
-    <>
-      <Dropdown
-        triggerVariant={ButtonVariant.SECONDARY}
-        triggerTitle="Change Language"
-        trigger="🌐 Language"
-        items={languageItems}
-        triggerClassName={styles.sidebarControl}
-      />
-
-      <Button
-        variant={ButtonVariant.SECONDARY}
-        className={styles.sidebarControl}
-        onClick={() => {
-          toggleTheme();
-          setSidebarOpen(false);
-        }}
-      >
-        {theme === Theme.LIGHT ? '🌙 Dark Mode' : '☀️ Light Mode'}
-      </Button>
-
-      <Button
-        variant={ButtonVariant.SECONDARY}
-        className={styles.sidebarControl}
-        onClick={openHelp}
-      >
-        ❓ Rules
-      </Button>
-
-      <button
-        type="button"
-        className={classNames(styles.username, styles.sidebarUsername)}
-        onClick={openChangeName}
-        title={translation.changeName.title}
-      >
-        {displayName}
-      </button>
-    </>
-  );
-
-  const resolvedLeftSlot = leftSlot ?? defaultLeftSlot;
-  const resolvedCenterSlot = centerSlot ?? null;
-  const resolvedDesktopRightSlot = rightSlot ?? defaultDesktopRightSlot;
-  const resolvedSidebarRightSlot = rightSlot ?? defaultSidebarRightSlot;
-
-  return (
-    <header className={styles.container}>
-      <div className={styles.left}>{resolvedLeftSlot}</div>
-
-      <div className={styles.center}>{resolvedCenterSlot}</div>
+      </div>
 
       <div className={styles.desktopTools}>
-        <div className={styles.rightSlot}>{resolvedDesktopRightSlot}</div>
-        {additionalActions ? (
-          <div className={styles.additionalActions}>{additionalActions}</div>
+        <div className={styles.rightSlot}>{renderTools('desktop')}</div>
+        {extraActionsDesktop ? (
+          <div className={styles.additionalActions}>{extraActionsDesktop}</div>
         ) : null}
       </div>
 
       <Button
         variant={ButtonVariant.ICON}
-        className={classNames(styles.burger)}
-        title="Open menu"
+        className={styles.burger}
+        title={headerCopy.openMenu}
         onClick={() => setSidebarOpen(true)}
       >
         <span className={styles.burgerGlyph}>☰</span>
       </Button>
 
-      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)}>
+      <Sidebar open={sidebarOpen} onClose={closeSidebar}>
         <div className={styles.sidebarContent}>
           <div className={styles.sidebarSection}>
-            <div className={styles.sidebarSlot}>{resolvedSidebarRightSlot}</div>
-            {additionalActions ? (
-              <div className={styles.sidebarSlot}>{additionalActions}</div>
+            <div className={styles.sidebarSlot}>{renderTools('sidebar')}</div>
+            {extraActionsSidebar ? (
+              <div className={styles.sidebarSlot}>{extraActionsSidebar}</div>
             ) : null}
           </div>
         </div>

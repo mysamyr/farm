@@ -70,3 +70,23 @@
 .icon:active {
   transform: none;
 }
+
+.text {
+  padding: 8px 10px;
+  background: transparent;
+  color: var(--text-main);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.text:hover {
+  transform: none;
+  opacity: 0.8;
+}
+
+.text:active {
+  transform: none;
+}
