@@ -16,9 +16,8 @@ export function canStartGame(room: BaseRoom): boolean {
 
 export function shouldDeleteRoom(room: BaseRoom, socketId: string): boolean {
   return (
-    (room.state === ROOM_STATES.RUNNING && !room.players.length) ||
-    (room.state === ROOM_STATES.IDLE && room.ownerId === socketId) ||
-    (room.state === ROOM_STATES.FINISHED && !room.players.length)
+    !room.players.length ||
+    (room.state === ROOM_STATES.IDLE && room.ownerId === socketId)
   );
 }
 
