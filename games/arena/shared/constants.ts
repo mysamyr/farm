@@ -166,13 +166,13 @@ export const SKILLS: Record<SkillId, Skill> = {
       {
         type: ActionType.DAMAGE,
         target: ActionTarget.opponent,
-        value: { source: ActionValueSource.raw, amount: 10 },
+        value: { source: ActionValueSource.raw, amount: 8 },
       },
       {
         type: ActionType.APPLY_STATUS,
         target: ActionTarget.opponent,
         status: EffectId.bleed,
-        value: { source: ActionValueSource.raw, amount: 20 },
+        value: { source: ActionValueSource.raw, amount: 15 },
         duration: 2,
       },
     ],
@@ -185,7 +185,7 @@ export const SKILLS: Record<SkillId, Skill> = {
       {
         type: ActionType.DAMAGE,
         target: ActionTarget.opponent,
-        value: { source: ActionValueSource.raw, amount: 8 },
+        value: { source: ActionValueSource.raw, amount: 6 },
       },
       {
         type: ActionType.APPLY_STATUS,
@@ -204,7 +204,7 @@ export const SKILLS: Record<SkillId, Skill> = {
       {
         type: ActionType.DAMAGE,
         target: ActionTarget.opponent,
-        value: { source: ActionValueSource.raw, amount: 12 },
+        value: { source: ActionValueSource.raw, amount: 10 },
       },
       {
         type: ActionType.LIFE_STEAL,
@@ -216,18 +216,18 @@ export const SKILLS: Record<SkillId, Skill> = {
   [SkillId.bash_strike]: {
     id: SkillId.bash_strike,
     type: SkillType.active,
-    cooldown: 2,
+    cooldown: 3,
     actions: [
       {
         type: ActionType.DAMAGE,
         target: ActionTarget.opponent,
-        value: { source: ActionValueSource.raw, amount: 15 },
+        value: { source: ActionValueSource.raw, amount: 8 },
       },
       {
         type: ActionType.MODIFY_STAT,
         target: ActionTarget.opponent,
         stat: StatId.attack,
-        value: { source: ActionValueSource.raw, amount: -10 },
+        value: { source: ActionValueSource.raw, amount: -5 },
         duration: 2,
       },
     ],
@@ -235,12 +235,12 @@ export const SKILLS: Record<SkillId, Skill> = {
   [SkillId.knockback]: {
     id: SkillId.knockback,
     type: SkillType.active,
-    cooldown: 4,
+    cooldown: 3,
     actions: [
       {
         type: ActionType.DAMAGE,
         target: ActionTarget.opponent,
-        value: { source: ActionValueSource.raw, amount: 10 },
+        value: { source: ActionValueSource.raw, amount: 8 },
       },
       {
         type: ActionType.APPLY_STATUS,
@@ -253,13 +253,13 @@ export const SKILLS: Record<SkillId, Skill> = {
   [SkillId.corrosion]: {
     id: SkillId.corrosion,
     type: SkillType.active,
-    cooldown: 4,
+    cooldown: 3,
     actions: [
       {
         type: ActionType.MODIFY_STAT,
         target: ActionTarget.opponent,
         stat: StatId.armor,
-        value: { source: ActionValueSource.raw, amount: -10 },
+        value: { source: ActionValueSource.raw, amount: -5 },
         duration: 3,
       },
     ],
@@ -277,27 +277,16 @@ export const SKILLS: Record<SkillId, Skill> = {
       },
     ],
   },
-  [SkillId.cleanse]: {
-    id: SkillId.cleanse,
-    type: SkillType.active,
-    cooldown: 4,
-    actions: [
-      {
-        type: ActionType.CLEANSE,
-        target: ActionTarget.self,
-      },
-    ],
-  },
   [SkillId.rage]: {
     id: SkillId.rage,
     type: SkillType.active,
-    cooldown: 4,
+    cooldown: 3,
     actions: [
       {
         type: ActionType.MODIFY_STAT,
         target: ActionTarget.self,
         stat: StatId.attack,
-        value: { source: ActionValueSource.raw, amount: 10 },
+        value: { source: ActionValueSource.raw, amount: 8 },
         duration: 3,
       },
     ],
@@ -350,14 +339,30 @@ export const SKILLS: Record<SkillId, Skill> = {
       {
         type: ActionType.HEAL,
         target: ActionTarget.self,
-        value: { source: ActionValueSource.raw, amount: 10 },
+        value: { source: ActionValueSource.raw, amount: 5 },
       },
       {
         type: ActionType.APPLY_STATUS,
         target: ActionTarget.self,
         status: EffectId.regeneration,
-        value: { source: ActionValueSource.raw, amount: 8 },
+        value: { source: ActionValueSource.raw, amount: 6 },
         duration: 3,
+      },
+    ],
+  },
+  [SkillId.cleanse]: {
+    id: SkillId.cleanse,
+    type: SkillType.healing,
+    cooldown: 3,
+    actions: [
+      {
+        type: ActionType.CLEANSE,
+        target: ActionTarget.self,
+      },
+      {
+        type: ActionType.HEAL,
+        target: ActionTarget.self,
+        value: { source: ActionValueSource.raw, amount: 5 },
       },
     ],
   },
@@ -370,13 +375,13 @@ export const SKILLS: Record<SkillId, Skill> = {
         type: ActionType.MODIFY_STAT,
         target: ActionTarget.self,
         stat: StatId.hp,
-        value: { source: ActionValueSource.raw, amount: 25 },
+        value: { source: ActionValueSource.raw, amount: 20 },
       },
       {
         type: ActionType.MODIFY_STAT,
         target: ActionTarget.self,
         stat: StatId.armor,
-        value: { source: ActionValueSource.raw, amount: 10 },
+        value: { source: ActionValueSource.raw, amount: 3 },
       },
     ],
   },
@@ -388,13 +393,13 @@ export const SKILLS: Record<SkillId, Skill> = {
         type: ActionType.MODIFY_STAT,
         target: ActionTarget.self,
         stat: StatId.armor,
-        value: { source: ActionValueSource.raw, amount: 15 },
+        value: { source: ActionValueSource.raw, amount: 5 },
       },
       {
         type: ActionType.MODIFY_STAT,
         target: ActionTarget.self,
         stat: StatId.attack,
-        value: { source: ActionValueSource.raw, amount: 5 },
+        value: { source: ActionValueSource.raw, amount: 3 },
       },
     ],
   },
@@ -424,7 +429,7 @@ export const SKILLS: Record<SkillId, Skill> = {
         type: ActionType.MODIFY_STAT,
         target: ActionTarget.self,
         stat: StatId.attack,
-        value: { source: ActionValueSource.raw, amount: 15 },
+        value: { source: ActionValueSource.raw, amount: 6 },
       },
       {
         type: ActionType.MODIFY_STAT,
@@ -442,7 +447,7 @@ export const SKILLS: Record<SkillId, Skill> = {
         type: ActionType.MODIFY_STAT,
         target: ActionTarget.self,
         stat: StatId.attack,
-        value: { source: ActionValueSource.raw, amount: 10 },
+        value: { source: ActionValueSource.raw, amount: 4 },
       },
       {
         type: ActionType.MODIFY_STAT,
