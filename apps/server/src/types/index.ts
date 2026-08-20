@@ -1,8 +1,8 @@
-import type { Player } from '@game/shared/types';
+import type { BasePlayer } from '@game/shared/types';
 import type {
-  ClientToServerEvents,
+  CoreClientToServerEvents,
+  CoreServerToClientEvents,
   SocketAck,
-  ServerToClientEvents,
 } from '@game/shared/types';
 import type { DefaultEventsMap, Server, Socket } from 'socket.io';
 
@@ -10,22 +10,21 @@ export type AckFunc<TResponse extends SocketAck = SocketAck> = (
   response: TResponse
 ) => void;
 
-export type SocketSessionData = {
-  player: Player;
-  lastEmoteSendTime?: number; // TODO: game-specific
-  userId?: string;
+type SocketSessionData = {
+  player: BasePlayer;
+  userId: string;
 };
 
 export type AppSocket = Socket<
-  ClientToServerEvents,
-  ServerToClientEvents,
+  CoreClientToServerEvents,
+  CoreServerToClientEvents,
   DefaultEventsMap,
   SocketSessionData
 >;
 
 export type AppServer = Server<
-  ClientToServerEvents,
-  ServerToClientEvents,
+  CoreClientToServerEvents,
+  CoreServerToClientEvents,
   DefaultEventsMap,
   SocketSessionData
 >;

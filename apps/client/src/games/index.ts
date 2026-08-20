@@ -1,2 +1,2 @@
-// Import all game modules here to trigger registration
-import './farm';
+export { gameRegistry } from './registry.js';
+export { GameContainer } from './GameContainer.js';

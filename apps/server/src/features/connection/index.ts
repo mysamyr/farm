@@ -2,16 +2,16 @@ import { EVENTS, ROOM_STATES } from '@game/shared/constants';
 
 import type { DisconnectReason } from 'socket.io';
 
-import { LogLevel } from '../../constants';
-import { log } from '../../services/logger';
-import type { AppServer, AppSocket } from '../../types';
+import { LogLevel } from '../../constants/index.js';
+import { log } from '../../services/logger.js';
+import type { AppServer, AppSocket } from '../../types/index.js';
 import {
   getActiveRoom,
   removePlayerFromAllRooms,
   updateRoomsList,
-} from '../room/room.service';
+} from '../room/room.service.js';
 
-import { getIpAddress } from './connection.helper';
+import { getIpAddress } from './connection.helper.js';
 import {
   assignPlayer,
   broadcastOnlineCount,
@@ -19,20 +19,26 @@ import {
   gracefulDisconnect,
   PendingDisconnect,
   reconnect,
-} from './connection.service';
+} from './connection.service.js';
 
 const disconnectHandler =
   (io: AppServer, socket: AppSocket, ip: string) =>
   (reason: DisconnectReason): void => {
-    log(LogLevel.INFO, 'socket:disconnected', { socketId: socket.id, reason });
+    log(LogLevel.INFO, 'socket:disconnected', {
+      socketId: socket.id,
+      userId: socket.data.userId,
+      ip,
+      reason,
+    });
     const room = getActiveRoom(socket.id);
 
-    if (room && room.state === ROOM_STATES.RUNNING) {
-      const userId = socket.data.userId;
-      if (userId) {
-        gracefulDisconnect(io, socket, userId, ip);
-        return;
-      }
+    if (
+      room &&
+      (room.state === ROOM_STATES.RUNNING ||
+        room.state === ROOM_STATES.FINISHED)
+    ) {
+      gracefulDisconnect(io, socket, socket.data.userId, ip);
+      return;
     }
 
     removePlayerFromAllRooms(io, socket);
@@ -49,6 +55,7 @@ const reconnectHandler = (
   log(LogLevel.INFO, 'socket:reconnected', {
     socketId: socket.id,
     userId,
+    ip,
     oldSocketId: pending.oldSocketId,
   });
 
@@ -63,17 +70,25 @@ export function registerConnection(io: AppServer, socket: AppSocket): void {
   const ip = getIpAddress(socket);
   const userId = (socket.handshake.auth as { userId?: string }).userId;
 
-  log(LogLevel.INFO, 'socket:connected', { socketId: socket.id, ip });
-
-  if (userId) {
-    const pending = getPendingDisconnect(userId);
-    if (pending) {
-      reconnectHandler(io, socket, ip, pending, userId);
-      return;
-    }
-    socket.data.userId = userId;
+  if (!userId) {
+    log(LogLevel.WARN, 'socket:rejected', {
+      socketId: socket.id,
+      ip,
+      reason: 'missing_userId',
+    });
+    socket.disconnect(true);
+    return;
   }
 
+  log(LogLevel.INFO, 'socket:connected', { socketId: socket.id, userId, ip });
+
+  const pending = getPendingDisconnect(userId);
+  if (pending) {
+    reconnectHandler(io, socket, ip, pending, userId);
+    return;
+  }
+
+  socket.data.userId = userId;
   assignPlayer(socket);
   broadcastOnlineCount(io);
   updateRoomsList(io);

@@ -1,4 +1,4 @@
-import type { AppSocket } from '../../types';
+import type { AppSocket } from '../../types/index.js';
 
 export function getIpAddress(socket: AppSocket): string {
   return (

@@ -1,17 +1,34 @@
-import type { ROOM_STATES, GAME_IDS } from '../constants';
+import type { GameId, GameColor, ROOM_STATES } from '../constants/index.js';
 
-export type GameId = (typeof GAME_IDS)[keyof typeof GAME_IDS];
+/**
+ * Runtime game metadata provided by the server.
+ * Used by the client to display game info without hardcoding.
+ */
+export interface GameMetadata {
+  id: GameId;
+  name: string;
+  emoji: string;
+  color: GameColor;
+  minPlayers: number;
+  maxPlayers: number;
+}
 
 export interface BasePlayer {
   id: string;
   name: string;
 }
 
-export type Player = BasePlayer;
+export interface BaseRules {
+  /**
+   * checkbox, number or dropdown
+   */
+  [key: string]: boolean | number | string;
+}
 
-export type BaseRules = Record<string, boolean>;
-
-export type Rules = BaseRules;
+export interface RematchState {
+  expiresAt: number;
+  readyPlayerIds: string[];
+}
 
 export interface BaseRoom<
   TPlayer extends BasePlayer = BasePlayer,
@@ -25,8 +42,10 @@ export interface BaseRoom<
   state: ROOM_STATES;
   players: TPlayer[];
   rules: TRules;
+  /** Stable userIds that are not allowed to rejoin this room */
+  blacklist: string[];
+  winner?: string;
+  rematch?: RematchState;
 }
 
-export type Room = BaseRoom;
-
-export * from './socket';
+export * from './socket.js';

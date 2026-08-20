@@ -1,13 +1,13 @@
 import { loadEnvFile } from 'node:process';
 
-import { Env, LogLevel } from '../constants';
+import { Env, LogLevel } from '../constants/index.js';
 
 try {
   loadEnvFile('.env');
 } catch (e: unknown) {
-  if ((e as NodeJS.ErrnoException).code === 'ENOENT')
-    // eslint-disable-next-line no-console
+  if ((e as NodeJS.ErrnoException).code === 'ENOENT') {
     console.warn('No .env file found or could not be loaded.');
+  }
 }
 
 export default {

@@ -1,11 +1,6 @@
-import { ERROR, EVENTS } from '../constants';
+import { ERROR, GameId, EVENTS } from '../constants/index.js';
 
-import {
-  ClientToServerEvents as ClientToServerFarmEvents,
-  ServerToClientEvents as ServerToClientFarmEvents,
-} from './farm/socket';
-
-import type { Room, GameId } from './index';
+import type { BaseRoom } from './index.js';
 
 export type SocketAck = {
   ok: boolean;
@@ -13,7 +8,7 @@ export type SocketAck = {
 };
 
 export type RejoinRoomAck = SocketAck & {
-  room?: Room;
+  room?: BaseRoom;
 };
 
 export type ServerNotification = {
@@ -25,12 +20,16 @@ export type RoomIdPayload = {
   roomId: string;
 };
 
+export type RoomKickPayload = RoomIdPayload & {
+  playerId: string;
+};
+
 export type RoomCreatePayload = {
   game: GameId;
 };
 
 export type RoomPayload = {
-  room: Room;
+  room: BaseRoom;
 };
 
 export type RoomUpdatePayload = RoomIdPayload & {
@@ -38,11 +37,21 @@ export type RoomUpdatePayload = RoomIdPayload & {
   rules?: Record<string, boolean>;
 };
 
+export type GameActionPayload<
+  TAction extends { type: string } = { type: string },
+> = RoomIdPayload & {
+  action: TAction;
+};
+
 export type PlayerRenamePayload = {
   name: string;
 };
 
-export type ClientToServerEvents = {
+/**
+ * Core client-to-server events for room/player management.
+ * Game-specific events are merged via intersection types.
+ */
+export type CoreClientToServerEvents = {
   [EVENTS.ROOM_REJOIN]: (
     payload: null,
     ack?: (response: RejoinRoomAck) => void
@@ -63,6 +72,10 @@ export type ClientToServerEvents = {
     payload: RoomIdPayload,
     ack?: (response: SocketAck) => void
   ) => void;
+  [EVENTS.ROOM_KICK]: (
+    payload: RoomKickPayload,
+    ack?: (response: SocketAck) => void
+  ) => void;
   [EVENTS.ROOM_CLOSE]: (
     payload: RoomIdPayload,
     ack?: (response: SocketAck) => void
@@ -75,13 +88,46 @@ export type ClientToServerEvents = {
     payload: RoomIdPayload,
     ack?: (response: SocketAck) => void
   ) => void;
-} & ClientToServerFarmEvents;
+  [EVENTS.GAME_ACTION]: (
+    payload: GameActionPayload,
+    ack?: (response: SocketAck) => void
+  ) => void;
+  [EVENTS.GAME_REMATCH]: (
+    payload: RoomIdPayload,
+    ack?: (response: SocketAck) => void
+  ) => void;
+  [EVENTS.GAME_RETURN_TO_LOBBY]: (
+    payload: RoomIdPayload,
+    ack?: (response: SocketAck) => void
+  ) => void;
+};
 
-export type ServerToClientEvents = {
+/**
+ * Core server-to-client events for room/player management.
+ * Game-specific events are merged via intersection types.
+ */
+export type GameStateUpdatePayload = {
+  state: BaseRoom;
+};
+
+export type GameEffectPayload = {
+  type: string;
+  payload?: unknown;
+};
+
+export type GameErrorPayload = {
+  code: string;
+  params?: Record<string, unknown>;
+};
+
+export type CoreServerToClientEvents = {
   [EVENTS.CONNECT]: () => void;
-  [EVENTS.ROOMS_LIST]: (rooms: Room[]) => void;
+  [EVENTS.ROOMS_LIST]: (rooms: BaseRoom[]) => void;
   [EVENTS.ROOM_CLOSED]: () => void;
   [EVENTS.NOTIFICATION]: (payload: ServerNotification) => void;
   [EVENTS.ONLINE_COUNT]: (online: number) => void;
   [EVENTS.GAME_STARTED]: (payload: RoomPayload) => void;
-} & ServerToClientFarmEvents;
+  [EVENTS.GAME_STATE_UPDATE]: (payload: GameStateUpdatePayload) => void;
+  [EVENTS.GAME_EFFECT]: (payload: GameEffectPayload) => void;
+  [EVENTS.GAME_ERROR]: (payload: GameErrorPayload) => void;
+};

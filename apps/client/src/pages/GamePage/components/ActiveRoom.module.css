@@ -1,0 +1,123 @@
+.activeRoom {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  background: var(--bg-card);
+  padding: 20px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-elevation);
+  border: 2px solid var(--accent);
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+}
+
+.roomName {
+  font-size: 1.2rem;
+  font-weight: 700;
+  width: 100%;
+  margin: 0 0 5px;
+}
+
+.playerCount {
+  color: var(--text-muted);
+}
+
+input.roomName {
+  border: none;
+  border-bottom: 1px dashed var(--accent);
+  background-color: var(--surface-input-bg);
+  color: var(--surface-input-text);
+  border-radius: 8px;
+  padding: 6px 8px;
+  box-sizing: border-box;
+  display: block;
+}
+
+input.roomName:focus {
+  outline: none;
+  border-bottom-color: var(--accent);
+}
+
+input.roomNameInvalid,
+input.roomNameInvalid:focus {
+  border-bottom-color: var(--error, #e53e3e);
+}
+
+h3.roomName {
+  color: var(--text-main);
+}
+
+.playersList {
+  background: var(--bg-page);
+  border-radius: 12px;
+  padding: 6px;
+}
+
+.playerItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--bg-surface-subtle);
+  gap: 8px;
+}
+
+.playerItem:last-child {
+  border-bottom: none;
+}
+
+.playerActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.kickButton {
+  padding: 4px 10px;
+  font-size: 0.75rem;
+}
+
+.currentUser {
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.rulesSection {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.rulesToggles {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.rulesTags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rulesTags > li {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.actions > * {
+  flex: 1 1 0;
+}

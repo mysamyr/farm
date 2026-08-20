@@ -1,0 +1,7 @@
+{
+  "extends": "../../../tsconfig.react.json",
+  "compilerOptions": {
+    "customConditions": ["development"]
+  },
+  "include": ["./**/*.ts", "./**/*.tsx", "../shared/**/*.ts"]
+}

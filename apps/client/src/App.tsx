@@ -1,6 +1,27 @@
 import { useEffect } from 'react';
 
 import {
+  ChangeNameModal,
+  Modal,
+  PostGameOverlay,
+  Snackbar,
+} from '@game/client-core/components';
+import { PATHS, getCatalogPath } from '@game/client-core/constants';
+import {
+  useActiveGame,
+  useGames,
+  useGamesLoader,
+  useModal,
+  useRoom,
+  useRoomSubscriptions,
+  useSnackbar,
+  useTheme,
+  useUnloadWarning,
+  useUsername,
+} from '@game/client-core/hooks';
+import { applyAccentColor, applyTheme } from '@game/client-core/utils';
+import { GameColor } from '@game/shared/constants';
+import {
   BrowserRouter,
   Navigate,
   Route,
@@ -8,64 +29,121 @@ import {
   useLocation,
 } from 'react-router-dom';
 
-import { Modal } from './components/ui/Modal';
-import { Snackbar } from './components/ui/Snackbar';
-import { PATHS } from './constants';
-import { GAME_WIN_EVENT } from './constants/events';
-import './games';
-import { getGameConfig } from './games/registry';
-import { useActiveGame } from './hooks/useActiveGame';
-import { useModal } from './hooks/useModal';
-import { useRoom } from './hooks/useRoom';
-import { useRoomSubscriptions } from './hooks/useRoomSubscriptions';
-import { useSnackbar } from './hooks/useSnackbar';
-import { useTheme } from './hooks/useTheme';
-import { useUnloadWarning } from './hooks/useUnloadWarning';
-import Dashboard from './pages/Dashboard';
-import { applyAccentColor } from './utils/theme';
+import { GameSubscriptions } from './components/GameSubscriptions.js';
+import { MainLayout } from './components/layout/MainLayout.js';
+import { GameContainer } from './games/index.js';
+import CatalogPage from './pages/Catalog/index.js';
+import GamePage from './pages/GamePage/index.js';
+
+function GamePlayPage() {
+  const { activeGame } = useActiveGame();
+
+  if (!activeGame) {
+    return <Navigate to={getCatalogPath()} replace />;
+  }
+
+  return <GameContainer gameId={activeGame} />;
+}
 
 function AppContent() {
-  const { open: modalOpen, modal, requestCloseModal } = useModal();
+  const { open: modalOpen, modal, requestCloseModal, showModal } = useModal();
   const { open: snackbarOpen, message, closeSnackbar } = useSnackbar();
   const { currentRoom } = useRoom();
   const { activeGame } = useActiveGame();
   const { theme } = useTheme();
-
+  const { isValid: hasUsername } = useUsername();
   const location = useLocation();
+  const {
+    games,
+    loading: gamesLoading,
+    error: gamesError,
+    getGame,
+  } = useGames();
 
-  const { color, GameboardPage, useGameSubscriptions } =
-    getGameConfig(activeGame);
+  const gameMetadata = activeGame ? getGame(activeGame) : undefined;
+  const accentColor = gameMetadata?.color ?? GameColor.purple;
+
+  useGamesLoader();
 
   useRoomSubscriptions();
-  useGameSubscriptions({
-    onCurrentUserWon: () => {
-      window.dispatchEvent(new CustomEvent(GAME_WIN_EVENT));
-    },
-  });
 
   useUnloadWarning(currentRoom);
 
   useEffect(() => {
-    applyAccentColor(color);
-  }, [color]);
+    applyAccentColor(accentColor);
+  }, [accentColor]);
 
-  // Sync theme with DOM
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
+    applyTheme(theme);
   }, [theme]);
 
   useEffect(() => {
+    if (modal?.closeOnNavigate === false) {
+      return;
+    }
     requestCloseModal();
-  }, [location.pathname, requestCloseModal]);
+  }, [location.pathname, modal?.closeOnNavigate, requestCloseModal]);
+
+  useEffect(() => {
+    if (hasUsername) {
+      return;
+    }
+    if (modalOpen && modal?.component === ChangeNameModal) {
+      return;
+    }
+    showModal({
+      component: ChangeNameModal,
+      props: { required: true },
+      closeOnBackdrop: false,
+      closeOnEscape: false,
+      closeOnNavigate: false,
+    });
+  }, [hasUsername, modal?.component, modalOpen, showModal]);
+
+  if (gamesLoading && games.length === 0) {
+    return (
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+        }}
+      >
+        <p>Loading...</p>
+      </div>
+    );
+  }
+
+  if (gamesError && games.length === 0) {
+    return (
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+          gap: '1rem',
+        }}
+      >
+        <p>Failed to load games: {gamesError}</p>
+        <button onClick={() => window.location.reload()}>Retry</button>
+      </div>
+    );
+  }
 
   return (
     <>
+      {activeGame && <GameSubscriptions key={activeGame} gameId={activeGame} />}
+      <PostGameOverlay />
       <Routes>
-        <Route path={PATHS.DASHBOARD} element={<Dashboard />} />
-        {currentRoom && (
-          <Route path={PATHS.GAME_BOARD} element={<GameboardPage />} />
-        )}
-        <Route path="*" element={<Navigate to={PATHS.DASHBOARD} replace />} />
+        <Route element={<MainLayout />}>
+          <Route path={PATHS.CATALOG} element={<CatalogPage />} />
+          <Route path={PATHS.GAME_BOARD} element={<GamePlayPage />} />
+          <Route path={PATHS.GAME} element={<GamePage />} />
+        </Route>
+        <Route path="*" element={<Navigate to={getCatalogPath()} replace />} />
       </Routes>
 
       {snackbarOpen && <Snackbar message={message} onClose={closeSnackbar} />}

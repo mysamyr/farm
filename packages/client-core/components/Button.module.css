@@ -1,0 +1,92 @@
+.button {
+  cursor: pointer;
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  transition:
+    transform 0.1s,
+    opacity 0.2s;
+}
+
+.button:hover {
+  transform: translateY(-1px);
+}
+
+.button:active {
+  transform: translateY(0);
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--text-muted);
+  outline-offset: 2px;
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  transform: none;
+}
+
+.primary {
+  padding: 12px 25px;
+  background-color: var(--accent);
+  color: var(--accent-contrast);
+  box-shadow: 0 4px 10px var(--accent-shadow);
+}
+
+.secondary {
+  background-color: var(--bg-surface-subtle);
+  color: var(--text-main);
+}
+
+.danger {
+  background-color: var(--status-error);
+  color: var(--accent-contrast);
+}
+
+.success {
+  background-color: var(--status-success);
+  color: var(--accent-contrast);
+}
+
+.icon {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  background-color: var(--bg-surface-subtle);
+  border-radius: var(--radius-lg);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5rem;
+}
+
+.icon:hover {
+  background-color: var(--border-base);
+  transform: none;
+}
+
+.icon:active {
+  transform: none;
+}
+
+.text {
+  padding: 8px 10px;
+  background: transparent;
+  color: var(--text-main);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.text:hover {
+  transform: none;
+  opacity: 0.8;
+}
+
+.text:active {
+  transform: none;
+}

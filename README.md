@@ -1,12 +1,11 @@
-# Farm Board game
+# Game Hub project
 
 - [ ] generate README.md
-
-review logging on server
-theme button - possibility to add new themes
-
-yellow button with white text...
-
-remove react-router-dom
-
-review possibility to reduce amount of trading events
+- [x] make possible to restart a game after game Finished (is all players agree) - core
+- [x] add kick feature
+- [ ] add password-protected rooms
+- [x] ARENA: add rule for 0 cooldown on start
+- [x] Dashboard redesign (more info about games)
+- [x] Header refactoring
+- [ ] Room Card refactoring
+- [ ] Single player games (based on rule)

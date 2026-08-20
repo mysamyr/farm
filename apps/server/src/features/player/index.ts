@@ -2,10 +2,10 @@ import { EVENTS, VALIDATION, ERROR } from '@game/shared/constants';
 
 import { PlayerRenamePayload } from '@game/shared/types';
 
-import { LogLevel } from '../../constants';
-import { log } from '../../services/logger';
-import type { AckFunc, AppServer, AppSocket } from '../../types';
-import { updateRoomsList } from '../room/room.service';
+import { LogLevel } from '../../constants/index.js';
+import { log } from '../../services/logger.js';
+import type { AckFunc, AppServer, AppSocket } from '../../types/index.js';
+import { updateRoomsList } from '../room/room.service.js';
 
 const renamePlayerHandler =
   (io: AppServer, socket: AppSocket) =>

@@ -1,54 +1,64 @@
 import {
-  ROOM_STATES,
   EVENTS,
   NOTIFICATION_TYPES,
+  ROOM_STATES,
 } from '@game/shared/constants';
 
-import type { Room, GameId } from '@game/shared/types';
+import type { GameId } from '@game/shared/constants';
+import type { BaseRoom } from '@game/shared/types';
 
 import { uuid } from '@game/shared/utils';
 
-import { LogLevel } from '../../constants';
-import { getGameModule } from '../../games';
-import { log } from '../../services/logger';
-import type { AppServer, AppSocket } from '../../types';
+import { LogLevel } from '../../constants/index.js';
+import { gameRegistry } from '../../games/registry.js';
+import { log } from '../../services/logger.js';
+import type { AppServer, AppSocket } from '../../types/index.js';
+import { findPendingDisconnectBySocketId } from '../connection/connection.store.js';
 
+import {
+  clearRematchTimer,
+  onPlayerLeftDuringRematch,
+  remapRematchPlayerId,
+} from './rematch.service.js';
 import {
   generateRoomName,
   shouldAutowin,
   shouldDeleteRoom,
-} from './room.helpers';
+} from './room.helpers.js';
+import {
+  getRoomById as getRoomByIdFromStore,
+  getRoomsMap,
+  listRooms as listRoomsFromStore,
+  removeRoom,
+  setRoom,
+} from './room.store.js';
 
-const rooms: Map<string, Room> = new Map();
+const rooms = getRoomsMap();
 
-export function getRoomById(roomId: string): Room | null {
-  return rooms.get(roomId) || null;
-}
-
-export function listRooms(): Room[] {
-  return Array.from(rooms.values());
-}
+export const getRoomById = getRoomByIdFromStore;
+export const listRooms = listRoomsFromStore;
 
 export function deleteRoom(roomId: string): void {
-  if (rooms.delete(roomId)) {
+  clearRematchTimer(roomId);
+  if (removeRoom(roomId)) {
     log(LogLevel.INFO, 'room:delete', { roomId });
   }
 }
 
-export function createRoom(ownerId: string, game: GameId): Room {
+export function createRoom(ownerId: string, game: GameId): BaseRoom {
   const id = uuid();
-  const roomFields = getGameModule(game).addRoomFields();
-  const room: Room = {
+  const roomFields = gameRegistry.get(game).addRoomFields();
+  const room: BaseRoom = {
     id,
     name: generateRoomName(rooms),
     ownerId,
     game,
     state: ROOM_STATES.IDLE,
     players: [],
+    blacklist: [],
     ...roomFields,
-    rules: roomFields.rules,
   };
-  rooms.set(id, room);
+  setRoom(room);
   log(LogLevel.INFO, 'room:create', {
     roomId: id,
     ownerId,
@@ -71,7 +81,7 @@ export function updateRoomsList(io: AppServer): void {
   io.emit(EVENTS.ROOMS_LIST, listRooms());
 }
 
-export function assignNewOwner(room: Room): void {
+export function assignNewOwner(room: BaseRoom): void {
   const nextOwner = room.players[0];
   if (nextOwner) {
     room.ownerId = nextOwner.id;
@@ -80,15 +90,18 @@ export function assignNewOwner(room: Room): void {
 
 export function removePlayerFromRoom(
   io: AppServer,
-  room: Room,
+  room: BaseRoom,
   socket: AppSocket
 ): void {
   const idx = room.players.findIndex(p => p.id === socket.id);
   if (idx === -1) return;
 
+  const wasInRematch =
+    room.state === ROOM_STATES.FINISHED && Boolean(room.rematch);
+
   room.players.splice(idx, 1);
   leaveRoom(io, room.id, socket.id);
-  const gameModule = getGameModule(room.game);
+  const gameModule = gameRegistry.get(room.game);
   gameModule.onPlayerRemoved?.(room, socket.id);
   if (shouldAutowin(room)) {
     gameModule.onPlayerWin?.(io, room, room.players[0]!);
@@ -101,9 +114,80 @@ export function removePlayerFromRoom(
   } else if (room.ownerId === socket.id) {
     assignNewOwner(room);
   }
+
+  if (wasInRematch && getRoomById(room.id)) {
+    onPlayerLeftDuringRematch(io, room, socket.id);
+  }
+
   updateRoomsList(io);
 
   log(LogLevel.INFO, 'room:left', { roomId: room.id, socketId: socket.id });
+}
+
+/**
+ * Kick a player from a room: blacklist their stable userId, notify, then remove.
+ * Returns false if the target player is not in the room.
+ */
+export function kickPlayerFromRoom(
+  io: AppServer,
+  room: BaseRoom,
+  playerId: string
+): boolean {
+  const player = room.players.find(p => p.id === playerId);
+  if (!player) {
+    return false;
+  }
+
+  const targetSocket = io.sockets.sockets.get(playerId);
+  let userId = targetSocket?.data.userId;
+
+  if (!userId) {
+    const pending = findPendingDisconnectBySocketId(playerId);
+    userId = pending?.userId;
+  }
+
+  if (userId && !room.blacklist.includes(userId)) {
+    room.blacklist.push(userId);
+  }
+
+  io.to(room.id).emit(EVENTS.NOTIFICATION, {
+    type: NOTIFICATION_TYPES.PLAYER_KICKED,
+    data: player.name,
+  });
+
+  if (targetSocket) {
+    removePlayerFromRoom(io, room, targetSocket);
+  } else {
+    // Player is in reconnect grace period — remove by id without a live socket
+    const idx = room.players.findIndex(p => p.id === playerId);
+    if (idx !== -1) {
+      const wasInRematch =
+        room.state === ROOM_STATES.FINISHED && Boolean(room.rematch);
+      room.players.splice(idx, 1);
+      const gameModule = gameRegistry.get(room.game);
+      gameModule.onPlayerRemoved?.(room, playerId);
+      if (shouldAutowin(room)) {
+        gameModule.onPlayerWin?.(io, room, room.players[0]!);
+      } else if (shouldDeleteRoom(room, playerId)) {
+        deleteRoom(room.id);
+      } else if (room.ownerId === playerId) {
+        assignNewOwner(room);
+      }
+      if (wasInRematch && getRoomById(room.id)) {
+        onPlayerLeftDuringRematch(io, room, playerId);
+      }
+      updateRoomsList(io);
+    }
+  }
+
+  log(LogLevel.INFO, 'room:kicked', {
+    roomId: room.id,
+    playerId,
+    userId,
+    playerName: player.name,
+  });
+
+  return true;
 }
 
 export function removePlayerFromAllRooms(io: AppServer, socket: AppSocket) {
@@ -119,7 +203,7 @@ export function removePlayerFromAllRooms(io: AppServer, socket: AppSocket) {
   }
 }
 
-export function getActiveRoom(playerId: string): Room | null {
+export function getActiveRoom(playerId: string): BaseRoom | null {
   for (const room of rooms.values()) {
     if (room.players.some(p => p.id === playerId)) return room;
   }
@@ -140,11 +224,10 @@ export function reassignPlayerInRooms(
       room.players = room.players.map(p =>
         p.id === oldSocketId ? { ...p, id: newSocket.id } : p
       );
-      getGameModule(room.game).onPlayerReconnected?.(
-        room,
-        oldSocketId,
-        newSocket.id
-      );
+      gameRegistry
+        .get(room.game)
+        .onPlayerReconnected?.(room, oldSocketId, newSocket.id);
+      remapRematchPlayerId(room, oldSocketId, newSocket.id);
 
       void newSocket.join(room.id);
 

@@ -15,6 +15,6 @@ dist
 .DS_Store
 
 # Custom
-assets/
+/assets
 logs/
 .env

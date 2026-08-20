@@ -1,0 +1,244 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ─── Equipped section ───────────────────────────────────── */
+.equippedSection {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.statsPreview {
+  flex: 0 0 220px;
+  min-width: 200px;
+}
+
+.slotGroups {
+  display: flex;
+  gap: 16px;
+  flex: 1;
+  flex-wrap: wrap;
+}
+
+.slotGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  min-width: 120px;
+}
+
+.slotGroupHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.slotGroupLabel {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.slotCounter {
+  font-size: 0.72rem;
+  font-weight: 600;
+  background: var(--accent-soft);
+  color: var(--accent);
+  padding: 1px 7px;
+  border-radius: 99px;
+}
+
+.activeSlots {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.passiveSlots {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.healingSlots {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.slot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.equippedSlot {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-sm);
+  border: 2px dashed var(--border-base);
+  flex-direction: column;
+  padding: 2px;
+}
+
+.slot.slotFilled {
+  border-style: solid;
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  box-shadow: 0 0 0 2px var(--accent-shadow);
+}
+
+.slot:hover.slotFilled:not(.slotLocked) {
+  box-shadow:
+    0 0 0 2px var(--accent-shadow),
+    var(--shadow-hover-card);
+}
+
+.slotLocked {
+  cursor: default;
+}
+
+.slotPlus {
+  font-size: 1.1rem;
+  color: var(--border-base);
+  line-height: 1;
+}
+
+.slotIcon {
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+.slotName {
+  font-size: 0.5rem;
+  font-weight: 600;
+  color: var(--accent);
+  text-align: center;
+  word-break: break-word;
+  line-height: 1.1;
+}
+
+.slotRemove {
+  position: absolute;
+  top: 1px;
+  right: 3px;
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  font-weight: 700;
+  line-height: 1;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.slot:hover .slotRemove {
+  opacity: 1;
+}
+
+/* ─── Skill grid ─────────────────────────────────────────── */
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sectionTitle {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.skillGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 8px;
+}
+
+/* ─── Actions ────────────────────────────────────────────── */
+.actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.actionButtons {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+/* ─── Waiting state ──────────────────────────────────────── */
+.waitingMessage {
+  text-align: center;
+  padding: 0;
+  margin: 0;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* ─── Congrats screen ───────────────────────────────────── */
+.congratsScreen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+}
+
+.congratsContent {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.congratsTitle {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0 0 12px;
+}
+
+.congratsMessage {
+  font-size: 1rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* ─── Mobile overrides ───────────────────────────────────── */
+@media (max-width: 479px) {
+  .equippedSection {
+    flex-direction: column;
+  }
+
+  .statsPreview {
+    flex: 1 1 auto;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .slotGroups {
+    width: 100%;
+  }
+
+  .skillGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .equippedSlot {
+    width: 48px;
+    height: 48px;
+  }
+}

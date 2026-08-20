@@ -1,7 +1,7 @@
-import type { Request, Response, NextFunction } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 
-import config from '../config';
-import { LogLevel } from '../constants';
+import config from '../config/index.js';
+import { LogLevel } from '../constants/index.js';
 
 const levels: Record<LogLevel, number> = {
   [LogLevel.DEBUG]: 10,
@@ -18,11 +18,15 @@ export function log(
   if (levels[level] < levels[config.LOG_LEVEL]) return;
   const time = new Date().toISOString();
   const payload = meta ? ` ${JSON.stringify(meta)}` : '';
-  // eslint-disable-next-line no-console
+
   console.log(`[${time}] [${level.toUpperCase()}] ${msg}${payload}`);
 }
 
-export function httpLogger(req: Request, res: Response, next: NextFunction) {
+export function loggingMiddleware(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   const start = Date.now();
   res.on('finish', () => {
     const ms = Date.now() - start;

@@ -1,49 +1,52 @@
 {
-  "name": "farm-game",
+  "name": "game",
   "version": "0.1.0",
   "description": "Board game socket server with rooms and configurable rules",
   "private": true,
+  "type": "module",
   "packageManager": "npm@11.0.0",
   "workspaces": [
-    "apps/server",
-    "apps/client",
-    "packages/shared"
+    "apps/*",
+    "packages/*",
+    "games/*"
   ],
   "engines": {
-    "node": ">=22"
+    "node": ">=24"
   },
   "scripts": {
-    "start": "node apps/server/dist/apps/server/src/index.js",
-    "clean": "rimraf apps/*/dist packages/*/dist",
+    "start": "node apps/server/dist/index.js",
+    "clean": "rimraf apps/*/dist games/*/dist packages/*/dist apps/*/*.tsbuildinfo games/*/*.tsbuildinfo packages/*/*.tsbuildinfo",
     "dev": "concurrently -n api,client -c cyan,magenta \"npm run dev:api\" \"npm run dev:client\"",
     "dev:api": "npm -w @game/server run dev",
     "dev:client": "npm -w @game/client run dev",
-    "build": "npm run build:shared && npm run build:api && npm run build:client",
+    "build": " npm run build:shared && npm run build:games &&npm run build:api && npm run build:client",
+    "build:games": "npm -w @game/game-farm run build && npm -w @game/game-arena run build",
     "build:shared": "npm -w @game/shared run build",
     "build:api": "npm -w @game/server run build",
     "build:client": "npm -w @game/client run build",
-    "typecheck": "npm run typecheck:api && npm run typecheck:client",
+    "typecheck": "npm run typecheck:api && npm run typecheck:client && npm run typecheck:games",
     "typecheck:api": "npm -w @game/server run typecheck",
     "typecheck:client": "npm -w @game/client run typecheck",
+    "typecheck:games": "npm -w @game/game-farm run typecheck && npm -w @game/game-arena run typecheck",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "format": "prettier --write .",
     "prepare": "husky"
   },
   "devDependencies": {
-    "concurrently": "^9.2.1",
+    "concurrently": "^10.0.3",
     "eslint": "^9.39.4",
     "eslint-config-prettier": "^10.1.8",
-    "eslint-import-resolver-typescript": "^4.4.4",
+    "eslint-import-resolver-typescript": "^4.4.5",
     "eslint-plugin-import": "^2.32.0",
-    "globals": "^17.3.0",
+    "globals": "^17.6.0",
     "husky": "^9.1.7",
-    "jiti": "^2.6.1",
-    "lint-staged": "^16.2.7",
-    "prettier": "^3.8.1",
-    "rimraf": "^6.0.1",
-    "typescript": "^5.9.3",
-    "typescript-eslint": "^8.54.0"
+    "jiti": "^2.7.0",
+    "lint-staged": "^17.0.7",
+    "prettier": "^3.8.4",
+    "rimraf": "^6.1.3",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.61.0"
   },
   "lint-staged": {
     "*.ts": [

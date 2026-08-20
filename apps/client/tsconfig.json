@@ -1,15 +1,7 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../tsconfig.react.json",
   "compilerOptions": {
-    "target": "ES2023",
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "jsx": "react-jsx",
-    "types": ["vite/client"],
-    "noEmit": true,
-    "paths": {
-      "@game/shared/*": ["../../packages/shared/*"]
-    }
+    "customConditions": ["development"]
   },
   "include": ["src", "vite.config.ts"]
 }

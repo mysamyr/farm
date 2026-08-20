@@ -1,30 +1,24 @@
 import { EVENTS } from '@game/shared/constants';
-import type { Player } from '@game/shared/types';
 
-import { LogLevel } from '../../constants';
-import { log } from '../../services/logger';
-import type { AppServer, AppSocket } from '../../types';
-import { getDefaultPlayerName } from '../player/player.helpers';
+import { LogLevel } from '../../constants/index.js';
+import { log } from '../../services/logger.js';
+import type { AppServer, AppSocket } from '../../types/index.js';
+import { getDefaultPlayerName } from '../player/player.helpers.js';
 import {
   reassignPlayerInRooms,
   removePlayerFromAllRooms,
-} from '../room/room.service';
+} from '../room/room.service.js';
+
+import {
+  removePendingDisconnect,
+  setPendingDisconnect,
+  type PendingDisconnect,
+} from './connection.store.js';
 
 const GRACE_PERIOD_MS = 30 * 1000;
 
-export type PendingDisconnect = {
-  timeout: NodeJS.Timeout;
-  oldSocketId: string;
-  player: Player;
-};
-
-const pendingDisconnects = new Map<string, PendingDisconnect>();
-
-export function getPendingDisconnect(
-  userId: string
-): PendingDisconnect | undefined {
-  return pendingDisconnects.get(userId);
-}
+export type { PendingDisconnect } from './connection.store.js';
+export { getPendingDisconnect } from './connection.store.js';
 
 export function reconnect(
   userId: string,
@@ -32,7 +26,7 @@ export function reconnect(
   pending: PendingDisconnect
 ): void {
   clearTimeout(pending.timeout);
-  pendingDisconnects.delete(userId);
+  removePendingDisconnect(userId);
   newSocket.data.player = { id: newSocket.id, name: pending.player.name };
   newSocket.data.userId = userId;
   if (pending.oldSocketId !== newSocket.id) {
@@ -54,11 +48,11 @@ export function gracefulDisconnect(
       ip,
     });
     removePlayerFromAllRooms(io, socket);
-    pendingDisconnects.delete(userId);
+    removePendingDisconnect(userId);
     broadcastOnlineCount(io);
   }, GRACE_PERIOD_MS);
 
-  pendingDisconnects.set(userId, { timeout, oldSocketId: socket.id, player });
+  setPendingDisconnect(userId, { timeout, oldSocketId: socket.id, player });
 }
 
 export function assignPlayer(socket: AppSocket): void {

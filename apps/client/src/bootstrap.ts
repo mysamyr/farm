@@ -1,0 +1,16 @@
+import { GameId } from '@game/shared/constants';
+
+import { gameRegistry } from './games/registry.js';
+
+// Register game loaders - add new games here
+gameRegistry.registerLoader(GameId.farm, () =>
+  import('@game/game-farm/client').then(m => ({
+    default: m.farmConfig,
+  }))
+);
+
+gameRegistry.registerLoader(GameId.arena, () =>
+  import('@game/game-arena/client').then(m => ({
+    default: m.arenaConfig,
+  }))
+);
