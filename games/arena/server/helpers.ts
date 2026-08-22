@@ -11,6 +11,7 @@ import {
   HealAction,
   LifeStealAction,
   ModifyStatAction,
+  type ReduceCooldownsAction,
   type Player,
   REQUIRED_ACTIVE_COUNT,
   REQUIRED_HEALING_COUNT,
@@ -228,9 +229,21 @@ export function splitOpponentActions(
 
 export function splitSelfActions(
   actions: GameAction[]
-): [ApplyStatusAction[], ModifyStatAction[], HealAction[], CleanseAction[]] {
+): [
+  ApplyStatusAction[],
+  ModifyStatAction[],
+  HealAction[],
+  CleanseAction[],
+  ReduceCooldownsAction[],
+] {
   return actions.reduce<
-    [ApplyStatusAction[], ModifyStatAction[], HealAction[], CleanseAction[]]
+    [
+      ApplyStatusAction[],
+      ModifyStatAction[],
+      HealAction[],
+      CleanseAction[],
+      ReduceCooldownsAction[],
+    ]
   >(
     (acc, action) => {
       if (action.target === ActionTarget.opponent) return acc;
@@ -239,8 +252,9 @@ export function splitSelfActions(
       if (action.type === ActionType.MODIFY_STAT) acc[1].push(action);
       if (action.type === ActionType.HEAL) acc[2].push(action);
       if (action.type === ActionType.CLEANSE) acc[3].push(action);
+      if (action.type === ActionType.REDUCE_COOLDOWNS) acc[4].push(action);
       return acc;
     },
-    [[], [], [], []]
+    [[], [], [], [], []]
   );
 }

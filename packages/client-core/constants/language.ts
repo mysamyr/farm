@@ -91,6 +91,8 @@ const translations: Record<LanguageCode, Translation> = {
     },
     changeName: {
       title: 'Your name',
+      description:
+        'Please enter a display name. It is required to create rooms and play games with others.',
       placeholder: 'Enter your name',
       save: 'Save',
       cancel: 'Cancel',
@@ -113,6 +115,7 @@ const translations: Record<LanguageCode, Translation> = {
       createRoomBtn: 'Create Room',
       openRoomsHeader: 'Open Rooms',
       noActiveRooms: 'No open rooms.',
+      createRoom: 'Create a room to start.',
       roomRules: 'Rules',
       players: 'Players',
     },
@@ -238,6 +241,8 @@ const translations: Record<LanguageCode, Translation> = {
     },
     changeName: {
       title: 'Ваше імʼя',
+      description:
+        'Будь ласка, введіть відображуване імʼя. Воно потрібне, щоб створювати кімнати та грати з іншими.',
       placeholder: 'Введіть ваше імʼя',
       save: 'Зберегти',
       cancel: 'Скасувати',
@@ -260,6 +265,7 @@ const translations: Record<LanguageCode, Translation> = {
       createRoomBtn: 'Створити кімнату',
       openRoomsHeader: 'Відкриті кімнати',
       noActiveRooms: 'Немає відкритих кімнат.',
+      createRoom: 'Створіть кімнату щоб розпочати.',
       roomRules: 'Правила',
       players: 'Гравців',
     },

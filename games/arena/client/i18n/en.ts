@@ -1,4 +1,9 @@
-import { GAME_RULES } from '../../shared/index.js';
+import {
+  GAME_RULES,
+  REQUIRED_ACTIVE_COUNT,
+  REQUIRED_HEALING_COUNT,
+  REQUIRED_PASSIVE_COUNT,
+} from '../../shared/index.js';
 
 import type { ArenaHelpTranslation, ArenaTranslation } from './types.js';
 
@@ -34,6 +39,7 @@ export const arenaGameTranslation: ArenaTranslation = {
     regeneration: 'Regeneration',
     resistance: 'Magic Shield',
     cleanse: 'Cleanse',
+    meditation: 'Meditation',
     rage: 'Rage',
     spiked_armor: 'Spiked Armor',
     reflect: 'Reflect',
@@ -53,6 +59,7 @@ export const arenaGameTranslation: ArenaTranslation = {
     heal: 'Heal for {value}',
     lifesteal: 'Lifesteal {value}',
     cleanse: 'Cleanse all negative effects',
+    reduceCooldowns: 'Reduce all your cooldowns by {amount}',
     applyStatus: 'Apply {status}{value}{duration}',
     modifyStat: '{sign}{value} {stat} to {target}{duration}',
     durationTurns: 'for {turns} turns',
@@ -105,6 +112,7 @@ export const arenaGameTranslation: ArenaTranslation = {
     thorns: '-{value} thorns',
     leech: '+{value} leech',
     cleanse: 'Cleansed negative effects',
+    reduceCooldowns: 'Reduced all own cooldowns by {value}',
     resist: '{target}: resisted {status}',
     reflect: '{target}: reflected debuffs',
     applyStatus: '{target}: applied {status}{value}{duration}',
@@ -133,8 +141,7 @@ export const arenaHelpTranslation: ArenaHelpTranslation = {
     crit: 'Chance to double the total damage.',
   },
   skillsHeader: 'Skills',
-  skillsIntro:
-    'Before the fight, choose 2 active skills, 1 healing skill, and 2 passive skills. Attack and Skip are always available.',
+  skillsIntro: `Before the fight, choose ${REQUIRED_ACTIVE_COUNT} active skills, ${REQUIRED_HEALING_COUNT} healing skill, and ${REQUIRED_PASSIVE_COUNT} passive skills. Attack and Skip are always available.`,
   activeSkills:
     'Active skills are used on your turn and have a cooldown. They can deal damage, apply effects, buff you, or weaken the opponent.',
   healingSkills:
@@ -176,6 +183,7 @@ export const arenaHelpTranslation: ArenaHelpTranslation = {
     'Death check',
     'Reset the cooldown of the skill you used',
     'Reduce other skill cooldowns (skipped if you are stunned)',
+    'Apply end-of-turn cooldown reduction effects on self (for example, Meditation)',
     'Reduce duration of active effects (skipped for Bleed, Poison, Stun, Regeneration, and stat reductions applied this turn)',
     'Next turn',
   ],

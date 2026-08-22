@@ -67,6 +67,8 @@ function getEffectText(
       return t.leech.replace('{value}', String(effect.value));
     case LogEffectKind.cleanse:
       return t.cleanse;
+    case LogEffectKind.reduce_cooldowns:
+      return t.reduceCooldowns.replace('{value}', String(effect.value));
     case LogEffectKind.resist:
       return t.resist
         .replace('{target}', getTargetLabel(effect.target, util))
@@ -120,6 +122,7 @@ function getEffectClass(effect: LogEffect): string | undefined {
     case LogEffectKind.reflect:
       return styles.dodge;
     case LogEffectKind.cleanse:
+    case LogEffectKind.reduce_cooldowns:
     case LogEffectKind.apply_status:
     case LogEffectKind.modify_stat:
       return undefined;

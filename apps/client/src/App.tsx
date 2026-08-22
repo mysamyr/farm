@@ -94,11 +94,9 @@ function AppContent() {
     showModal({
       component: ChangeNameModal,
       props: { required: true },
-      closeOnBackdrop: false,
-      closeOnEscape: false,
       closeOnNavigate: false,
     });
-  }, [hasUsername, modal?.component, modalOpen, showModal]);
+  }, []);
 
   if (gamesLoading && games.length === 0) {
     return (

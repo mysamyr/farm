@@ -50,6 +50,7 @@ function ChangeNameModal({
   return (
     <form className={styles.container} onSubmit={onSubmit}>
       <h3 className={styles.title}>{t.title}</h3>
+      <p className={styles.description}>{t.description}</p>
       <label className={styles.label} htmlFor="change-name-input">
         {t.placeholder}
       </label>

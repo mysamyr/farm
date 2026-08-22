@@ -5,7 +5,12 @@ import { emitGameEvent, getSocketId } from '@game/client-core/socket';
 
 import { EVENTS, ROOM_STATES } from '@game/shared/constants';
 
-import { EffectId, type Room } from '@game/game-arena/shared';
+import {
+  ActionTarget,
+  EffectId,
+  LogEffectKind,
+  type Room,
+} from '@game/game-arena/shared';
 
 import { useArenaTranslation } from '../../../hooks/useArenaTranslation.js';
 import { getActivePlayerId } from '../../../utils/index.js';
@@ -14,6 +19,24 @@ import BattleLog from './BattleLog.js';
 import styles from './FightPhase.module.css';
 import PlayerSkills from './PlayerSkills.js';
 import PlayerStatsDisplay from './PlayerStats.js';
+
+function getCritHitEventKey(room: Room, playerId: string): string | undefined {
+  const lastStep = room.steps.at(-1);
+  if (!lastStep) return undefined;
+
+  const opponentId = room.players.find(p => p.id !== lastStep.playerId)?.id;
+  if (!opponentId) return undefined;
+
+  const gotCritHit = lastStep.effects.some(effect => {
+    if (effect.kind !== LogEffectKind.damage || !effect.isCrit) return false;
+
+    const targetId =
+      effect.target === ActionTarget.self ? lastStep.playerId : opponentId;
+    return targetId === playerId;
+  });
+
+  return gotCritHit ? `${lastStep.step}-${playerId}` : undefined;
+}
 
 export default function FightPhase(): ReactElement {
   const { currentRoom: rawCurrentRoom } = useRoom();
@@ -61,6 +84,7 @@ export default function FightPhase(): ReactElement {
                 key={player.id}
                 player={player}
                 isActive={activePlayerId === player.id}
+                critHitEventKey={getCritHitEventKey(room, player.id)}
                 isWinner={room.winner === player.id}
                 isLoser={
                   isGameOver && !!room.winner && room.winner !== player.id

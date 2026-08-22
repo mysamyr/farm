@@ -114,8 +114,6 @@ export interface ModalConfig<
   component: ComponentType<T>;
   props?: T;
   onClose?: (reason: ModalCloseReason) => boolean | void;
-  closeOnBackdrop?: boolean;
-  closeOnEscape?: boolean;
   closeOnNavigate?: boolean;
 }
 
@@ -131,23 +129,12 @@ export const useModalStore = create<ModalSlice>((set, get) => ({
     }
     set({
       open: true,
-      modal: {
-        closeOnBackdrop: true,
-        closeOnEscape: true,
-        ...config,
-      } as ModalConfig,
+      modal: config as ModalConfig,
     });
   },
   requestCloseModal: (reason = 'programmatic') => {
     const activeModal = get().modal;
     if (!activeModal) {
-      return;
-    }
-
-    if (reason === 'backdrop' && activeModal.closeOnBackdrop === false) {
-      return;
-    }
-    if (reason === 'escape' && activeModal.closeOnEscape === false) {
       return;
     }
 

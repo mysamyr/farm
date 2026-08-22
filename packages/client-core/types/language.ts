@@ -36,6 +36,7 @@ export type Translation = {
   };
   changeName: {
     title: string;
+    description: string;
     placeholder: string;
     save: string;
     cancel: string;
@@ -58,6 +59,7 @@ export type Translation = {
     createRoomBtn: string;
     openRoomsHeader: string;
     noActiveRooms: string;
+    createRoom: string;
     roomRules: string;
     players: string;
   };

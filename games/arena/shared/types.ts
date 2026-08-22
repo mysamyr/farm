@@ -50,10 +50,7 @@ export type DamageDealtActionValue = {
 };
 
 export type InstantActionValue =
-  | RawActionValue
-  | CurrentHpActionValue
-  | MaxHpActionValue
-  | StatActionValue;
+  RawActionValue | CurrentHpActionValue | MaxHpActionValue | StatActionValue;
 
 export type ReactiveActionValue = InstantActionValue | DamageDealtActionValue;
 
@@ -135,13 +132,20 @@ export type CleanseAction = BaseAction & {
   target: ActionTarget.self;
 };
 
+export type ReduceCooldownsAction = BaseAction & {
+  type: ActionType.REDUCE_COOLDOWNS;
+  target: ActionTarget.self;
+  amount: number;
+};
+
 export type GameAction =
   | DamageAction
   | HealAction
   | ApplyStatusAction
   | ModifyStatAction
   | CleanseAction
-  | LifeStealAction;
+  | LifeStealAction
+  | ReduceCooldownsAction;
 
 // Skills
 
@@ -236,6 +240,7 @@ export type LogEffect =
       duration?: number;
     })
   | (BaseLogEffect & { kind: LogEffectKind.cleanse })
+  | (BaseLogEffect & { kind: LogEffectKind.reduce_cooldowns; value: number })
   | (BaseLogEffect & {
       kind: LogEffectKind.resist;
       status: EffectId.bleed | EffectId.poison;
