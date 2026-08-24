@@ -29,37 +29,3 @@ export function shouldAutowin(room: BaseRoom): boolean {
     room.players.length < minPlayers
   );
 }
-
-export function generateRoomName(rooms: Map<string, BaseRoom>): string {
-  const adjectives = [
-    'Sunny',
-    'Misty',
-    'Quiet',
-    'Lively',
-    'Happy',
-    'Sad',
-    'Brave',
-    'Shy',
-    'Clever',
-    'Lazy',
-  ];
-  const nouns = [
-    'Meadow',
-    'Forest',
-    'River',
-    'Mountain',
-    'Valley',
-    'Ocean',
-    'Desert',
-    'Island',
-    'Village',
-    'City',
-  ];
-  const adjective = adjectives[Math.floor(Math.random() * adjectives.length)];
-  const noun = nouns[Math.floor(Math.random() * nouns.length)];
-  const name = `${adjective} ${noun}`;
-  if (Array.from(rooms.values()).some(room => room.name === name)) {
-    return generateRoomName(rooms);
-  }
-  return name;
-}

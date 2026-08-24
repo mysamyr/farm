@@ -20,11 +20,7 @@ import {
   onPlayerLeftDuringRematch,
   remapRematchPlayerId,
 } from './rematch.service.js';
-import {
-  generateRoomName,
-  shouldAutowin,
-  shouldDeleteRoom,
-} from './room.helpers.js';
+import { shouldAutowin, shouldDeleteRoom } from './room.helpers.js';
 import {
   getRoomById as getRoomByIdFromStore,
   getRoomsMap,
@@ -45,12 +41,16 @@ export function deleteRoom(roomId: string): void {
   }
 }
 
-export function createRoom(ownerId: string, game: GameId): BaseRoom {
+export function createRoom(
+  ownerId: string,
+  game: GameId,
+  name: string
+): BaseRoom {
   const id = uuid();
   const roomFields = gameRegistry.get(game).addRoomFields();
   const room: BaseRoom = {
     id,
-    name: generateRoomName(rooms),
+    name,
     ownerId,
     game,
     state: ROOM_STATES.IDLE,
@@ -97,7 +97,9 @@ export function removePlayerFromRoom(
   if (idx === -1) return;
 
   const wasInRematch =
-    room.state === ROOM_STATES.FINISHED && Boolean(room.rematch);
+    (room.state === ROOM_STATES.FINISHED ||
+      room.state === ROOM_STATES.RUNNING) &&
+    Boolean(room.rematch);
 
   room.players.splice(idx, 1);
   leaveRoom(io, room.id, socket.id);
@@ -162,7 +164,9 @@ export function kickPlayerFromRoom(
     const idx = room.players.findIndex(p => p.id === playerId);
     if (idx !== -1) {
       const wasInRematch =
-        room.state === ROOM_STATES.FINISHED && Boolean(room.rematch);
+        (room.state === ROOM_STATES.FINISHED ||
+          room.state === ROOM_STATES.RUNNING) &&
+        Boolean(room.rematch);
       room.players.splice(idx, 1);
       const gameModule = gameRegistry.get(room.game);
       gameModule.onPlayerRemoved?.(room, playerId);

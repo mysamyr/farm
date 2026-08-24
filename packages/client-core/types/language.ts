@@ -107,5 +107,14 @@ export type Translation = {
     roomClosed: (playerName: string) => string;
     gameFinished: (winnerName: string) => string;
     tradeCancelled: (playerName: string) => string;
+    returnedToLobby: (playerName: string) => string;
+  };
+  inGame: {
+    lobby: string;
+    lobbyConfirmTitle: string;
+    lobbyConfirmMessage: string;
+    lobbyConfirmButton: string;
+    cancel: string;
+    voteTitle: string;
   };
 };

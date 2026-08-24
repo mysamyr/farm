@@ -58,6 +58,38 @@ export function returnRoomToLobby(io: AppServer, room: BaseRoom): void {
   log(LogLevel.INFO, 'room:returned-to-lobby', { roomId: room.id });
 }
 
+export function beginMidGameVote(io: AppServer, room: BaseRoom): void {
+  if (room.state !== ROOM_STATES.RUNNING) {
+    return;
+  }
+  if (room.rematch) {
+    return;
+  }
+
+  const minPlayers = gameRegistry.getConfig(room.game).minPlayers;
+  if (room.players.length < minPlayers) {
+    return;
+  }
+
+  room.rematch = {
+    expiresAt: Date.now() + REMATCH_TIMEOUT_MS,
+    readyPlayerIds: [],
+  };
+
+  const timer = setTimeout(() => {
+    rematchTimers.delete(room.id);
+    const current = getRoomById(room.id);
+    if (!current || current.state !== ROOM_STATES.RUNNING || !current.rematch) {
+      return;
+    }
+    delete current.rematch;
+    broadcastRoom(io, current);
+  }, REMATCH_TIMEOUT_MS);
+  rematchTimers.set(room.id, timer);
+
+  broadcastRoom(io, room);
+}
+
 export function beginPostGame(io: AppServer, room: BaseRoom): void {
   if (room.state !== ROOM_STATES.FINISHED) {
     return;
@@ -105,7 +137,11 @@ export function voteRematch(
   room: BaseRoom,
   playerId: string
 ): boolean {
-  if (room.state !== ROOM_STATES.FINISHED || !room.rematch) {
+  if (
+    (room.state !== ROOM_STATES.FINISHED &&
+      room.state !== ROOM_STATES.RUNNING) ||
+    !room.rematch
+  ) {
     return false;
   }
   if (!room.players.some(player => player.id === playerId)) {
@@ -126,12 +162,34 @@ export function voteRematch(
   return true;
 }
 
+export function declineMidGameRematchVote(
+  io: AppServer,
+  room: BaseRoom,
+  playerId: string
+): boolean {
+  if (room.state !== ROOM_STATES.RUNNING || !room.rematch) {
+    return false;
+  }
+  if (!room.players.some(player => player.id === playerId)) {
+    return false;
+  }
+
+  clearRematchTimer(room.id);
+  delete room.rematch;
+  broadcastRoom(io, room);
+  return true;
+}
+
 export function onPlayerLeftDuringRematch(
   io: AppServer,
   room: BaseRoom,
   playerId: string
 ): void {
-  if (room.state !== ROOM_STATES.FINISHED || !room.rematch) {
+  if (
+    (room.state !== ROOM_STATES.FINISHED &&
+      room.state !== ROOM_STATES.RUNNING) ||
+    !room.rematch
+  ) {
     return;
   }
 

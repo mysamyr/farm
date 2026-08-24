@@ -3,14 +3,15 @@ import { type ReactElement, type ReactNode, useState } from 'react';
 import {
   Button,
   ChangeNameModal,
+  ConfirmationModal,
   Dropdown,
   Sidebar,
   SiteRulesModal,
+  BurgerIcon,
 } from '@game/client-core/components';
 import {
   ButtonVariant,
   getCatalogPath,
-  getGamePath,
   isGameBoardPathname,
   LANGUAGES_CONFIG,
   Theme,
@@ -26,9 +27,9 @@ import {
   useUsername,
 } from '@game/client-core/hooks';
 import { emitEvent } from '@game/client-core/socket';
-import { classNames, resolveErrorMessage } from '@game/client-core/utils';
+import { resolveErrorMessage } from '@game/client-core/utils';
 import { EVENTS, ROOM_STATES } from '@game/shared/constants';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 import { useGameConfig } from '../../hooks/index.js';
 
@@ -41,7 +42,6 @@ type HeaderProps = {
 export function Header({ additionalActions }: HeaderProps): ReactElement {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
-  const navigate = useNavigate();
 
   const { online } = useConnection();
   const { showModal } = useModal();
@@ -49,13 +49,17 @@ export function Header({ additionalActions }: HeaderProps): ReactElement {
   const { theme, setTheme } = useTheme();
   const { username } = useUsername();
   const { activeGame, cleanupCurrentIdleRoom } = useActiveGame();
-  const { currentRoom, setCurrentRoom } = useRoom();
+  const { currentRoom } = useRoom();
   const { showSnackbar } = useSnackbar();
   const { config: gameConfig } = useGameConfig(activeGame);
 
   const headerCopy = translation.header;
+  const inGameCopy = translation.inGame;
   const helpModal = activeGame ? gameConfig?.HelpModal : SiteRulesModal;
-  const showLeaveRoom = isGameBoardPathname(location.pathname) && !!currentRoom;
+  const isOnPlayRoute = isGameBoardPathname(location.pathname);
+  const showLeaveRoom = isOnPlayRoute && !!currentRoom;
+  const isRunningGame =
+    isOnPlayRoute && currentRoom?.state === ROOM_STATES.RUNNING;
   const displayName = username.trim() || headerCopy.setName;
   const isLightTheme = theme === Theme.LIGHT;
 
@@ -64,7 +68,6 @@ export function Header({ additionalActions }: HeaderProps): ReactElement {
     label: item.name,
     onSelect: () => {
       setLanguage(item.code);
-      setSidebarOpen(false);
     },
   }));
 
@@ -101,100 +104,106 @@ export function Header({ additionalActions }: HeaderProps): ReactElement {
       return;
     }
 
-    const { id: roomId, game } = currentRoom;
+    const { id: roomId } = currentRoom;
 
     emitEvent(EVENTS.ROOM_LEAVE, { roomId }, res => {
       if (!res.ok) {
         showSnackbar(resolveErrorMessage(res.error, translation));
       }
-      setCurrentRoom(null);
-      void navigate(getGamePath(game));
     });
   }
 
-  function renderTools(placement: 'desktop' | 'sidebar') {
-    const inSidebar = placement === 'sidebar';
-    const toolVariant = inSidebar ? ButtonVariant.SECONDARY : ButtonVariant.ICON;
-    const toolClassName = inSidebar ? styles.sidebarControl : undefined;
-    const themeIcon = isLightTheme ? '🌙' : '☀️';
-    const themeLabel = isLightTheme ? headerCopy.darkMode : headerCopy.lightMode;
-
-    return (
-      <>
-        <Button
-          variant={ButtonVariant.TEXT}
-          className={classNames(
-            styles.username,
-            inSidebar && styles.sidebarControl
-          )}
-          title={translation.changeName.title}
-          onClick={openChangeName}
-        >
-          {displayName}
-        </Button>
-
-        <Dropdown
-          triggerVariant={toolVariant}
-          triggerTitle={headerCopy.changeLanguage}
-          trigger={inSidebar ? `🌐 ${headerCopy.language}` : '🌐'}
-          items={languageItems}
-          align={inSidebar ? 'left' : 'right'}
-          triggerClassName={toolClassName}
-        />
-
-        <Button
-          variant={toolVariant}
-          className={toolClassName}
-          title={headerCopy.toggleTheme}
-          onClick={() => {
-            toggleTheme();
-            if (inSidebar) {
-              closeSidebar();
-            }
-          }}
-        >
-          {inSidebar ? `${themeIcon} ${themeLabel}` : themeIcon}
-        </Button>
-
-        <Button
-          variant={toolVariant}
-          className={toolClassName}
-          title={headerCopy.showRules}
-          onClick={openHelp}
-          disabled={!helpModal}
-        >
-          {inSidebar ? `❓ ${headerCopy.rules}` : '❓'}
-        </Button>
-      </>
-    );
+  function handleReturnToLobby() {
+    if (!currentRoom) {
+      return;
+    }
+    const { id: roomId } = currentRoom;
+    emitEvent(EVENTS.GAME_RETURN_TO_LOBBY, { roomId }, res => {
+      if (!res.ok) {
+        showSnackbar(resolveErrorMessage(res.error, translation));
+      }
+    });
   }
 
-  function renderExtraActions(inSidebar: boolean) {
+  function handleRematch() {
+    if (!currentRoom) {
+      return;
+    }
+    emitEvent(EVENTS.GAME_REMATCH, { roomId: currentRoom.id }, res => {
+      if (!res.ok) {
+        showSnackbar(resolveErrorMessage(res.error, translation));
+      }
+    });
+  }
+
+  function openReturnToLobbyConfirm() {
+    closeSidebar();
+    showModal({
+      component: ConfirmationModal,
+      props: {
+        title: inGameCopy.lobbyConfirmTitle,
+        message: inGameCopy.lobbyConfirmMessage,
+        confirmLabel: inGameCopy.lobbyConfirmButton,
+        cancelLabel: inGameCopy.cancel,
+        onConfirm: handleReturnToLobby,
+      },
+    });
+  }
+
+  function renderExtraActions() {
+    const handleLeaveRoomClick = () => {
+      closeSidebar();
+      handleLeaveRoom();
+    };
+
+    const leaveRoomButton = showLeaveRoom ? (
+      <Button
+        variant={isRunningGame ? ButtonVariant.DANGER : ButtonVariant.SECONDARY}
+        className={styles.sidebarControl}
+        onClick={handleLeaveRoomClick}
+      >
+        {translation.roomButton.leaveRoom}
+      </Button>
+    ) : null;
+
     if (!showLeaveRoom && !additionalActions) {
       return null;
     }
 
-    return (
-      <>
-        {showLeaveRoom ? (
+    if (isRunningGame) {
+      const postGameCopy = translation.postGame;
+      return (
+        <>
           <Button
             variant={ButtonVariant.SECONDARY}
-            className={inSidebar ? styles.sidebarControl : undefined}
+            className={styles.sidebarControl}
             onClick={() => {
               closeSidebar();
-              handleLeaveRoom();
+              handleRematch();
             }}
           >
-            {translation.roomButton.leaveRoom}
+            🔄 {postGameCopy.rematch}
           </Button>
-        ) : null}
+          <Button
+            variant={ButtonVariant.SECONDARY}
+            className={styles.sidebarControl}
+            onClick={openReturnToLobbyConfirm}
+          >
+            🏠 {inGameCopy.lobby}
+          </Button>
+          {leaveRoomButton}
+          {additionalActions}
+        </>
+      );
+    }
+
+    return (
+      <>
+        {leaveRoomButton}
         {additionalActions}
       </>
     );
   }
-
-  const extraActionsDesktop = renderExtraActions(false);
-  const extraActionsSidebar = renderExtraActions(true);
 
   return (
     <header className={styles.container}>
@@ -212,29 +221,57 @@ export function Header({ additionalActions }: HeaderProps): ReactElement {
         </div>
       </div>
 
-      <div className={styles.desktopTools}>
-        <div className={styles.rightSlot}>{renderTools('desktop')}</div>
-        {extraActionsDesktop ? (
-          <div className={styles.additionalActions}>{extraActionsDesktop}</div>
-        ) : null}
-      </div>
-
       <Button
         variant={ButtonVariant.ICON}
-        className={styles.burger}
         title={headerCopy.openMenu}
         onClick={() => setSidebarOpen(true)}
       >
-        <span className={styles.burgerGlyph}>☰</span>
+        <BurgerIcon />
       </Button>
 
       <Sidebar open={sidebarOpen} onClose={closeSidebar}>
         <div className={styles.sidebarContent}>
           <div className={styles.sidebarSection}>
-            <div className={styles.sidebarSlot}>{renderTools('sidebar')}</div>
-            {extraActionsSidebar ? (
-              <div className={styles.sidebarSlot}>{extraActionsSidebar}</div>
-            ) : null}
+            <Button
+              variant={ButtonVariant.TEXT}
+              className={styles.sidebarControl}
+              title={translation.changeName.title}
+              onClick={openChangeName}
+            >
+              {displayName}
+            </Button>
+
+            <Dropdown
+              triggerVariant={ButtonVariant.SECONDARY}
+              triggerTitle={headerCopy.changeLanguage}
+              trigger={`🌐 ${headerCopy.language}`}
+              items={languageItems}
+              align="left"
+              triggerClassName={styles.sidebarControl}
+            />
+
+            <Button
+              variant={ButtonVariant.SECONDARY}
+              className={styles.sidebarControl}
+              title={headerCopy.toggleTheme}
+              onClick={toggleTheme}
+            >
+              {isLightTheme
+                ? '🌙' + ' ' + headerCopy.darkMode
+                : '☀️' + ' ' + headerCopy.lightMode}
+            </Button>
+
+            <Button
+              variant={ButtonVariant.SECONDARY}
+              className={styles.sidebarControl}
+              title={headerCopy.showRules}
+              onClick={openHelp}
+              disabled={!helpModal}
+            >
+              {`❓ ${headerCopy.rules}`}
+            </Button>
+
+            {renderExtraActions()}
           </div>
         </div>
       </Sidebar>

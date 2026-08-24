@@ -4,10 +4,10 @@ import { ROOM_STATES, EVENTS } from '@game/shared/constants';
 import { useNavigate } from 'react-router-dom';
 
 import { ButtonVariant, getGamePath } from '../constants/index.js';
-import { useLanguage } from '../hooks/useLanguage.js';
-import { useRoom } from '../hooks/useRoom.js';
-import { useServerCountdown } from '../hooks/useServerCountdown.js';
-import { useSnackbar } from '../hooks/useSnackbar.js';
+import { useLanguage } from '../hooks/index.js';
+import { useServerCountdown } from '../hooks/index.js';
+import { useSnackbar } from '../hooks/index.js';
+import { useRoom } from '../hooks/index.js';
 import { emitEvent, getSocketId } from '../socket/index.js';
 import { classNames, resolveErrorMessage } from '../utils/index.js';
 
@@ -25,9 +25,17 @@ export function PostGameOverlay(): ReactElement | null {
   const remainingSec = useServerCountdown(currentRoom?.rematch?.expiresAt);
   const [minimized, setMinimized] = useState(false);
 
+  const isPostGame = currentRoom?.state === ROOM_STATES.FINISHED;
+  const isMidGameVote =
+    currentRoom?.state === ROOM_STATES.RUNNING && Boolean(currentRoom?.rematch);
+
   useEffect(() => {
-    setMinimized(false);
-  }, [currentRoom?.id, currentRoom?.rematch?.expiresAt]);
+    if (isMidGameVote) {
+      setMinimized(false);
+    } else {
+      setMinimized(false);
+    }
+  }, [currentRoom?.id, currentRoom?.rematch?.expiresAt, isMidGameVote]);
 
   const handleLeave = useCallback(() => {
     if (!currentRoom) {
@@ -53,6 +61,17 @@ export function PostGameOverlay(): ReactElement | null {
     });
   }, [currentRoom, showSnackbar, translation]);
 
+  const handleDeclineRematch = useCallback(() => {
+    if (!currentRoom) {
+      return;
+    }
+    emitEvent(EVENTS.GAME_REMATCH_DECLINE, { roomId: currentRoom.id }, res => {
+      if (!res.ok) {
+        showSnackbar(resolveErrorMessage(res.error, translation));
+      }
+    });
+  }, [currentRoom, showSnackbar, translation]);
+
   const handleLobby = useCallback(() => {
     if (!currentRoom) {
       return;
@@ -64,7 +83,7 @@ export function PostGameOverlay(): ReactElement | null {
     });
   }, [currentRoom, showSnackbar, translation]);
 
-  if (!currentRoom || currentRoom.state !== ROOM_STATES.FINISHED) {
+  if (!currentRoom || (!isPostGame && !isMidGameVote)) {
     return null;
   }
 
@@ -72,26 +91,100 @@ export function PostGameOverlay(): ReactElement | null {
   const myId = getSocketId();
   const readyIds = new Set(currentRoom.rematch?.readyPlayerIds ?? []);
   const iAmReady = Boolean(myId && readyIds.has(myId));
-  const winner = currentRoom.players.find(
-    player => player.id === currentRoom.winner
-  );
-  const winnerName = winner?.name ?? currentRoom.winner ?? '';
   const t = translation.postGame;
+  const tInGame = translation.inGame;
 
   if (minimized) {
+    const readyCount = readyIds.size;
+    const totalCount = currentRoom.players.length;
     return (
       <button
         type="button"
         className={styles.fab}
         onClick={() => setMinimized(false)}
       >
-        {canRematch && (
-          <span className={styles.fabTime}>{t.seconds(remainingSec)}</span>
+        {isMidGameVote ? (
+          <span className={styles.fabTime}>
+            🔄 {readyCount}/{totalCount}
+          </span>
+        ) : (
+          canRematch && (
+            <span className={styles.fabTime}>{t.seconds(remainingSec)}</span>
+          )
         )}
-        <span>{t.expand}</span>
+        <span>{isMidGameVote ? tInGame.voteTitle : t.expand}</span>
       </button>
     );
   }
+
+  if (isMidGameVote) {
+    return (
+      <div className={styles.backdrop}>
+        <div
+          className={styles.modal}
+          role="dialog"
+          aria-labelledby="mid-game-vote-title"
+        >
+          <div className={styles.header}>
+            <h2 id="mid-game-vote-title" className={styles.title}>
+              {tInGame.voteTitle}
+            </h2>
+            <Button
+              variant={ButtonVariant.ICON}
+              aria-label={t.minimize}
+              title={t.minimize}
+              onClick={() => setMinimized(true)}
+            >
+              <MinimizeIcon />
+            </Button>
+          </div>
+
+          <p className={styles.timer}>{t.seconds(remainingSec)}</p>
+
+          <ul className={styles.players}>
+            {currentRoom.players.map(player => {
+              const isReady = readyIds.has(player.id);
+              return (
+                <li
+                  key={player.id}
+                  className={classNames(
+                    styles.player,
+                    isReady && styles.playerReady
+                  )}
+                >
+                  <span>
+                    {player.name}
+                    {player.id === myId && ` (${translation.you})`}
+                  </span>
+                  <span>{isReady ? t.ready : t.waiting}</span>
+                </li>
+              );
+            })}
+          </ul>
+
+          {!iAmReady ? (
+            <div className={styles.actions}>
+              <Button variant={ButtonVariant.PRIMARY} onClick={handleRematch}>
+                {t.rematch}
+              </Button>
+              <Button
+                variant={ButtonVariant.SECONDARY}
+                onClick={handleDeclineRematch}
+              >
+                {tInGame.cancel}
+              </Button>
+            </div>
+          ) : null}
+        </div>
+      </div>
+    );
+  }
+
+  // Post-game overlay (state === FINISHED)
+  const winner = currentRoom.players.find(
+    player => player.id === currentRoom.winner
+  );
+  const winnerName = winner?.name ?? currentRoom.winner ?? '';
 
   return (
     <div className={styles.backdrop}>

@@ -37,6 +37,9 @@ export default function Dropdown({
 }: DropdownProps): ReactElement {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const showIndicator =
+    triggerVariant !== ButtonVariant.TEXT &&
+    triggerVariant !== ButtonVariant.ICON;
 
   useEffect(() => {
     function handleOutsideClick(event: MouseEvent) {
@@ -76,7 +79,14 @@ export default function Dropdown({
         disabled={disabled}
         onClick={() => setIsOpen(open => !open)}
       >
-        {trigger}
+        <span className={styles.triggerContent}>
+          <span className={styles.triggerLabel}>{trigger}</span>
+          {showIndicator ? (
+            <span className={styles.triggerIndicator} aria-hidden="true">
+              ▾
+            </span>
+          ) : null}
+        </span>
       </Button>
 
       {isOpen ? (

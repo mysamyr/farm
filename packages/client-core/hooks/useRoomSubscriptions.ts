@@ -57,12 +57,13 @@ export function useRoomSubscriptions(): void {
       void navigate(to, options);
     };
 
-    const navigateToLobbyIfFinished = (
+    const navigateToLobbyIfNeeded = (
       nextState: ROOM_STATES,
       gameId?: string
     ): void => {
+      const prev = previousRoomStateRef.current;
       if (
-        previousRoomStateRef.current === ROOM_STATES.FINISHED &&
+        (prev === ROOM_STATES.FINISHED || prev === ROOM_STATES.RUNNING) &&
         nextState === ROOM_STATES.IDLE &&
         gameId
       ) {
@@ -125,7 +126,7 @@ export function useRoomSubscriptions(): void {
 
       if (updatedCurrentRoom) {
         setCurrentRoom(updatedCurrentRoom);
-        navigateToLobbyIfFinished(
+        navigateToLobbyIfNeeded(
           updatedCurrentRoom.state,
           updatedCurrentRoom.game
         );
@@ -149,7 +150,7 @@ export function useRoomSubscriptions(): void {
     subscribe(
       EVENTS.GAME_STATE_UPDATE,
       ({ state }: GameStateUpdatePayload): void => {
-        navigateToLobbyIfFinished(state.state, state.game);
+        navigateToLobbyIfNeeded(state.state, state.game);
       }
     );
 
@@ -179,6 +180,9 @@ export function useRoomSubscriptions(): void {
             break;
           case NOTIFICATION_TYPES.CLOSE_ROOM:
             showSnackbar(translation.notifications.roomClosed(data));
+            break;
+          case NOTIFICATION_TYPES.RETURN_TO_LOBBY:
+            showSnackbar(translation.notifications.returnedToLobby(data));
             break;
           default:
             break;

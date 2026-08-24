@@ -41,6 +41,7 @@ export const EVENTS = {
   GAME_EFFECT: 'game:effect',
   GAME_ERROR: 'game:error',
   GAME_REMATCH: 'game:rematch',
+  GAME_REMATCH_DECLINE: 'game:rematch_decline',
   GAME_RETURN_TO_LOBBY: 'game:return_to_lobby',
 } as const;
 
@@ -52,6 +53,7 @@ export const NOTIFICATION_TYPES = {
   PLAYER_KICKED: 'player_kicked',
   CLOSE_ROOM: 'close_room',
   GAME_FINISHED: 'game_finished',
+  RETURN_TO_LOBBY: 'return_to_lobby',
 } as const;
 
 export const VALIDATION = {

@@ -8,6 +8,7 @@ export { Snackbar } from './Snackbar.js';
 export { default as Tag } from './Tag.js';
 export { WinningAnimation } from './WinningAnimation.js';
 export { PostGameOverlay } from './PostGameOverlay.js';
+export * from './icons/index.js';
 
 // Modals
 export { default as HelpModal } from './modals/HelpModal.js';
