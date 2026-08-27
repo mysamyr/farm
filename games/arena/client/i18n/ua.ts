@@ -1,4 +1,9 @@
-import { GAME_RULES } from '../../shared/index.js';
+import {
+  GAME_RULES,
+  REQUIRED_ACTIVE_COUNT,
+  REQUIRED_HEALING_COUNT,
+  REQUIRED_PASSIVE_COUNT,
+} from '../../shared/index.js';
 
 import type { ArenaHelpTranslation, ArenaTranslation } from './types.js';
 
@@ -34,6 +39,7 @@ export const arenaGameTranslation: ArenaTranslation = {
     regeneration: 'Регенерація',
     resistance: 'Магічний щит',
     cleanse: 'Очищення',
+    meditation: 'Медитація',
     rage: 'Лють',
     spiked_armor: 'Шипована броня',
     reflect: 'Відбиття',
@@ -53,6 +59,7 @@ export const arenaGameTranslation: ArenaTranslation = {
     heal: 'Зцілити на {value}',
     lifesteal: 'Вкрасти {value}',
     cleanse: 'Очистити негативні ефекти',
+    reduceCooldowns: 'Зменшити всі свої кулдауни на {amount}',
     applyStatus: 'Накласти {status}{value} {target} {duration}',
     modifyStat: '{sign}{value} {stat} {target}{duration}',
     durationTurns: 'на {turns} ходів',
@@ -105,6 +112,7 @@ export const arenaGameTranslation: ArenaTranslation = {
     thorns: '-{value} шипи',
     leech: '+{value} вампірик',
     cleanse: 'Очищено негативні ефекти',
+    reduceCooldowns: 'Зменшено всі власні кулдауни на {value}',
     resist: '{target}: відбив {status}',
     reflect: '{target}: відбив дебафи',
     applyStatus: '{target}: накладено {status}{value}{duration}',
@@ -133,8 +141,7 @@ export const arenaHelpTranslation: ArenaHelpTranslation = {
     crit: 'Шанс подвоїти загальну шкоду.',
   },
   skillsHeader: 'Навички',
-  skillsIntro:
-    'Перед боєм оберіть 2 активні навички, 1 лікувальну та 2 пасивні. Атака і Пропустити доступні завжди.',
+  skillsIntro: `Перед боєм оберіть ${REQUIRED_ACTIVE_COUNT} активні навички, ${REQUIRED_HEALING_COUNT} лікувальну та ${REQUIRED_PASSIVE_COUNT} пасивні. Атака і Пропустити доступні завжди.`,
   activeSkills:
     'Активні навички використовуються у ваш хід і мають перезаряджання. Вони завдають шкоди, накладають ефекти, підсилюють вас або послаблюють суперника.',
   healingSkills:
@@ -176,6 +183,7 @@ export const arenaHelpTranslation: ArenaHelpTranslation = {
     'Перевірка смерті',
     'Скинути кулдаун навички, що оброблялася',
     'Зменшити кулдауни навичок (якщо не застанений)',
+    'Застосувати наприкінці ходу ефекти зменшення кулдаунів на собі (наприклад, Медитація)',
     'Зменшити тривалість активних ефектів (пропустити Кровотечу, Отруту, Оніміння, Регенерацію та зниження статів, накладені в цей хід)',
     'Наступний хід',
   ],

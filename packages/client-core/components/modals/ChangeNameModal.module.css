@@ -13,6 +13,13 @@
   color: var(--text-main);
 }
 
+.description {
+  margin: -2px 0 2px;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
 .label {
   font-size: 0.8rem;
   color: var(--text-muted);
@@ -38,17 +45,17 @@
 }
 
 .inputError {
-  border-color: var(--error, #e53e3e);
+  border-color: var(--status-error);
 }
 
 .inputError:focus {
-  border-color: var(--error, #e53e3e);
+  border-color: var(--status-error);
 }
 
 .error {
   margin: 0;
   font-size: 0.75rem;
-  color: var(--error, #e53e3e);
+  color: var(--status-error);
 }
 
 .actions {

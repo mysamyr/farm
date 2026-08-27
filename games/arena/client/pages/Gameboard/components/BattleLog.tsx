@@ -67,15 +67,14 @@ function getEffectText(
       return t.leech.replace('{value}', String(effect.value));
     case LogEffectKind.cleanse:
       return t.cleanse;
+    case LogEffectKind.reduce_cooldowns:
+      return t.reduceCooldowns.replace('{value}', String(effect.value));
     case LogEffectKind.resist:
       return t.resist
         .replace('{target}', getTargetLabel(effect.target, util))
         .replace('{status}', effectLabels[effect.status]);
     case LogEffectKind.reflect:
-      return t.reflect.replace(
-        '{target}',
-        getTargetLabel(effect.target, util)
-      );
+      return t.reflect.replace('{target}', getTargetLabel(effect.target, util));
     case LogEffectKind.apply_status: {
       const value =
         'value' in effect && effect.value !== undefined
@@ -120,6 +119,7 @@ function getEffectClass(effect: LogEffect): string | undefined {
     case LogEffectKind.reflect:
       return styles.dodge;
     case LogEffectKind.cleanse:
+    case LogEffectKind.reduce_cooldowns:
     case LogEffectKind.apply_status:
     case LogEffectKind.modify_stat:
       return undefined;

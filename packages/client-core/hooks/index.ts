@@ -5,6 +5,7 @@ export { useGames, useGamesLoader } from './useGames.js';
 export { useKickPlayer } from './useKickPlayer.js';
 export { useLanguage } from './useLanguage.js';
 export { useModal } from './useModal.js';
+export { useRematchActions } from './useRematchActions.js';
 export { useRoom } from './useRoom.js';
 export { useRoomSubscriptions } from './useRoomSubscriptions.js';
 export { useServerCountdown } from './useServerCountdown.js';

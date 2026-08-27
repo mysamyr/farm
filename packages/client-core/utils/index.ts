@@ -32,5 +32,6 @@ export function t(
 // Re-export from other utility files
 export * from './identity.js';
 export * from './language.js';
+export * from './roomName/index.js';
 export * from './theme.js';
 export * from './validation.js';

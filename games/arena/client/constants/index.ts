@@ -31,6 +31,7 @@ export const SKILL_ICONS: Record<SkillId, string> = {
   regeneration: '🌿',
   resistance: '🫧',
   cleanse: '✨',
+  meditation: '🧘',
   rage: '😡',
   spiked_armor: '✴️',
   reflect: '🪞',
@@ -157,6 +158,8 @@ function formatAction(
       );
     case ActionType.CLEANSE:
       return labels.cleanse;
+    case ActionType.REDUCE_COOLDOWNS:
+      return labels.reduceCooldowns.replace('{amount}', String(action.amount));
     case ActionType.APPLY_STATUS: {
       const val =
         action.value !== undefined

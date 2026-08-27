@@ -26,6 +26,7 @@ export type RoomKickPayload = RoomIdPayload & {
 
 export type RoomCreatePayload = {
   game: GameId;
+  name: string;
 };
 
 export type RoomPayload = {
@@ -93,6 +94,10 @@ export type CoreClientToServerEvents = {
     ack?: (response: SocketAck) => void
   ) => void;
   [EVENTS.GAME_REMATCH]: (
+    payload: RoomIdPayload,
+    ack?: (response: SocketAck) => void
+  ) => void;
+  [EVENTS.GAME_REMATCH_DECLINE]: (
     payload: RoomIdPayload,
     ack?: (response: SocketAck) => void
   ) => void;

@@ -11,11 +11,11 @@ import {
   HealAction,
   LifeStealAction,
   ModifyStatAction,
+  type ReduceCooldownsAction,
   type Player,
   REQUIRED_ACTIVE_COUNT,
   REQUIRED_HEALING_COUNT,
   REQUIRED_PASSIVE_COUNT,
-  NEGATIVE_EFFECTS,
   type Room,
   type Skill,
   type SkillId,
@@ -80,29 +80,18 @@ export function isPlayerReflecting(player: Player): boolean {
   );
 }
 
-function isDeferredStatus(status: StatusEffect): boolean {
-  if (status.type === EffectId.regeneration) return true;
-  if (NEGATIVE_EFFECTS.includes(status.type as EffectId)) return true;
-  if (STAT_TYPES.includes(status.type as StatId) && status.value < 0) {
-    return true;
-  }
-  return false;
-}
-
 export function isSameTurnDeferred(
   status: StatusEffect,
   currentTurnId: number
 ): boolean {
-  return status.appliedTurn === currentTurnId && isDeferredStatus(status);
+  return status.appliedTurn === currentTurnId;
 }
 
 export function stampDeferredAppliedTurn(
   status: StatusEffect,
   currentTurnId: number
 ): void {
-  if (isDeferredStatus(status)) {
-    status.appliedTurn = currentTurnId;
-  }
+  status.appliedTurn = currentTurnId;
 }
 
 export function getThorns(player: Player): number {
@@ -240,9 +229,21 @@ export function splitOpponentActions(
 
 export function splitSelfActions(
   actions: GameAction[]
-): [ApplyStatusAction[], ModifyStatAction[], HealAction[], CleanseAction[]] {
+): [
+  ApplyStatusAction[],
+  ModifyStatAction[],
+  HealAction[],
+  CleanseAction[],
+  ReduceCooldownsAction[],
+] {
   return actions.reduce<
-    [ApplyStatusAction[], ModifyStatAction[], HealAction[], CleanseAction[]]
+    [
+      ApplyStatusAction[],
+      ModifyStatAction[],
+      HealAction[],
+      CleanseAction[],
+      ReduceCooldownsAction[],
+    ]
   >(
     (acc, action) => {
       if (action.target === ActionTarget.opponent) return acc;
@@ -251,8 +252,9 @@ export function splitSelfActions(
       if (action.type === ActionType.MODIFY_STAT) acc[1].push(action);
       if (action.type === ActionType.HEAL) acc[2].push(action);
       if (action.type === ActionType.CLEANSE) acc[3].push(action);
+      if (action.type === ActionType.REDUCE_COOLDOWNS) acc[4].push(action);
       return acc;
     },
-    [[], [], [], []]
+    [[], [], [], [], []]
   );
 }

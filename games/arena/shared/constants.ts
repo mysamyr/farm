@@ -17,7 +17,7 @@ export const GAME_METADATA = {
   maxPlayers: DEFAULT_CONFIG.maxPlayers,
 } satisfies GameMetadata;
 
-export const REQUIRED_ACTIVE_COUNT = 2;
+export const REQUIRED_ACTIVE_COUNT = 3;
 export const REQUIRED_HEALING_COUNT = 1;
 export const REQUIRED_PASSIVE_COUNT = 2;
 
@@ -45,6 +45,7 @@ export enum SkillId {
   // Active buffs
   resistance = 'resistance',
   cleanse = 'cleanse',
+  meditation = 'meditation',
   rage = 'rage',
   spiked_armor = 'spiked_armor',
   reflect = 'reflect',
@@ -98,6 +99,7 @@ export enum ActionType {
   MODIFY_STAT = 'MODIFY_STAT',
   LIFE_STEAL = 'LIFE_STEAL',
   CLEANSE = 'CLEANSE',
+  REDUCE_COOLDOWNS = 'REDUCE_COOLDOWNS',
 }
 
 export enum ActionTarget {
@@ -126,6 +128,7 @@ export enum LogEffectKind {
   apply_status = 'apply_status',
   modify_stat = 'modify_stat',
   cleanse = 'cleanse',
+  reduce_cooldowns = 'reduce_cooldowns',
   resist = 'resist',
   reflect = 'reflect',
 }
@@ -353,7 +356,7 @@ export const SKILLS: Record<SkillId, Skill> = {
   [SkillId.cleanse]: {
     id: SkillId.cleanse,
     type: SkillType.healing,
-    cooldown: 3,
+    cooldown: 2,
     actions: [
       {
         type: ActionType.CLEANSE,
@@ -363,6 +366,18 @@ export const SKILLS: Record<SkillId, Skill> = {
         type: ActionType.HEAL,
         target: ActionTarget.self,
         value: { source: ActionValueSource.raw, amount: 5 },
+      },
+    ],
+  },
+  [SkillId.meditation]: {
+    id: SkillId.meditation,
+    type: SkillType.active,
+    cooldown: 2,
+    actions: [
+      {
+        type: ActionType.REDUCE_COOLDOWNS,
+        target: ActionTarget.self,
+        amount: 1,
       },
     ],
   },

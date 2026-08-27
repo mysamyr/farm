@@ -66,11 +66,6 @@
   color: var(--text-muted);
 }
 
-.playerReady {
-  color: var(--text-main);
-  outline: 1px solid var(--status-success);
-}
-
 .actions {
   display: flex;
   flex-direction: column;

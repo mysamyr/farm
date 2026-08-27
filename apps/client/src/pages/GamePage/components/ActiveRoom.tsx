@@ -59,7 +59,8 @@ export default function ActiveRoom(): ReactElement | null {
   const canStartGame =
     playerCount >= minPlayers &&
     playerCount <= maxPlayers &&
-    currentRoom.state === ROOM_STATES.IDLE;
+    currentRoom.state === ROOM_STATES.IDLE &&
+    !currentRoom.vote;
   const canEnterGame = currentRoom.state === ROOM_STATES.RUNNING;
   const rules = gameConfig?.rules ?? [];
   const enabledRules = rules.filter(rule => currentRoom.rules[rule.key]);

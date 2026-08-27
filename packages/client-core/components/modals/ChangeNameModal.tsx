@@ -3,10 +3,10 @@ import { type SubmitEvent, type ReactElement, useState } from 'react';
 import { VALIDATION } from '@game/shared/constants';
 
 import { ButtonVariant } from '../../constants/index.js';
-import { useLanguage } from '../../hooks/useLanguage.js';
+import { useLanguage } from '../../hooks/index.js';
+import { useUsername } from '../../hooks/index.js';
 import { useModal } from '../../hooks/useModal.js';
-import { useUsername } from '../../hooks/useUsername.js';
-import { isValidUsername } from '../../utils/validation.js';
+import { isValidUsername } from '../../utils/index.js';
 
 import Button from '../Button.js';
 
@@ -50,6 +50,7 @@ function ChangeNameModal({
   return (
     <form className={styles.container} onSubmit={onSubmit}>
       <h3 className={styles.title}>{t.title}</h3>
+      <p className={styles.description}>{t.description}</p>
       <label className={styles.label} htmlFor="change-name-input">
         {t.placeholder}
       </label>

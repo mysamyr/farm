@@ -27,6 +27,7 @@ import {
   type SkillId,
   SKILLS,
   SkillType,
+  type ReduceCooldownsAction,
   type StatusEffect,
   type ValueContext,
 } from '../shared/index.js';
@@ -637,6 +638,27 @@ function decrementSkillCooldowns(player: Player, skillId: SkillId): void {
   }
 }
 
+function applyCooldownReductions(
+  player: Player,
+  actions: ReduceCooldownsAction[],
+  ctx: TurnContext = NO_CONTEXT
+): void {
+  for (const action of actions) {
+    const amount = Math.max(action.amount, 0);
+    if (amount <= 0) continue;
+
+    for (const skill of player.skills) {
+      skill.cooldown = Math.max(skill.cooldown - amount, 0);
+    }
+
+    ctx.addEffect({
+      kind: LogEffectKind.reduce_cooldowns,
+      target: ActionTarget.self,
+      value: amount,
+    });
+  }
+}
+
 function resetSkillCooldown(player: Player, skillId: SkillId): void {
   const playerSkill = player.skills.find(s => s.id === skillId);
   if (!playerSkill) return;
@@ -664,8 +686,13 @@ export function processPlayerTurn(
   const effects: LogEffect[] = [];
   const ctx: TurnContext = { addEffect: e => effects.push(e) };
 
-  const [applyStatusActions, modifyStatActions, healActions, cleanseActions] =
-    splitSelfActions(skill.actions);
+  const [
+    applyStatusActions,
+    modifyStatActions,
+    healActions,
+    cleanseActions,
+    cooldownReductionActions,
+  ] = splitSelfActions(skill.actions);
 
   const valueCtx: ValueContext = {
     self: player,
@@ -727,6 +754,8 @@ export function processPlayerTurn(
   if (!isStunned(player)) {
     decrementSkillCooldowns(player, skillId);
   }
+
+  applyCooldownReductions(player, cooldownReductionActions, ctx);
 
   decrementStatusDurations(player, currentTurnId);
 

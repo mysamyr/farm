@@ -6,7 +6,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { LOCAL_STORAGE_KEY } from '../constants/index.js';
 import { emitEvent } from '../socket/index.js';
 import { useUsernameStore } from '../store/index.js';
-import { isValidUsername } from '../utils/validation.js';
+import { isValidUsername } from '../utils/index.js';
 
 export function useUsername(): {
   username: string;

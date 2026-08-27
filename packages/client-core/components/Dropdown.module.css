@@ -3,6 +3,23 @@
   display: inline-block;
 }
 
+.triggerContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 10px;
+}
+
+.triggerLabel {
+  text-align: left;
+}
+
+.triggerIndicator {
+  font-size: 1em;
+  flex-shrink: 0;
+}
+
 .dropdown {
   position: absolute;
   top: calc(100% + 4px);
@@ -23,7 +40,7 @@
   border: none;
   background: transparent;
   text-align: left;
-  padding: 8px 16px;
+  padding: 10px 16px;
   cursor: pointer;
   color: var(--text-main);
 }

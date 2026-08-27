@@ -27,6 +27,7 @@ const GRID_STATS: StatId[] = [
 type PlayerStatsProps = {
   player: Player;
   isActive: boolean;
+  critHitEventKey?: string;
   isWinner?: boolean;
   isLoser?: boolean;
   isMatchEnded?: boolean;
@@ -46,6 +47,7 @@ function getStatusLabel(
 export default function PlayerStatsDisplay({
   player,
   isActive,
+  critHitEventKey,
   isWinner = false,
   isLoser = false,
   isMatchEnded = false,
@@ -66,6 +68,22 @@ export default function PlayerStatsDisplay({
         isWinner && styles.winner
       )}
     >
+      {critHitEventKey && (
+        <span
+          key={`${critHitEventKey}-flash`}
+          className={styles.critFlash}
+          aria-hidden
+        />
+      )}
+      {critHitEventKey && (
+        <span
+          key={`${critHitEventKey}-text`}
+          className={styles.critText}
+          aria-hidden
+        >
+          CRIT
+        </span>
+      )}
       <div className={styles.header}>
         <span className={styles.playerName}>{player.name}</span>
         {isActive && !isWinner && !isMatchEnded && (

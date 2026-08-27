@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import {
   ChangeNameModal,
   Modal,
-  PostGameOverlay,
+  RematchModal,
   Snackbar,
 } from '@game/client-core/components';
 import { PATHS, getCatalogPath } from '@game/client-core/constants';
@@ -94,11 +94,9 @@ function AppContent() {
     showModal({
       component: ChangeNameModal,
       props: { required: true },
-      closeOnBackdrop: false,
-      closeOnEscape: false,
       closeOnNavigate: false,
     });
-  }, [hasUsername, modal?.component, modalOpen, showModal]);
+  }, []);
 
   if (gamesLoading && games.length === 0) {
     return (
@@ -136,7 +134,7 @@ function AppContent() {
   return (
     <>
       {activeGame && <GameSubscriptions key={activeGame} gameId={activeGame} />}
-      <PostGameOverlay />
+      <RematchModal />
       <Routes>
         <Route element={<MainLayout />}>
           <Route path={PATHS.CATALOG} element={<CatalogPage />} />

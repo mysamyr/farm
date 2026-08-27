@@ -36,6 +36,7 @@ export type Translation = {
   };
   changeName: {
     title: string;
+    description: string;
     placeholder: string;
     save: string;
     cancel: string;
@@ -58,6 +59,7 @@ export type Translation = {
     createRoomBtn: string;
     openRoomsHeader: string;
     noActiveRooms: string;
+    createRoom: string;
     roomRules: string;
     players: string;
   };
@@ -85,6 +87,7 @@ export type Translation = {
     winner: (winnerName: string) => string;
     rematch: string;
     lobby: string;
+    decline: string;
     leave: string;
     minimize: string;
     expand: string;
@@ -105,5 +108,15 @@ export type Translation = {
     roomClosed: (playerName: string) => string;
     gameFinished: (winnerName: string) => string;
     tradeCancelled: (playerName: string) => string;
+    returnedToLobby: (playerName: string) => string;
+  };
+  inGame: {
+    lobby: string;
+    lobbyConfirmTitle: string;
+    lobbyConfirmMessage: string;
+    lobbyConfirmButton: string;
+    cancel: string;
+    voteTitle: string;
+    readyTitle: string;
   };
 };

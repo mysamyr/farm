@@ -26,8 +26,10 @@ import type { AckFunc, AppServer, AppSocket } from '../../types/index.js';
 import { checkIfPlayerAlreadyInRoom } from '../player/player.helpers.js';
 
 import {
+  beginMidGameVote,
+  beginPreGameVote,
+  declineVote,
   returnRoomToLobby,
-  startRoomGame,
   voteRematch,
 } from './rematch.service.js';
 import { canStartGame } from './room.helpers.js';
@@ -89,7 +91,17 @@ const createRoomHandler =
       return;
     }
 
-    const room: BaseRoom = createRoom(socket.id, req.game);
+    if (listRooms().some(r => r.game === req.game && r.name === req.name)) {
+      if (ack) {
+        ack({
+          ok: false,
+          error: ERROR.ROOM_NAME_TAKEN,
+        });
+      }
+      return;
+    }
+
+    const room: BaseRoom = createRoom(socket.id, req.game, req.name);
     room.players.push(createRoomPlayer(socket.data.player));
     void socket.join(room.id);
     updateRoomsList(io);
@@ -341,7 +353,7 @@ const startGameHandler =
       return;
     }
 
-    startRoomGame(io, room);
+    beginPreGameVote(io, room);
     ack?.({ ok: true });
   };
 
@@ -358,13 +370,21 @@ const rematchHandler =
       ack?.({ ok: false, error: ERROR.ROOM_NOT_FOUND });
       return;
     }
-    if (room.state !== ROOM_STATES.FINISHED || !room.rematch) {
+    if (
+      (room.state === ROOM_STATES.FINISHED ||
+        room.state === ROOM_STATES.IDLE) &&
+      !room.vote
+    ) {
       ack?.({ ok: false, error: ERROR.GAME_NOT_RUNNING });
       return;
     }
     if (!room.players.some(player => player.id === socket.id)) {
       ack?.({ ok: false, error: ERROR.PLAYER_NOT_FOUND });
       return;
+    }
+
+    if (room.state === ROOM_STATES.RUNNING && !room.vote) {
+      beginMidGameVote(io, room);
     }
 
     const ok = voteRematch(io, room, socket.id);
@@ -384,7 +404,10 @@ const returnToLobbyHandler =
       ack?.({ ok: false, error: ERROR.ROOM_NOT_FOUND });
       return;
     }
-    if (room.state !== ROOM_STATES.FINISHED) {
+    if (
+      room.state !== ROOM_STATES.FINISHED &&
+      room.state !== ROOM_STATES.RUNNING
+    ) {
       ack?.({ ok: false, error: ERROR.GAME_NOT_RUNNING });
       return;
     }
@@ -393,8 +416,56 @@ const returnToLobbyHandler =
       return;
     }
 
+    io.to(room.id).emit(EVENTS.NOTIFICATION, {
+      type: NOTIFICATION_TYPES.RETURN_TO_LOBBY,
+      data: socket.data.player.name,
+    });
     returnRoomToLobby(io, room);
     ack?.({ ok: true });
+  };
+
+const rematchDeclineHandler =
+  (io: AppServer, socket: AppSocket) =>
+  (req: RoomIdPayload, ack?: AckFunc): void => {
+    log(LogLevel.DEBUG, 'event:game:rematch_decline', {
+      socketId: socket.id,
+      roomId: req.roomId,
+    });
+
+    const room = getRoomById(req.roomId);
+    if (!room) {
+      ack?.({ ok: false, error: ERROR.ROOM_NOT_FOUND });
+      return;
+    }
+    if (!room.players.some(player => player.id === socket.id)) {
+      ack?.({ ok: false, error: ERROR.PLAYER_NOT_FOUND });
+      return;
+    }
+
+    // Post-game decline → return everyone to lobby
+    if (room.state === ROOM_STATES.FINISHED) {
+      io.to(room.id).emit(EVENTS.NOTIFICATION, {
+        type: NOTIFICATION_TYPES.RETURN_TO_LOBBY,
+        data: socket.data.player.name,
+      });
+      returnRoomToLobby(io, room);
+      ack?.({ ok: true });
+      return;
+    }
+
+    // Pre-game or mid-game decline → clear the vote for everyone
+    if (room.state === ROOM_STATES.RUNNING || room.state === ROOM_STATES.IDLE) {
+      // Already in lobby with no active vote (e.g. another client/server already returned)
+      if (room.state === ROOM_STATES.IDLE && !room.vote) {
+        ack?.({ ok: true });
+        return;
+      }
+      const ok = declineVote(io, room, socket.id);
+      ack?.({ ok });
+      return;
+    }
+
+    ack?.({ ok: false, error: ERROR.GAME_NOT_RUNNING });
   };
 
 export function registerRoomFeature(io: AppServer, socket: AppSocket): void {
@@ -407,5 +478,6 @@ export function registerRoomFeature(io: AppServer, socket: AppSocket): void {
   socket.on(EVENTS.ROOM_REJOIN, rejoinRoomHandler(io, socket));
   socket.on(EVENTS.GAME_START, startGameHandler(io, socket));
   socket.on(EVENTS.GAME_REMATCH, rematchHandler(io, socket));
+  socket.on(EVENTS.GAME_REMATCH_DECLINE, rematchDeclineHandler(io, socket));
   socket.on(EVENTS.GAME_RETURN_TO_LOBBY, returnToLobbyHandler(io, socket));
 }

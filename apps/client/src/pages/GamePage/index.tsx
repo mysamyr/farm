@@ -37,7 +37,10 @@ export default function GamePage(): ReactElement {
           <h2>{translation.dashboard.openRoomsHeader}</h2>
           <div className={styles.roomsGrid}>
             {!filteredRooms.length ? (
-              <p>{translation.dashboard.noActiveRooms}</p>
+              <p>
+                {translation.dashboard.noActiveRooms}
+                {!currentRoom && ' ' + translation.dashboard.createRoom}
+              </p>
             ) : (
               filteredRooms.map(room => <RoomCard key={room.id} room={room} />)
             )}

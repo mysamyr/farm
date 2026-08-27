@@ -13,6 +13,7 @@ export interface ArenaSkillEffectLabelsTranslation {
   applyStatus: string;
   modifyStat: string;
   cleanse: string;
+  reduceCooldowns: string;
   durationTurns: string;
   durationPassive: string;
   cooldown: string;
@@ -65,6 +66,7 @@ export interface ArenaBattleLogTranslation {
   thorns: string;
   leech: string;
   cleanse: string;
+  reduceCooldowns: string;
   resist: string;
   reflect: string;
   applyStatus: string;
