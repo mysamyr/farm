@@ -22,15 +22,6 @@
   letter-spacing: 0.05em;
 }
 
-.waitingBadge {
-  font-size: 0.72rem;
-  font-weight: 600;
-  background: var(--bg-surface-subtle);
-  color: var(--text-muted);
-  padding: 1px 7px;
-  border-radius: 99px;
-}
-
 .skillsGrid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));

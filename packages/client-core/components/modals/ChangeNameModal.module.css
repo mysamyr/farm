@@ -45,17 +45,17 @@
 }
 
 .inputError {
-  border-color: var(--error, #e53e3e);
+  border-color: var(--status-error);
 }
 
 .inputError:focus {
-  border-color: var(--error, #e53e3e);
+  border-color: var(--status-error);
 }
 
 .error {
   margin: 0;
   font-size: 0.75rem;
-  color: var(--error, #e53e3e);
+  color: var(--status-error);
 }
 
 .actions {

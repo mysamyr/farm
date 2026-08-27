@@ -15,11 +15,6 @@
     transform 0.15s ease;
   min-height: 44px;
   text-align: center;
-  z-index: 1;
-}
-
-.card:hover {
-  z-index: 10;
 }
 
 @media (hover: hover) {
@@ -115,7 +110,7 @@
 /* ─── Tooltip ────────────────────────────────────────────── */
 .tooltip {
   position: absolute;
-  z-index: 100;
+  z-index: 1000;
   width: max-content;
   max-width: 180px;
   background: var(--bg-card);

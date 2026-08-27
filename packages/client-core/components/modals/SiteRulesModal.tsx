@@ -1,6 +1,6 @@
 import type { ReactElement } from 'react';
 
-import { useLanguage } from '../../hooks/useLanguage.js';
+import { useLanguage } from '../../hooks/index.js';
 
 import HelpModal from './HelpModal.js';
 

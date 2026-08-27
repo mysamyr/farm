@@ -74,10 +74,7 @@ function getEffectText(
         .replace('{target}', getTargetLabel(effect.target, util))
         .replace('{status}', effectLabels[effect.status]);
     case LogEffectKind.reflect:
-      return t.reflect.replace(
-        '{target}',
-        getTargetLabel(effect.target, util)
-      );
+      return t.reflect.replace('{target}', getTargetLabel(effect.target, util));
     case LogEffectKind.apply_status: {
       const value =
         'value' in effect && effect.value !== undefined

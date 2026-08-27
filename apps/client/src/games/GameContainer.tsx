@@ -2,7 +2,7 @@ import { Component, type ErrorInfo, type ReactNode, Suspense } from 'react';
 
 import { getGamePath } from '@game/client-core/constants';
 import { useConnection, useRoom } from '@game/client-core/hooks';
-import type { GameId } from '@game/shared/constants';
+import { ROOM_STATES, type GameId } from '@game/shared/constants';
 import { Navigate } from 'react-router-dom';
 
 import styles from './GameContainer.module.css';
@@ -114,6 +114,10 @@ export function GameContainer({ gameId }: GameContainerProps) {
         error={new Error('Game plugin not found')}
       />
     );
+  }
+
+  if (currentRoom.state === ROOM_STATES.IDLE) {
+    return <Navigate to={getGamePath(gameId)} replace />;
   }
 
   const LazyGameboard = gameRegistry.getLazyGameboard(gameId);

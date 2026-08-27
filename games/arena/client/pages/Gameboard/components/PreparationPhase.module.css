@@ -191,32 +191,6 @@
   font-style: italic;
 }
 
-/* ─── Congrats screen ───────────────────────────────────── */
-.congratsScreen {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 400px;
-}
-
-.congratsContent {
-  text-align: center;
-  padding: 40px 20px;
-}
-
-.congratsTitle {
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--text-main);
-  margin: 0 0 12px;
-}
-
-.congratsMessage {
-  font-size: 1rem;
-  color: var(--text-muted);
-  margin: 0;
-}
-
 /* ─── Mobile overrides ───────────────────────────────────── */
 @media (max-width: 479px) {
   .equippedSection {

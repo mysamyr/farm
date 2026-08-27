@@ -150,6 +150,7 @@ export function useRoomSubscriptions(): void {
     subscribe(
       EVENTS.GAME_STATE_UPDATE,
       ({ state }: GameStateUpdatePayload): void => {
+        setCurrentRoom(prev => (prev && prev.id === state.id ? state : prev));
         navigateToLobbyIfNeeded(state.state, state.game);
       }
     );

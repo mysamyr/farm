@@ -26,7 +26,7 @@ import {
   useTheme,
   useUsername,
 } from '@game/client-core/hooks';
-import { emitEvent } from '@game/client-core/socket';
+import { emitEvent, getSocketId } from '@game/client-core/socket';
 import { resolveErrorMessage } from '@game/client-core/utils';
 import { EVENTS, ROOM_STATES } from '@game/shared/constants';
 import { Link, useLocation } from 'react-router-dom';
@@ -53,15 +53,15 @@ export function Header({ additionalActions }: HeaderProps): ReactElement {
   const { showSnackbar } = useSnackbar();
   const { config: gameConfig } = useGameConfig(activeGame);
 
-  const headerCopy = translation.header;
-  const inGameCopy = translation.inGame;
+  const headerT = translation.header;
+  const inGameT = translation.inGame;
   const helpModal = activeGame ? gameConfig?.HelpModal : SiteRulesModal;
   const isOnPlayRoute = isGameBoardPathname(location.pathname);
-  const showLeaveRoom = isOnPlayRoute && !!currentRoom;
-  const isRunningGame =
-    isOnPlayRoute && currentRoom?.state === ROOM_STATES.RUNNING;
-  const displayName = username.trim() || headerCopy.setName;
+  const isInRoom = isOnPlayRoute && !!currentRoom;
+  const isRunningGame = isInRoom && currentRoom?.state === ROOM_STATES.RUNNING;
+  const displayName = username.trim() || headerT.setName;
   const isLightTheme = theme === Theme.LIGHT;
+  const isRoomOwner = currentRoom?.ownerId === getSocketId();
 
   const languageItems = LANGUAGES_CONFIG.map(item => ({
     key: item.code,
@@ -99,7 +99,7 @@ export function Header({ additionalActions }: HeaderProps): ReactElement {
 
     if (
       currentRoom.state === ROOM_STATES.RUNNING &&
-      !window.confirm(headerCopy.leaveRoomConfirmation)
+      !window.confirm(headerT.leaveRoomConfirmation)
     ) {
       return;
     }
@@ -141,66 +141,62 @@ export function Header({ additionalActions }: HeaderProps): ReactElement {
     showModal({
       component: ConfirmationModal,
       props: {
-        title: inGameCopy.lobbyConfirmTitle,
-        message: inGameCopy.lobbyConfirmMessage,
-        confirmLabel: inGameCopy.lobbyConfirmButton,
-        cancelLabel: inGameCopy.cancel,
+        title: inGameT.lobbyConfirmTitle,
+        message: inGameT.lobbyConfirmMessage,
+        confirmLabel: inGameT.lobbyConfirmButton,
+        cancelLabel: inGameT.cancel,
         onConfirm: handleReturnToLobby,
       },
     });
   }
 
   function renderExtraActions() {
+    if (!isInRoom && !additionalActions) {
+      return null;
+    }
+
     const handleLeaveRoomClick = () => {
       closeSidebar();
       handleLeaveRoom();
     };
 
-    const leaveRoomButton = showLeaveRoom ? (
-      <Button
-        variant={isRunningGame ? ButtonVariant.DANGER : ButtonVariant.SECONDARY}
-        className={styles.sidebarControl}
-        onClick={handleLeaveRoomClick}
-      >
-        {translation.roomButton.leaveRoom}
-      </Button>
-    ) : null;
-
-    if (!showLeaveRoom && !additionalActions) {
-      return null;
-    }
-
-    if (isRunningGame) {
-      const postGameCopy = translation.postGame;
-      return (
-        <>
-          <Button
-            variant={ButtonVariant.SECONDARY}
-            className={styles.sidebarControl}
-            onClick={() => {
-              closeSidebar();
-              handleRematch();
-            }}
-          >
-            🔄 {postGameCopy.rematch}
-          </Button>
-          <Button
-            variant={ButtonVariant.SECONDARY}
-            className={styles.sidebarControl}
-            onClick={openReturnToLobbyConfirm}
-          >
-            🏠 {inGameCopy.lobby}
-          </Button>
-          {leaveRoomButton}
-          {additionalActions}
-        </>
-      );
-    }
-
     return (
       <>
-        {leaveRoomButton}
+        {isRunningGame && (
+          <>
+            <Button
+              variant={ButtonVariant.SECONDARY}
+              className={styles.sidebarControl}
+              onClick={() => {
+                closeSidebar();
+                handleRematch();
+              }}
+            >
+              🔄 {translation.postGame.rematch}
+            </Button>
+            {isRoomOwner && (
+              <Button
+                variant={ButtonVariant.SECONDARY}
+                className={styles.sidebarControl}
+                onClick={openReturnToLobbyConfirm}
+              >
+                🏠 {inGameT.lobby}
+              </Button>
+            )}
+          </>
+        )}
         {additionalActions}
+        {isInRoom && (
+          <Button
+            variant={
+              isRunningGame ? ButtonVariant.DANGER : ButtonVariant.SECONDARY
+            }
+            className={styles.sidebarControl}
+            onClick={handleLeaveRoomClick}
+          >
+            {translation.roomButton.leaveRoom}
+          </Button>
+        )}
       </>
     );
   }
@@ -217,13 +213,13 @@ export function Header({ additionalActions }: HeaderProps): ReactElement {
         </Link>
         <div className={styles.onlineIndicator}>
           <span className={styles.dot} />
-          <span>{headerCopy.online(online)}</span>
+          <span>{headerT.online(online)}</span>
         </div>
       </div>
 
       <Button
         variant={ButtonVariant.ICON}
-        title={headerCopy.openMenu}
+        title={headerT.openMenu}
         onClick={() => setSidebarOpen(true)}
       >
         <BurgerIcon />
@@ -243,8 +239,8 @@ export function Header({ additionalActions }: HeaderProps): ReactElement {
 
             <Dropdown
               triggerVariant={ButtonVariant.SECONDARY}
-              triggerTitle={headerCopy.changeLanguage}
-              trigger={`🌐 ${headerCopy.language}`}
+              triggerTitle={headerT.changeLanguage}
+              trigger={`🌐 ${headerT.language}`}
               items={languageItems}
               align="left"
               triggerClassName={styles.sidebarControl}
@@ -253,22 +249,22 @@ export function Header({ additionalActions }: HeaderProps): ReactElement {
             <Button
               variant={ButtonVariant.SECONDARY}
               className={styles.sidebarControl}
-              title={headerCopy.toggleTheme}
+              title={headerT.toggleTheme}
               onClick={toggleTheme}
             >
               {isLightTheme
-                ? '🌙' + ' ' + headerCopy.darkMode
-                : '☀️' + ' ' + headerCopy.lightMode}
+                ? '🌙' + ' ' + headerT.darkMode
+                : '☀️' + ' ' + headerT.lightMode}
             </Button>
 
             <Button
               variant={ButtonVariant.SECONDARY}
               className={styles.sidebarControl}
-              title={headerCopy.showRules}
+              title={headerT.showRules}
               onClick={openHelp}
               disabled={!helpModal}
             >
-              {`❓ ${headerCopy.rules}`}
+              {`❓ ${headerT.rules}`}
             </Button>
 
             {renderExtraActions()}

@@ -87,6 +87,7 @@ export type Translation = {
     winner: (winnerName: string) => string;
     rematch: string;
     lobby: string;
+    decline: string;
     leave: string;
     minimize: string;
     expand: string;
@@ -116,5 +117,6 @@ export type Translation = {
     lobbyConfirmButton: string;
     cancel: string;
     voteTitle: string;
+    readyTitle: string;
   };
 };

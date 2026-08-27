@@ -90,8 +90,11 @@ client (`GameConfig`) and server (`ServerGameModule`).
   - `registerLoader(gameId, loader)` – Dynamic `import()` of the plugin’s `GameConfig`
   - `loadConfig(gameId)` – Load and cache config
   - `getLazyGameboard(gameId)` – `React.lazy` wrapper around `config.GameboardPage`
-- **`GameContainer`** waits for room rejoin, then Suspense-loads the gameboard with an error boundary.
-- **`GameSubscriptions`** runs the plugin’s `useGameSubscriptions` hook (win event → `PostGameOverlay`).
+- **`GameContainer`** waits for room rejoin, then renders by `room.state` without changing the play URL:
+  - `idle` → navigate back to `/:gameId` lobby
+  - `running` → Suspense-load `GameboardPage`
+  - `finished` → `GameSummaryLayout` + plugin `GameSummary`
+- **`GameSubscriptions`** runs the plugin’s `useGameSubscriptions` hook (win event → confetti). Pre-game readiness, mid-game rematch, and post-game rematch votes use `RematchModal` (driven by `room.vote`).
 
 ### Client Game Module Interface (`GameConfig`)
 
@@ -101,6 +104,7 @@ Each game’s `client/index.ts` exports a `GameConfig`:
 - `title(language)` / `shortDescription(language)` – Localized catalog copy
 - `rules: { key, label(language) }[]` – Lobby rule toggles (keys match server `GAME_RULES`)
 - `GameboardPage` – Root in-game UI
+- `GameSummary` – Finished-state body (`{ room }`); mounted inside shared `GameSummaryLayout`
 - `HelpModal` – Game rules modal (uses shared `HelpModal` layout from client-core)
 - `useGameSubscriptions({ onCurrentUserWon })` – Socket listeners for that game’s state
 

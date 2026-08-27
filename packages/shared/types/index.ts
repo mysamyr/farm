@@ -25,8 +25,9 @@ export interface BaseRules {
   [key: string]: boolean | number | string;
 }
 
-export interface RematchState {
-  expiresAt: number;
+export interface VoteState {
+  /** Present for mid-game rematch votes; omitted for pre-game / post-game votes. */
+  expiresAt?: number;
   readyPlayerIds: string[];
 }
 
@@ -45,7 +46,8 @@ export interface BaseRoom<
   /** Stable userIds that are not allowed to rejoin this room */
   blacklist: string[];
   winner?: string;
-  rematch?: RematchState;
+  /** Pre-game readiness, mid-game rematch, or post-game rematch vote */
+  vote?: VoteState;
 }
 
 export * from './socket.js';

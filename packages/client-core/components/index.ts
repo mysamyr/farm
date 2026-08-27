@@ -7,7 +7,7 @@ export { default as Slider } from './Slider.js';
 export { Snackbar } from './Snackbar.js';
 export { default as Tag } from './Tag.js';
 export { WinningAnimation } from './WinningAnimation.js';
-export { PostGameOverlay } from './PostGameOverlay.js';
+export { RematchModal } from './RematchModal.js';
 export * from './icons/index.js';
 
 // Modals

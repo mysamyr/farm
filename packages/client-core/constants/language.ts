@@ -149,8 +149,9 @@ const translations: Record<LanguageCode, Translation> = {
     postGame: {
       title: 'Game over',
       winner: (name: string): string => `Winner: ${name}`,
-      rematch: 'Quick rematch',
+      rematch: 'Rematch',
       lobby: 'To lobby',
+      decline: 'Decline',
       leave: 'Leave room',
       minimize: 'Minimize',
       expand: 'Expand',
@@ -177,6 +178,7 @@ const translations: Record<LanguageCode, Translation> = {
       lobbyConfirmButton: 'Return to lobby',
       cancel: 'Cancel',
       voteTitle: 'Rematch vote',
+      readyTitle: 'Get ready',
     },
   },
   [LanguageCode.UA]: {
@@ -312,8 +314,9 @@ const translations: Record<LanguageCode, Translation> = {
     postGame: {
       title: 'Гра завершена',
       winner: (name: string): string => `Переможець: ${name}`,
-      rematch: 'Швидкий реванш',
+      rematch: 'Реванш',
       lobby: 'У лобі',
+      decline: 'Відхилити',
       leave: 'Покинути кімнату',
       minimize: 'Згорнути',
       expand: 'Розгорнути',
@@ -341,6 +344,7 @@ const translations: Record<LanguageCode, Translation> = {
       lobbyConfirmButton: 'Повернутись у лобі',
       cancel: 'Скасувати',
       voteTitle: 'Голосування за реванш',
+      readyTitle: 'Приготуйтесь',
     },
   },
 };

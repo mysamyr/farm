@@ -98,8 +98,9 @@ export function removePlayerFromRoom(
 
   const wasInRematch =
     (room.state === ROOM_STATES.FINISHED ||
-      room.state === ROOM_STATES.RUNNING) &&
-    Boolean(room.rematch);
+      room.state === ROOM_STATES.RUNNING ||
+      room.state === ROOM_STATES.IDLE) &&
+    Boolean(room.vote);
 
   room.players.splice(idx, 1);
   leaveRoom(io, room.id, socket.id);
@@ -165,8 +166,9 @@ export function kickPlayerFromRoom(
     if (idx !== -1) {
       const wasInRematch =
         (room.state === ROOM_STATES.FINISHED ||
-          room.state === ROOM_STATES.RUNNING) &&
-        Boolean(room.rematch);
+          room.state === ROOM_STATES.RUNNING ||
+          room.state === ROOM_STATES.IDLE) &&
+        Boolean(room.vote);
       room.players.splice(idx, 1);
       const gameModule = gameRegistry.get(room.game);
       gameModule.onPlayerRemoved?.(room, playerId);
