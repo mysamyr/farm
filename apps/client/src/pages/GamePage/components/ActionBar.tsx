@@ -1,18 +1,15 @@
 import { useCallback } from 'react';
 
 import { Button } from '@game/client-core/components';
-import { getCatalogPath } from '@game/client-core/constants';
-import {
-  useActiveGame,
-  useLanguage,
-  useRoom,
-  useSnackbar,
-  useUsername,
-} from '@game/client-core/hooks';
+import { useLanguage, useRoom, useSnackbar } from '@game/client-core/hooks';
 import { emitEvent } from '@game/client-core/socket';
-import { generateRoomName, resolveErrorMessage } from '@game/client-core/utils';
+import { resolveErrorMessage } from '@game/client-core/utils';
 import { ERROR, EVENTS } from '@game/shared/constants';
 import { Link } from 'react-router-dom';
+
+import { getCatalogPath } from '../../../constants/index.js';
+import { useActiveGame, useUsername } from '../../../hooks/index.js';
+import { generateRoomName } from '../../../utils/index.js';
 
 import styles from './ActionBar.module.css';
 
@@ -48,7 +45,15 @@ export default function ActionBar() {
         showSnackbar(resolveErrorMessage(res.error, translation));
       }
     });
-  }, [activeGame, currentRoom, isValid, language, rooms, showSnackbar, translation]);
+  }, [
+    activeGame,
+    currentRoom,
+    isValid,
+    language,
+    rooms,
+    showSnackbar,
+    translation,
+  ]);
 
   return (
     <section className={styles.container}>

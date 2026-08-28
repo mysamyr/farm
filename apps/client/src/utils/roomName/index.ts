@@ -1,4 +1,4 @@
-import { LanguageCode } from '../../constants/index.js';
+import { LanguageCode } from '@game/client-core/constants';
 
 import { enConfig } from './en.js';
 import { uaConfig } from './ua.js';

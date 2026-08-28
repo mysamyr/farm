@@ -1,14 +1,12 @@
 import { useCallback, useMemo } from 'react';
 
+import { useRoom } from '@game/client-core/hooks';
+import { emitEvent } from '@game/client-core/socket';
 import { EVENTS, GameId, ROOM_STATES } from '@game/shared/constants';
-
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { getGameIdFromPathname, getGamePath } from '../constants/index.js';
-import { emitEvent } from '../socket/index.js';
 import { useGamesStore } from '../store/index.js';
-
-import { useRoom } from './useRoom.js';
 
 export function useActiveGame(): {
   activeGame: GameId | null;

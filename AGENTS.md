@@ -43,8 +43,9 @@
 - Disconnects during running/finished games use a 30s reconnect grace period before removal
   (`apps/server/src/features/connection/connection.service.ts`).
 - Client room/game synchronization is centralized in `useRoomSubscriptions` (rejoin flow, navigation, notifications,
-  errors) (`packages/client-core/hooks/useRoomSubscriptions.ts`).
-- Global Zustand slices are consolidated in one store module (`packages/client-core/store/index.ts`).
+  errors) (`apps/client/src/hooks/useRoomSubscriptions.ts`).
+- Plugin-facing Zustand slices live in `@game/client-core`; shell slices live in `apps/client/src/store/index.ts`.
+  Placement rules (what belongs in which store) are in `ARCHITECTURE.md` § “Client state: what lives where”.
 - Core copy is in `client-core`; game-specific text stays in each game’s `client/i18n` and is accessed via game
   translation hooks.
 

@@ -2,6 +2,29 @@ import { ERROR, VALIDATION } from '@game/shared/constants';
 
 import type { Language, Translation } from '../types/language.js';
 
+function formatStatisticsDuration(
+  ms: number,
+  units: { hour: string; minute: string; second: string }
+): string {
+  const totalSeconds = Math.max(0, Math.round(ms / 1000));
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  const parts: string[] = [];
+
+  if (hours > 0) {
+    parts.push(`${hours}${units.hour}`);
+  }
+  if (minutes > 0) {
+    parts.push(`${minutes}${units.minute}`);
+  }
+  if (seconds > 0 || parts.length === 0) {
+    parts.push(`${seconds}${units.second}`);
+  }
+
+  return parts.join(' ');
+}
+
 export enum LanguageCode {
   EN = 'en',
   UA = 'ua',
@@ -111,6 +134,30 @@ const translations: Record<LanguageCode, Translation> = {
       lightMode: 'Light mode',
       rules: 'Rules',
       online: (count: number): string => `${count} Online`,
+    },
+    statistics: {
+      title: 'Statistics',
+      navigationLabel: 'Statistics',
+      selectGame: 'Select game',
+      recentMatches: 'Recent matches',
+      noMatches: 'No matches recorded yet.',
+      win: 'Win',
+      loss: 'Loss',
+      players: (count: number): string =>
+        count === 1 ? '1 player' : `${count} players`,
+      duration: (ms: number): string =>
+        formatStatisticsDuration(ms, {
+          hour: 'h',
+          minute: 'm',
+          second: 's',
+        }),
+      reset: 'Reset Statistics',
+      resetConfirmTitle: 'Reset all statistics?',
+      resetConfirmMessage:
+        'This will permanently remove match history for every game on this browser.',
+      resetConfirm: 'Clear All',
+      cancel: 'Cancel',
+      lastMatch: 'Last played match',
     },
     dashboard: {
       backToGames: 'Back to games',
@@ -276,6 +323,37 @@ const translations: Record<LanguageCode, Translation> = {
       lightMode: 'Світла тема',
       rules: 'Правила',
       online: (count: number): string => `${count} онлайн`,
+    },
+    statistics: {
+      title: 'Статистика',
+      navigationLabel: 'Статистика',
+      selectGame: 'Оберіть гру',
+      recentMatches: 'Останні матчі',
+      noMatches: 'Зіграних матчів ще немає.',
+      win: 'Перемога',
+      loss: 'Поразка',
+      players: (count: number): string => {
+        const n = count % 10;
+        const n100 = count % 100;
+        if (n === 1 && n100 !== 11) return `${count} гравець`;
+        if (n >= 2 && n <= 4 && (n100 < 12 || n100 > 14)) {
+          return `${count} гравці`;
+        }
+        return `${count} гравців`;
+      },
+      duration: (ms: number): string =>
+        formatStatisticsDuration(ms, {
+          hour: ' год',
+          minute: ' хв',
+          second: ' с',
+        }),
+      reset: 'Скинути статистику',
+      resetConfirmTitle: 'Скинути всю статистику?',
+      resetConfirmMessage:
+        'Це назавжди видалить історію матчів усіх ігор у цьому браузері.',
+      resetConfirm: 'Очистити все',
+      cancel: 'Скасувати',
+      lastMatch: 'Останній зіграний матч',
     },
     dashboard: {
       backToGames: 'Назад до ігор',

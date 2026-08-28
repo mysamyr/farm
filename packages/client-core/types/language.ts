@@ -54,6 +54,23 @@ export type Translation = {
     rules: string;
     online: (count: number) => string;
   };
+  statistics: {
+    title: string;
+    navigationLabel: string;
+    selectGame: string;
+    recentMatches: string;
+    noMatches: string;
+    win: string;
+    loss: string;
+    players: (count: number) => string;
+    duration: (ms: number) => string;
+    reset: string;
+    resetConfirmTitle: string;
+    resetConfirmMessage: string;
+    resetConfirm: string;
+    cancel: string;
+    lastMatch: string;
+  };
   dashboard: {
     backToGames: string;
     createRoomBtn: string;

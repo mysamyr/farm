@@ -1,37 +1,39 @@
 import { type ReactElement, type ReactNode, useState } from 'react';
 
 import {
+  BurgerIcon,
   Button,
-  ChangeNameModal,
   ConfirmationModal,
   Dropdown,
-  Sidebar,
-  SiteRulesModal,
-  BurgerIcon,
 } from '@game/client-core/components';
+import { ButtonVariant, LANGUAGES_CONFIG } from '@game/client-core/constants';
 import {
-  ButtonVariant,
-  getCatalogPath,
-  isGameBoardPathname,
-  LANGUAGES_CONFIG,
-  Theme,
-} from '@game/client-core/constants';
-import {
-  useActiveGame,
-  useConnection,
   useLanguage,
   useModal,
   useRoom,
   useSnackbar,
-  useTheme,
-  useUsername,
 } from '@game/client-core/hooks';
 import { emitEvent, getSocketId } from '@game/client-core/socket';
 import { resolveErrorMessage } from '@game/client-core/utils';
 import { EVENTS, ROOM_STATES } from '@game/shared/constants';
 import { Link, useLocation } from 'react-router-dom';
 
-import { useGameConfig } from '../../hooks/index.js';
+import {
+  getCatalogPath,
+  isGameBoardPathname,
+  Theme,
+} from '../../constants/index.js';
+import {
+  useActiveGame,
+  useConnection,
+  useGameConfig,
+  useTheme,
+  useUsername,
+} from '../../hooks/index.js';
+import ChangeNameModal from '../modals/ChangeNameModal.js';
+import SiteRulesModal from '../modals/SiteRulesModal.js';
+import StatisticsModal from '../modals/StatisticsModal.js';
+import { Sidebar } from './Sidebar.js';
 
 import styles from './Header.module.css';
 
@@ -86,6 +88,11 @@ export function Header({ additionalActions }: HeaderProps): ReactElement {
   function openChangeName() {
     closeSidebar();
     showModal({ component: ChangeNameModal });
+  }
+
+  function openStatistics() {
+    closeSidebar();
+    showModal({ component: StatisticsModal });
   }
 
   function toggleTheme() {
@@ -255,6 +262,15 @@ export function Header({ additionalActions }: HeaderProps): ReactElement {
               {isLightTheme
                 ? '🌙' + ' ' + headerT.darkMode
                 : '☀️' + ' ' + headerT.lightMode}
+            </Button>
+
+            <Button
+              variant={ButtonVariant.SECONDARY}
+              className={styles.sidebarControl}
+              title={translation.statistics.navigationLabel}
+              onClick={openStatistics}
+            >
+              {`📊 ${translation.statistics.navigationLabel}`}
             </Button>
 
             <Button

@@ -1,5 +1,14 @@
 import { useEffect, useRef } from 'react';
 
+import { LOCAL_STORAGE_KEY } from '@game/client-core/constants';
+import { useLanguage, useRoom, useSnackbar } from '@game/client-core/hooks';
+import {
+  emitEvent,
+  getSocketId,
+  isSocketConnected,
+  subscribe,
+} from '@game/client-core/socket';
+import { resolveErrorMessage } from '@game/client-core/utils';
 import {
   EVENTS,
   NOTIFICATION_TYPES,
@@ -11,29 +20,17 @@ import type {
   RoomPayload,
   ServerNotification,
 } from '@game/shared/types';
-
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import {
-  LOCAL_STORAGE_KEY,
   getGameBoardPath,
   getGameIdFromPathname,
   getGamePath,
   isCatalogPathname,
   isGameBoardPathname,
 } from '../constants/index.js';
-import {
-  emitEvent,
-  getSocketId,
-  isSocketConnected,
-  subscribe,
-} from '../socket/index.js';
-import { resolveErrorMessage } from '../utils/index.js';
 
 import { useConnection } from './useConnection.js';
-import { useLanguage } from './useLanguage.js';
-import { useRoom } from './useRoom.js';
-import { useSnackbar } from './useSnackbar.js';
 
 export function useRoomSubscriptions(): void {
   const navigate = useNavigate();

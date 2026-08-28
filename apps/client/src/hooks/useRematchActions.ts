@@ -1,15 +1,12 @@
 import { useCallback } from 'react';
 
+import { useLanguage, useRoom, useSnackbar } from '@game/client-core/hooks';
+import { emitEvent } from '@game/client-core/socket';
+import { resolveErrorMessage } from '@game/client-core/utils';
 import { EVENTS } from '@game/shared/constants';
 import { useNavigate } from 'react-router-dom';
 
 import { getGamePath } from '../constants/index.js';
-import { emitEvent } from '../socket/index.js';
-import { resolveErrorMessage } from '../utils/index.js';
-
-import { useLanguage } from './useLanguage.js';
-import { useRoom } from './useRoom.js';
-import { useSnackbar } from './useSnackbar.js';
 
 export function useRematchActions() {
   const navigate = useNavigate();

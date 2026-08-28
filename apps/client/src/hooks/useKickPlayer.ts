@@ -1,15 +1,11 @@
 import { useCallback } from 'react';
 
+import { ConfirmationModal } from '@game/client-core/components';
+import { useLanguage, useModal, useSnackbar } from '@game/client-core/hooks';
+import { emitEvent } from '@game/client-core/socket';
+import { resolveErrorMessage } from '@game/client-core/utils';
 import { EVENTS } from '@game/shared/constants';
 import type { BasePlayer } from '@game/shared/types';
-
-import ConfirmationModal from '../components/modals/ConfirmationModal.js';
-import { emitEvent } from '../socket/index.js';
-import { resolveErrorMessage } from '../utils/index.js';
-
-import { useLanguage } from './useLanguage.js';
-import { useModal } from './useModal.js';
-import { useSnackbar } from './useSnackbar.js';
 
 export function useKickPlayer(): (roomId: string, player: BasePlayer) => void {
   const { showModal } = useModal();

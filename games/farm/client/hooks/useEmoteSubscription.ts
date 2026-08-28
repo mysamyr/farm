@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import { subscribe, unsubscribe } from '@game/client-core/socket';
+
 import { EVENTS } from '@game/shared/constants';
 import type { GameEffectPayload } from '@game/shared/types';
 

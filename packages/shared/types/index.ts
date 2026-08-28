@@ -46,6 +46,8 @@ export interface BaseRoom<
   /** Stable userIds that are not allowed to rejoin this room */
   blacklist: string[];
   winner?: string;
+  /** Epoch ms when the current running match began; omitted when idle */
+  startedAt?: number;
   /** Pre-game readiness, mid-game rematch, or post-game rematch vote */
   vote?: VoteState;
 }

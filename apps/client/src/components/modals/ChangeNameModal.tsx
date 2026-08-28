@@ -1,14 +1,12 @@
 import { type SubmitEvent, type ReactElement, useState } from 'react';
 
+import { Button } from '@game/client-core/components';
+import { ButtonVariant } from '@game/client-core/constants';
+import { useLanguage, useModal } from '@game/client-core/hooks';
 import { VALIDATION } from '@game/shared/constants';
 
-import { ButtonVariant } from '../../constants/index.js';
-import { useLanguage } from '../../hooks/index.js';
 import { useUsername } from '../../hooks/index.js';
-import { useModal } from '../../hooks/useModal.js';
 import { isValidUsername } from '../../utils/index.js';
-
-import Button from '../Button.js';
 
 import styles from './ChangeNameModal.module.css';
 

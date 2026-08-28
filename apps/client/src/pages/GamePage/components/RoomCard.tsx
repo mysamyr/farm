@@ -1,24 +1,16 @@
 import { ReactElement } from 'react';
 
-import { Button, Tag } from '@game/client-core/components';
+import { Button } from '@game/client-core/components';
 import { ButtonVariant } from '@game/client-core/constants';
-import {
-  useGames,
-  useLanguage,
-  useRoom,
-  useSnackbar,
-  useUsername,
-} from '@game/client-core/hooks';
+import { useLanguage, useRoom, useSnackbar } from '@game/client-core/hooks';
 import { emitEvent } from '@game/client-core/socket';
-import {
-  getOwnerName,
-  getUserId,
-  resolveErrorMessage,
-} from '@game/client-core/utils';
+import { getUserId, resolveErrorMessage } from '@game/client-core/utils';
 import { EVENTS } from '@game/shared/constants';
 import type { BaseRoom } from '@game/shared/types';
 
-import { useGameConfig } from '../../../hooks/index.js';
+import { Tag } from '../../../components/index.js';
+import { useGameConfig, useGames, useUsername } from '../../../hooks/index.js';
+import { getOwnerName } from '../../../utils/index.js';
 
 import styles from './RoomCard.module.css';
 

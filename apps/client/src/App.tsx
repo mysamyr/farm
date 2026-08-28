@@ -1,25 +1,7 @@
 import { useEffect } from 'react';
 
-import {
-  ChangeNameModal,
-  Modal,
-  RematchModal,
-  Snackbar,
-} from '@game/client-core/components';
-import { PATHS, getCatalogPath } from '@game/client-core/constants';
-import {
-  useActiveGame,
-  useGames,
-  useGamesLoader,
-  useModal,
-  useRoom,
-  useRoomSubscriptions,
-  useSnackbar,
-  useTheme,
-  useUnloadWarning,
-  useUsername,
-} from '@game/client-core/hooks';
-import { applyAccentColor, applyTheme } from '@game/client-core/utils';
+import { Modal, Snackbar } from '@game/client-core/components';
+import { useModal, useRoom, useSnackbar } from '@game/client-core/hooks';
 import { GameColor } from '@game/shared/constants';
 import {
   BrowserRouter,
@@ -30,10 +12,23 @@ import {
 } from 'react-router-dom';
 
 import { GameSubscriptions } from './components/GameSubscriptions.js';
+import { ChangeNameModal, RematchModal } from './components/index.js';
 import { MainLayout } from './components/layout/MainLayout.js';
+import { PATHS, getCatalogPath } from './constants/index.js';
 import { GameContainer } from './games/index.js';
+import {
+  useActiveGame,
+  useGameStatisticsRecorder,
+  useGames,
+  useGamesLoader,
+  useRoomSubscriptions,
+  useTheme,
+  useUnloadWarning,
+  useUsername,
+} from './hooks/index.js';
 import CatalogPage from './pages/Catalog/index.js';
 import GamePage from './pages/GamePage/index.js';
+import { applyAccentColor, applyTheme } from './utils/index.js';
 
 function GamePlayPage() {
   const { activeGame } = useActiveGame();
@@ -66,6 +61,8 @@ function AppContent() {
   useGamesLoader();
 
   useRoomSubscriptions();
+
+  useGameStatisticsRecorder();
 
   useUnloadWarning(currentRoom);
 

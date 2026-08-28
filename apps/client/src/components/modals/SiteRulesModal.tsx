@@ -1,8 +1,7 @@
 import type { ReactElement } from 'react';
 
-import { useLanguage } from '../../hooks/index.js';
-
-import HelpModal from './HelpModal.js';
+import { HelpModal } from '@game/client-core/components';
+import { useLanguage } from '@game/client-core/hooks';
 
 import styles from './SiteRulesModal.module.css';
 

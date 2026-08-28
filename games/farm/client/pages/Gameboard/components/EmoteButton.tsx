@@ -10,6 +10,7 @@ import {
 import { Dropdown } from '@game/client-core/components';
 import { ButtonVariant } from '@game/client-core/constants';
 import { emitGameEvent } from '@game/client-core/socket';
+
 import { EVENTS } from '@game/shared/constants';
 
 import { EMOTES, type EmoteId } from '@game/game-farm/shared';

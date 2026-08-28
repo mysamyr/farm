@@ -3,7 +3,11 @@ import type { GameId } from '@game/shared/constants';
 
 import { useGameConfig } from '../hooks/index.js';
 
-export function GameSubscriptions({ gameId }: { gameId: GameId }) {
+type GameSubscriptionsProps = {
+  gameId: GameId;
+};
+
+export function GameSubscriptions({ gameId }: GameSubscriptionsProps) {
   const { config } = useGameConfig(gameId);
 
   // Wait for config to load
@@ -18,11 +22,11 @@ export function GameSubscriptions({ gameId }: { gameId: GameId }) {
   );
 }
 
-function GameSubscriptionsInner({
-  useGameSubscriptions,
-}: {
+type GameSubscriptionsInnerProps = {
   useGameSubscriptions: (args: { onCurrentUserWon: () => void }) => void;
-}) {
+};
+
+function GameSubscriptionsInner({ useGameSubscriptions }: GameSubscriptionsInnerProps) {
   useGameSubscriptions({
     onCurrentUserWon: () => {
       window.dispatchEvent(new CustomEvent(GAME_WIN_EVENT));

@@ -1,9 +1,11 @@
 import { Component, type ErrorInfo, type ReactNode, Suspense } from 'react';
 
-import { getGamePath } from '@game/client-core/constants';
-import { useConnection, useRoom } from '@game/client-core/hooks';
+import { useRoom } from '@game/client-core/hooks';
 import { ROOM_STATES, type GameId } from '@game/shared/constants';
 import { Navigate } from 'react-router-dom';
+
+import { getGamePath } from '../constants/index.js';
+import { useConnection } from '../hooks/index.js';
 
 import styles from './GameContainer.module.css';
 import { gameRegistry } from './registry.js';

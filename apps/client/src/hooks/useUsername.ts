@@ -1,10 +1,10 @@
 import { useCallback } from 'react';
 
+import { LOCAL_STORAGE_KEY } from '@game/client-core/constants';
+import { emitEvent } from '@game/client-core/socket';
 import { EVENTS } from '@game/shared/constants';
 import { useShallow } from 'zustand/react/shallow';
 
-import { LOCAL_STORAGE_KEY } from '../constants/index.js';
-import { emitEvent } from '../socket/index.js';
 import { useUsernameStore } from '../store/index.js';
 import { isValidUsername } from '../utils/index.js';
 

@@ -12,7 +12,7 @@ client (`GameConfig`) and server (`ServerGameModule`).
 /
 ├── apps/
 │   ├── server/             # Express + Socket.io (Core Routing, Rooms, Game Registry)
-│   └── client/             # React shell: catalog, room dashboard, router, plugin loaders
+│   └── client/             # React shell: catalog, lobby, routing, rematch, theme, statistics
 │       └── public/assets/banners/  # Per-game catalog banners (farm.jpeg, arena.jpeg)
 ├── games/
 │   ├── farm/               # Game Plugin: Farm
@@ -22,7 +22,7 @@ client (`GameConfig`) and server (`ServerGameModule`).
 │   └── arena/              # Game Plugin: Arena (same layout)
 └── packages/
     ├── shared/             # Core types ONLY (User/Room, GameMetadata, BaseEngine, Socket protocols)
-    └── client-core/        # Shared client utilities (components, hooks, stores, socket, i18n, theme)
+    └── client-core/        # Plugin SDK: generic UI/icons, socket, language, room/modal/snackbar state
 ```
 
 ## 3. Server Architecture
@@ -82,7 +82,7 @@ client (`GameConfig`) and server (`ServerGameModule`).
 ### Catalog & lobby
 
 - **Catalog** lists games from `GET /api/games` (`useGames` / `useGamesStore`). Each `GameCard` uses plugin `GameConfig` for localized title, short description, and banner (`bannerUrl` under `apps/client/public/assets/banners/`), plus live open-room counts.
-- **Game page** (`ActionBar` + room grid + `ActiveRoom`) filters rooms by `activeGame`. Room create/join/kick/start stay in core; games only supply rule labels via `GameConfig.rules`.
+- **Game page** (`ActionBar` + room grid + `ActiveRoom`) filters rooms by `activeGame`. Room create/join/kick/start stay in the client shell; games only supply rule labels via `GameConfig.rules`.
 
 ### Plugin loading
 
@@ -94,7 +94,7 @@ client (`GameConfig`) and server (`ServerGameModule`).
   - `idle` → navigate back to `/:gameId` lobby
   - `running` → Suspense-load `GameboardPage`
   - `finished` → `GameSummaryLayout` + plugin `GameSummary`
-- **`GameSubscriptions`** runs the plugin’s `useGameSubscriptions` hook (win event → confetti). Pre-game readiness, mid-game rematch, and post-game rematch votes use `RematchModal` (driven by `room.vote`).
+- **`GameSubscriptions`** runs the plugin’s `useGameSubscriptions` hook (win event → confetti). Pre-game readiness, mid-game rematch, and post-game rematch votes use `RematchModal` in `apps/client` (driven by `room.vote`).
 
 ### Client Game Module Interface (`GameConfig`)
 
@@ -108,16 +108,52 @@ Each game’s `client/index.ts` exports a `GameConfig`:
 - `HelpModal` – Game rules modal (uses shared `HelpModal` layout from client-core)
 - `useGameSubscriptions({ onCurrentUserWon })` – Socket listeners for that game’s state
 
-### State & i18n
+### Client state: what lives where
 
-- Core Zustand stores live in `@game/client-core` (`useRoomsStore`, `useGamesStore`, `useLanguageStore`, `useThemeStore`, `useUsernameStore`, `useModalStore`, `useSnackbarStore`, `useConnectionStore`). There is no `useAuthStore`.
+Zustand is split on **who reads it**, not on “global vs local”. There is no `useAuthStore`.
+
+**`@game/client-core` (`packages/client-core/store/index.ts`)** — plugin-facing runtime that `games/*/client` may import via hooks:
+
+| Slice    | Store / hook                       | Put it here when                                                              |
+| -------- | ---------------------------------- | ----------------------------------------------------------------------------- |
+| Language | `useLanguageStore` / `useLanguage` | Games need `LanguageCode`, `translation` (errors, `youWin`), or `setLanguage` |
+| Rooms    | `useRoomsStore` / `useRoom`        | Games read/write `currentRoom` / `rooms` from socket updates                  |
+| Modal    | `useModalStore` / `useModal`       | Games open dialogs (e.g. Farm trade) through the shared host                  |
+| Snackbar | `useSnackbarStore` / `useSnackbar` | Games show toasts for action errors / notifications                           |
+
+Do **not** add a slice to client-core unless a game board (or a primitive games already import, such as `WinningAnimation`) must read or write it.
+
+**UI components: what lives where**
+
+Generic, game-agnostic primitives stay in `packages/client-core/components` so plugins can reuse them (now or later): `Button`, `Dropdown`, `Slider`, `Modal` (the dialog host for `useModal`), `Snackbar`, `ConfirmationModal`, `HelpModal`, `WinningAnimation`, and `icons/*`.
+
+Components tied to shell features live in `apps/client/src/components`, grouped by UI kind (not product feature): `layout/` (`MainLayout`), `modals/` (`ChangeNameModal`, `SiteRulesModal`, `StatisticsModal`, `RematchModal`), `ui/` (`Header`, `Sidebar`, `Tag`, `RematchPlayerList`, `MatchDetails`). Page-only widgets stay under `pages/<Page>/components` (e.g. `LastMatchSummary`). App wiring such as `GameSubscriptions` stays at the components root. A component belongs in the shell as soon as it reads shell state (games catalog, theme, username, connection), routing, or shell-only copy.
+
+**`apps/client` (`apps/client/src/store/index.ts`)** — shell-only; games must not import this module:
+
+| Slice         | Store / hook                           | Put it here when                                                                        |
+| ------------- | -------------------------------------- | --------------------------------------------------------------------------------------- |
+| Games catalog | `useGamesStore` / `useGames`           | Metadata from `GET /api/games`, lobby/catalog only                                      |
+| Theme         | `useThemeStore` / `useTheme`           | `data-theme` chrome; games do not toggle theme                                          |
+| Username      | `useUsernameStore` / `useUsername`     | Header / name modal; socket auth still uses `LOCAL_STORAGE_KEY.USERNAME` in client-core |
+| Connection    | `useConnectionStore` / `useConnection` | Online count and rejoin gate for routing                                                |
+
+**Adding state — checklist**
+
+1. If `games/*/client` needs it (or will need it as shared UI), put the slice and hook in `@game/client-core`.
+2. If only the catalog, lobby, header, rematch overlay, or statistics need it, put it in `apps/client`.
+3. Persist with `localStorage` next to the owner package: identity/language keys in client-core; theme/statistics keys in the shell.
+4. Game-specific board state stays in that game’s client (or on `room` via `game:state_update`). Never import one game from another.
+
+### i18n
+
 - Core copy (catalog, dashboard, header, errors, post-game) is in `client-core` (`en` / `ua`).
 - Game copy lives in each plugin (`games/<id>/client/i18n/`) and is accessed through that game’s translation helper (e.g. `useFarmTranslation`). Games must not put UI strings into core translations.
 
 ## 5. Plugin Contract Guidelines
 
 - A game package **MUST NOT** import anything from other game packages.
-- A game **client** may depend on `@game/client-core` (shared UI, hooks, socket helpers) and `@game/shared`.
+- A game **client** may depend on `@game/client-core` (plugin SDK: shared UI and icons, language, room/modal/snackbar hooks, socket helpers) and `@game/shared`.
 - A game **server** and **shared** layer **MUST ONLY** depend on `@game/shared` (plus the game’s own `shared/`).
 - Display metadata is split:
   - Server `GameMetadata` – stable id, fallback name, emoji, accent color, player limits (for `/api/games`)

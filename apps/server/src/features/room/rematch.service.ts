@@ -41,6 +41,7 @@ export function startRoomGame(io: AppServer, room: BaseRoom): void {
   delete room.vote;
   delete room.winner;
   room.state = ROOM_STATES.RUNNING;
+  room.startedAt = Date.now();
 
   gameRegistry.get(room.game).onGameStart?.(io, room);
 
@@ -53,6 +54,7 @@ export function returnRoomToLobby(io: AppServer, room: BaseRoom): void {
   clearRematchTimer(room.id);
   delete room.vote;
   delete room.winner;
+  delete room.startedAt;
   room.state = ROOM_STATES.IDLE;
   broadcastRoom(io, room);
   log(LogLevel.INFO, 'room:returned-to-lobby', { roomId: room.id });

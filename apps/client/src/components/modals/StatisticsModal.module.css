@@ -1,0 +1,78 @@
+.container {
+  display: flex;
+  width: min(520px, 100%);
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+}
+
+.title,
+.subtitle,
+.confirmation h3 {
+  margin: 0;
+}
+
+.label {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border-base);
+  border-radius: var(--radius-sm);
+  color: var(--surface-input-text);
+  background: var(--surface-input-bg);
+  font: inherit;
+}
+
+.subtitle {
+  margin-top: 4px;
+}
+
+.matches {
+  display: flex;
+  max-height: 320px;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.match {
+  padding: 10px 12px;
+  border: 1px solid var(--border-base);
+  border-radius: var(--radius-sm);
+  background: var(--bg-surface-subtle);
+}
+
+.empty {
+  margin: 4px 0;
+  color: var(--text-muted);
+}
+
+.reset {
+  align-self: flex-end;
+  margin-top: 8px;
+}
+
+.confirmation {
+  padding: 12px;
+  border: 1px solid var(--status-error);
+  border-radius: var(--radius-sm);
+  background: var(--status-error-soft);
+}
+
+.confirmation p {
+  margin: 8px 0 12px;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}

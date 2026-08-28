@@ -1,16 +1,17 @@
 import { type ReactElement, useEffect, useState } from 'react';
 
+import { Button, MinimizeIcon } from '@game/client-core/components';
+
+import { ButtonVariant } from '@game/client-core/constants';
+import { useLanguage, useRoom } from '@game/client-core/hooks';
+import { getSocketId } from '@game/client-core/socket';
 import { ROOM_STATES } from '@game/shared/constants';
 
-import { ButtonVariant } from '../constants/index.js';
-import { useLanguage, useRoom, useServerCountdown } from '../hooks/index.js';
-import { useRematchActions } from '../hooks/index.js';
-import { getSocketId } from '../socket/index.js';
+import { useRematchActions, useServerCountdown } from '../../hooks/index.js';
 
-import Button from './Button.js';
-import MinimizeIcon from './icons/MinimizeIcon.js';
-import styles from './PostGameOverlay.module.css';
-import { RematchPlayerList } from './RematchPlayerList.js';
+import { RematchPlayerList } from '../ui/RematchPlayerList.js';
+
+import styles from './RematchModal.module.css';
 
 type VoteMode = 'preGame' | 'midGame' | 'postGame';
 

@@ -1,9 +1,8 @@
 import type { ReactElement } from 'react';
 
+import { useLanguage } from '@game/client-core/hooks';
+import { classNames } from '@game/client-core/utils';
 import type { BasePlayer } from '@game/shared/types';
-
-import { useLanguage } from '../hooks/index.js';
-import { classNames } from '../utils/index.js';
 
 import styles from './RematchPlayerList.module.css';
 

@@ -1,10 +1,9 @@
 import { useEffect } from 'react';
 
+import { reconnectSocket } from '@game/client-core/socket';
 import { ROOM_STATES } from '@game/shared/constants';
 
 import type { BaseRoom } from '@game/shared/types';
-
-import { reconnectSocket } from '../socket/index.js';
 
 export function useUnloadWarning(currentRoom: BaseRoom | null): void {
   useEffect(() => {
