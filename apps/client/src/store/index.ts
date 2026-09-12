@@ -1,5 +1,5 @@
-import { LOCAL_STORAGE_KEY as CORE_STORAGE_KEY } from '@game/client-core/constants';
-import { VALIDATION, type GameId } from '@game/shared/constants';
+import { readStoredUsername } from '@game/client-core/utils';
+import type { GameId } from '@game/shared/constants';
 import type { GameMetadata } from '@game/shared/types';
 import { create } from 'zustand';
 
@@ -39,11 +39,6 @@ export const useConnectionStore = create<ConnectionSlice>(set => ({
 }));
 
 // ─── Username ────────────────────────────────────────────────────────────────
-
-function readStoredUsername(): string {
-  const stored = window.localStorage.getItem(CORE_STORAGE_KEY.USERNAME) ?? '';
-  return [...stored].slice(0, VALIDATION.USER_NAME.MAX_LENGTH).join('');
-}
 
 interface UsernameSlice {
   username: string;

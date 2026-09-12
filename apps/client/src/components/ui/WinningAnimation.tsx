@@ -1,7 +1,9 @@
 import type { ReactElement } from 'react';
 
-import { useLanguage, useWinningAnimation } from '../hooks/index.js';
-import { classNames } from '../utils/index.js';
+import { useLanguage } from '@game/client-core/hooks';
+import { classNames } from '@game/client-core/utils';
+
+import { useWinningAnimation } from '../../hooks/index.js';
 
 import styles from './WinningAnimation.module.css';
 

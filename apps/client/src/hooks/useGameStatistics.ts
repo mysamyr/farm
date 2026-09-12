@@ -45,6 +45,8 @@ export function useGameStatistics(gameId: string | null): MatchRecord[] {
   return matches;
 }
 
+// TODO: Add rules, turns count and game-specific statistics to the match record
+
 export function useGameStatisticsRecorder(): void {
   const { currentRoom } = useRoom();
   const previousRoomRef = useRef<{

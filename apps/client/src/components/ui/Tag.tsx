@@ -7,7 +7,7 @@ type TagProps = {
   title?: string;
 };
 
-export default function Tag({ children, title }: TagProps): ReactElement {
+export function Tag({ children, title }: TagProps): ReactElement {
   return (
     <span className={styles.tag} title={title}>
       {children}

@@ -57,7 +57,3 @@
 - Build all in dependency order: `npm run build` (shared -> games -> server -> client).
 - Quality gates used in this repo: `npm run typecheck` and `npm run lint` (no test script is currently defined).
 - Client dev server proxies `/api` and `/socket.io` to `http://localhost:3000` (`apps/client/vite.config.ts`).
-
-## Existing AI instructions in-repo
-
-- Follow `ARCHITECTURE.md` as a hard constraint (also repeated in `.github/copilot-instructions.md` and `.cursorrules`).

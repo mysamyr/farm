@@ -2,7 +2,7 @@
   position: fixed;
   inset: 0;
   background: var(--overlay-backdrop);
-  z-index: 200;
+  z-index: 3;
 }
 
 .sheet {
@@ -10,7 +10,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: 201;
+  z-index: 4;
   background: var(--bg-card);
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   padding: 20px 20px 32px;
@@ -65,6 +65,6 @@
   margin-top: 4px;
   padding-top: 4px;
   border-top: 1px solid var(--border-base);
-  color: var(--accent) !important;
+  /* color: var(--accent) !important; */
   font-weight: 500;
 }

@@ -18,15 +18,20 @@ function HelpModal({
   const { closeModal } = useModal();
 
   return (
-   <div className={classNames(styles.container)}>
-     <div className={styles.header}>
-       <h2 className={styles.title}>{title}</h2>
-       <Button className={styles.closeButton} variant={ButtonVariant.ICON} onClick={closeModal} aria-label="Close help modal">
-         <CloseIcon />
-       </Button>
-     </div>
-     {children}
-   </div>
+    <div className={classNames(styles.container)}>
+      <div className={styles.header}>
+        <h2 className={styles.title}>{title}</h2>
+        <Button
+          className={styles.closeButton}
+          variant={ButtonVariant.ICON}
+          onClick={closeModal}
+          aria-label="Close help modal"
+        >
+          <CloseIcon />
+        </Button>
+      </div>
+      {children}
+    </div>
   );
 }
 

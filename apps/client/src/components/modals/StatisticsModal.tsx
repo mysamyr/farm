@@ -95,6 +95,7 @@ export default function StatisticsModal(): ReactElement {
           <Button
             variant={ButtonVariant.DANGER}
             className={styles.reset}
+            disabled={!matches.length}
             onClick={() => setConfirmingReset(true)}
           >
             {statisticsT.reset}

@@ -1,6 +1,5 @@
 import { type ReactElement, useEffect } from 'react';
 
-import { WinningAnimation } from '@game/client-core/components';
 import { useModal, useRoom } from '@game/client-core/hooks';
 import { emitGameEvent, getSocketId } from '@game/client-core/socket';
 
@@ -69,8 +68,6 @@ export default function Gameboard(): ReactElement {
       <PlayersSection />
 
       <ExchangeSection isYourTurn={isYourTurn} />
-
-      <WinningAnimation />
 
       <EmoteFloatingContainer />
     </div>

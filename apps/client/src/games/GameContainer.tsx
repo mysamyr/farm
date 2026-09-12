@@ -4,6 +4,7 @@ import { useRoom } from '@game/client-core/hooks';
 import { ROOM_STATES, type GameId } from '@game/shared/constants';
 import { Navigate } from 'react-router-dom';
 
+import { WinningAnimation } from '../components/index.js';
 import { getGamePath } from '../constants/index.js';
 import { useConnection } from '../hooks/index.js';
 
@@ -129,6 +130,7 @@ export function GameContainer({ gameId }: GameContainerProps) {
       <Suspense fallback={<GameLoadingFallback />}>
         <LazyGameboard />
       </Suspense>
+      <WinningAnimation />
     </GameErrorBoundary>
   );
 }

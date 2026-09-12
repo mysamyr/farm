@@ -13,3 +13,4 @@ export { useServerCountdown } from './useServerCountdown.js';
 export { useTheme } from './useTheme.js';
 export { useUsername } from './useUsername.js';
 export { useUnloadWarning } from './useUnloadWarning.js';
+export { useWinningAnimation } from './useWinningAnimation.js';

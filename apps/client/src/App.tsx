@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 
-import { Modal, Snackbar } from '@game/client-core/components';
 import { useModal, useRoom, useSnackbar } from '@game/client-core/hooks';
 import { GameColor } from '@game/shared/constants';
 import {
@@ -12,7 +11,12 @@ import {
 } from 'react-router-dom';
 
 import { GameSubscriptions } from './components/GameSubscriptions.js';
-import { ChangeNameModal, RematchModal } from './components/index.js';
+import {
+  ChangeNameModal,
+  Modal,
+  RematchModal,
+  Snackbar,
+} from './components/index.js';
 import { MainLayout } from './components/layout/MainLayout.js';
 import { PATHS, getCatalogPath } from './constants/index.js';
 import { GameContainer } from './games/index.js';

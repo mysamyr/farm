@@ -26,7 +26,9 @@ type GameSubscriptionsInnerProps = {
   useGameSubscriptions: (args: { onCurrentUserWon: () => void }) => void;
 };
 
-function GameSubscriptionsInner({ useGameSubscriptions }: GameSubscriptionsInnerProps) {
+function GameSubscriptionsInner({
+  useGameSubscriptions,
+}: GameSubscriptionsInnerProps) {
   useGameSubscriptions({
     onCurrentUserWon: () => {
       window.dispatchEvent(new CustomEvent(GAME_WIN_EVENT));

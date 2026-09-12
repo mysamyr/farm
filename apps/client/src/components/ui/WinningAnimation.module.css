@@ -8,7 +8,7 @@
   align-items: center;
   justify-content: center;
   background: var(--overlay-backdrop);
-  z-index: 1000;
+  z-index: 10;
   animation: fadeIn 0.5s ease-out forwards;
   cursor: pointer;
 }

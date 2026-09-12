@@ -5,14 +5,7 @@ import type { ANIMALS, EMOTES, GAME_RULES } from './constants.js';
 
 export type EmoteId = (typeof EMOTES)[number]['id'];
 
-export type TradableAnimals =
-  | ANIMALS.DUCK
-  | ANIMALS.GOAT
-  | ANIMALS.PIG
-  | ANIMALS.HORSE
-  | ANIMALS.COW
-  | ANIMALS.SMALL_DOG
-  | ANIMALS.BIG_DOG;
+export type TradableAnimals = Exclude<ANIMALS, ANIMALS.FOX | ANIMALS.BEAR>;
 
 export type DiceAnimals = Exclude<ANIMALS, ANIMALS.SMALL_DOG | ANIMALS.BIG_DOG>;
 
@@ -41,6 +34,5 @@ export interface Room extends BaseRoom<Player, Rules, GameId.farm> {
   order: string[];
   turn: number;
   dice?: [DiceAnimals, DiceAnimals];
-  winner?: string;
   trade?: TradeState;
 }

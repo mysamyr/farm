@@ -1,6 +1,5 @@
 import { type ReactElement } from 'react';
 
-import { WinningAnimation } from '@game/client-core/components';
 import { useRoom } from '@game/client-core/hooks';
 
 import { type Room } from '@game/game-arena/shared';
@@ -25,7 +24,6 @@ export default function Gameboard(): ReactElement {
   return (
     <div className={styles.container}>
       {isPreparationPhase ? <PreparationPhase /> : <FightPhase />}
-      <WinningAnimation />
     </div>
   );
 }

@@ -34,7 +34,7 @@ export default function GamePage(): ReactElement {
   return (
     <div className={styles.container}>
       <ActionBar />
-      
+
       <LastMatchSummary gameId={activeGame} />
 
       <div className={styles.dashboardGrid}>

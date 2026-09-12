@@ -255,8 +255,6 @@ export interface LogStep {
   effects: LogEffect[];
 }
 
-// Player
-
 export interface StatusEffect {
   type: StatId | EffectId;
   value: number;
@@ -282,12 +280,10 @@ export interface Player extends BasePlayer {
   ready: boolean;
 }
 
-// Room
 export type Rules = Record<GAME_RULES, boolean>;
 
 export interface Room extends BaseRoom<Player, Rules, GameId.arena> {
   order: string[];
   turn: number;
-  winner?: string;
   steps: LogStep[];
 }

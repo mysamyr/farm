@@ -1,4 +1,10 @@
-import { ReactElement, ReactNode, useEffect, useRef, useState } from 'react';
+import {
+  type ReactElement,
+  type ReactNode,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 
 import { ButtonVariant } from '../constants/index.js';
 import { classNames } from '../utils/index.js';
@@ -37,9 +43,6 @@ export default function Dropdown({
 }: DropdownProps): ReactElement {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const showIndicator =
-    triggerVariant !== ButtonVariant.TEXT &&
-    triggerVariant !== ButtonVariant.ICON;
 
   useEffect(() => {
     function handleOutsideClick(event: MouseEvent) {
@@ -79,14 +82,7 @@ export default function Dropdown({
         disabled={disabled}
         onClick={() => setIsOpen(open => !open)}
       >
-        <span className={styles.triggerContent}>
-          <span className={styles.triggerLabel}>{trigger}</span>
-          {showIndicator ? (
-            <span className={styles.triggerIndicator} aria-hidden="true">
-              ▾
-            </span>
-          ) : null}
-        </span>
+        <span className={styles.triggerLabel}>{trigger}</span>
       </Button>
 
       {isOpen ? (

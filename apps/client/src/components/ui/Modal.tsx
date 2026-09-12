@@ -1,6 +1,6 @@
 import { ReactElement, useEffect, useRef } from 'react';
 
-import type { ModalCloseReason, ModalConfig } from '../store/index.js';
+import type { ModalCloseReason, ModalConfig } from '@game/client-core/store';
 
 type ModalProps = {
   open: boolean;
@@ -8,7 +8,7 @@ type ModalProps = {
   onRequestClose: (reason: ModalCloseReason) => void;
 };
 
-export default function Modal({
+export function Modal({
   open,
   modal,
   onRequestClose,
