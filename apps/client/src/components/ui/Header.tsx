@@ -33,9 +33,9 @@ import {
 import ChangeNameModal from '../modals/ChangeNameModal.js';
 import SiteRulesModal from '../modals/SiteRulesModal.js';
 import StatisticsModal from '../modals/StatisticsModal.js';
-import { Sidebar } from './Sidebar.js';
 
 import styles from './Header.module.css';
+import { Sidebar } from './Sidebar.js';
 
 type HeaderProps = {
   additionalActions?: ReactNode;
@@ -151,7 +151,7 @@ export function Header({ additionalActions }: HeaderProps): ReactElement {
         title: inGameT.lobbyConfirmTitle,
         message: inGameT.lobbyConfirmMessage,
         confirmLabel: inGameT.lobbyConfirmButton,
-        cancelLabel: inGameT.cancel,
+        cancelLabel: translation.cancel,
         onConfirm: handleReturnToLobby,
       },
     });

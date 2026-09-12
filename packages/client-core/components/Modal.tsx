@@ -37,22 +37,6 @@ export default function Modal({
         event.preventDefault();
         onRequestClose('escape');
       }}
-      onClick={event => {
-        const dialog = dialogRef.current;
-        if (!dialog) {
-          return;
-        }
-
-        const rect = dialog.getBoundingClientRect();
-        if (
-          event.clientX < rect.left ||
-          event.clientX > rect.right ||
-          event.clientY < rect.top ||
-          event.clientY > rect.bottom
-        ) {
-          onRequestClose('backdrop');
-        }
-      }}
     >
       {ModalComponent ? <ModalComponent {...modalProps} /> : null}
     </dialog>

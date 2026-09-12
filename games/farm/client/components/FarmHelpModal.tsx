@@ -12,8 +12,7 @@ export default function FarmHelpModal(): ReactElement {
   const { ruleLabels } = useFarmTranslation();
 
   return (
-    <HelpModal>
-      <h2>{help.title}</h2>
+    <HelpModal title={help.title}>
       <p>{help.goal}</p>
 
       <h2>{help.componentsHeader}</h2>

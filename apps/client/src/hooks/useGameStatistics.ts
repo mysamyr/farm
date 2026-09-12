@@ -10,7 +10,7 @@ import {
   getGameStatistics,
   recordMatch,
   STATISTICS_CHANGED_EVENT,
-} from '../utils/statistics.js';
+} from '../utils/index.js';
 
 export function useGameStatistics(gameId: string | null): MatchRecord[] {
   const loadStatistics = useCallback(

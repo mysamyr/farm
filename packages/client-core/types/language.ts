@@ -39,7 +39,6 @@ export type Translation = {
     description: string;
     placeholder: string;
     save: string;
-    cancel: string;
   };
   header: {
     setName: string;
@@ -68,7 +67,6 @@ export type Translation = {
     resetConfirmTitle: string;
     resetConfirmMessage: string;
     resetConfirm: string;
-    cancel: string;
     lastMatch: string;
   };
   dashboard: {
@@ -94,11 +92,11 @@ export type Translation = {
     confirmTitle: string;
     confirmMessage: (playerName: string) => string;
     confirmButton: string;
-    cancelButton: string;
   };
   you: string;
   owner: string;
   youWin: string;
+  cancel: string;
   postGame: {
     title: string;
     winner: (winnerName: string) => string;
@@ -132,7 +130,6 @@ export type Translation = {
     lobbyConfirmTitle: string;
     lobbyConfirmMessage: string;
     lobbyConfirmButton: string;
-    cancel: string;
     voteTitle: string;
     readyTitle: string;
   };

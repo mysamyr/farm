@@ -120,7 +120,6 @@ const translations: Record<LanguageCode, Translation> = {
         'Please enter a display name. It is required to create rooms and play games with others.',
       placeholder: 'Enter your name',
       save: 'Save',
-      cancel: 'Cancel',
     },
     header: {
       setName: 'Set name',
@@ -156,7 +155,6 @@ const translations: Record<LanguageCode, Translation> = {
       resetConfirmMessage:
         'This will permanently remove match history for every game on this browser.',
       resetConfirm: 'Clear All',
-      cancel: 'Cancel',
       lastMatch: 'Last played match',
     },
     dashboard: {
@@ -183,7 +181,6 @@ const translations: Record<LanguageCode, Translation> = {
       confirmMessage: (name: string): string =>
         `Are you sure you want to kick ${name}? They will not be able to rejoin this room.`,
       confirmButton: 'Kick',
-      cancelButton: 'Cancel',
     },
     roomState: {
       idle: 'Idle',
@@ -193,6 +190,7 @@ const translations: Record<LanguageCode, Translation> = {
     you: 'You',
     owner: 'by',
     youWin: 'You win!',
+    cancel: 'Cancel',
     postGame: {
       title: 'Game over',
       winner: (name: string): string => `Winner: ${name}`,
@@ -223,7 +221,6 @@ const translations: Record<LanguageCode, Translation> = {
       lobbyConfirmMessage:
         'This will immediately end the current game for all players and move everyone back to the lobby. No winner will be recorded.',
       lobbyConfirmButton: 'Return to lobby',
-      cancel: 'Cancel',
       voteTitle: 'Rematch vote',
       readyTitle: 'Get ready',
     },
@@ -309,7 +306,6 @@ const translations: Record<LanguageCode, Translation> = {
         'Будь ласка, введіть відображуване імʼя. Воно потрібне, щоб створювати кімнати та грати з іншими.',
       placeholder: 'Введіть ваше імʼя',
       save: 'Зберегти',
-      cancel: 'Скасувати',
     },
     header: {
       setName: 'Вказати імʼя',
@@ -352,7 +348,6 @@ const translations: Record<LanguageCode, Translation> = {
       resetConfirmMessage:
         'Це назавжди видалить історію матчів усіх ігор у цьому браузері.',
       resetConfirm: 'Очистити все',
-      cancel: 'Скасувати',
       lastMatch: 'Останній зіграний матч',
     },
     dashboard: {
@@ -379,7 +374,6 @@ const translations: Record<LanguageCode, Translation> = {
       confirmMessage: (name: string): string =>
         `Ви впевнені, що хочете вигнати ${name}? Вони не зможуть повернутися до цієї кімнати.`,
       confirmButton: 'Вигнати',
-      cancelButton: 'Скасувати',
     },
     roomState: {
       idle: 'В очікуванні',
@@ -389,6 +383,7 @@ const translations: Record<LanguageCode, Translation> = {
     you: 'Ви',
     owner: 'Власник',
     youWin: 'Ви виграли!',
+    cancel: 'Скасувати',
     postGame: {
       title: 'Гра завершена',
       winner: (name: string): string => `Переможець: ${name}`,
@@ -420,7 +415,6 @@ const translations: Record<LanguageCode, Translation> = {
       lobbyConfirmMessage:
         'Це негайно завершить поточну гру для всіх гравців і поверне всіх у лобі. Переможець зараховано не буде.',
       lobbyConfirmButton: 'Повернутись у лобі',
-      cancel: 'Скасувати',
       voteTitle: 'Голосування за реванш',
       readyTitle: 'Приготуйтесь',
     },

@@ -20,7 +20,7 @@ export function useKickPlayer(): (roomId: string, player: BasePlayer) => void {
           title: translation.kick.confirmTitle,
           message: translation.kick.confirmMessage(player.name),
           confirmLabel: translation.kick.confirmButton,
-          cancelLabel: translation.kick.cancelButton,
+          cancelLabel: translation.cancel,
           onConfirm: () => {
             emitEvent(
               EVENTS.ROOM_KICK,

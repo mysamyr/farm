@@ -10,13 +10,7 @@ import { isValidUsername } from '../../utils/index.js';
 
 import styles from './ChangeNameModal.module.css';
 
-export type ChangeNameModalProps = {
-  required?: boolean;
-};
-
-function ChangeNameModal({
-  required = false,
-}: ChangeNameModalProps): ReactElement {
+function ChangeNameModal(): ReactElement {
   const { closeModal } = useModal();
   const { translation } = useLanguage();
   const { username, setUsername } = useUsername();
@@ -27,9 +21,7 @@ function ChangeNameModal({
   const length = [...normalized].length;
   const error =
     normalized.length === 0
-      ? required
-        ? translation.errors.userNameTooShort
-        : null
+      ? translation.errors.userNameTooShort
       : length < VALIDATION.USER_NAME.MIN_LENGTH
         ? translation.errors.userNameTooShort
         : length > VALIDATION.USER_NAME.MAX_LENGTH
@@ -65,15 +57,13 @@ function ChangeNameModal({
       />
       {error ? <p className={styles.error}>{error}</p> : null}
       <div className={styles.actions}>
-        {!required && (
-          <Button
-            type="button"
-            variant={ButtonVariant.SECONDARY}
-            onClick={() => closeModal()}
-          >
-            {t.cancel}
-          </Button>
-        )}
+        <Button
+          type="button"
+          variant={ButtonVariant.SECONDARY}
+          onClick={() => closeModal()}
+        >
+          {translation.cancel}
+        </Button>
         <Button type="submit" disabled={!isValidUsername(draft)}>
           {t.save}
         </Button>

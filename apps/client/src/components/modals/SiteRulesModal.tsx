@@ -10,8 +10,7 @@ function SiteRulesModal(): ReactElement {
   const { title, intro, sections } = translation.siteRules;
 
   return (
-    <HelpModal>
-      <h2 className={styles.title}>{title}</h2>
+    <HelpModal title={title}>
       <p className={styles.intro}>{intro}</p>
       {sections.map(section => (
         <section key={section.heading} className={styles.section}>

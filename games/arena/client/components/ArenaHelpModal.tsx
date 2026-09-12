@@ -18,8 +18,7 @@ export default function ArenaHelpModal(): ReactElement {
   const { statLabels, effectLabels } = useArenaTranslation();
 
   return (
-    <HelpModal>
-      <h2>{help.title}</h2>
+    <HelpModal title={help.title}>
       <p>{help.goal}</p>
 
       <h2>{help.statsHeader}</h2>
