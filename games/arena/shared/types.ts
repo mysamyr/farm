@@ -87,7 +87,7 @@ export type ApplyStatusAction = BaseAction & {
     | {
         status: EffectId.resistance;
         duration: number;
-        value?: never;
+        value: InstantActionValue;
       }
     | {
         status: EffectId.reflection;
@@ -109,7 +109,7 @@ export type ApplyStatusAction = BaseAction & {
       }
     | {
         status: EffectId.pierce;
-        value: ReactiveActionValue;
+        value?: never;
       }
   );
 
@@ -195,6 +195,7 @@ export type ApplyStatusLogEffect = BaseLogEffect & {
     | {
         status: EffectId.resistance;
         duration: number;
+        value: number;
       }
     | {
         status: EffectId.reflection;

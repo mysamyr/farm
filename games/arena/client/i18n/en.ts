@@ -154,13 +154,13 @@ export const arenaHelpTranslation: ArenaHelpTranslation = {
   effects: {
     regeneration: 'Restore HP at the end of your turn.',
     resistance:
-      'Block new Bleed and Poison. Does not remove effects already applied.',
+      'Block new Bleed and Poison, and reduce incoming direct damage by 30%. Does not remove effects already applied.',
     thorns: 'Reflect a portion of direct damage back to the attacker.',
     leech: 'Heal a portion of the direct damage you deal.',
     poison: 'Take a fixed amount of damage each turn.',
     bleed: 'Take damage each turn based on current HP.',
     stun: 'Cannot use skills (only Skip). Skill cooldowns do not tick down.',
-    pierce: "Ignore part of the opponent's Armor.",
+    pierce: "Ignore all of the opponent's Armor.",
     reflection:
       'Redirect incoming debuffs (Bleed, Poison, Stun, and stat reductions) to the attacker, with the same values and duration. Does not bounce twice.',
   },

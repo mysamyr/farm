@@ -72,6 +72,18 @@ export function isPlayerResistant(player: Player): boolean {
   );
 }
 
+export function getResistance(player: Player): number {
+  return player.statuses.reduce((total, status) => {
+    if (
+      status.type === EffectId.resistance &&
+      (status.remainingDuration === undefined || status.remainingDuration > 0)
+    ) {
+      total += status.value ?? 0;
+    }
+    return total;
+  }, 0);
+}
+
 export function isPlayerReflecting(player: Player): boolean {
   return player.statuses.some(
     s =>
@@ -118,16 +130,12 @@ export function getLeech(player: Player): number {
   }, 0);
 }
 
-export function getPierce(player: Player): number {
-  return player.statuses.reduce((acc, s) => {
-    if (
-      s.type === EffectId.pierce &&
-      (s.remainingDuration === undefined || s.remainingDuration > 0)
-    ) {
-      acc += s.value ?? 0;
-    }
-    return acc;
-  }, 0);
+export function isPlayerPiercing(player: Player): boolean {
+  return player.statuses.some(
+    status =>
+      status.type === EffectId.pierce &&
+      (status.remainingDuration === undefined || status.remainingDuration > 0)
+  );
 }
 
 export function isValidSkillSelection(skills: SkillId[]): boolean {

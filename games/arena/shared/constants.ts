@@ -80,7 +80,7 @@ export enum EffectId {
   bleed = 'bleed',
   /** Removes possibility to use skills. No cooldown reduction */
   stun = 'stun',
-  /** Ignores some amount of opponent's defense */
+  /** Ignores all opponent armor */
   pierce = 'pierce',
   /** Redirects incoming debuffs to the attacker */
   reflection = 'reflection',
@@ -230,7 +230,7 @@ export const SKILLS: Record<SkillId, Skill> = {
         type: ActionType.MODIFY_STAT,
         target: ActionTarget.opponent,
         stat: StatId.attack,
-        value: { source: ActionValueSource.raw, amount: -5 },
+        value: { source: ActionValueSource.raw, amount: -7 },
         duration: 2,
       },
     ],
@@ -238,12 +238,12 @@ export const SKILLS: Record<SkillId, Skill> = {
   [SkillId.knockback]: {
     id: SkillId.knockback,
     type: SkillType.active,
-    cooldown: 3,
+    cooldown: 4,
     actions: [
       {
         type: ActionType.DAMAGE,
         target: ActionTarget.opponent,
-        value: { source: ActionValueSource.raw, amount: 8 },
+        value: { source: ActionValueSource.raw, amount: 10 },
       },
       {
         type: ActionType.APPLY_STATUS,
@@ -276,6 +276,7 @@ export const SKILLS: Record<SkillId, Skill> = {
         type: ActionType.APPLY_STATUS,
         target: ActionTarget.self,
         status: EffectId.resistance,
+        value: { source: ActionValueSource.raw, amount: 30 },
         duration: 3,
       },
     ],
@@ -289,7 +290,7 @@ export const SKILLS: Record<SkillId, Skill> = {
         type: ActionType.MODIFY_STAT,
         target: ActionTarget.self,
         stat: StatId.attack,
-        value: { source: ActionValueSource.raw, amount: 8 },
+        value: { source: ActionValueSource.raw, amount: 10 },
         duration: 3,
       },
     ],
@@ -303,7 +304,7 @@ export const SKILLS: Record<SkillId, Skill> = {
         type: ActionType.APPLY_STATUS,
         target: ActionTarget.self,
         status: EffectId.thorns,
-        value: { source: ActionValueSource.raw, amount: 60 },
+        value: { source: ActionValueSource.raw, amount: 100 },
         duration: 2,
       },
     ],
@@ -363,9 +364,16 @@ export const SKILLS: Record<SkillId, Skill> = {
         target: ActionTarget.self,
       },
       {
+        type: ActionType.APPLY_STATUS,
+        target: ActionTarget.self,
+        status: EffectId.resistance,
+        value: { source: ActionValueSource.raw, amount: 30 },
+        duration: 1,
+      },
+      {
         type: ActionType.HEAL,
         target: ActionTarget.self,
-        value: { source: ActionValueSource.raw, amount: 5 },
+        value: { source: ActionValueSource.raw, amount: 10 },
       },
     ],
   },
@@ -510,7 +518,6 @@ export const SKILLS: Record<SkillId, Skill> = {
         type: ActionType.APPLY_STATUS,
         target: ActionTarget.self,
         status: EffectId.pierce,
-        value: { source: ActionValueSource.raw, amount: 5 },
       },
     ],
   },

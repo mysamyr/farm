@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 
+import { Button } from '@game/client-core/components';
 import { useModal, useRoom, useSnackbar } from '@game/client-core/hooks';
 import { GameColor } from '@game/shared/constants';
 import {
@@ -127,7 +128,7 @@ function AppContent() {
         }}
       >
         <p>Failed to load games: {gamesError}</p>
-        <button onClick={() => window.location.reload()}>Retry</button>
+        <Button onClick={() => window.location.reload()}>Retry</Button>
       </div>
     );
   }

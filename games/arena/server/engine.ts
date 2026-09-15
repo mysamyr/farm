@@ -38,11 +38,12 @@ import {
   getActivePlayer,
   getLeech,
   getOpponent,
-  getPierce,
+  getResistance,
   getPlayerMinHp,
   getPlayerStats,
   getThorns,
   isDead,
+  isPlayerPiercing,
   isPlayerReflecting,
   isPlayerResistant,
   isSameTurnDeferred,
@@ -165,7 +166,7 @@ function applyCleansing(
 ): void {
   if (actions.length) {
     player.statuses = player.statuses.filter(
-      s => !NEGATIVE_EFFECTS.includes(s.type as EffectId)
+      status => status.remainingDuration === undefined
     );
 
     ctx.addEffect({
@@ -334,16 +335,22 @@ function applyDamageToOpponent(
   ctx: TurnContext = NO_CONTEXT
 ): number {
   const isCrit = rollChance(attackerStats.crit);
-  const pierce = getPierce(player);
+  const ignoresArmor = isPlayerPiercing(player);
+  const resistance = getResistance(opponent);
 
   let totalDamageDealt = 0;
 
   for (const action of actions) {
-    const damage = calculateDamage(
+    const baseDamage = calculateDamage(
       resolveActionValue(action.value, valueCtx),
       attackerStats.attack,
-      defenderStats.armor - pierce,
+      ignoresArmor ? 0 : defenderStats.armor,
       isCrit
+    );
+    // Apply resistance to the base damage
+    const damage = Math.max(
+      Math.floor((baseDamage * Math.max(100 - resistance, 0)) / 100),
+      1
     );
     applyDamage(opponent, damage);
     totalDamageDealt += damage;
