@@ -142,6 +142,7 @@ const translations: Record<LanguageCode, Translation> = {
       noMatches: 'No matches recorded yet.',
       win: 'Win',
       loss: 'Loss',
+      autoWin: 'Auto win',
       players: (count: number): string =>
         count === 1 ? '1 player' : `${count} players`,
       duration: (ms: number): string =>
@@ -191,6 +192,7 @@ const translations: Record<LanguageCode, Translation> = {
     owner: 'by',
     youWin: 'You win!',
     cancel: 'Cancel',
+    close: 'Close',
     postGame: {
       title: 'Game over',
       winner: (name: string): string => `Winner: ${name}`,
@@ -328,6 +330,7 @@ const translations: Record<LanguageCode, Translation> = {
       noMatches: 'Зіграних матчів ще немає.',
       win: 'Перемога',
       loss: 'Поразка',
+      autoWin: 'Авто-виграш',
       players: (count: number): string => {
         const n = count % 10;
         const n100 = count % 100;
@@ -384,6 +387,7 @@ const translations: Record<LanguageCode, Translation> = {
     owner: 'Власник',
     youWin: 'Ви виграли!',
     cancel: 'Скасувати',
+    close: 'Закрити',
     postGame: {
       title: 'Гра завершена',
       winner: (name: string): string => `Переможець: ${name}`,

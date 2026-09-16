@@ -52,6 +52,7 @@ export function useGameStatisticsRecorder(): void {
   const previousRoomRef = useRef<{
     id: string;
     state: ROOM_STATES;
+    players: number;
     startedAt?: number;
   } | null>(null);
 
@@ -66,9 +67,12 @@ export function useGameStatisticsRecorder(): void {
       currentRoom.winner
     ) {
       const startedAt = currentRoom.startedAt ?? previousRoom.startedAt;
+      const previousPlayers = previousRoom.players;
+      const autoWin = previousPlayers > currentRoom.players.length;
       recordMatch(currentRoom.game, {
         winner: currentRoom.winner === getSocketId(),
-        players: currentRoom.players.length,
+        players: previousPlayers || currentRoom.players.length,
+        autoWin,
         ...(typeof startedAt === 'number'
           ? { durationMs: Math.max(0, Date.now() - startedAt) }
           : {}),
@@ -79,6 +83,7 @@ export function useGameStatisticsRecorder(): void {
       ? {
           id: currentRoom.id,
           state: currentRoom.state,
+          players: currentRoom.players.length,
           startedAt:
             currentRoom.startedAt ??
             (previousRoom?.id === currentRoom.id

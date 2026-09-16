@@ -36,6 +36,7 @@ import { NO_CONTEXT, TURN_START_INDEX } from './constants.js';
 import {
   calculateDamage,
   getActivePlayer,
+  getBerserk,
   getLeech,
   getOpponent,
   getResistance,
@@ -337,6 +338,7 @@ function applyDamageToOpponent(
   const isCrit = rollChance(attackerStats.crit);
   const ignoresArmor = isPlayerPiercing(player);
   const resistance = getResistance(opponent);
+  const berserk = getBerserk(player);
 
   let totalDamageDealt = 0;
 
@@ -345,18 +347,16 @@ function applyDamageToOpponent(
       resolveActionValue(action.value, valueCtx),
       attackerStats.attack,
       ignoresArmor ? 0 : defenderStats.armor,
-      isCrit
+      isCrit,
+      resistance,
+      berserk
     );
-    // Apply resistance to the base damage
-    const damage = Math.max(
-      Math.floor((baseDamage * Math.max(100 - resistance, 0)) / 100),
-      1
-    );
-    applyDamage(opponent, damage);
-    totalDamageDealt += damage;
+    totalDamageDealt += baseDamage;
   }
 
   if (totalDamageDealt === 0) return 0;
+
+  applyDamage(opponent, totalDamageDealt);
 
   ctx.addEffect({
     kind: LogEffectKind.damage,

@@ -27,6 +27,8 @@ function isMatchRecord(value: unknown): value is MatchRecord {
     (typeof match.durationMs === 'number' &&
       Number.isFinite(match.durationMs) &&
       match.durationMs >= 0);
+  const hasValidAutoWin =
+    match.autoWin === undefined || typeof match.autoWin === 'boolean';
 
   return (
     typeof match.id === 'string' &&
@@ -37,7 +39,8 @@ function isMatchRecord(value: unknown): value is MatchRecord {
     typeof match.players === 'number' &&
     Number.isInteger(match.players) &&
     match.players > 0 &&
-    hasValidDuration
+    hasValidDuration &&
+    hasValidAutoWin
   );
 }
 

@@ -63,6 +63,7 @@ export enum SkillId {
   thorns = 'thorns',
   leech = 'leech',
   pierce = 'pierce',
+  berserk = 'berserk',
 }
 
 export enum EffectId {
@@ -84,6 +85,8 @@ export enum EffectId {
   pierce = 'pierce',
   /** Redirects incoming debuffs to the attacker */
   reflection = 'reflection',
+  /** Increases damage dealt based on current HP */
+  berserk = 'berserk',
 }
 
 export enum SkillType {
@@ -518,6 +521,17 @@ export const SKILLS: Record<SkillId, Skill> = {
         type: ActionType.APPLY_STATUS,
         target: ActionTarget.self,
         status: EffectId.pierce,
+      },
+    ],
+  },
+  [SkillId.berserk]: {
+    id: SkillId.berserk,
+    type: SkillType.passive,
+    actions: [
+      {
+        type: ActionType.APPLY_STATUS,
+        target: ActionTarget.self,
+        status: EffectId.berserk,
       },
     ],
   },

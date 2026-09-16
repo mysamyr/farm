@@ -7,6 +7,7 @@ import {
   CUSTOM_SKILLS,
   DamageAction,
   EffectId,
+  getPlayerMaxHp,
   type GameAction,
   HealAction,
   LifeStealAction,
@@ -130,6 +131,25 @@ export function getLeech(player: Player): number {
   }, 0);
 }
 
+export function isPlayerBerserk(player: Player): boolean {
+  return player.statuses.some(
+    s =>
+      s.type === EffectId.berserk &&
+      (s.remainingDuration === undefined || s.remainingDuration > 0)
+  );
+}
+
+export function getBerserk(player: Player): number {
+  if (!isPlayerBerserk(player)) return 0;
+
+  const hpPercent = (getPlayerStats(player).hp / getPlayerMaxHp(player)) * 100;
+  if (hpPercent <= 10) return 30;
+  if (hpPercent <= 25) return 20;
+  if (hpPercent <= 50) return 10;
+  if (hpPercent <= 75) return 5;
+  return 0;
+}
+
 export function isPlayerPiercing(player: Player): boolean {
   return player.statuses.some(
     status =>
@@ -195,11 +215,19 @@ export function calculateDamage(
   value: number,
   attack: number,
   armor: number,
-  isCrit: boolean
+  isCrit: boolean,
+  resistance: number,
+  berserk: number
 ): number {
   let damage = value + attack - armor;
   if (isCrit) damage *= 2;
-  return Math.max(damage, 1);
+  damage = Math.max(damage, 1);
+  damage = Math.floor((damage * (100 + berserk)) / 100);
+  damage = Math.max(
+    Math.floor((damage * Math.max(100 - resistance, 0)) / 100),
+    1
+  );
+  return damage;
 }
 
 export function isDead(player: Player): boolean {

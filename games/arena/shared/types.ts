@@ -111,6 +111,10 @@ export type ApplyStatusAction = BaseAction & {
         status: EffectId.pierce;
         value?: never;
       }
+    | {
+        status: EffectId.berserk;
+        value?: never;
+      }
   );
 
 export type ModifyStatAction = BaseAction & {

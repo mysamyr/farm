@@ -25,6 +25,7 @@ export function MatchDetails({ match }: MatchDetailsProps): ReactElement {
       <strong className={match.winner ? styles.win : styles.loss}>
         {match.winner ? statisticsT.win : statisticsT.loss}
       </strong>
+      {match.autoWin ? <span>{statisticsT.autoWin}</span> : null}
       <span>{playedAt}</span>
       <span>{statisticsT.players(match.players)}</span>
       {match.durationMs !== undefined ? (

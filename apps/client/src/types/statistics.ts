@@ -1,6 +1,7 @@
 export interface MatchResult {
   winner: boolean;
   players: number;
+  autoWin?: boolean;
   durationMs?: number;
 }
 

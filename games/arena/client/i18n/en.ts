@@ -27,6 +27,7 @@ export const arenaGameTranslation: ArenaTranslation = {
     stun: 'Stun',
     pierce: 'Pierce',
     reflection: 'Reflection',
+    berserk: 'Berserk',
   },
   skillNames: {
     attack: 'Attack',
@@ -53,6 +54,7 @@ export const arenaGameTranslation: ArenaTranslation = {
     thorns: 'Thorns',
     leech: 'Leech',
     pierce: 'Pierce',
+    berserk: 'Berserk',
   },
   skillEffectLabels: {
     damage: 'Deal {value} damage',
@@ -163,6 +165,8 @@ export const arenaHelpTranslation: ArenaHelpTranslation = {
     pierce: "Ignore all of the opponent's Armor.",
     reflection:
       'Redirect incoming debuffs (Bleed, Poison, Stun, and stat reductions) to the attacker, with the same values and duration. Does not bounce twice.',
+    berserk:
+      'Increase total damage dealt based on current HP: 5% at 51-75%, 10% at 26-50%, 20% at 11-25%, and 30% at 10% or less.',
   },
   turnHeader: 'Turn processing',
   turnIntro: 'Each turn runs in a fixed order:',
@@ -172,7 +176,7 @@ export const arenaHelpTranslation: ArenaHelpTranslation = {
     'Apply effects to yourself',
     'Apply stat changes to yourself',
     'Dodge check — if the opponent dodges, skip the rest of the attack',
-    'Deal damage (can crit)',
+    'Deal damage: minimum 1, then critical multiplier, Berserk multiplier, and resistance reduction',
     'Apply Thorns',
     'Apply lifesteal / Leech',
     'If the defender has Reflection, incoming debuffs (negative statuses and stat reductions) are redirected to the attacker',

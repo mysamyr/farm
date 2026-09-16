@@ -45,6 +45,7 @@ export const SKILL_ICONS: Record<SkillId, string> = {
   thorns: '🌵',
   leech: '🩸',
   pierce: '🗡️',
+  berserk: '🔥',
 };
 
 export function getSkillIcon(skillId: SkillId): string {
@@ -61,6 +62,7 @@ export const EFFECT_ICONS: Record<EffectId, string> = {
   leech: '🧛',
   pierce: '🗡️',
   reflection: '🪞',
+  berserk: '🔥',
 };
 
 export function getEffectIcon(effectId: EffectId): string {

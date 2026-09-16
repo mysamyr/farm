@@ -61,6 +61,7 @@ export type Translation = {
     noMatches: string;
     win: string;
     loss: string;
+    autoWin: string;
     players: (count: number) => string;
     duration: (ms: number) => string;
     reset: string;
@@ -97,6 +98,7 @@ export type Translation = {
   owner: string;
   youWin: string;
   cancel: string;
+  close: string;
   postGame: {
     title: string;
     winner: (winnerName: string) => string;

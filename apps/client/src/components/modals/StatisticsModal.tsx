@@ -90,7 +90,7 @@ export default function StatisticsModal(): ReactElement {
       ) : (
         <div className={styles.actions}>
           <Button variant={ButtonVariant.SECONDARY} onClick={closeModal}>
-            {translation.cancel}
+            {translation.close}
           </Button>
           <Button
             variant={ButtonVariant.DANGER}
