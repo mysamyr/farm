@@ -5,5 +5,4 @@
 - [ ] add password-protected rooms
 - [ ] Single player games
 - [ ] (Server + UI) Chat (small floating icon at the left bottom side)
-- [ ] (UI) Open sidebar with swipe
-- [ ] hovering on active status should open tooltip with description.
+- [ ] (ARENA) hovering on active status should open tooltip with description.

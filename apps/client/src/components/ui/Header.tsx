@@ -77,6 +77,10 @@ export function Header({ additionalActions }: HeaderProps): ReactElement {
     setSidebarOpen(false);
   }
 
+  function openSidebar() {
+    setSidebarOpen(true);
+  }
+
   function openHelp() {
     if (!helpModal) {
       return;
@@ -227,12 +231,16 @@ export function Header({ additionalActions }: HeaderProps): ReactElement {
       <Button
         variant={ButtonVariant.ICON}
         title={headerT.openMenu}
-        onClick={() => setSidebarOpen(true)}
+        onClick={openSidebar}
       >
         <BurgerIcon />
       </Button>
 
-      <Sidebar open={sidebarOpen} onClose={closeSidebar}>
+      <Sidebar
+        open={sidebarOpen}
+        onOpen={openSidebar}
+        onClose={closeSidebar}
+      >
         <div className={styles.sidebarContent}>
           <div className={styles.sidebarSection}>
             <Button

@@ -11,6 +11,11 @@
   visibility: visible;
 }
 
+.root.dragging,
+.root.settling {
+  visibility: visible;
+}
+
 .overlay {
   position: absolute;
   inset: 0;
@@ -18,6 +23,11 @@
   opacity: 0;
   transition: opacity 0.25s ease;
   cursor: default;
+}
+
+.root.dragging .overlay,
+.root.settling .overlay {
+  opacity: var(--sidebar-swipe-progress);
 }
 
 .root.open .overlay {
@@ -39,9 +49,18 @@
   box-sizing: border-box;
 }
 
+.root.dragging .panel {
+  transition: none;
+}
+
 .right {
   right: 0;
   transform: translateX(100%);
+}
+
+.root.dragging .right,
+.root.settling .right {
+  transform: translateX(var(--sidebar-swipe-translate));
 }
 
 .left {

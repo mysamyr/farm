@@ -10,6 +10,7 @@ export { useKickPlayer } from './useKickPlayer.js';
 export { useRematchActions } from './useRematchActions.js';
 export { useRoomSubscriptions } from './useRoomSubscriptions.js';
 export { useServerCountdown } from './useServerCountdown.js';
+export { useSidebarSwipe } from './useSidebarSwipe.js';
 export { useTheme } from './useTheme.js';
 export { useUsername } from './useUsername.js';
 export { useUnloadWarning } from './useUnloadWarning.js';
