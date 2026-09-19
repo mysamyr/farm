@@ -1,7 +1,6 @@
 import { type ReactElement } from 'react';
 
 import { useLanguage, useRoom } from '@game/client-core/hooks';
-import { ROOM_STATES } from '@game/shared/constants';
 import { Navigate } from 'react-router-dom';
 
 import { getCatalogPath } from '../../constants/index.js';
@@ -24,10 +23,7 @@ export default function GamePage(): ReactElement {
   }
 
   const filteredRooms = rooms.filter(
-    room =>
-      room.game === activeGame &&
-      room.state === ROOM_STATES.IDLE &&
-      room.id !== currentRoom?.id
+    room => room.game === activeGame && room.id !== currentRoom?.id
   );
   const showActiveRoom = currentRoom?.game === activeGame;
 

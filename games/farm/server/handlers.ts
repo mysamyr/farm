@@ -424,6 +424,10 @@ export function handleAction(
   if (!room || room.game !== GameId.farm) {
     return;
   }
+  if (!room.players.some(player => player.id === ctx.socketId)) {
+    ack?.({ ok: false, error: ERROR.PLAYER_NOT_FOUND });
+    return;
+  }
 
   const action = payload.action as FarmGameActionPayload['action'];
 

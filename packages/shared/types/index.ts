@@ -18,6 +18,8 @@ export interface BasePlayer {
   name: string;
 }
 
+export type RoomRole = 'player' | 'spectator';
+
 export interface BaseRules {
   /**
    * checkbox, number or dropdown
@@ -42,6 +44,7 @@ export interface BaseRoom<
   game: TGame;
   state: ROOM_STATES;
   players: TPlayer[];
+  spectators: BasePlayer[];
   rules: TRules;
   /** Stable userIds that are not allowed to rejoin this room */
   blacklist: string[];

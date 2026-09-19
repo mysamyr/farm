@@ -64,7 +64,8 @@ export function useGameStatisticsRecorder(): void {
       previousRoom?.id === currentRoom.id &&
       previousRoom.state === ROOM_STATES.RUNNING &&
       currentRoom.state === ROOM_STATES.FINISHED &&
-      currentRoom.winner
+      currentRoom.winner &&
+      currentRoom.players.some(player => player.id === getSocketId())
     ) {
       const startedAt = currentRoom.startedAt ?? previousRoom.startedAt;
       const previousPlayers = previousRoom.players;

@@ -10,6 +10,7 @@ import styles from './SelfPanel.module.css';
 
 type SelfPanelProps = {
   player: Player;
+  turnOrder: number;
   isActive: boolean;
   isMyTurn: boolean;
   isStunned: boolean;
@@ -22,6 +23,7 @@ type SelfPanelProps = {
 
 export default function SelfPanel({
   player,
+  turnOrder,
   isActive,
   isMyTurn,
   isStunned,
@@ -38,6 +40,7 @@ export default function SelfPanel({
       <div className={styles.statsSlot}>
         <PlayerStatsDisplay
           player={player}
+          turnOrder={turnOrder}
           isSelf
           isActive={isActive}
           isEliminated={eliminated}

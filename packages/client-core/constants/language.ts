@@ -161,8 +161,8 @@ const translations: Record<LanguageCode, Translation> = {
     dashboard: {
       backToGames: 'Back to games',
       createRoomBtn: 'Create Room',
-      openRoomsHeader: 'Open Rooms',
-      noActiveRooms: 'No open rooms.',
+      openRoomsHeader: 'Rooms',
+      noActiveRooms: 'No rooms.',
       createRoom: 'Create a room to start.',
       roomRules: 'Rules',
       players: 'Players',
@@ -170,6 +170,7 @@ const translations: Record<LanguageCode, Translation> = {
     roomButton: {
       full: 'Full',
       join: 'Join',
+      watch: 'Watch',
       joined: 'Joined',
       enter: 'Enter',
       startGame: 'Start Game',
@@ -356,8 +357,8 @@ const translations: Record<LanguageCode, Translation> = {
     dashboard: {
       backToGames: 'Назад до ігор',
       createRoomBtn: 'Створити кімнату',
-      openRoomsHeader: 'Відкриті кімнати',
-      noActiveRooms: 'Немає відкритих кімнат.',
+      openRoomsHeader: 'Кімнати',
+      noActiveRooms: 'Немає кімнат.',
       createRoom: 'Створіть кімнату щоб розпочати.',
       roomRules: 'Правила',
       players: 'Гравців',
@@ -365,6 +366,7 @@ const translations: Record<LanguageCode, Translation> = {
     roomButton: {
       full: 'Повна',
       join: 'Приєднатися',
+      watch: 'Дивитися',
       joined: 'Приєднано',
       enter: 'Увійти',
       startGame: 'Розпочати Гру',

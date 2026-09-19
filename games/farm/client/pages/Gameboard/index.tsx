@@ -1,6 +1,6 @@
 import { type ReactElement, useEffect } from 'react';
 
-import { useModal, useRoom } from '@game/client-core/hooks';
+import { useModal, useRoom, useRoomRole } from '@game/client-core/hooks';
 import { emitGameEvent, getSocketId } from '@game/client-core/socket';
 
 import { EVENTS, ROOM_STATES } from '@game/shared/constants';
@@ -20,12 +20,17 @@ import styles from './Gameboard.module.css';
 
 export default function Gameboard(): ReactElement {
   const { currentRoom: rawCurrentRoom } = useRoom();
+  const { isSpectator } = useRoomRole();
   const { showModal, closeModal } = useModal();
 
   const currentRoom = rawCurrentRoom as unknown as Room | null;
 
   // Auto-open/close trade modal based on room trade state
   useEffect(() => {
+    if (isSpectator) {
+      closeModal();
+      return;
+    }
     if (!currentRoom?.trade) {
       closeModal();
       return;
@@ -45,7 +50,13 @@ export default function Gameboard(): ReactElement {
         },
       });
     }
-  }, [currentRoom?.trade, currentRoom?.id, showModal, closeModal]);
+  }, [
+    currentRoom?.trade,
+    currentRoom?.id,
+    isSpectator,
+    showModal,
+    closeModal,
+  ]);
 
   if (!currentRoom) {
     return <></>;
@@ -61,13 +72,13 @@ export default function Gameboard(): ReactElement {
 
   return (
     <div className={styles.container}>
-      <DiceSection isYourTurn={isYourTurn} />
+      <DiceSection isYourTurn={isYourTurn} readOnly={isSpectator} />
 
       {isLimitedCardsRule && <ActiveCardsSection />}
 
-      <PlayersSection />
+      <PlayersSection readOnly={isSpectator} />
 
-      <ExchangeSection isYourTurn={isYourTurn} />
+      {!isSpectator && <ExchangeSection isYourTurn={isYourTurn} />}
 
       <EmoteFloatingContainer />
     </div>

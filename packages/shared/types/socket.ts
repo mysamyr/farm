@@ -11,6 +11,10 @@ export type RejoinRoomAck = SocketAck & {
   room?: BaseRoom;
 };
 
+export type SpectateRoomAck = SocketAck & {
+  room?: BaseRoom;
+};
+
 export type ServerNotification = {
   type: string;
   data: string;
@@ -68,6 +72,10 @@ export type CoreClientToServerEvents = {
   [EVENTS.ROOM_JOIN]: (
     payload: RoomIdPayload,
     ack?: (response: SocketAck) => void
+  ) => void;
+  [EVENTS.ROOM_SPECTATE]: (
+    payload: RoomIdPayload,
+    ack?: (response: SpectateRoomAck) => void
   ) => void;
   [EVENTS.ROOM_LEAVE]: (
     payload: RoomIdPayload,
@@ -129,6 +137,7 @@ export type CoreServerToClientEvents = {
   [EVENTS.CONNECT]: () => void;
   [EVENTS.ROOMS_LIST]: (rooms: BaseRoom[]) => void;
   [EVENTS.ROOM_CLOSED]: () => void;
+  [EVENTS.ROOM_SPECTATE_ENDED]: () => void;
   [EVENTS.NOTIFICATION]: (payload: ServerNotification) => void;
   [EVENTS.ONLINE_COUNT]: (online: number) => void;
   [EVENTS.GAME_STARTED]: (payload: RoomPayload) => void;

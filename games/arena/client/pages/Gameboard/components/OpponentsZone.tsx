@@ -10,6 +10,7 @@ import PlayerStatsDisplay from './PlayerStats.js';
 
 type OpponentsZoneProps = {
   opponents: Player[];
+  turnOrder: string[];
   activePlayerId?: string;
   selectedTargetId?: string;
   winnerId?: string;
@@ -20,6 +21,7 @@ type OpponentsZoneProps = {
 
 export default function OpponentsZone({
   opponents,
+  turnOrder,
   activePlayerId,
   selectedTargetId,
   winnerId,
@@ -49,6 +51,7 @@ export default function OpponentsZone({
             <PlayerStatsDisplay
               key={opponent.id}
               player={opponent}
+              turnOrder={turnOrder.indexOf(opponent.id) + 1}
               isActive={activePlayerId === opponent.id}
               isTarget={isTarget}
               isEliminated={eliminated}

@@ -19,10 +19,12 @@ import EmoteButton from './EmoteButton.js';
 
 type DiceSectionProps = {
   isYourTurn: boolean;
+  readOnly?: boolean;
 };
 
 export default function DiceSection({
   isYourTurn,
+  readOnly = false,
 }: DiceSectionProps): ReactElement {
   const farmT = useFarmTranslation();
   const { translation } = useLanguage();
@@ -71,7 +73,7 @@ export default function DiceSection({
         </div>
       </div>
 
-      <div className={styles.actions}>
+      {!readOnly && <div className={styles.actions}>
         <Button
           variant={ButtonVariant.PRIMARY}
           disabled={!isYourTurn || !!room.trade}
@@ -81,7 +83,7 @@ export default function DiceSection({
         </Button>
 
         <EmoteButton roomId={room.id} />
-      </div>
+      </div>}
     </div>
   );
 }

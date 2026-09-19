@@ -90,6 +90,7 @@ export function initGameState(room: Room): void {
   room.players.forEach(player => {
     player.hp = DEFAULT_PLAYER_STATS.hp;
     player.skills = [];
+    player.loadout = [];
     player.statuses = [];
     player.ready = false;
     player.eliminated = false;
@@ -136,6 +137,7 @@ export function applySkillSelection(
   skills: SkillId[],
   zeroCd: boolean
 ): void {
+  player.loadout = [...skills];
   const [activeSkills, healingSkills] = skills.reduce<
     [ActiveSkill[], HealingSkill[]]
   >(

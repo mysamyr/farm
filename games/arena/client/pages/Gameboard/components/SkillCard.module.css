@@ -3,6 +3,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: space-between;
   gap: 4px;
   padding: 10px 8px;
   border-radius: var(--radius-sm);
@@ -43,6 +44,14 @@
   border-color: var(--status-success);
 }
 
+.card.passive {
+  border-color: var(--pc-purple-400);
+}
+
+.card.passive.selected {
+  border-color: var(--pc-purple-400);
+}
+
 .card.disabled {
   cursor: not-allowed;
 }
@@ -63,30 +72,6 @@
   color: var(--text-main);
   line-height: 1.2;
   word-break: break-word;
-}
-
-.badge {
-  font-size: 0.6rem;
-  font-weight: 500;
-  padding: 1px 6px;
-  border-radius: 99px;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.badgeActive {
-  background: var(--accent-soft);
-  color: var(--accent);
-}
-
-.badgePassive {
-  background: var(--bg-surface-subtle);
-  color: var(--text-muted);
-}
-
-.badgeHealing {
-  background: var(--bg-surface-subtle);
-  color: var(--status-success);
 }
 
 .infoButton {

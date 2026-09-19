@@ -19,7 +19,8 @@ type PlayerSkillsProps = {
   isMyTurn: boolean;
   isStunned: boolean;
   disabled?: boolean;
-  onUseSkill: (skillId: string) => void;
+  label?: string;
+  onUseSkill?: (skillId: string) => void;
 };
 
 export default function PlayerSkills({
@@ -27,6 +28,7 @@ export default function PlayerSkills({
   isMyTurn,
   isStunned,
   disabled = false,
+  label,
   onUseSkill,
 }: PlayerSkillsProps): ReactElement {
   const t = useArenaTranslation();
@@ -70,7 +72,7 @@ export default function PlayerSkills({
         skill={skillDef}
         cooldown={playerSkill.cooldown}
         disabled={skillDisabled}
-        onClick={() => onUseSkill(playerSkill.id)}
+        onClick={() => onUseSkill?.(playerSkill.id)}
         onOpenDetail={setDetailSkill}
       />
     );
@@ -79,7 +81,9 @@ export default function PlayerSkills({
   return (
     <div className={styles.section}>
       <div className={styles.sectionHeader}>
-        <span className={styles.sectionLabel}>{t.fight.yourSkillsLabel}</span>
+        <span className={styles.sectionLabel}>
+          {label ?? t.fight.yourSkillsLabel}
+        </span>
       </div>
 
       <div className={styles.skillsGrid}>

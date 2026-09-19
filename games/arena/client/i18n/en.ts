@@ -86,6 +86,11 @@ export const arenaGameTranslation: ArenaTranslation = {
     failedToReady: 'Failed to ready up',
     readyButton: 'Ready',
     resetButton: 'Reset',
+    spectatorTitle: 'Fighter preparation',
+    spectatorDescription:
+      'Players are choosing their active, healing, and passive skills. Ready loadouts appear as soon as each fighter confirms their selection.',
+    readyStatus: 'Ready',
+    selectingStatus: 'Selecting skills',
     victoryTitle: '🎉 Victory!',
     victoryMessage: 'Opponent left the room. You win by default!',
     opponentLeftTitle: '😞 Opponent Left',

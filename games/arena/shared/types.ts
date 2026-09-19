@@ -285,6 +285,8 @@ export interface Player extends BasePlayer {
   statuses: StatusEffect[];
   /** The skills the player currently has. */
   skills: PlayerSkill[];
+  /** The complete selected loadout, including passive skills. */
+  loadout: SkillId[];
   /** Whether the player is ready to take their turn. */
   ready: boolean;
   /** Whether the player has been knocked out and is no longer part of the fight. */

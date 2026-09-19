@@ -82,6 +82,7 @@ export type Translation = {
   roomButton: {
     full: string;
     join: string;
+    watch: string;
     joined: string;
     enter: string;
     startGame: string;

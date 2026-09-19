@@ -17,10 +17,12 @@ import type {
   RoomIdPayload,
   RoomKickPayload,
   RoomUpdatePayload,
+  SpectateRoomAck,
 } from '@game/shared/types';
 
 import { LogLevel } from '../../constants/index.js';
 import { gameRegistry } from '../../games/index.js';
+import { projectRoomState } from '../../games/state.service.js';
 import { log } from '../../services/logger.js';
 import type { AckFunc, AppServer, AppSocket } from '../../types/index.js';
 import { checkIfPlayerAlreadyInRoom } from '../player/player.helpers.js';
@@ -39,10 +41,12 @@ import {
   deleteRoom,
   getActiveRoom,
   getRoomById,
+  getRoomRole,
   kickPlayerFromRoom,
   leaveRoom,
   listRooms,
   removePlayerFromRoom,
+  removeSpectatorFromRoom,
   updateRoomsList,
 } from './room.service.js';
 
@@ -81,7 +85,7 @@ const createRoomHandler =
       return;
     }
 
-    if (listRooms().find(r => r.players.some(p => p.id === socket.id))) {
+    if (getActiveRoom(socket.id)) {
       if (ack) {
         ack({
           ok: false,
@@ -172,6 +176,10 @@ const joinRoomHandler =
       if (ack) ack({ ok: false, error: ERROR.GAME_IN_PROGRESS });
       return;
     }
+    if (getActiveRoom(socket.id)) {
+      ack?.({ ok: false, error: ERROR.ALREADY_IN_ROOM });
+      return;
+    }
     if (room.blacklist.includes(socket.data.userId)) {
       if (ack) ack({ ok: false, error: ERROR.PLAYER_KICKED });
       return;
@@ -204,6 +212,42 @@ const joinRoomHandler =
     });
   };
 
+const spectateRoomHandler =
+  (io: AppServer, socket: AppSocket) =>
+  (req: RoomIdPayload, ack?: AckFunc<SpectateRoomAck>): void => {
+    const room = getRoomById(req.roomId);
+    if (!room) {
+      ack?.({ ok: false, error: ERROR.ROOM_NOT_FOUND });
+      return;
+    }
+    if (room.state !== ROOM_STATES.RUNNING) {
+      ack?.({ ok: false, error: ERROR.GAME_NOT_RUNNING });
+      return;
+    }
+    if (!socket.data.player.name) {
+      ack?.({ ok: false, error: ERROR.NO_USERNAME });
+      return;
+    }
+    if (room.blacklist.includes(socket.data.userId)) {
+      ack?.({ ok: false, error: ERROR.PLAYER_KICKED });
+      return;
+    }
+    if (getActiveRoom(socket.id)) {
+      ack?.({ ok: false, error: ERROR.ALREADY_IN_ROOM });
+      return;
+    }
+
+    room.spectators.push(createRoomPlayer(socket.data.player));
+    void socket.join(room.id);
+    updateRoomsList(io);
+    ack?.({ ok: true, room });
+
+    log(LogLevel.INFO, 'room:spectated', {
+      roomId: room.id,
+      socketId: socket.id,
+    });
+  };
+
 const leaveRoomHandler =
   (io: AppServer, socket: AppSocket) =>
   (req: RoomIdPayload, ack?: AckFunc): void => {
@@ -215,6 +259,17 @@ const leaveRoomHandler =
     const room = getRoomById(req.roomId);
     if (!room) {
       if (ack) ack({ ok: false, error: ERROR.ROOM_NOT_FOUND });
+      return;
+    }
+
+    const role = getRoomRole(room, socket.id);
+    if (role === 'spectator') {
+      removeSpectatorFromRoom(io, room, socket.id);
+      ack?.({ ok: true });
+      return;
+    }
+    if (role !== 'player') {
+      ack?.({ ok: false, error: ERROR.PLAYER_NOT_FOUND });
       return;
     }
 
@@ -322,7 +377,10 @@ const rejoinRoomHandler =
       socketId: socket.id,
     });
 
-    if (ack) ack({ ok: true, room });
+    const role = getRoomRole(room, socket.id);
+    if (ack && role) {
+      ack({ ok: true, room: projectRoomState(room, socket.id, role) });
+    }
   };
 
 const startGameHandler =
@@ -472,6 +530,7 @@ export function registerRoomFeature(io: AppServer, socket: AppSocket): void {
   socket.on(EVENTS.ROOM_CREATE, createRoomHandler(io, socket));
   socket.on(EVENTS.ROOM_UPDATE, updateRoomHandler(io, socket));
   socket.on(EVENTS.ROOM_JOIN, joinRoomHandler(io, socket));
+  socket.on(EVENTS.ROOM_SPECTATE, spectateRoomHandler(io, socket));
   socket.on(EVENTS.ROOM_LEAVE, leaveRoomHandler(io, socket));
   socket.on(EVENTS.ROOM_KICK, kickRoomHandler(io, socket));
   socket.on(EVENTS.ROOM_CLOSE, closeRoomHandler(io, socket));

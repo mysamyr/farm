@@ -7,10 +7,12 @@ import type { BaseRoom } from '@game/shared/types';
 
 import { LogLevel } from '../../constants/index.js';
 import { gameRegistry } from '../../games/registry.js';
+import { emitGameStarted, emitGameState } from '../../games/state.service.js';
 import { log } from '../../services/logger.js';
 import type { AppServer } from '../../types/index.js';
 
-import { getRoomById, listRooms } from './room.store.js';
+import { updateRoomsList } from './room.broadcast.js';
+import { getRoomById } from './room.store.js';
 
 const rematchTimers = new Map<string, ReturnType<typeof setTimeout>>();
 
@@ -23,8 +25,8 @@ export function clearRematchTimer(roomId: string): void {
 }
 
 function broadcastRoom(io: AppServer, room: BaseRoom): void {
-  io.to(room.id).emit(EVENTS.GAME_STATE_UPDATE, { state: room });
-  io.emit(EVENTS.ROOMS_LIST, listRooms());
+  emitGameState(io, room);
+  updateRoomsList(io);
 }
 
 function areAllPresentReady(room: BaseRoom): boolean {
@@ -45,8 +47,8 @@ export function startRoomGame(io: AppServer, room: BaseRoom): void {
 
   gameRegistry.get(room.game).onGameStart?.(io, room);
 
-  io.emit(EVENTS.ROOMS_LIST, listRooms());
-  io.to(room.id).emit(EVENTS.GAME_STARTED, { room });
+  updateRoomsList(io);
+  emitGameStarted(io, room);
   log(LogLevel.INFO, 'game:started', { room });
 }
 
@@ -56,6 +58,12 @@ export function returnRoomToLobby(io: AppServer, room: BaseRoom): void {
   delete room.winner;
   delete room.startedAt;
   room.state = ROOM_STATES.IDLE;
+  for (const spectator of room.spectators) {
+    io.to(spectator.id).emit(EVENTS.ROOM_SPECTATE_ENDED);
+    const socket = io.sockets.sockets.get(spectator.id);
+    if (socket) void socket.leave(room.id);
+  }
+  room.spectators = [];
   broadcastRoom(io, room);
   log(LogLevel.INFO, 'room:returned-to-lobby', { roomId: room.id });
 }

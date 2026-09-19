@@ -11,6 +11,7 @@ import {
   useLanguage,
   useModal,
   useRoom,
+  useRoomRole,
   useSnackbar,
 } from '@game/client-core/hooks';
 import { emitEvent, getSocketId } from '@game/client-core/socket';
@@ -52,6 +53,7 @@ export function Header({ additionalActions }: HeaderProps): ReactElement {
   const { username } = useUsername();
   const { activeGame, cleanupCurrentIdleRoom } = useActiveGame();
   const { currentRoom } = useRoom();
+  const { isSpectator } = useRoomRole();
   const { showSnackbar } = useSnackbar();
   const { config: gameConfig } = useGameConfig(activeGame);
 
@@ -173,7 +175,7 @@ export function Header({ additionalActions }: HeaderProps): ReactElement {
 
     return (
       <>
-        {isRunningGame && (
+        {isRunningGame && !isSpectator && (
           <>
             <Button
               variant={ButtonVariant.SECONDARY}
@@ -196,7 +198,7 @@ export function Header({ additionalActions }: HeaderProps): ReactElement {
             )}
           </>
         )}
-        {additionalActions}
+        {!isSpectator && additionalActions}
         {isInRoom && (
           <Button
             variant={

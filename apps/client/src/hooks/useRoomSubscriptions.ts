@@ -117,12 +117,21 @@ export function useRoomSubscriptions(): void {
         return changed ? nextRooms : prevRooms;
       });
 
-      const updatedCurrentRoom = nextRooms.find(room =>
-        room.players.some(player => player.id === getSocketId())
+      const socketId = getSocketId();
+      const updatedCurrentRoom = nextRooms.find(
+        room =>
+          room.players.some(player => player.id === socketId) ||
+          room.spectators.some(spectator => spectator.id === socketId)
       );
 
       if (updatedCurrentRoom) {
-        setCurrentRoom(updatedCurrentRoom);
+        setCurrentRoom(prev =>
+          prev &&
+          prev.id === updatedCurrentRoom.id &&
+          updatedCurrentRoom.state !== ROOM_STATES.IDLE
+            ? prev
+            : updatedCurrentRoom
+        );
         navigateToLobbyIfNeeded(
           updatedCurrentRoom.state,
           updatedCurrentRoom.game
@@ -136,6 +145,16 @@ export function useRoomSubscriptions(): void {
     subscribe(EVENTS.ROOM_CLOSED, (): void => {
       previousRoomStateRef.current = null;
       setCurrentRoom(null);
+    });
+
+    subscribe(EVENTS.ROOM_SPECTATE_ENDED, (): void => {
+      previousRoomStateRef.current = null;
+      setCurrentRoom(prev => {
+        if (prev) {
+          navigateIfNeeded(getGamePath(prev.game), { replace: true });
+        }
+        return null;
+      });
     });
 
     subscribe(EVENTS.GAME_STARTED, ({ room }: RoomPayload): void => {

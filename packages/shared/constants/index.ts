@@ -24,6 +24,8 @@ export const EVENTS = {
   ROOM_CREATE: 'room:create',
   ROOM_UPDATE: 'room:update',
   ROOM_JOIN: 'room:join',
+  ROOM_SPECTATE: 'room:spectate',
+  ROOM_SPECTATE_ENDED: 'room:spectate_ended',
   ROOM_LEAVE: 'room:leave',
   ROOM_KICK: 'room:kick',
   ROOM_CLOSE: 'room:close',

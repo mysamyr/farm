@@ -36,6 +36,10 @@ export interface ArenaPreparationTranslation {
   failedToReady: string;
   readyButton: string;
   resetButton: string;
+  spectatorTitle: string;
+  spectatorDescription: string;
+  readyStatus: string;
+  selectingStatus: string;
   victoryTitle: string;
   victoryMessage: string;
   opponentLeftTitle: string;

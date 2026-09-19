@@ -19,13 +19,14 @@ import styles from './PlayerStats.module.css';
 
 const GRID_STATS: StatId[] = [
   StatId.attack,
-  StatId.crit,
   StatId.armor,
+  StatId.crit,
   StatId.dodge,
 ];
 
 type PlayerStatsProps = {
   player: Player;
+  turnOrder?: number;
   isActive: boolean;
   critHitEventKey?: string;
   isWinner?: boolean;
@@ -59,6 +60,7 @@ function getStatusLabel(
 
 export default function PlayerStatsDisplay({
   player,
+  turnOrder,
   isActive,
   critHitEventKey,
   isWinner = false,
@@ -120,7 +122,10 @@ export default function PlayerStatsDisplay({
         </span>
       )}
       <div className={styles.header}>
-        <span className={styles.playerName}>{player.name}</span>
+        <span className={styles.playerName}>
+          {turnOrder !== undefined ? `${turnOrder}. ` : ''}
+          {player.name}
+        </span>
         {isTarget && !isEliminated && !isMatchEnded && (
           <span className={styles.targetBadge}>{t.fight.targetBadge}</span>
         )}

@@ -28,6 +28,7 @@ type SkillCardProps = {
   selected?: boolean;
   disabled: boolean;
   cooldown?: number; // active CD in fight phase
+  alwaysShowCooldown?: boolean;
   onClick: () => void;
   onOpenDetail: (skill: Skill) => void;
 };
@@ -37,6 +38,7 @@ export default function SkillCard({
   selected,
   disabled,
   cooldown,
+  alwaysShowCooldown = false,
   onClick,
   onOpenDetail,
 }: SkillCardProps): ReactElement {
@@ -100,6 +102,7 @@ export default function SkillCard({
         styles.card,
         selected && styles.selected,
         skill.type === SkillType.healing && styles.healing,
+        skill.type === SkillType.passive && styles.passive,
         disabled && styles.disabled,
         onCooldown && styles.onCooldown
       )}
@@ -109,19 +112,7 @@ export default function SkillCard({
     >
       <span className={styles.icon}>{icon}</span>
       <span className={styles.name}>{name}</span>
-      <span
-        className={classNames(
-          styles.badge,
-          skill.type === SkillType.passive
-            ? styles.badgePassive
-            : skill.type === SkillType.healing
-              ? styles.badgeHealing
-              : styles.badgeActive
-        )}
-      >
-        {skill.type}
-      </span>
-      {onCooldown && (
+      {(onCooldown || (alwaysShowCooldown && cooldown !== undefined)) && (
         <span className={styles.cooldownBadge}>⏳ {cooldown}</span>
       )}
       <button

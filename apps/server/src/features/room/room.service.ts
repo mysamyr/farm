@@ -5,7 +5,7 @@ import {
 } from '@game/shared/constants';
 
 import type { GameId } from '@game/shared/constants';
-import type { BaseRoom } from '@game/shared/types';
+import type { BaseRoom, RoomRole } from '@game/shared/types';
 
 import { uuid } from '@game/shared/utils';
 
@@ -20,6 +20,7 @@ import {
   onPlayerLeftDuringRematch,
   remapRematchPlayerId,
 } from './rematch.service.js';
+import { updateRoomsList } from './room.broadcast.js';
 import { shouldAutowin, shouldDeleteRoom } from './room.helpers.js';
 import {
   getRoomById as getRoomByIdFromStore,
@@ -28,6 +29,8 @@ import {
   removeRoom,
   setRoom,
 } from './room.store.js';
+
+export { updateRoomsList } from './room.broadcast.js';
 
 const rooms = getRoomsMap();
 
@@ -55,6 +58,7 @@ export function createRoom(
     game,
     state: ROOM_STATES.IDLE,
     players: [],
+    spectators: [],
     blacklist: [],
     ...roomFields,
   };
@@ -75,10 +79,6 @@ export function leaveRoom(
 ): void {
   const s = io.sockets.sockets.get(socketId);
   if (s) void s.leave(roomId);
-}
-
-export function updateRoomsList(io: AppServer): void {
-  io.emit(EVENTS.ROOMS_LIST, listRooms());
 }
 
 export function assignNewOwner(room: BaseRoom): void {
@@ -127,6 +127,23 @@ export function removePlayerFromRoom(
   updateRoomsList(io);
 
   log(LogLevel.INFO, 'room:left', { roomId: room.id, socketId: socket.id });
+}
+
+export function removeSpectatorFromRoom(
+  io: AppServer,
+  room: BaseRoom,
+  socketId: string
+): boolean {
+  const idx = room.spectators.findIndex(spectator => spectator.id === socketId);
+  if (idx === -1) return false;
+  room.spectators.splice(idx, 1);
+  leaveRoom(io, room.id, socketId);
+  updateRoomsList(io);
+  log(LogLevel.INFO, 'room:spectator-left', {
+    roomId: room.id,
+    socketId,
+  });
+  return true;
 }
 
 /**
@@ -209,13 +226,28 @@ export function removePlayerFromAllRooms(io: AppServer, socket: AppSocket) {
         type: NOTIFICATION_TYPES.PLAYER_LEFT,
         data: socket.data.player.name,
       });
+    } else if (room.spectators.some(p => p.id === socket.id)) {
+      removeSpectatorFromRoom(io, room, socket.id);
     }
   }
 }
 
 export function getActiveRoom(playerId: string): BaseRoom | null {
   for (const room of rooms.values()) {
-    if (room.players.some(p => p.id === playerId)) return room;
+    if (
+      room.players.some(p => p.id === playerId) ||
+      room.spectators.some(p => p.id === playerId)
+    ) {
+      return room;
+    }
+  }
+  return null;
+}
+
+export function getRoomRole(room: BaseRoom, socketId: string): RoomRole | null {
+  if (room.players.some(player => player.id === socketId)) return 'player';
+  if (room.spectators.some(spectator => spectator.id === socketId)) {
+    return 'spectator';
   }
   return null;
 }
@@ -242,6 +274,20 @@ export function reassignPlayerInRooms(
       void newSocket.join(room.id);
 
       log(LogLevel.INFO, 'room:player-reassigned', {
+        roomId: room.id,
+        oldSocketId,
+        newSocketId: newSocket.id,
+      });
+      continue;
+    }
+
+    const spectator = room.spectators.find(p => p.id === oldSocketId);
+    if (spectator) {
+      room.spectators = room.spectators.map(p =>
+        p.id === oldSocketId ? { ...p, id: newSocket.id } : p
+      );
+      void newSocket.join(room.id);
+      log(LogLevel.INFO, 'room:spectator-reassigned', {
         roomId: room.id,
         oldSocketId,
         newSocketId: newSocket.id,

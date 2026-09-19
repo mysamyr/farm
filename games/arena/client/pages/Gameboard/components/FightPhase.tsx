@@ -181,6 +181,7 @@ export default function FightPhase(): ReactElement {
 
           <OpponentsZone
             opponents={opponents}
+            turnOrder={room.order}
             activePlayerId={activePlayerId}
             selectedTargetId={selectedTargetId}
             winnerId={room.winner}
@@ -192,6 +193,7 @@ export default function FightPhase(): ReactElement {
           {self && (
             <SelfPanel
               player={self}
+              turnOrder={room.order.indexOf(self.id) + 1}
               isActive={activePlayerId === self.id}
               isMyTurn={isMyTurn}
               isStunned={hasStun(self)}

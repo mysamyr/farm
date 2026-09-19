@@ -208,6 +208,7 @@ export default function PreparationPhase(): ReactElement {
           <div className={styles.statsPreview}>
             <PlayerStatsDisplay
               player={previewPlayer}
+              turnOrder={room.order.indexOf(previewPlayer.id) + 1}
               isActive={false}
               showStatuses
             />

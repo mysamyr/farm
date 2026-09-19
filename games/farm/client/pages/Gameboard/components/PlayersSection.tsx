@@ -21,7 +21,13 @@ import { getCurrentPlayerTurnId } from '../../../utils/index.js';
 
 import styles from './PlayersSection.module.css';
 
-export default function PlayersSection(): ReactElement {
+type PlayersSectionProps = {
+  readOnly?: boolean;
+};
+
+export default function PlayersSection({
+  readOnly = false,
+}: PlayersSectionProps): ReactElement {
   const room = useRoom();
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
   const farmT = useFarmTranslation();
@@ -63,7 +69,12 @@ export default function PlayersSection(): ReactElement {
         const isCollapsed = !!collapsed[player.id];
         const isSelf = player.id === myId;
         const canTrade =
-          isYourTurn && tradeAllowed && !tradeActive && !isSelf && !isWinner;
+          !readOnly &&
+          isYourTurn &&
+          tradeAllowed &&
+          !tradeActive &&
+          !isSelf &&
+          !isWinner;
 
         return (
           <div

@@ -94,10 +94,11 @@ const playerUpdateHandler = (
     player.hp = DEFAULT_PLAYER_STATS.hp;
     player.eliminated = false;
     player.skills = [];
+    player.loadout = [];
     player.statuses = [];
   }
 
-  ctx.emitToRoom(room.id, EVENTS.GAME_STATE_UPDATE, { state: room });
+  ctx.emitGameState(room);
   ack?.({ ok: true });
 };
 
@@ -162,7 +163,7 @@ const useSkillHandler = (
     if (winner) winnerHandler(ctx, room, winner);
   }
 
-  ctx.emitToRoom(room.id, EVENTS.GAME_STATE_UPDATE, { state: room });
+  ctx.emitGameState(room);
   ack?.({ ok: true });
 };
 

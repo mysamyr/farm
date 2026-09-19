@@ -3,7 +3,7 @@ import { type ReactElement, useEffect, useState } from 'react';
 import { Button, MinimizeIcon } from '@game/client-core/components';
 
 import { ButtonVariant } from '@game/client-core/constants';
-import { useLanguage, useRoom } from '@game/client-core/hooks';
+import { useLanguage, useRoom, useRoomRole } from '@game/client-core/hooks';
 import { getSocketId } from '@game/client-core/socket';
 import { ROOM_STATES } from '@game/shared/constants';
 
@@ -36,6 +36,7 @@ function resolveVoteMode(
 
 export function RematchModal(): ReactElement | null {
   const { currentRoom } = useRoom();
+  const { isSpectator } = useRoomRole();
   const { translation } = useLanguage();
   const remainingSec = useServerCountdown(currentRoom?.vote?.expiresAt);
   const { handleRematch, handleDeclineRematch, handleLeave } =
@@ -107,10 +108,10 @@ export function RematchModal(): ReactElement | null {
 
   const showMinimize = mode === 'midGame' || mode === 'postGame';
   const showTimer = mode === 'midGame' && Boolean(currentRoom.vote?.expiresAt);
-  const showAccept = canRematch && !iAmReady;
+  const showAccept = !isSpectator && canRematch && !iAmReady;
   // Mid-game: hide actions once you've voted. Pre/post-game: always allow decline.
-  const showDecline = mode !== 'midGame' || !iAmReady;
-  const showLeave = mode === 'postGame';
+  const showDecline = !isSpectator && (mode !== 'midGame' || !iAmReady);
+  const showLeave = !isSpectator && mode === 'postGame';
   const showActions = showAccept || showDecline || showLeave;
 
   return (
