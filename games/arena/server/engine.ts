@@ -37,19 +37,21 @@ import {
   calculateDamage,
   getActivePlayer,
   getBerserk,
+  getAlivePlayers,
   getLeech,
-  getOpponent,
   getResistance,
   getPlayerMinHp,
   getPlayerStats,
   getThorns,
   isDead,
+  isEliminated,
   isPlayerPiercing,
   isPlayerReflecting,
   isPlayerResistant,
   isSameTurnDeferred,
   isStunned,
   PlayerStats,
+  resolveTarget,
   rollChance,
   skillTargetsOpponent,
   splitOpponentActions,
@@ -90,15 +92,30 @@ export function initGameState(room: Room): void {
     player.skills = [];
     player.statuses = [];
     player.ready = false;
+    player.eliminated = false;
   });
 }
 
-export function removePlayerFromOrder(room: Room, playerId: string): void {
+/**
+ * Remove a player from the turn order.
+ * @returns the winner when only a single alive player remains, otherwise undefined.
+ */
+export function removePlayerFromOrder(
+  room: Room,
+  playerId: string
+): Player | undefined {
   const idx: number = room.order.indexOf(playerId);
-  room.order.splice(idx, 1);
-  if (room.turn >= room.order.length) {
-    room.turn = TURN_START_INDEX;
+  if (idx !== -1) {
+    room.order.splice(idx, 1);
+    if (room.turn >= room.order.length) {
+      room.turn = TURN_START_INDEX;
+    }
   }
+
+  if (room.state !== ROOM_STATES.RUNNING) return undefined;
+
+  const alive = getAlivePlayers(room);
+  return alive.length === 1 ? alive[0] : undefined;
 }
 
 export function updateRoomOrderId(
@@ -680,13 +697,34 @@ function resetSkillCooldown(player: Player, skillId: SkillId): void {
 }
 
 function setNextTurn(room: Room): void {
-  room.turn = (room.turn + 1) % room.order.length;
+  const total = room.order.length;
+  if (total === 0) return;
+
+  for (let offset = 1; offset <= total; offset++) {
+    const idx = (room.turn + offset) % total;
+    const candidateId = room.order[idx];
+    const candidate = room.players.find(p => p.id === candidateId);
+    if (candidate && !isEliminated(candidate)) {
+      room.turn = idx;
+      return;
+    }
+  }
+
+  room.turn = (room.turn + 1) % total;
+}
+
+export interface TurnResult {
+  /** Ids of players knocked out during this turn. */
+  eliminated: string[];
+  /** Set when the match ended with this turn. */
+  winnerId?: string;
 }
 
 export function processPlayerTurn(
   room: Room,
-  skillId: SkillId
-): { dead: 'attacker' | 'defender' | null } {
+  skillId: SkillId,
+  targetId?: string
+): TurnResult {
   const player = getActivePlayer(room)!;
   const skill = SKILLS[skillId];
 
@@ -701,9 +739,11 @@ export function processPlayerTurn(
     cooldownReductionActions,
   ] = splitSelfActions(skill.actions);
 
+  const target = resolveTarget(room, player.id, targetId);
+
   const valueCtx: ValueContext = {
     self: player,
-    opponent: getOpponent(room, player.id),
+    opponent: target,
   };
 
   const currentTurnId = room.steps.length;
@@ -727,24 +767,13 @@ export function processPlayerTurn(
     currentTurnId
   );
 
-  let dead: 'attacker' | 'defender' | null = null;
+  const hitsTarget = skillTargetsOpponent(skill.actions) && Boolean(target);
 
-  if (skillTargetsOpponent(skill.actions)) {
-    const opponent = getOpponent(room, player.id)!;
-
-    applySkillToOpponent(player, opponent, skill.actions, ctx, currentTurnId);
-
-    if (isDead(opponent)) {
-      dead = 'defender';
-    } else if (isDead(player)) {
-      dead = 'attacker';
-    }
+  if (hitsTarget) {
+    applySkillToOpponent(player, target!, skill.actions, ctx, currentTurnId);
   }
 
   processStatusEffects(player, ctx, currentTurnId);
-  if (isDead(player)) {
-    dead = 'attacker';
-  }
 
   room.steps.push({
     step: room.steps.length + 1,
@@ -752,21 +781,39 @@ export function processPlayerTurn(
     playerName: player.name,
     skillId,
     effects,
+    ...(hitsTarget ? { targetId: target!.id, targetName: target!.name } : {}),
   });
 
-  if (dead) return { dead };
-
-  resetSkillCooldown(player, skillId);
-
-  if (!isStunned(player)) {
-    decrementSkillCooldowns(player, skillId);
+  // Everyone at 0 HP after the full resolution is knocked out simultaneously.
+  const eliminated: string[] = [];
+  for (const candidate of room.players) {
+    if (!isEliminated(candidate) && isDead(candidate)) {
+      candidate.eliminated = true;
+      eliminated.push(candidate.id);
+    }
   }
 
-  applyCooldownReductions(player, cooldownReductionActions, ctx);
+  const alive = getAlivePlayers(room);
 
-  decrementStatusDurations(player, currentTurnId);
+  if (alive.length <= 1) {
+    // Ties favour the acting player, matching the previous 1v1 behaviour.
+    const winner = alive.length === 1 ? alive[0]! : player;
+    return { eliminated, winnerId: winner.id };
+  }
+
+  if (!isEliminated(player)) {
+    resetSkillCooldown(player, skillId);
+
+    if (!isStunned(player)) {
+      decrementSkillCooldowns(player, skillId);
+    }
+
+    applyCooldownReductions(player, cooldownReductionActions, ctx);
+
+    decrementStatusDurations(player, currentTurnId);
+  }
 
   setNextTurn(room);
 
-  return { dead: null };
+  return { eliminated };
 }

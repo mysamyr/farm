@@ -36,8 +36,8 @@ export interface ServerGameModule<
   /** Initialize room-specific fields when creating a room */
   addRoomFields: () => Pick<TRoom, 'rules'> & Partial<TRoom>;
 
-  /** Handle player removal from room */
-  onPlayerRemoved?: (room: TRoom, playerId: string) => void;
+  /** Handle player removal from room. May return the winner when the removal ends the match. */
+  onPlayerRemoved?: (room: TRoom, playerId: string) => TPlayer | void;
 
   /** Handle player reconnection with new socket ID */
   onPlayerReconnected?: (

@@ -13,29 +13,35 @@
 .mainColumn {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-}
-
-.playersRow {
-  display: flex;
   gap: 12px;
+  min-width: 0;
 }
 
-.playersRow > * {
-  display: flex;
-  flex: 1;
+.logRail {
+  min-width: 0;
 }
 
+/* Desktop: battle log becomes a full-height rail so the board fills the width. */
 @media (min-width: 1024px) {
   .layout {
     grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
     align-items: start;
   }
+
+  .logRail {
+    position: sticky;
+    top: 16px;
+  }
 }
 
-@media (max-width: 767px) {
-  .playersRow {
+/* Mobile: skills stay reachable, the log sits last. */
+@media (max-width: 1023px) {
+  .layout {
+    display: flex;
     flex-direction: column;
-    gap: 12px;
+  }
+
+  .logRail {
+    order: 2;
   }
 }

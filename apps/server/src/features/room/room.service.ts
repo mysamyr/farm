@@ -105,9 +105,11 @@ export function removePlayerFromRoom(
   room.players.splice(idx, 1);
   leaveRoom(io, room.id, socket.id);
   const gameModule = gameRegistry.get(room.game);
-  gameModule.onPlayerRemoved?.(room, socket.id);
+  const winnerAfterRemoval = gameModule.onPlayerRemoved?.(room, socket.id);
   if (shouldAutowin(room)) {
     gameModule.onPlayerWin?.(io, room, room.players[0]!);
+  } else if (winnerAfterRemoval) {
+    gameModule.onPlayerWin?.(io, room, winnerAfterRemoval);
   } else if (shouldDeleteRoom(room, socket.id)) {
     deleteRoom(room.id);
     log(LogLevel.INFO, 'room:deleted', {
@@ -171,9 +173,11 @@ export function kickPlayerFromRoom(
         Boolean(room.vote);
       room.players.splice(idx, 1);
       const gameModule = gameRegistry.get(room.game);
-      gameModule.onPlayerRemoved?.(room, playerId);
+      const winnerAfterRemoval = gameModule.onPlayerRemoved?.(room, playerId);
       if (shouldAutowin(room)) {
         gameModule.onPlayerWin?.(io, room, room.players[0]!);
+      } else if (winnerAfterRemoval) {
+        gameModule.onPlayerWin?.(io, room, winnerAfterRemoval);
       } else if (shouldDeleteRoom(room, playerId)) {
         deleteRoom(room.id);
       } else if (room.ownerId === playerId) {

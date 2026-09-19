@@ -1,0 +1,69 @@
+import { type CSSProperties, type ReactElement } from 'react';
+
+import { type Player } from '@game/game-arena/shared';
+
+import { useArenaTranslation } from '../../../hooks/useArenaTranslation.js';
+import { isPlayerEliminated } from '../../../utils/index.js';
+
+import styles from './OpponentsZone.module.css';
+import PlayerStatsDisplay from './PlayerStats.js';
+
+type OpponentsZoneProps = {
+  opponents: Player[];
+  activePlayerId?: string;
+  selectedTargetId?: string;
+  winnerId?: string;
+  isMatchEnded: boolean;
+  getCritHitEventKey: (playerId: string) => string | undefined;
+  onSelectTarget: (playerId: string) => void;
+};
+
+export default function OpponentsZone({
+  opponents,
+  activePlayerId,
+  selectedTargetId,
+  winnerId,
+  isMatchEnded,
+  getCritHitEventKey,
+  onSelectTarget,
+}: OpponentsZoneProps): ReactElement {
+  const t = useArenaTranslation();
+
+  return (
+    <section className={styles.zone}>
+      <span className={styles.label}>{t.fight.opponentsLabel}</span>
+      <div
+        className={styles.grid}
+        data-count={Math.min(opponents.length, 3)}
+        style={
+          {
+            '--opponent-columns': String(Math.min(opponents.length, 3)),
+          } as CSSProperties
+        }
+      >
+        {opponents.map(opponent => {
+          const eliminated = isPlayerEliminated(opponent);
+          const isTarget = opponent.id === selectedTargetId;
+
+          return (
+            <PlayerStatsDisplay
+              key={opponent.id}
+              player={opponent}
+              isActive={activePlayerId === opponent.id}
+              isTarget={isTarget}
+              isEliminated={eliminated}
+              critHitEventKey={getCritHitEventKey(opponent.id)}
+              isWinner={winnerId === opponent.id}
+              isLoser={isMatchEnded && !!winnerId && winnerId !== opponent.id}
+              isMatchEnded={isMatchEnded}
+              showStatuses
+              onSelect={
+                eliminated ? undefined : () => onSelectTarget(opponent.id)
+              }
+            />
+          );
+        })}
+      </div>
+    </section>
+  );
+}

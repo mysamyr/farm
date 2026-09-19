@@ -258,6 +258,10 @@ export interface LogStep {
   playerName: string;
   skillId: SkillId;
   effects: LogEffect[];
+  /** The player targeted by this skill. Omitted for self-only skills. */
+  targetId?: string;
+  /** Display name of the targeted player, kept for rendering past log entries. */
+  targetName?: string;
 }
 
 export interface StatusEffect {
@@ -283,6 +287,8 @@ export interface Player extends BasePlayer {
   skills: PlayerSkill[];
   /** Whether the player is ready to take their turn. */
   ready: boolean;
+  /** Whether the player has been knocked out and is no longer part of the fight. */
+  eliminated: boolean;
 }
 
 export type Rules = Record<GAME_RULES, boolean>;

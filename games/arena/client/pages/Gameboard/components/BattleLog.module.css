@@ -31,6 +31,23 @@
   background: var(--bg-card);
 }
 
+/* Only the expanded log grows to fill the rail; collapsed it stays compact.
+   The subtracted offset leaves room for the sticky app header and page
+   chrome above the log so the log never forces the whole page to scroll. */
+@media (min-width: 1024px) {
+  .panel.expanded {
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 180px);
+  }
+
+  .panel.expanded .content {
+    flex: 1;
+    max-height: none;
+    min-height: 0;
+  }
+}
+
 .stepSection {
   padding: 8px 0;
   border-top: 1px solid var(--border-base);

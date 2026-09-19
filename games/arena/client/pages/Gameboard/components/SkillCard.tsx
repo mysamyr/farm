@@ -99,6 +99,7 @@ export default function SkillCard({
       className={classNames(
         styles.card,
         selected && styles.selected,
+        skill.type === SkillType.healing && styles.healing,
         disabled && styles.disabled,
         onCooldown && styles.onCooldown
       )}
@@ -121,7 +122,7 @@ export default function SkillCard({
         {skill.type}
       </span>
       {onCooldown && (
-        <span className={styles.cooldownBadge}>CD: {cooldown}</span>
+        <span className={styles.cooldownBadge}>⏳ {cooldown}</span>
       )}
       <button
         type="button"

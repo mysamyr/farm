@@ -32,7 +32,20 @@ type PlayerStatsProps = {
   isLoser?: boolean;
   isMatchEnded?: boolean;
   showStatuses?: boolean;
+  isSelf?: boolean;
+  isTarget?: boolean;
+  isEliminated?: boolean;
+  onSelect?: () => void;
 };
+
+function getStatIcon(label: string): string {
+  return label.split(' ')[0] ?? label;
+}
+
+function getStatText(label: string): string {
+  const parts = label.split(' ');
+  return parts.length > 1 ? parts.slice(1).join(' ') : label;
+}
 
 function getStatusLabel(
   status: StatusEffect,
@@ -52,12 +65,17 @@ export default function PlayerStatsDisplay({
   isLoser = false,
   isMatchEnded = false,
   showStatuses = false,
+  isSelf = false,
+  isTarget = false,
+  isEliminated = false,
+  onSelect,
 }: PlayerStatsProps): ReactElement {
   const t = useArenaTranslation();
   const stats = getPlayerStats(player);
   const visibleStatuses = player.statuses.filter(
     s => !StatId[s.type as StatId]
   );
+  const selectable = Boolean(onSelect) && !isEliminated;
 
   return (
     <div
@@ -65,8 +83,25 @@ export default function PlayerStatsDisplay({
         styles.card,
         isActive && styles.active,
         isLoser && styles.loser,
-        isWinner && styles.winner
+        isWinner && styles.winner,
+        isSelf && styles.self,
+        isTarget && styles.target,
+        isEliminated && styles.eliminated,
+        selectable && styles.selectable
       )}
+      onClick={selectable ? onSelect : undefined}
+      role={selectable ? 'button' : undefined}
+      tabIndex={selectable ? 0 : undefined}
+      onKeyDown={
+        selectable
+          ? event => {
+              if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                onSelect?.();
+              }
+            }
+          : undefined
+      }
     >
       {critHitEventKey && (
         <span
@@ -86,7 +121,15 @@ export default function PlayerStatsDisplay({
       )}
       <div className={styles.header}>
         <span className={styles.playerName}>{player.name}</span>
-        {isActive && !isWinner && !isMatchEnded && (
+        {isTarget && !isEliminated && !isMatchEnded && (
+          <span className={styles.targetBadge}>{t.fight.targetBadge}</span>
+        )}
+        {isEliminated && (
+          <span className={styles.eliminatedBadge}>
+            {t.fight.eliminatedBadge}
+          </span>
+        )}
+        {isActive && !isWinner && !isMatchEnded && !isEliminated && (
           <span className={styles.turnBadge}>{t.fight.turnBadge}</span>
         )}
         {isWinner && (
@@ -100,8 +143,14 @@ export default function PlayerStatsDisplay({
       />
       <div className={styles.statsGrid}>
         {GRID_STATS.map(stat => (
-          <div key={stat} className={styles.statItem}>
-            <span className={styles.statLabel}>{t.statLabels[stat]}</span>
+          <div
+            key={stat}
+            className={styles.statItem}
+            title={getStatText(t.statLabels[stat])}
+          >
+            <span className={styles.statIcon} aria-hidden>
+              {getStatIcon(t.statLabels[stat])}
+            </span>
             <span className={styles.statValue}>{stats[stat]}</span>
           </div>
         ))}

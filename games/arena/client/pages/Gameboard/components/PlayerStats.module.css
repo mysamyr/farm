@@ -47,6 +47,32 @@
   box-shadow: 0 0 0 2px var(--accent-shadow);
 }
 
+.card.selectable {
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .card.selectable:hover {
+    transform: translateY(-1px);
+  }
+}
+
+.card.target {
+  border-color: var(--status-error);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--status-error) 45%, transparent);
+}
+
+.card.self {
+  border-color: var(--accent);
+  background: var(--bg-card);
+}
+
+.card.eliminated {
+  opacity: 0.45;
+  filter: grayscale(85%);
+  cursor: not-allowed;
+}
+
 .card.winner {
   border-color: var(--status-highlight);
   box-shadow: 0 0 8px var(--status-highlight);
@@ -59,7 +85,29 @@
 .header {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.targetBadge {
+  font-size: 0.68rem;
+  font-weight: 600;
+  background: color-mix(in srgb, var(--status-error) 20%, transparent);
+  color: var(--status-error);
+  padding: 1px 7px;
+  border-radius: 99px;
+  white-space: nowrap;
+}
+
+.eliminatedBadge {
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: var(--bg-surface-subtle);
+  color: var(--text-muted);
+  padding: 1px 7px;
+  border-radius: 99px;
 }
 
 .playerName {
@@ -91,30 +139,40 @@
 
 .statsGrid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
 }
 
 .statItem {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 8px;
+  justify-content: center;
+  gap: 4px;
   min-width: 0;
   font-size: 0.8rem;
-  background: var(--bg-surface-subtle);
-  padding: 3px 8px;
-  border-radius: var(--radius-sm);
+  padding: 2px 4px;
 }
 
-.statLabel {
-  color: var(--text-muted);
-  white-space: nowrap;
+.statIcon {
+  line-height: 1;
 }
 
 .statValue {
   font-weight: 600;
   color: var(--text-main);
+}
+
+/* Narrow screens: keep icons tight so 4 stats fit in one row. */
+@media (max-width: 767px) {
+  .statItem {
+    padding: 2px;
+    font-size: 0.75rem;
+    gap: 3px;
+  }
+
+  .statsGrid {
+    gap: 4px;
+  }
 }
 
 .statusList {

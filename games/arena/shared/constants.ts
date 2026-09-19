@@ -4,7 +4,7 @@ import type { GameMetadata } from '@game/shared/types';
 import type { Skill } from './types.js';
 
 export const DEFAULT_CONFIG = {
-  maxPlayers: 2,
+  maxPlayers: 4,
   minPlayers: 2,
 } as const;
 

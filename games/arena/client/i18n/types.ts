@@ -32,6 +32,7 @@ export interface ArenaPreparationTranslation {
   healingSkillFull: string;
   passiveSkillsFull: string;
   waitingForOpponent: string;
+  waitingForPlayers: string;
   failedToReady: string;
   readyButton: string;
   resetButton: string;
@@ -48,6 +49,19 @@ export interface ArenaFightTranslation {
   failedToUseSkill: string;
   turnBadge: string;
   winnerBadge: string;
+  targetBadge: string;
+  eliminatedBadge: string;
+  yourTurnPrompt: string;
+  yourTurnNoTargetPrompt: string;
+  stunnedPrompt: string;
+  otherTurnPrompt: string;
+  eliminatedPrompt: string;
+  winnerPrompt: string;
+  selectTargetHint: string;
+  opponentsLabel: string;
+  playerEliminated: string;
+  battleLogShow: string;
+  battleLogHide: string;
 }
 
 export interface ArenaBattleLogTranslation {

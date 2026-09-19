@@ -24,8 +24,13 @@ type BattleLogProps = {
   steps: LogStep[];
 };
 
-function getTargetLabel(target: ActionTarget, util: UtilTranslation): string {
-  return target === ActionTarget.self ? util.self : util.opponent;
+function getTargetLabel(
+  target: ActionTarget,
+  util: UtilTranslation,
+  targetName?: string
+): string {
+  if (target === ActionTarget.self) return util.self;
+  return targetName ?? util.opponent;
 }
 
 function formatDuration(
@@ -41,16 +46,20 @@ function getEffectText(
   t: ArenaBattleLogTranslation,
   effectLabels: ArenaEffectLabelsTranslation,
   statLabels: ArenaStatLabelsTranslation,
-  util: UtilTranslation
+  util: UtilTranslation,
+  targetName?: string
 ): string {
   switch (effect.kind) {
     case LogEffectKind.damage:
       return t.damage
-        .replace('{target}', getTargetLabel(effect.target, util))
+        .replace('{target}', getTargetLabel(effect.target, util, targetName))
         .replace('{value}', String(effect.value))
         .replace('{crit}', effect.isCrit ? t.crit : '');
     case LogEffectKind.dodge:
-      return t.dodge.replace('{target}', getTargetLabel(effect.target, util));
+      return t.dodge.replace(
+        '{target}',
+        getTargetLabel(effect.target, util, targetName)
+      );
     case LogEffectKind.heal:
       return t.heal.replace('{value}', String(effect.value));
     case LogEffectKind.lifesteal:
@@ -71,10 +80,13 @@ function getEffectText(
       return t.reduceCooldowns.replace('{value}', String(effect.value));
     case LogEffectKind.resist:
       return t.resist
-        .replace('{target}', getTargetLabel(effect.target, util))
+        .replace('{target}', getTargetLabel(effect.target, util, targetName))
         .replace('{status}', effectLabels[effect.status]);
     case LogEffectKind.reflect:
-      return t.reflect.replace('{target}', getTargetLabel(effect.target, util));
+      return t.reflect.replace(
+        '{target}',
+        getTargetLabel(effect.target, util, targetName)
+      );
     case LogEffectKind.apply_status: {
       const value =
         'value' in effect && effect.value !== undefined
@@ -85,7 +97,7 @@ function getEffectText(
         t
       );
       return t.applyStatus
-        .replace('{target}', getTargetLabel(effect.target, util))
+        .replace('{target}', getTargetLabel(effect.target, util, targetName))
         .replace('{status}', effectLabels[effect.status])
         .replace('{value}', value)
         .replace('{duration}', duration);
@@ -93,7 +105,7 @@ function getEffectText(
     case LogEffectKind.modify_stat: {
       const sign = effect.value >= 0 ? '+' : '';
       return t.modifyStat
-        .replace('{target}', getTargetLabel(effect.target, util))
+        .replace('{target}', getTargetLabel(effect.target, util, targetName))
         .replace('{sign}', sign)
         .replace('{value}', String(effect.value))
         .replace('{stat}', getStatLabel(effect.stat, statLabels))
@@ -129,10 +141,15 @@ function getEffectClass(effect: LogEffect): string | undefined {
 export default function BattleLog({ steps }: BattleLogProps): ReactElement {
   const t = useArenaTranslation();
   const { battleLog, effectLabels, statLabels, skillNames, util } = t;
-  const [isOpen, setIsOpen] = useState(false);
+  // Open by default on desktop where the log has its own rail; collapsed on mobile.
+  const [isOpen, setIsOpen] = useState(
+    () =>
+      typeof window !== 'undefined' &&
+      window.matchMedia('(min-width: 1024px)').matches
+  );
 
   return (
-    <div className={styles.panel}>
+    <div className={classNames(styles.panel, isOpen && styles.expanded)}>
       <button className={styles.toggle} onClick={() => setIsOpen(o => !o)}>
         <span>{battleLog.title}</span>
         <span>{isOpen ? '▴' : '▾'}</span>
@@ -161,7 +178,8 @@ export default function BattleLog({ steps }: BattleLogProps): ReactElement {
                       battleLog,
                       effectLabels,
                       statLabels,
-                      util
+                      util,
+                      step.targetName
                     )}
                   </p>
                 ))}

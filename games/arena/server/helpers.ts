@@ -199,8 +199,53 @@ export function getActivePlayer(room: Room): Player | undefined {
   return room.players.find(p => p.id === playerId);
 }
 
-export function getOpponent(room: Room, playerId: string): Player | undefined {
-  return room.players.find(p => p.id !== playerId);
+export function isEliminated(player: Player): boolean {
+  return player.eliminated === true;
+}
+
+export function getAlivePlayers(room: Room): Player[] {
+  return room.players.filter(p => !isEliminated(p));
+}
+
+/**
+ * Find the next alive opponent walking forward through the turn order.
+ * Used both as the default client target and as the server-side fallback.
+ */
+export function getNextAliveTargetId(
+  room: Room,
+  playerId: string
+): string | undefined {
+  const start = room.order.indexOf(playerId);
+  if (start === -1)
+    return getAlivePlayers(room).find(p => p.id !== playerId)?.id;
+
+  for (let offset = 1; offset <= room.order.length; offset++) {
+    const candidateId = room.order[(start + offset) % room.order.length];
+    if (!candidateId || candidateId === playerId) continue;
+
+    const candidate = room.players.find(p => p.id === candidateId);
+    if (candidate && !isEliminated(candidate)) return candidate.id;
+  }
+
+  return undefined;
+}
+
+/**
+ * Resolve the requested target, falling back to the next alive opponent so a
+ * stale or malicious target id can never wedge a turn.
+ */
+export function resolveTarget(
+  room: Room,
+  actorId: string,
+  targetId?: string
+): Player | undefined {
+  if (targetId && targetId !== actorId) {
+    const requested = room.players.find(p => p.id === targetId);
+    if (requested && !isEliminated(requested)) return requested;
+  }
+
+  const fallbackId = getNextAliveTargetId(room, actorId);
+  return room.players.find(p => p.id === fallbackId);
 }
 
 export function skillTargetsOpponent(actions: GameAction[]): boolean {

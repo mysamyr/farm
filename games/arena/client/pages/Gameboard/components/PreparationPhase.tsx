@@ -416,7 +416,12 @@ export default function PreparationPhase(): ReactElement {
         <div className={styles.actions}>
           {isLocked && (
             <p className={styles.waitingMessage}>
-              {t.preparation.waitingForOpponent}
+              {t.preparation.waitingForPlayers
+                .replace(
+                  '{ready}',
+                  String(room.players.filter(p => p.ready).length)
+                )
+                .replace('{total}', String(room.players.length))}
             </p>
           )}
           <div className={styles.actionButtons}>

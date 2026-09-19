@@ -55,6 +55,27 @@ export default function PlayerSkills({
     }
   );
 
+  const renderSkill = (playerSkill: Player['skills'][number]) => {
+    const skillDef = SKILLS[playerSkill.id];
+    if (!skillDef) return null;
+
+    const skillDisabled =
+      disabled ||
+      !isMyTurn ||
+      (isStunned ? playerSkill.id !== SkillId.skip : playerSkill.cooldown > 0);
+
+    return (
+      <SkillCard
+        key={playerSkill.id}
+        skill={skillDef}
+        cooldown={playerSkill.cooldown}
+        disabled={skillDisabled}
+        onClick={() => onUseSkill(playerSkill.id)}
+        onOpenDetail={setDetailSkill}
+      />
+    );
+  };
+
   return (
     <div className={styles.section}>
       <div className={styles.sectionHeader}>
@@ -62,32 +83,10 @@ export default function PlayerSkills({
       </div>
 
       <div className={styles.skillsGrid}>
-        {[
-          ...skillsByType.base,
-          ...skillsByType.active,
-          ...skillsByType.healing,
-        ].map(playerSkill => {
-          const skillDef = SKILLS[playerSkill.id];
-          if (!skillDef) return null;
-
-          const skillDisabled =
-            disabled ||
-            !isMyTurn ||
-            (isStunned
-              ? playerSkill.id !== SkillId.skip
-              : playerSkill.cooldown > 0);
-
-          return (
-            <SkillCard
-              key={playerSkill.id}
-              skill={skillDef}
-              cooldown={playerSkill.cooldown}
-              disabled={skillDisabled}
-              onClick={() => onUseSkill(playerSkill.id)}
-              onOpenDetail={setDetailSkill}
-            />
-          );
-        })}
+        {[...skillsByType.base, ...skillsByType.healing].map(renderSkill)}
+      </div>
+      <div className={styles.skillsGrid}>
+        {skillsByType.active.map(renderSkill)}
       </div>
 
       {detailSkill && (
