@@ -24,6 +24,7 @@ export default function Gameboard(): ReactElement {
   const { showModal, closeModal } = useModal();
 
   const currentRoom = rawCurrentRoom as unknown as Room | null;
+  const socketId = getSocketId();
 
   // Auto-open/close trade modal based on room trade state
   useEffect(() => {
@@ -35,10 +36,9 @@ export default function Gameboard(): ReactElement {
       closeModal();
       return;
     }
-    const myId = getSocketId();
     const isParticipant =
-      currentRoom.trade.initiatorId === myId ||
-      currentRoom.trade.targetId === myId;
+      currentRoom.trade.initiatorId === socketId ||
+      currentRoom.trade.targetId === socketId;
     if (isParticipant) {
       showModal({
         component: TradeModal,
@@ -54,6 +54,7 @@ export default function Gameboard(): ReactElement {
     currentRoom?.trade,
     currentRoom?.id,
     isSpectator,
+    socketId,
     showModal,
     closeModal,
   ]);
@@ -66,19 +67,25 @@ export default function Gameboard(): ReactElement {
   const isYourTurn =
     currentRoom.state === ROOM_STATES.RUNNING &&
     !!currentPlayerId &&
-    currentPlayerId === getSocketId();
+    currentPlayerId === socketId;
 
   const isLimitedCardsRule = !currentRoom.rules[GAME_RULES.UNLIMITED_CARDS];
 
   return (
     <div className={styles.container}>
-      <DiceSection isYourTurn={isYourTurn} readOnly={isSpectator} />
+      <DiceSection
+        room={currentRoom}
+        isYourTurn={isYourTurn}
+        isSpectator={isSpectator}
+      />
 
-      {isLimitedCardsRule && <ActiveCardsSection />}
+      {isLimitedCardsRule && <ActiveCardsSection room={currentRoom} />}
 
-      <PlayersSection readOnly={isSpectator} />
+      <PlayersSection room={currentRoom} isSpectator={isSpectator} />
 
-      {!isSpectator && <ExchangeSection isYourTurn={isYourTurn} />}
+      {!isSpectator && (
+        <ExchangeSection room={currentRoom} isYourTurn={isYourTurn} />
+      )}
 
       <EmoteFloatingContainer />
     </div>

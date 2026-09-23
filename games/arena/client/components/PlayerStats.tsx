@@ -1,18 +1,18 @@
-import type { ReactElement } from 'react';
+import { memo, type ReactElement } from 'react';
 
 import { classNames } from '@game/client-core/utils';
 
 import {
   getPlayerMaxHp,
-  Player,
+  type Player,
   StatId,
-  StatusEffect,
-  EffectId,
+  type StatusEffect,
+  type EffectId,
 } from '@game/game-arena/shared';
 
-import { getEffectIcon } from '../../../constants/index.js';
-import { useArenaTranslation } from '../../../hooks/useArenaTranslation.js';
-import { getPlayerStats } from '../../../utils/index.js';
+import { getEffectIcon } from '../constants/index.js';
+import { useArenaTranslation } from '../hooks/useArenaTranslation.js';
+import { getPlayerStats } from '../utils/index.js';
 
 import HealthBar from './HealthBar.js';
 import styles from './PlayerStats.module.css';
@@ -23,6 +23,15 @@ const GRID_STATS: StatId[] = [
   StatId.crit,
   StatId.dodge,
 ];
+
+function getStatIcon(label: string): string {
+  return label.split(' ')[0] ?? label;
+}
+
+function getStatText(label: string): string {
+  const parts = label.split(' ');
+  return parts.length > 1 ? parts.slice(1).join(' ') : label;
+}
 
 type PlayerStatsProps = {
   player: Player;
@@ -36,29 +45,10 @@ type PlayerStatsProps = {
   isSelf?: boolean;
   isTarget?: boolean;
   isEliminated?: boolean;
-  onSelect?: () => void;
+  onSelect?: (playerId: string) => void;
 };
 
-function getStatIcon(label: string): string {
-  return label.split(' ')[0] ?? label;
-}
-
-function getStatText(label: string): string {
-  const parts = label.split(' ');
-  return parts.length > 1 ? parts.slice(1).join(' ') : label;
-}
-
-function getStatusLabel(
-  status: StatusEffect,
-  effectLabels: Record<EffectId, string>
-): string {
-  const effectId = status.type as EffectId;
-  const label = `${getEffectIcon(effectId)} ${effectLabels[effectId] ?? status.type}`;
-  if (status.remainingDuration === undefined) return label;
-  return `${label} (${status.remainingDuration})`;
-}
-
-export default function PlayerStatsDisplay({
+function PlayerStatsDisplay({
   player,
   turnOrder,
   isActive,
@@ -73,11 +63,21 @@ export default function PlayerStatsDisplay({
   onSelect,
 }: PlayerStatsProps): ReactElement {
   const t = useArenaTranslation();
+  const getStatusLabel = (status: StatusEffect): string => {
+    const effectId = status.type as EffectId;
+    const label = `${getEffectIcon(effectId)} ${
+      t.effectLabels[effectId] ?? status.type
+    }`;
+    return status.remainingDuration === undefined
+      ? label
+      : `${label} (${status.remainingDuration})`;
+  };
   const stats = getPlayerStats(player);
   const visibleStatuses = player.statuses.filter(
     s => !StatId[s.type as StatId]
   );
   const selectable = Boolean(onSelect) && !isEliminated;
+  const handleSelect = () => onSelect?.(player.id);
 
   return (
     <div
@@ -91,7 +91,7 @@ export default function PlayerStatsDisplay({
         isEliminated && styles.eliminated,
         selectable && styles.selectable
       )}
-      onClick={selectable ? onSelect : undefined}
+      onClick={selectable ? handleSelect : undefined}
       role={selectable ? 'button' : undefined}
       tabIndex={selectable ? 0 : undefined}
       onKeyDown={
@@ -99,7 +99,7 @@ export default function PlayerStatsDisplay({
           ? event => {
               if (event.key === 'Enter' || event.key === ' ') {
                 event.preventDefault();
-                onSelect?.();
+                handleSelect();
               }
             }
           : undefined
@@ -164,7 +164,7 @@ export default function PlayerStatsDisplay({
         <div className={styles.statusList}>
           {visibleStatuses.map((status, i) => (
             <span key={`${status.type}-${i}`} className={styles.statusBadge}>
-              {getStatusLabel(status, t.effectLabels)}
+              {getStatusLabel(status)}
             </span>
           ))}
         </div>
@@ -172,3 +172,5 @@ export default function PlayerStatsDisplay({
     </div>
   );
 }
+
+export default memo(PlayerStatsDisplay);

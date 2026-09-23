@@ -1,4 +1,4 @@
-import { type ReactElement, useState } from 'react';
+import { type ReactElement, memo, useMemo, useState } from 'react';
 
 import {
   type Player,
@@ -6,13 +6,13 @@ import {
   SkillId,
   SKILLS,
   SkillType,
-} from '@game/game-arena/shared';
+} from '../../../../shared/index.js';
 
+import SkillCard from '../../../components/SkillCard.js';
+import SkillDetailSheet from '../../../components/SkillDetailSheet.js';
 import { useArenaTranslation } from '../../../hooks/useArenaTranslation.js';
 
 import styles from './PlayerSkills.module.css';
-import SkillCard from './SkillCard.js';
-import SkillDetailSheet from './SkillDetailSheet.js';
 
 type PlayerSkillsProps = {
   player: Player;
@@ -20,10 +20,12 @@ type PlayerSkillsProps = {
   isStunned: boolean;
   disabled?: boolean;
   label?: string;
-  onUseSkill?: (skillId: string) => void;
+  onUseSkill?: (skillId: SkillId) => void;
 };
 
-export default function PlayerSkills({
+const noopUseSkill = (_skillId: SkillId): void => undefined;
+
+function PlayerSkills({
   player,
   isMyTurn,
   isStunned,
@@ -33,29 +35,32 @@ export default function PlayerSkills({
 }: PlayerSkillsProps): ReactElement {
   const t = useArenaTranslation();
   const [detailSkill, setDetailSkill] = useState<Skill | null>(null);
-  const baseSkillIds = new Set([SkillId.attack, SkillId.skip]);
 
-  const skillsByType = player.skills.reduce(
-    (acc, playerSkill) => {
-      const skillDef = SKILLS[playerSkill.id];
-      if (!skillDef) return acc;
+  const skillsByType = useMemo(() => {
+    const baseSkillIds = new Set([SkillId.attack, SkillId.skip]);
 
-      if (baseSkillIds.has(playerSkill.id)) {
-        acc.base.push(playerSkill);
-      } else if (skillDef.type === SkillType.active) {
-        acc.active.push(playerSkill);
-      } else if (skillDef.type === SkillType.healing) {
-        acc.healing.push(playerSkill);
+    return player.skills.reduce(
+      (acc, playerSkill) => {
+        const skillDef = SKILLS[playerSkill.id];
+        if (!skillDef) return acc;
+
+        if (baseSkillIds.has(playerSkill.id)) {
+          acc.base.push(playerSkill);
+        } else if (skillDef.type === SkillType.active) {
+          acc.active.push(playerSkill);
+        } else if (skillDef.type === SkillType.healing) {
+          acc.healing.push(playerSkill);
+        }
+
+        return acc;
+      },
+      {
+        base: [] as Player['skills'],
+        active: [] as Player['skills'],
+        healing: [] as Player['skills'],
       }
-
-      return acc;
-    },
-    {
-      base: [] as Player['skills'],
-      active: [] as Player['skills'],
-      healing: [] as Player['skills'],
-    }
-  );
+    );
+  }, [player.skills]);
 
   const renderSkill = (playerSkill: Player['skills'][number]) => {
     const skillDef = SKILLS[playerSkill.id];
@@ -72,7 +77,7 @@ export default function PlayerSkills({
         skill={skillDef}
         cooldown={playerSkill.cooldown}
         disabled={skillDisabled}
-        onClick={() => onUseSkill?.(playerSkill.id)}
+        onClick={onUseSkill ?? noopUseSkill}
         onOpenDetail={setDetailSkill}
       />
     );
@@ -102,3 +107,5 @@ export default function PlayerSkills({
     </div>
   );
 }
+
+export default memo(PlayerSkills);

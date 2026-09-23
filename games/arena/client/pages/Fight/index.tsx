@@ -7,7 +7,7 @@ import {
   useState,
 } from 'react';
 
-import { useRoom, useSnackbar } from '@game/client-core/hooks';
+import { useSnackbar } from '@game/client-core/hooks';
 import { emitGameEvent, getSocketId } from '@game/client-core/socket';
 
 import { EVENTS, ROOM_STATES } from '@game/shared/constants';
@@ -20,53 +20,92 @@ import {
   type Room,
 } from '@game/game-arena/shared';
 
-import { useArenaTranslation } from '../../../hooks/useArenaTranslation.js';
+import PlayerStatsDisplay from '../../components/PlayerStats.js';
+import SpectatorSkills from '../../components/SpectatorSkills.js';
+
+import { useArenaTranslation } from '../../hooks/useArenaTranslation.js';
+
 import {
   getActivePlayerId,
   getDefaultTargetId,
   getOpponentsInTurnOrder,
   isPlayerEliminated,
-} from '../../../utils/index.js';
+} from '../../utils/index.js';
 
-import BattleLog from './BattleLog.js';
-import styles from './FightPhase.module.css';
-import OpponentsZone from './OpponentsZone.js';
-import SelfPanel from './SelfPanel.js';
-import TurnBanner from './TurnBanner.js';
+import BattleLog from './components/BattleLog.js';
+import OpponentsZone from './components/OpponentsZone.js';
+import SelfPanel from './components/SelfPanel.js';
+import styles from './Fight.module.css';
 
-function getCritHitEventKey(room: Room, playerId: string): string | undefined {
-  const lastStep = room.steps.at(-1);
-  if (!lastStep) return undefined;
+type FightProps = {
+  room: Room;
+};
 
-  const gotCritHit = lastStep.effects.some(effect => {
-    if (effect.kind !== LogEffectKind.damage || !effect.isCrit) return false;
+function SpectatorFight({ room }: FightProps): ReactElement {
+  const activePlayerId = getActivePlayerId(room);
+  const playersInTurnOrder = room.order
+    .map(id => room.players.find(player => player.id === id))
+    .filter((player): player is Player => Boolean(player));
 
-    const targetId =
-      effect.target === ActionTarget.self
-        ? lastStep.playerId
-        : lastStep.targetId;
-    return targetId === playerId;
-  });
-
-  return gotCritHit ? `${lastStep.step}-${playerId}` : undefined;
-}
-
-function hasStun(player: Player | undefined): boolean {
-  return Boolean(
-    player?.statuses.some(
-      s =>
-        s.type === EffectId.stun &&
-        s.remainingDuration &&
-        s.remainingDuration > 0
-    )
+  return (
+    <div className={styles.spectatorLayout}>
+      <main className={styles.spectatorMain}>
+        <div className={styles.spectatorPlayers}>
+          {playersInTurnOrder.map((player, index) => (
+            <section key={player.id} className={styles.spectatorPlayer}>
+              <PlayerStatsDisplay
+                player={player}
+                turnOrder={index + 1}
+                isActive={activePlayerId === player.id}
+                isEliminated={isPlayerEliminated(player)}
+                isWinner={room.winner === player.id}
+                isMatchEnded={Boolean(room.winner)}
+                showStatuses
+              />
+              <SpectatorSkills player={player} />
+            </section>
+          ))}
+        </div>
+      </main>
+      <aside className={styles.logRail}>
+        <BattleLog steps={room.steps} />
+      </aside>
+    </div>
   );
 }
 
-export default function FightPhase(): ReactElement {
-  const { currentRoom: rawCurrentRoom } = useRoom();
+function FightPlayer({ room }: FightProps): ReactElement {
   const { showSnackbar } = useSnackbar();
   const t = useArenaTranslation();
-  const room = rawCurrentRoom as unknown as Room | null;
+
+  const getCritHitEventKey = useCallback(
+    (playerId: string): string | undefined => {
+      const lastStep = room?.steps.at(-1);
+      if (!lastStep) return undefined;
+
+      const gotCritHit = lastStep.effects.some(effect => {
+        if (effect.kind !== LogEffectKind.damage || !effect.isCrit)
+          return false;
+        const targetId =
+          effect.target === ActionTarget.self
+            ? lastStep.playerId
+            : lastStep.targetId;
+        return targetId === playerId;
+      });
+
+      return gotCritHit ? `${lastStep.step}-${playerId}` : undefined;
+    },
+    [room]
+  );
+  const hasStun = (player: Player | undefined): boolean =>
+    Boolean(
+      player?.statuses.some(
+        status =>
+          status.type === EffectId.stun &&
+          status.remainingDuration &&
+          status.remainingDuration > 0
+      )
+    );
 
   const [selectedTargetId, setSelectedTargetId] = useState<string>();
   const knownEliminatedRef = useRef<Set<string>>(new Set());
@@ -140,15 +179,13 @@ export default function FightPhase(): ReactElement {
           },
         },
         (res: { ok: boolean }) => {
-          if (!res.ok) {
-            showSnackbar(t.fight.failedToUseSkill);
-          }
+          if (!res.ok) showSnackbar(t.fight.failedToUseSkill);
         }
       );
     },
     [
-      isMyTurn,
       room,
+      isMyTurn,
       selectedTargetId,
       defaultTargetId,
       showSnackbar,
@@ -156,29 +193,10 @@ export default function FightPhase(): ReactElement {
     ]
   );
 
-  if (!room) {
-    return <></>;
-  }
-
-  const activePlayer = room.players.find(p => p.id === activePlayerId);
-  const targetPlayer = room.players.find(p => p.id === selectedTargetId);
-  const winner = room.players.find(p => p.id === room.winner);
-
   return (
     <div className={styles.container}>
       <div className={styles.layout}>
         <div className={styles.mainColumn}>
-          <TurnBanner
-            isGameOver={isGameOver}
-            winnerName={winner?.name}
-            isSelfEliminated={isSelfEliminated}
-            isMyTurn={isMyTurn}
-            isStunned={hasStun(self)}
-            activePlayerName={activePlayer?.name}
-            targetName={targetPlayer?.name}
-            showTargetHint={isMyTurn && opponents.length > 1}
-          />
-
           <OpponentsZone
             opponents={opponents}
             turnOrder={room.order}
@@ -186,7 +204,7 @@ export default function FightPhase(): ReactElement {
             selectedTargetId={selectedTargetId}
             winnerId={room.winner}
             isMatchEnded={isGameOver}
-            getCritHitEventKey={playerId => getCritHitEventKey(room, playerId)}
+            getCritHitEventKey={getCritHitEventKey}
             onSelectTarget={setSelectedTargetId}
           />
 
@@ -200,7 +218,7 @@ export default function FightPhase(): ReactElement {
               isGameOver={isGameOver}
               isWinner={room.winner === self.id}
               isLoser={isGameOver && !!room.winner && room.winner !== self.id}
-              critHitEventKey={getCritHitEventKey(room, self.id)}
+              critHitEventKey={getCritHitEventKey(self.id)}
               onUseSkill={handleUseSkill}
             />
           )}
@@ -211,5 +229,16 @@ export default function FightPhase(): ReactElement {
         </aside>
       </div>
     </div>
+  );
+}
+
+export default function Fight({
+  room,
+  isSpectator,
+}: FightProps & { isSpectator: boolean }): ReactElement {
+  return isSpectator ? (
+    <SpectatorFight room={room} />
+  ) : (
+    <FightPlayer room={room} />
   );
 }

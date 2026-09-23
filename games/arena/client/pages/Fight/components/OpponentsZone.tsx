@@ -1,12 +1,12 @@
-import { type CSSProperties, type ReactElement } from 'react';
+import { memo, type CSSProperties, type ReactElement } from 'react';
 
-import { type Player } from '@game/game-arena/shared';
+import { type Player } from '../../../../shared/index.js';
 
+import PlayerStatsDisplay from '../../../components/PlayerStats.js';
 import { useArenaTranslation } from '../../../hooks/useArenaTranslation.js';
 import { isPlayerEliminated } from '../../../utils/index.js';
 
 import styles from './OpponentsZone.module.css';
-import PlayerStatsDisplay from './PlayerStats.js';
 
 type OpponentsZoneProps = {
   opponents: Player[];
@@ -19,7 +19,7 @@ type OpponentsZoneProps = {
   onSelectTarget: (playerId: string) => void;
 };
 
-export default function OpponentsZone({
+function OpponentsZone({
   opponents,
   turnOrder,
   activePlayerId,
@@ -60,9 +60,7 @@ export default function OpponentsZone({
               isLoser={isMatchEnded && !!winnerId && winnerId !== opponent.id}
               isMatchEnded={isMatchEnded}
               showStatuses
-              onSelect={
-                eliminated ? undefined : () => onSelectTarget(opponent.id)
-              }
+              onSelect={onSelectTarget}
             />
           );
         })}
@@ -70,3 +68,5 @@ export default function OpponentsZone({
     </section>
   );
 }
+
+export default memo(OpponentsZone);

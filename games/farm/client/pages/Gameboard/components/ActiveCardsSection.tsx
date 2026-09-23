@@ -1,6 +1,4 @@
-import type { ReactElement } from 'react';
-
-import { useRoom } from '@game/client-core/hooks';
+import { memo, type ReactElement, useMemo } from 'react';
 
 import {
   ANIMALS,
@@ -13,18 +11,26 @@ import { ANIMALS_ICONS_CONFIG } from '../../../constants/index.js';
 
 import styles from './ActiveCardsSection.module.css';
 
-export default function ActiveCardsSection(): ReactElement {
-  const { currentRoom } = useRoom();
-  const room = currentRoom as FarmRoom;
+type ActiveCardsSectionProps = {
+  room: FarmRoom;
+};
 
-  const usedCardsByAnimal: Partial<Record<TradableAnimals, number>> = {};
+function ActiveCardsSection({
+  room,
+}: ActiveCardsSectionProps): ReactElement {
 
-  for (const player of room.players) {
-    for (const [animal, count] of Object.entries(player.animals)) {
-      const key = animal as TradableAnimals;
-      usedCardsByAnimal[key] = (usedCardsByAnimal[key] || 0) + count;
+  const usedCardsByAnimal = useMemo(() => {
+    const counts: Partial<Record<TradableAnimals, number>> = {};
+
+    for (const player of room.players) {
+      for (const [animal, count] of Object.entries(player.animals)) {
+        const key = animal as TradableAnimals;
+        counts[key] = (counts[key] || 0) + count;
+      }
     }
-  }
+
+    return counts;
+  }, [room.players]);
 
   return (
     <div className={styles.container}>
@@ -47,3 +53,5 @@ export default function ActiveCardsSection(): ReactElement {
     </div>
   );
 }
+
+export default memo(ActiveCardsSection);

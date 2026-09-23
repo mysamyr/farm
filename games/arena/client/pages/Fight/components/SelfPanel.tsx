@@ -1,11 +1,11 @@
-import { type ReactElement } from 'react';
+import { memo, type ReactElement } from 'react';
 
-import { type Player } from '@game/game-arena/shared';
+import { type Player, type SkillId } from '../../../../shared/index.js';
 
+import PlayerStatsDisplay from '../../../components/PlayerStats.js';
 import { isPlayerEliminated } from '../../../utils/index.js';
 
 import PlayerSkills from './PlayerSkills.js';
-import PlayerStatsDisplay from './PlayerStats.js';
 import styles from './SelfPanel.module.css';
 
 type SelfPanelProps = {
@@ -18,10 +18,10 @@ type SelfPanelProps = {
   isWinner: boolean;
   isLoser: boolean;
   critHitEventKey?: string;
-  onUseSkill: (skillId: string) => void;
+  onUseSkill: (skillId: SkillId) => void;
 };
 
-export default function SelfPanel({
+function SelfPanel({
   player,
   turnOrder,
   isActive,
@@ -63,3 +63,5 @@ export default function SelfPanel({
     </section>
   );
 }
+
+export default memo(SelfPanel);

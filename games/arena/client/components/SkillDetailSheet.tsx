@@ -1,4 +1,4 @@
-import type { ReactElement } from 'react';
+import { memo, type ReactElement } from 'react';
 
 import type { Skill } from '@game/game-arena/shared';
 
@@ -7,8 +7,8 @@ import {
   getSkillEffects,
   getSkillIcon,
   getSkillName,
-} from '../../../constants/index.js';
-import { useArenaTranslation } from '../../../hooks/useArenaTranslation.js';
+} from '../constants/index.js';
+import { useArenaTranslation } from '../hooks/useArenaTranslation.js';
 
 import styles from './SkillDetailSheet.module.css';
 
@@ -17,7 +17,7 @@ type SkillDetailSheetProps = {
   onClose: () => void;
 };
 
-export default function SkillDetailSheet({
+function SkillDetailSheet({
   skill,
   onClose,
 }: SkillDetailSheetProps): ReactElement {
@@ -56,3 +56,5 @@ export default function SkillDetailSheet({
     </>
   );
 }
+
+export default memo(SkillDetailSheet);

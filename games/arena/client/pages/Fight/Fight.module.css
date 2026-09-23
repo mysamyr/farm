@@ -1,7 +1,32 @@
 .container {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  composes: page from '../../styles/Arena.module.css';
+}
+
+.spectatorLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--arena-space);
+  width: 100%;
+}
+
+.spectatorMain {
+  min-width: 0;
+}
+
+.spectatorPlayers {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+  gap: var(--arena-space);
+}
+
+.spectatorPlayer {
+  display: grid;
+  gap: 0.75rem;
+  align-content: start;
+  padding: 0.75rem;
+  border: 1px solid var(--border-base);
+  border-radius: var(--arena-radius);
+  background: var(--bg-card);
 }
 
 .layout {

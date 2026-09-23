@@ -6,9 +6,8 @@ import { type Room } from '@game/game-arena/shared';
 
 import { isAllPlayersReady } from '../../utils/index.js';
 
-import FightPhase from './components/FightPhase.js';
-import PreparationPhase from './components/PreparationPhase.js';
-import SpectatorPhase from './components/SpectatorPhase.js';
+import Fight from '../Fight/index.js';
+import Preparation from '../Preparation/index.js';
 
 import styles from './Gameboard.module.css';
 
@@ -25,15 +24,10 @@ export default function Gameboard(): ReactElement {
 
   return (
     <div className={styles.container}>
-      {isSpectator ? (
-        <SpectatorPhase
-          room={currentRoom}
-          preparation={isPreparationPhase}
-        />
-      ) : isPreparationPhase ? (
-        <PreparationPhase />
+      {isPreparationPhase ? (
+        <Preparation room={currentRoom} isSpectator={isSpectator} />
       ) : (
-        <FightPhase />
+        <Fight room={currentRoom} isSpectator={isSpectator} />
       )}
     </div>
   );

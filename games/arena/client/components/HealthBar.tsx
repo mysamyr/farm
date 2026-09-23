@@ -1,4 +1,4 @@
-import { type CSSProperties, type ReactElement, useState } from 'react';
+import { memo, type CSSProperties, type ReactElement, useState } from 'react';
 
 import { classNames } from '@game/client-core/utils';
 
@@ -10,11 +10,7 @@ type HealthBarProps = {
   label: string;
 };
 
-export default function HealthBar({
-  current,
-  max,
-  label,
-}: HealthBarProps): ReactElement {
+function HealthBar({ current, max, label }: HealthBarProps): ReactElement {
   const safeMax = Math.max(max, 1);
   const value = Math.min(Math.max(current, 0), safeMax);
   const [settled, setSettled] = useState(value);
@@ -57,3 +53,5 @@ export default function HealthBar({
     </div>
   );
 }
+
+export default memo(HealthBar);

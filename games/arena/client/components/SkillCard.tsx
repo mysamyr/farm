@@ -1,22 +1,22 @@
 import {
+  memo,
   type MouseEvent,
   type ReactElement,
-  useCallback,
   useRef,
   useState,
 } from 'react';
 
 import { classNames } from '@game/client-core/utils';
 
-import { type Skill, SkillType } from '@game/game-arena/shared';
+import { type Skill, type SkillId, SkillType } from '@game/game-arena/shared';
 
 import {
   getSkillEffects,
   getSkillIcon,
   getSkillName,
   getSkillCooldownText,
-} from '../../../constants/index.js';
-import { useArenaTranslation } from '../../../hooks/useArenaTranslation.js';
+} from '../constants/index.js';
+import { useArenaTranslation } from '../hooks/useArenaTranslation.js';
 
 import styles from './SkillCard.module.css';
 
@@ -29,11 +29,11 @@ type SkillCardProps = {
   disabled: boolean;
   cooldown?: number; // active CD in fight phase
   alwaysShowCooldown?: boolean;
-  onClick: () => void;
+  onClick: (skillId: SkillId) => void;
   onOpenDetail: (skill: Skill) => void;
 };
 
-export default function SkillCard({
+function SkillCard({
   skill,
   selected,
   disabled,
@@ -48,7 +48,7 @@ export default function SkillCard({
   const [tooltipAlign, setTooltipAlign] = useState<TooltipAlign>('center');
   const cardRef = useRef<HTMLDivElement>(null);
 
-  const handleMouseEnter = useCallback(() => {
+  const handleMouseEnter = () => {
     if (window.matchMedia('(hover: none)').matches) return;
     if (cardRef.current) {
       const rect = cardRef.current.getBoundingClientRect();
@@ -63,26 +63,25 @@ export default function SkillCard({
         setTooltipAlign('center');
       }
     }
-    setTooltipVisible(true);
-  }, []);
 
-  const handleMouseLeave = useCallback(() => {
+    setTooltipVisible(true);
+  };
+
+  const handleMouseLeave = () => {
     setTooltipVisible(false);
-  }, []);
+  };
 
   const onCooldown = cooldown !== undefined && cooldown > 0;
 
-  const handleClick = useCallback(() => {
-    onClick();
-  }, [onClick]);
+  const handleCardClick = () => {
+    if (disabled || onCooldown) return;
+    onClick(skill.id);
+  };
 
-  const handleInfoClick = useCallback(
-    (event: MouseEvent<HTMLButtonElement>) => {
-      event.stopPropagation();
-      onOpenDetail(skill);
-    },
-    [skill, onOpenDetail]
-  );
+  const handleInfoClick = (event: MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    onOpenDetail(skill);
+  };
 
   const icon = getSkillIcon(skill.id);
   const name = getSkillName(skill.id, t.skillNames);
@@ -107,7 +106,7 @@ export default function SkillCard({
         disabled && styles.disabled,
         onCooldown && styles.onCooldown
       )}
-      onClick={!disabled && !onCooldown ? handleClick : undefined}
+      onClick={handleCardClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
@@ -158,3 +157,5 @@ export default function SkillCard({
     </div>
   );
 }
+
+export default memo(SkillCard);

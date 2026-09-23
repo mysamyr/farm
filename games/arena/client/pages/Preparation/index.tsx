@@ -2,7 +2,7 @@ import { type ReactElement, useCallback, useMemo, useState } from 'react';
 
 import { Button } from '@game/client-core/components';
 import { ButtonVariant } from '@game/client-core/constants';
-import { useRoom, useSnackbar } from '@game/client-core/hooks';
+import { useSnackbar } from '@game/client-core/hooks';
 import { emitGameEvent } from '@game/client-core/socket';
 
 import { EVENTS, ROOM_STATES } from '@game/shared/constants';
@@ -23,75 +23,106 @@ import {
   SkillType,
 } from '@game/game-arena/shared';
 
-import { getSkillIcon, getSkillName } from '../../../constants/index.js';
-import { useArenaTranslation } from '../../../hooks/useArenaTranslation.js';
-import { getCurrentPlayer, getPreviewPlayer } from '../../../utils/index.js';
+import PlayerStatsDisplay from '../../components/PlayerStats.js';
+import SkillCard from '../../components/SkillCard.js';
+import SkillDetailSheet from '../../components/SkillDetailSheet.js';
+import SpectatorSkills from '../../components/SpectatorSkills.js';
+import { getSkillIcon, getSkillName } from '../../constants/index.js';
+import { useArenaTranslation } from '../../hooks/useArenaTranslation.js';
+import { getCurrentPlayer, getPreviewPlayer } from '../../utils/index.js';
 
-import PlayerStatsDisplay from './PlayerStats.js';
-import styles from './PreparationPhase.module.css';
-import SkillCard from './SkillCard.js';
-import SkillDetailSheet from './SkillDetailSheet.js';
+import styles from './Preparation.module.css';
 
-export default function PreparationPhase(): ReactElement {
-  const { currentRoom: rawCurrentRoom } = useRoom();
+type PreparationProps = {
+  room: Room;
+};
+
+function SpectatorPreparation({ room }: PreparationProps): ReactElement {
+  const t = useArenaTranslation();
+
+  const playersInTurnOrder = room.order
+    .map(id => room.players.find(player => player.id === id))
+    .filter((player): player is Player => Boolean(player));
+
+  return (
+    <div className={styles.spectatorLayout}>
+      <main className={styles.spectatorMain}>
+        <div className={styles.spectatorIntro}>
+          <h2 className={styles.spectatorTitle}>
+            {t.preparation.spectatorTitle}
+          </h2>
+          <p>{t.preparation.spectatorDescription}</p>
+          <p className={styles.readySummary}>
+            {t.preparation.waitingForPlayers
+              .replace(
+                '{ready}',
+                String(room.players.filter(player => player.ready).length)
+              )
+              .replace('{total}', String(room.players.length))}
+          </p>
+        </div>
+        <div className={styles.spectatorPlayers}>
+          {playersInTurnOrder.map((player, index) => (
+            <section key={player.id} className={styles.spectatorPlayer}>
+              <div className={styles.spectatorStatus}>
+                {player.ready
+                  ? t.preparation.readyStatus
+                  : t.preparation.selectingStatus}
+              </div>
+              <PlayerStatsDisplay
+                player={player}
+                turnOrder={index + 1}
+                isActive={false}
+                isEliminated={false}
+                isMatchEnded={false}
+                showStatuses
+              />
+              {player.ready && <SpectatorSkills player={player} />}
+            </section>
+          ))}
+        </div>
+      </main>
+    </div>
+  );
+}
+
+function PreparationPlayer({ room }: PreparationProps): ReactElement {
   const { showSnackbar } = useSnackbar();
   const t = useArenaTranslation();
-  const room = rawCurrentRoom as unknown as Room | null;
-
-  if (!room) {
-    return <></>;
-  }
-
-  const currentPlayer = getCurrentPlayer(room);
-  const isGameOver =
-    room.state === ROOM_STATES.FINISHED || Boolean(room.winner);
-  const isLocked = isGameOver || Boolean(currentPlayer?.ready);
 
   const [selectedActives, setSelectedActives] = useState<SkillId[]>([]);
   const [selectedHealing, setSelectedHealing] = useState<SkillId[]>([]);
   const [selectedPassives, setSelectedPassives] = useState<SkillId[]>([]);
   const [detailSkill, setDetailSkill] = useState<Skill | null>(null);
 
-  const baseSkillIds = useMemo(() => new Set(BASE_SKILLS), []);
+  const isGameOver =
+    !!room && (room.state === ROOM_STATES.FINISHED || Boolean(room.winner));
+  const currentPlayer = room ? getCurrentPlayer(room) : null;
+  const isLocked = isGameOver || Boolean(currentPlayer?.ready);
 
-  const activeSkills: ActiveSkill[] = useMemo(
-    () =>
-      Object.values(SKILLS).filter(
+  const { activeSkills, healingSkills, passiveSkills } = useMemo(() => {
+    const baseSkillIds = new Set(BASE_SKILLS);
+    return {
+      activeSkills: Object.values(SKILLS).filter(
         s => s.type === SkillType.active && !baseSkillIds.has(s.id)
       ) as ActiveSkill[],
-    [baseSkillIds]
-  );
-
-  const healingSkills: HealingSkill[] = useMemo(
-    () => Object.values(SKILLS).filter(s => s.type === SkillType.healing),
-    []
-  );
-
-  const passiveSkills: PassiveSkill[] = useMemo(
-    () => Object.values(SKILLS).filter(s => s.type === SkillType.passive),
-    []
-  );
-
-  const previewPlayer: Player | null = useMemo(() => {
-    if (!currentPlayer) return null;
-    const skillIds = [
-      ...selectedActives,
-      ...selectedHealing,
-      ...selectedPassives,
-    ];
-    return getPreviewPlayer(currentPlayer, skillIds);
-  }, [currentPlayer, selectedActives, selectedHealing, selectedPassives]);
+      healingSkills: Object.values(SKILLS).filter(
+        s => s.type === SkillType.healing
+      ),
+      passiveSkills: Object.values(SKILLS).filter(
+        s => s.type === SkillType.passive
+      ),
+    };
+  }, []);
 
   const handleSelectActive = useCallback(
     (skillId: SkillId) => {
       if (isLocked) return;
       setSelectedActives(prev => {
-        if (prev.includes(skillId)) {
-          return prev.filter(id => id !== skillId);
-        }
+        if (prev.includes(skillId)) return prev.filter(id => id !== skillId);
         if (prev.length >= REQUIRED_ACTIVE_COUNT) {
-          const isCoarse = window.matchMedia('(pointer: coarse)').matches;
-          if (isCoarse) showSnackbar(t.preparation.activeSkillsFull);
+          if (window.matchMedia('(pointer: coarse)').matches)
+            showSnackbar(t.preparation.activeSkillsFull);
           return prev;
         }
         return [...prev, skillId];
@@ -104,12 +135,10 @@ export default function PreparationPhase(): ReactElement {
     (skillId: SkillId) => {
       if (isLocked) return;
       setSelectedPassives(prev => {
-        if (prev.includes(skillId)) {
-          return prev.filter(id => id !== skillId);
-        }
+        if (prev.includes(skillId)) return prev.filter(id => id !== skillId);
         if (prev.length >= REQUIRED_PASSIVE_COUNT) {
-          const isCoarse = window.matchMedia('(pointer: coarse)').matches;
-          if (isCoarse) showSnackbar(t.preparation.passiveSkillsFull);
+          if (window.matchMedia('(pointer: coarse)').matches)
+            showSnackbar(t.preparation.passiveSkillsFull);
           return prev;
         }
         return [...prev, skillId];
@@ -122,12 +151,10 @@ export default function PreparationPhase(): ReactElement {
     (skillId: SkillId) => {
       if (isLocked) return;
       setSelectedHealing(prev => {
-        if (prev.includes(skillId)) {
-          return prev.filter(id => id !== skillId);
-        }
+        if (prev.includes(skillId)) return prev.filter(id => id !== skillId);
         if (prev.length >= REQUIRED_HEALING_COUNT) {
-          const isCoarse = window.matchMedia('(pointer: coarse)').matches;
-          if (isCoarse) showSnackbar(t.preparation.healingSkillFull);
+          if (window.matchMedia('(pointer: coarse)').matches)
+            showSnackbar(t.preparation.healingSkillFull);
           return prev;
         }
         return [...prev, skillId];
@@ -136,8 +163,13 @@ export default function PreparationPhase(): ReactElement {
     [isLocked, showSnackbar, t.preparation.healingSkillFull]
   );
 
+  const isSelectionComplete =
+    selectedActives.length === REQUIRED_ACTIVE_COUNT &&
+    selectedHealing.length === REQUIRED_HEALING_COUNT &&
+    selectedPassives.length === REQUIRED_PASSIVE_COUNT;
+
   const handleReset = useCallback(() => {
-    if (isGameOver) return;
+    if (!room || isGameOver) return;
     if (isLocked) {
       emitGameEvent(
         EVENTS.GAME_ACTION,
@@ -153,21 +185,10 @@ export default function PreparationPhase(): ReactElement {
     setSelectedActives([]);
     setSelectedHealing([]);
     setSelectedPassives([]);
-  }, [
-    isGameOver,
-    isLocked,
-    room.id,
-    showSnackbar,
-    t.preparation.failedToReady,
-  ]);
-
-  const isSelectionComplete =
-    selectedActives.length === REQUIRED_ACTIVE_COUNT &&
-    selectedHealing.length === REQUIRED_HEALING_COUNT &&
-    selectedPassives.length === REQUIRED_PASSIVE_COUNT;
+  }, [room, isGameOver, isLocked, showSnackbar, t.preparation.failedToReady]);
 
   const handleReady = useCallback(() => {
-    if (isGameOver || !isSelectionComplete || isLocked) return;
+    if (!room || isGameOver || !isSelectionComplete || isLocked) return;
     const skills = [
       ...selectedActives,
       ...selectedHealing,
@@ -186,16 +207,26 @@ export default function PreparationPhase(): ReactElement {
       }
     );
   }, [
+    room,
     isGameOver,
     isSelectionComplete,
     isLocked,
     selectedActives,
     selectedHealing,
     selectedPassives,
-    room.id,
     showSnackbar,
     t.preparation.failedToReady,
   ]);
+
+  const previewPlayer: Player | null = (() => {
+    if (!currentPlayer) return null;
+    const skillIds = [
+      ...selectedActives,
+      ...selectedHealing,
+      ...selectedPassives,
+    ];
+    return getPreviewPlayer(currentPlayer, skillIds);
+  })();
 
   const activeSlotsFull = selectedActives.length >= REQUIRED_ACTIVE_COUNT;
   const healingSlotsFull = selectedHealing.length >= REQUIRED_HEALING_COUNT;
@@ -364,7 +395,7 @@ export default function PreparationPhase(): ReactElement {
                 isLocked ||
                 (!selectedActives.includes(skill.id) && activeSlotsFull)
               }
-              onClick={() => handleSelectActive(skill.id)}
+              onClick={handleSelectActive}
               onOpenDetail={setDetailSkill}
             />
           ))}
@@ -385,7 +416,7 @@ export default function PreparationPhase(): ReactElement {
                 isLocked ||
                 (!selectedHealing.includes(skill.id) && healingSlotsFull)
               }
-              onClick={() => handleSelectHealing(skill.id)}
+              onClick={handleSelectHealing}
               onOpenDetail={setDetailSkill}
             />
           ))}
@@ -406,7 +437,7 @@ export default function PreparationPhase(): ReactElement {
                 isLocked ||
                 (!selectedPassives.includes(skill.id) && passiveSlotsFull)
               }
-              onClick={() => handleSelectPassive(skill.id)}
+              onClick={handleSelectPassive}
               onOpenDetail={setDetailSkill}
             />
           ))}
@@ -445,5 +476,16 @@ export default function PreparationPhase(): ReactElement {
         />
       )}
     </div>
+  );
+}
+
+export default function Preparation({
+  room,
+  isSpectator,
+}: PreparationProps & { isSpectator: boolean }): ReactElement {
+  return isSpectator ? (
+    <SpectatorPreparation room={room} />
+  ) : (
+    <PreparationPlayer room={room} />
   );
 }
