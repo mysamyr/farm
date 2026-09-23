@@ -8,7 +8,6 @@ import {
   type Skill,
 } from '@game/game-arena/shared';
 
-import { getSkillIcon, getSkillName } from '../../../constants/index.js';
 import { useArenaTranslation } from '../../../hooks/useArenaTranslation.js';
 import {
   getActivePlayerId,
@@ -102,37 +101,27 @@ export default function SpectatorPhase({
         ) : null}
         <div className={styles.players}>
           {playersInTurnOrder.map((player, index) => (
-              <section key={player.id} className={styles.player}>
-                {preparation ? (
-                  <div className={styles.status}>
-                    {player.ready
-                      ? t.preparation.readyStatus
-                      : t.preparation.selectingStatus}
-                  </div>
-                ) : null}
-                <PlayerStatsDisplay
-                  player={player}
-                  turnOrder={index + 1}
-                  isActive={!preparation && activePlayerId === player.id}
-                  isEliminated={isPlayerEliminated(player)}
-                  isWinner={room.winner === player.id}
-                  isMatchEnded={Boolean(room.winner)}
-                  showStatuses
-                />
-                {preparation && player.ready ? (
-                  <>
-                    <div className={styles.loadout}>
-                      {player.loadout.map(skillId => (
-                        <span key={skillId} className={styles.skill}>
-                          {getSkillIcon(skillId)}{' '}
-                          {getSkillName(skillId, t.skillNames)}
-                        </span>
-                      ))}
-                    </div>
-                  </>
-                ) : null}
-                {!preparation ? <SpectatorSkills player={player} /> : null}
-              </section>
+            <section key={player.id} className={styles.player}>
+              {preparation ? (
+                <div className={styles.status}>
+                  {player.ready
+                    ? t.preparation.readyStatus
+                    : t.preparation.selectingStatus}
+                </div>
+              ) : null}
+              <PlayerStatsDisplay
+                player={player}
+                turnOrder={index + 1}
+                isActive={!preparation && activePlayerId === player.id}
+                isEliminated={isPlayerEliminated(player)}
+                isWinner={room.winner === player.id}
+                isMatchEnded={Boolean(room.winner)}
+                showStatuses
+              />
+              {!preparation || player.ready ? (
+                <SpectatorSkills player={player} />
+              ) : null}
+            </section>
           ))}
         </div>
       </main>

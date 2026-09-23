@@ -24,16 +24,23 @@
 
 @media (hover: hover) {
   .card:hover:not(.disabled) {
-    border-color: var(--accent);
     box-shadow: var(--shadow-hover-card);
     transform: translateY(-1px);
   }
 }
 
 .card.selected {
-  border-color: var(--accent);
-  background: var(--accent-soft);
+  border-color: var(--blue-500);
+  background: var(--pc-blue-50);
   box-shadow: 0 0 0 2px var(--accent-shadow);
+}
+
+.card.active {
+  border-color: var(--blue-500);
+}
+
+:global(:root[data-theme='dark']) .card.active.selected {
+  background: var(--pc-blue-800);
 }
 
 .card.healing {
@@ -42,6 +49,7 @@
 
 .card.healing.selected {
   border-color: var(--status-success);
+  background: color-mix(in srgb, var(--status-success) 20%, var(--bg-card));
 }
 
 .card.passive {
@@ -50,6 +58,7 @@
 
 .card.passive.selected {
   border-color: var(--pc-purple-400);
+  background: color-mix(in srgb, var(--pc-purple-400) 20%, var(--bg-card));
 }
 
 .card.disabled {
@@ -57,7 +66,7 @@
 }
 
 .card.disabled .icon {
-  opacity: 0.15;
+  opacity: 0.3;
   filter: grayscale(80%);
 }
 

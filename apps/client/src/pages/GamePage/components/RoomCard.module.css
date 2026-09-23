@@ -77,6 +77,23 @@
   font-size: 0.9rem;
 }
 
+@media (max-width: 1024px) {
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .joinButtonWrap {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
+
 @media (min-width: 768px) {
   .container {
     padding: 20px 22px;

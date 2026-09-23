@@ -101,6 +101,7 @@ export default function SkillCard({
       className={classNames(
         styles.card,
         selected && styles.selected,
+        skill.type === SkillType.active && styles.active,
         skill.type === SkillType.healing && styles.healing,
         skill.type === SkillType.passive && styles.passive,
         disabled && styles.disabled,

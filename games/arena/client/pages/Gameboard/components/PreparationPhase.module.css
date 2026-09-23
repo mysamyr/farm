@@ -97,9 +97,35 @@
 
 .slot.slotFilled {
   border-style: solid;
-  border-color: var(--accent);
-  background: var(--accent-soft);
+  border-color: var(--blue-500);
+  background: var(--pc-blue-50);
   box-shadow: 0 0 0 2px var(--accent-shadow);
+}
+
+.slot.healingSlot.slotFilled {
+  border-color: var(--status-success);
+  background: color-mix(in srgb, var(--status-success) 20%, var(--bg-card));
+}
+
+.slot.passiveSlot.slotFilled {
+  border-color: var(--pc-purple-400);
+  background: color-mix(in srgb, var(--pc-purple-400) 20%, var(--bg-card));
+}
+
+:global(:root[data-theme='dark']) .slot.activeSlot.slotFilled {
+  background: var(--pc-blue-800);
+}
+
+.slotName {
+  color: var(--blue-500);
+}
+
+.healingSlot .slotName {
+  color: var(--status-success);
+}
+
+.passiveSlot .slotName {
+  color: var(--pc-purple-400);
 }
 
 .slot:hover.slotFilled:not(.slotLocked) {

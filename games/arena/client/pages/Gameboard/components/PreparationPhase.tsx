@@ -231,7 +231,7 @@ export default function PreparationPhase(): ReactElement {
                 return (
                   <div
                     key={`active-${i}`}
-                    className={`${styles.slot} ${styles.equippedSlot} ${skillId ? styles.slotFilled : ''} ${isLocked ? styles.slotLocked : ''}`}
+                    className={`${styles.slot} ${styles.equippedSlot} ${styles.activeSlot} ${skillId ? styles.slotFilled : ''} ${isLocked ? styles.slotLocked : ''}`}
                     onClick={() => {
                       if (isLocked || !skillId) return;
                       setSelectedActives(prev =>
@@ -275,7 +275,7 @@ export default function PreparationPhase(): ReactElement {
                 return (
                   <div
                     key={`healing-${i}`}
-                    className={`${styles.slot} ${styles.equippedSlot} ${skillId ? styles.slotFilled : ''} ${isLocked ? styles.slotLocked : ''}`}
+                    className={`${styles.slot} ${styles.equippedSlot} ${styles.healingSlot} ${skillId ? styles.slotFilled : ''} ${isLocked ? styles.slotLocked : ''}`}
                     onClick={() => {
                       if (isLocked || !skillId) return;
                       setSelectedHealing(prev =>
@@ -319,7 +319,7 @@ export default function PreparationPhase(): ReactElement {
                 return (
                   <div
                     key={`passive-${i}`}
-                    className={`${styles.slot} ${styles.equippedSlot} ${skillId ? styles.slotFilled : ''} ${isLocked ? styles.slotLocked : ''}`}
+                    className={`${styles.slot} ${styles.equippedSlot} ${styles.passiveSlot} ${skillId ? styles.slotFilled : ''} ${isLocked ? styles.slotLocked : ''}`}
                     onClick={() => {
                       if (isLocked || !skillId) return;
                       setSelectedPassives(prev =>
