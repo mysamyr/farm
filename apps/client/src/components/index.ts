@@ -1,3 +1,5 @@
+export { ChatButton } from './ui/ChatButton.js';
+export { ChatPanel } from './ui/ChatPanel.js';
 export { Header } from './ui/Header.js';
 export { Modal } from './ui/Modal.js';
 export { Sidebar } from './ui/Sidebar.js';

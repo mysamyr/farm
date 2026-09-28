@@ -128,6 +128,14 @@ export type Translation = {
     tradeCancelled: (playerName: string) => string;
     returnedToLobby: (playerName: string) => string;
   };
+  chat: {
+    title: string;
+    open: (unread: number) => string;
+    placeholder: string;
+    send: string;
+    empty: string;
+    readOnly: string;
+  };
   inGame: {
     lobby: string;
     lobbyConfirmTitle: string;

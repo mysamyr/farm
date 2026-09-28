@@ -23,6 +23,7 @@ import { PATHS, getCatalogPath } from './constants/index.js';
 import { GameContainer } from './games/index.js';
 import {
   useActiveGame,
+  useChatSubscriptions,
   useGameStatisticsRecorder,
   useGames,
   useGamesLoader,
@@ -66,6 +67,8 @@ function AppContent() {
   useGamesLoader();
 
   useRoomSubscriptions();
+
+  useChatSubscriptions();
 
   useGameStatisticsRecorder();
 

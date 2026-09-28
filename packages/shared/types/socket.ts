@@ -1,6 +1,6 @@
 import { ERROR, GameId, EVENTS } from '../constants/index.js';
 
-import type { BaseRoom } from './index.js';
+import type { BaseRoom, ChatMessage } from './index.js';
 
 export type SocketAck = {
   ok: boolean;
@@ -50,6 +50,18 @@ export type GameActionPayload<
 
 export type PlayerRenamePayload = {
   name: string;
+};
+
+export type ChatSendPayload = RoomIdPayload & {
+  text: string;
+};
+
+export type ChatMessagePayload = RoomIdPayload & {
+  message: ChatMessage;
+};
+
+export type ChatHistoryAck = SocketAck & {
+  messages?: ChatMessage[];
 };
 
 /**
@@ -113,6 +125,14 @@ export type CoreClientToServerEvents = {
     payload: RoomIdPayload,
     ack?: (response: SocketAck) => void
   ) => void;
+  [EVENTS.CHAT_SEND]: (
+    payload: ChatSendPayload,
+    ack?: (response: SocketAck) => void
+  ) => void;
+  [EVENTS.CHAT_HISTORY]: (
+    payload: RoomIdPayload,
+    ack?: (response: ChatHistoryAck) => void
+  ) => void;
 };
 
 /**
@@ -144,4 +164,5 @@ export type CoreServerToClientEvents = {
   [EVENTS.GAME_STATE_UPDATE]: (payload: GameStateUpdatePayload) => void;
   [EVENTS.GAME_EFFECT]: (payload: GameEffectPayload) => void;
   [EVENTS.GAME_ERROR]: (payload: GameErrorPayload) => void;
+  [EVENTS.CHAT_MESSAGE]: (payload: ChatMessagePayload) => void;
 };

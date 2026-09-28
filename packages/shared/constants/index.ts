@@ -45,7 +45,12 @@ export const EVENTS = {
   GAME_REMATCH: 'game:rematch',
   GAME_REMATCH_DECLINE: 'game:rematch_decline',
   GAME_RETURN_TO_LOBBY: 'game:return_to_lobby',
+  CHAT_SEND: 'chat:send',
+  CHAT_MESSAGE: 'chat:message',
+  CHAT_HISTORY: 'chat:history',
 } as const;
+
+export const CHAT_HISTORY_LIMIT = 100;
 
 export const REMATCH_TIMEOUT_MS = 20_000;
 
@@ -66,5 +71,8 @@ export const VALIDATION = {
   USER_NAME: {
     MAX_LENGTH: 16,
     MIN_LENGTH: 2,
+  },
+  CHAT_MESSAGE: {
+    MAX_LENGTH: 200,
   },
 };

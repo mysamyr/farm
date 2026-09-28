@@ -1,6 +1,6 @@
 import { ReactElement } from 'react';
 
-function MinimizeIcon(): ReactElement {
+function SendIcon(): ReactElement {
   return (
     <svg
       width="20"
@@ -13,10 +13,10 @@ function MinimizeIcon(): ReactElement {
       strokeLinejoin="round"
       aria-hidden="true"
     >
-      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-      <circle cx="12" cy="12" r="3" />
+      <path d="M22 2 11 13" />
+      <path d="M22 2 15 22l-4-9-9-4 20-7z" />
     </svg>
   );
 }
 
-export default MinimizeIcon;
+export default SendIcon;

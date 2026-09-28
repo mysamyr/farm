@@ -1,6 +1,6 @@
 import { type ReactElement, useEffect, useState } from 'react';
 
-import { Button, MinimizeIcon } from '@game/client-core/components';
+import { Button, CloseIcon, RematchIcon } from '@game/client-core/components';
 
 import { ButtonVariant } from '@game/client-core/constants';
 import { useLanguage, useRoom, useRoomRole } from '@game/client-core/hooks';
@@ -72,29 +72,22 @@ export function RematchModal(): ReactElement | null {
     mode === 'postGame' || mode === 'midGame' ? t.rematch : t.ready;
   const declineLabel = mode === 'postGame' ? tInGame.lobby : t.decline;
 
-  if (minimized && mode === 'midGame') {
+  if (minimized && (mode === 'midGame' || mode === 'postGame')) {
+    const isMidGame = mode === 'midGame';
     return (
       <button
         type="button"
         className={styles.fab}
+        aria-label={isMidGame ? tInGame.voteTitle : t.expand}
+        title={isMidGame ? tInGame.voteTitle : t.expand}
         onClick={() => setMinimized(false)}
       >
-        <span className={styles.fabTime}>
-          🔄 {readyIds.size}/{currentRoom.players.length}
-        </span>
-        <span>{tInGame.voteTitle}</span>
-      </button>
-    );
-  }
-
-  if (minimized && mode === 'postGame') {
-    return (
-      <button
-        type="button"
-        className={styles.fab}
-        onClick={() => setMinimized(false)}
-      >
-        <span>{t.expand}</span>
+        <RematchIcon />
+        {isMidGame ? (
+          <span className={styles.badge} aria-hidden="true">
+            {readyIds.size}/{currentRoom.players.length}
+          </span>
+        ) : null}
       </button>
     );
   }
@@ -118,9 +111,9 @@ export function RematchModal(): ReactElement | null {
     <div className={styles.backdrop}>
       <div className={styles.modal} role="dialog" aria-labelledby="vote-title">
         <div className={styles.header}>
-          <h2 id="vote-title" className={styles.title}>
+          <h3 id="vote-title" className={styles.title}>
             {title}
-          </h2>
+          </h3>
           {showMinimize ? (
             <Button
               variant={ButtonVariant.ICON}
@@ -128,48 +121,50 @@ export function RematchModal(): ReactElement | null {
               title={t.minimize}
               onClick={() => setMinimized(true)}
             >
-              <MinimizeIcon />
+              <CloseIcon />
             </Button>
           ) : null}
         </div>
 
-        {winnerName ? (
-          <p className={styles.winner}>{t.winner(winnerName)}</p>
-        ) : null}
+        <div className={styles.body}>
+          {winnerName ? (
+            <p className={styles.winner}>{t.winner(winnerName)}</p>
+          ) : null}
 
-        {showTimer ? (
-          <p className={styles.timer}>{t.seconds(remainingSec)}</p>
-        ) : null}
+          {showTimer ? (
+            <p className={styles.timer}>{t.seconds(remainingSec)}</p>
+          ) : null}
 
-        <RematchPlayerList
-          players={currentRoom.players}
-          readyIds={readyIds}
-          myId={myId ?? undefined}
-          showStatus={canRematch}
-        />
+          <RematchPlayerList
+            players={currentRoom.players}
+            readyIds={readyIds}
+            myId={myId ?? undefined}
+            showStatus={canRematch}
+          />
 
-        {showActions ? (
-          <div className={styles.actions}>
-            {showAccept ? (
-              <Button variant={ButtonVariant.PRIMARY} onClick={handleRematch}>
-                {acceptLabel}
-              </Button>
-            ) : null}
-            {showDecline ? (
-              <Button
-                variant={ButtonVariant.SECONDARY}
-                onClick={handleDeclineRematch}
-              >
-                {declineLabel}
-              </Button>
-            ) : null}
-            {showLeave ? (
-              <Button variant={ButtonVariant.DANGER} onClick={handleLeave}>
-                {t.leave}
-              </Button>
-            ) : null}
-          </div>
-        ) : null}
+          {showActions ? (
+            <div className={styles.actions}>
+              {showAccept ? (
+                <Button variant={ButtonVariant.PRIMARY} onClick={handleRematch}>
+                  {acceptLabel}
+                </Button>
+              ) : null}
+              {showDecline ? (
+                <Button
+                  variant={ButtonVariant.SECONDARY}
+                  onClick={handleDeclineRematch}
+                >
+                  {declineLabel}
+                </Button>
+              ) : null}
+              {showLeave ? (
+                <Button variant={ButtonVariant.DANGER} onClick={handleLeave}>
+                  {t.leave}
+                </Button>
+              ) : null}
+            </div>
+          ) : null}
+        </div>
       </div>
     </div>
   );

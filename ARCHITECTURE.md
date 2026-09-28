@@ -61,6 +61,14 @@ client (`GameConfig`) and server (`ServerGameModule`).
   3. Creates a `GameHandlerContext` adapter (bridges Socket.io ↔ generic interface)
   4. Invokes `gameModule.handleAction(ctx, payload, ack)` with optional acknowledgment callback
 
+- **Room Chat (`features/chat`):** Core, game-agnostic per-room chat.
+  - `chat:send` (`{ roomId, text }`) – players only (spectators get `CHAT_READ_ONLY`); text is stripped of control
+    characters/newlines, trimmed, 1–`VALIDATION.CHAT_MESSAGE.MAX_LENGTH` code points, throttled per socket.
+  - `chat:message` (`{ roomId, message }`) – broadcast to the room; `chat:history` (`{ roomId }`) – ack with history.
+  - History (last `CHAT_HISTORY_LIMIT` messages) lives in `chat.store.ts` keyed by room id, **not** on the room
+    object, so it never leaks into `room:list` or game state projections. Cleared in `deleteRoom`; author ids are
+    remapped on reconnect.
+
 ## 4. Client Architecture
 
 ### Shell & routing
@@ -137,6 +145,7 @@ Components tied to shell features live in `apps/client/src/components`, grouped 
 | Theme         | `useThemeStore` / `useTheme`           | `data-theme` chrome; games do not toggle theme                                          |
 | Username      | `useUsernameStore` / `useUsername`     | Header / name modal; socket auth still uses `LOCAL_STORAGE_KEY.USERNAME` in client-core |
 | Connection    | `useConnectionStore` / `useConnection` | Online count and rejoin gate for routing                                                |
+| Chat          | `useChatStore` / `useChat`             | Room chat messages, open state, unread count (`useChatSubscriptions` syncs it)          |
 
 **Adding state — checklist**
 
@@ -144,6 +153,14 @@ Components tied to shell features live in `apps/client/src/components`, grouped 
 2. If only the catalog, lobby, header, rematch overlay, or statistics need it, put it in `apps/client`.
 3. Persist with `localStorage` next to the owner package: identity/language keys in client-core; theme/statistics keys in the shell.
 4. Game-specific board state stays in that game’s client (or on `room` via `game:state_update`). Never import one game from another.
+
+### Room chat
+
+- `ChatButton` (fixed bottom-left, unread badge) and `ChatPanel` (desktop popup / mobile bottom sheet) are mounted by
+  `MainLayout` only while `currentRoom` is set; `main` gets extra bottom padding so content is not covered.
+- `useChatSubscriptions` resets the store when the room changes, requests `chat:history` (counted as read) on room
+  change and reconnect, and appends `chat:message` events (unread increments only while closed, not for own messages).
+- Messages render as plain React text (never HTML). Spectators see the chat read-only.
 
 ### i18n
 

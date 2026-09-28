@@ -1,6 +1,6 @@
 import { readStoredUsername } from '@game/client-core/utils';
-import type { GameId } from '@game/shared/constants';
-import type { GameMetadata } from '@game/shared/types';
+import { CHAT_HISTORY_LIMIT, type GameId } from '@game/shared/constants';
+import type { ChatMessage, GameMetadata } from '@game/shared/types';
 import { create } from 'zustand';
 
 import { type Theme } from '../constants/index.js';
@@ -72,4 +72,41 @@ export const useGamesStore = create<GamesSlice>((set, get) => ({
   setError: error => set({ error, loading: false }),
   getGame: gameId => get().games.find(g => g.id === gameId),
   getDefaultGameId: () => get().games[0]?.id ?? null,
+}));
+
+// ─── Chat ────────────────────────────────────────────────────────────────────
+
+interface ChatSlice {
+  roomId: string | null;
+  messages: ChatMessage[];
+  isOpen: boolean;
+  unread: number;
+  reset: (roomId: string | null) => void;
+  setHistory: (roomId: string, history: ChatMessage[]) => void;
+  addMessage: (roomId: string, message: ChatMessage, isOwn: boolean) => void;
+  setOpen: (isOpen: boolean) => void;
+}
+
+export const useChatStore = create<ChatSlice>((set, get) => ({
+  roomId: null,
+  messages: [],
+  isOpen: false,
+  unread: 0,
+  reset: roomId => set({ roomId, messages: [], unread: 0, isOpen: false }),
+  setHistory: (roomId, history) => {
+    if (get().roomId !== roomId) return;
+    const known = new Set(history.map(message => message.id));
+    const live = get().messages.filter(message => !known.has(message.id));
+    set({ messages: [...history, ...live].slice(-CHAT_HISTORY_LIMIT) });
+  },
+  addMessage: (roomId, message, isOwn) => {
+    const state = get();
+    if (state.roomId !== roomId) return;
+    if (state.messages.some(existing => existing.id === message.id)) return;
+    set({
+      messages: [...state.messages, message].slice(-CHAT_HISTORY_LIMIT),
+      unread: state.isOpen || isOwn ? state.unread : state.unread + 1,
+    });
+  },
+  setOpen: isOpen => set(isOpen ? { isOpen, unread: 0 } : { isOpen }),
 }));

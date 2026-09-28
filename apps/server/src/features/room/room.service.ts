@@ -13,6 +13,7 @@ import { LogLevel } from '../../constants/index.js';
 import { gameRegistry } from '../../games/registry.js';
 import { log } from '../../services/logger.js';
 import type { AppServer, AppSocket } from '../../types/index.js';
+import { clearChat, remapChatAuthor } from '../chat/chat.store.js';
 import { findPendingDisconnectBySocketId } from '../connection/connection.store.js';
 
 import {
@@ -39,6 +40,7 @@ export const listRooms = listRoomsFromStore;
 
 export function deleteRoom(roomId: string): void {
   clearRematchTimer(roomId);
+  clearChat(roomId);
   if (removeRoom(roomId)) {
     log(LogLevel.INFO, 'room:delete', { roomId });
   }
@@ -270,6 +272,7 @@ export function reassignPlayerInRooms(
         .get(room.game)
         .onPlayerReconnected?.(room, oldSocketId, newSocket.id);
       remapRematchPlayerId(room, oldSocketId, newSocket.id);
+      remapChatAuthor(room.id, oldSocketId, newSocket.id);
 
       void newSocket.join(room.id);
 

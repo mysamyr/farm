@@ -18,6 +18,15 @@ export interface BasePlayer {
   name: string;
 }
 
+export interface ChatMessage {
+  id: string;
+  /** Socket id of the author (remapped on reconnect) */
+  authorId: string;
+  /** Author name snapshot at send time */
+  authorName: string;
+  text: string;
+}
+
 export type RoomRole = 'player' | 'spectator';
 
 export interface BaseRules {

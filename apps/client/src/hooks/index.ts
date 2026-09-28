@@ -1,4 +1,6 @@
 export { useActiveGame } from './useActiveGame.js';
+export { isValidChatInput, useChat } from './useChat.js';
+export { useChatSubscriptions } from './useChatSubscriptions.js';
 export { useConnection } from './useConnection.js';
 export { useGameConfig } from './useGameConfig.js';
 export { useGames, useGamesLoader } from './useGames.js';

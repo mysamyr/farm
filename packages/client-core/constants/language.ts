@@ -76,6 +76,8 @@ const translations: Record<LanguageCode, Translation> = {
       [ERROR.TRADE_NOT_ACTIVE]: 'No active trade.',
       [ERROR.TRADE_NOT_LOCKED]: 'Both players must lock their offers first.',
       [ERROR.INVALID_TRADE_TARGET]: 'Invalid trade target.',
+      [ERROR.CHAT_READ_ONLY]: 'Spectators cannot send messages.',
+      [ERROR.INVALID_CHAT_MESSAGE]: `Message must be 1–${VALIDATION.CHAT_MESSAGE.MAX_LENGTH} characters.`,
       // Client-only validations
       userNameTooShort: `Name must be at least ${VALIDATION.USER_NAME.MIN_LENGTH} characters.`,
       userNameTooLong: `Name must be at most ${VALIDATION.USER_NAME.MAX_LENGTH} characters.`,
@@ -218,6 +220,15 @@ const translations: Record<LanguageCode, Translation> = {
       returnedToLobby: (name: string): string =>
         `${name} ended the game and returned everyone to the lobby.`,
     },
+    chat: {
+      title: 'Room chat',
+      open: (unread: number): string =>
+        unread > 0 ? `Open chat, ${unread} unread` : 'Open chat',
+      placeholder: 'Type a message…',
+      send: 'Send',
+      empty: 'No messages yet. Say hi!',
+      readOnly: 'Spectators can only read the chat.',
+    },
     inGame: {
       lobby: 'Return to lobby',
       lobbyConfirmTitle: 'Return to lobby?',
@@ -258,6 +269,8 @@ const translations: Record<LanguageCode, Translation> = {
       [ERROR.TRADE_NOT_ACTIVE]: 'Немає активного обміну.',
       [ERROR.TRADE_NOT_LOCKED]: 'Обидва гравці повинні зафіксувати пропозицію.',
       [ERROR.INVALID_TRADE_TARGET]: 'Невірний гравець для обміну.',
+      [ERROR.CHAT_READ_ONLY]: 'Глядачі не можуть надсилати повідомлення.',
+      [ERROR.INVALID_CHAT_MESSAGE]: `Повідомлення має містити 1–${VALIDATION.CHAT_MESSAGE.MAX_LENGTH} символів.`,
       // Client-only validations
       userNameTooShort: `Імʼя має містити щонайменше ${VALIDATION.USER_NAME.MIN_LENGTH} символи.`,
       userNameTooLong: `Імʼя має містити щонайбільше ${VALIDATION.USER_NAME.MAX_LENGTH} символів.`,
@@ -414,6 +427,15 @@ const translations: Record<LanguageCode, Translation> = {
       tradeCancelled: (name: string): string => `${name} скасував обмін.`,
       returnedToLobby: (name: string): string =>
         `${name} завершив гру і повернув усіх у лобі.`,
+    },
+    chat: {
+      title: 'Чат кімнати',
+      open: (unread: number): string =>
+        unread > 0 ? `Відкрити чат, непрочитаних: ${unread}` : 'Відкрити чат',
+      placeholder: 'Напишіть повідомлення…',
+      send: 'Надіслати',
+      empty: 'Повідомлень ще немає. Привітайтесь!',
+      readOnly: 'Глядачі можуть лише читати чат.',
     },
     inGame: {
       lobby: 'Повернутись у лобі',

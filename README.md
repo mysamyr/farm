@@ -4,5 +4,4 @@
 - [ ] generate README.md
 - [ ] add password-protected rooms
 - [ ] Single player games
-- [ ] (Server + UI) Chat (small floating icon at the left bottom side)
 - [ ] (ARENA) hovering on active status should open tooltip with description.
