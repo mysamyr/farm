@@ -25,6 +25,11 @@ export type RawActionValue = {
   amount: number;
 };
 
+export type PercentActionValue = {
+  source: ActionValueSource.percent;
+  percent: number;
+};
+
 export type CurrentHpActionValue = {
   source: ActionValueSource.currentHp;
   actor: ActionTarget;
@@ -49,8 +54,14 @@ export type DamageDealtActionValue = {
   percent: number;
 };
 
+export type DirectActionValue = RawActionValue | PercentActionValue;
+
 export type InstantActionValue =
-  RawActionValue | CurrentHpActionValue | MaxHpActionValue | StatActionValue;
+  | RawActionValue
+  | PercentActionValue
+  | CurrentHpActionValue
+  | MaxHpActionValue
+  | StatActionValue;
 
 export type ReactiveActionValue = InstantActionValue | DamageDealtActionValue;
 
@@ -72,22 +83,22 @@ export type ApplyStatusAction = BaseAction & {
     | {
         status: EffectId.bleed;
         duration: number;
-        value: ReactiveActionValue;
+        value: DirectActionValue;
       }
     | {
         status: EffectId.poison;
         duration: number;
-        value: ReactiveActionValue;
+        value: DirectActionValue;
       }
     | {
         status: EffectId.regeneration;
         duration: number;
-        value: ReactiveActionValue;
+        value: DirectActionValue;
       }
     | {
         status: EffectId.resistance;
         duration: number;
-        value: InstantActionValue;
+        value: DirectActionValue;
       }
     | {
         status: EffectId.reflection;
@@ -101,11 +112,11 @@ export type ApplyStatusAction = BaseAction & {
       }
     | {
         status: EffectId.thorns;
-        value: InstantActionValue;
+        value: DirectActionValue;
       }
     | {
         status: EffectId.leech;
-        value: ReactiveActionValue;
+        value: DirectActionValue;
       }
     | {
         status: EffectId.pierce;

@@ -92,6 +92,8 @@ function formatActionValue(
   switch (value.source) {
     case ActionValueSource.raw:
       return String(value.amount);
+    case ActionValueSource.percent:
+      return String(value.percent) + '%';
     case ActionValueSource.currentHp:
       return labels.valueCurrentHp
         .replace('{percent}', String(value.percent))
