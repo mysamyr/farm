@@ -1,5 +1,9 @@
 import type { ReactElement } from 'react';
 
+import { Button, CloseIcon } from '@game/client-core/components';
+import { ButtonVariant } from '@game/client-core/constants';
+import { useLanguage } from '@game/client-core/hooks';
+
 import styles from './Snackbar.module.css';
 
 type SnackbarProps = {
@@ -8,12 +12,19 @@ type SnackbarProps = {
 };
 
 export function Snackbar({ message, onClose }: SnackbarProps): ReactElement {
+  const { translation } = useLanguage();
+
   return (
-    <div className={styles.container}>
+    <div className={styles.container} role="status" aria-live="polite">
       <div className={styles.label}>{message}</div>
-      <div className={styles.dismiss} onClick={onClose}>
-        ×
-      </div>
+      <Button
+        variant={ButtonVariant.ICON}
+        className={styles.dismiss}
+        aria-label={translation.close}
+        onClick={onClose}
+      >
+        <CloseIcon />
+      </Button>
     </div>
   );
 }

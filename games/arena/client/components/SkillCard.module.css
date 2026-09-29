@@ -111,83 +111,10 @@
 }
 
 /* ─── Tooltip ────────────────────────────────────────────── */
-.tooltip {
-  position: absolute;
+.card .tooltip {
   z-index: 3;
-  width: max-content;
   max-width: 230px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-base);
-  border-radius: var(--radius-sm);
-  box-shadow: var(--shadow-elevation);
-  padding: 8px 10px;
-  pointer-events: none;
-}
-
-.tooltipAlignCenter {
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.tooltipAlignLeft {
-  left: -4px;
-}
-
-.tooltipAlignRight {
-  right: -4px;
-}
-
-.tooltipAbove {
-  bottom: calc(100% + 6px);
-}
-
-.tooltipBelow {
-  top: calc(100% + 6px);
-}
-
-.tooltipHeader {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 6px;
-}
-
-.tooltipIcon {
-  font-size: 1.1rem;
-}
-
-.tooltipName {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--text-main);
-}
-
-.tooltipEffects {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.tooltipEffects li {
-  font-size: 0.72rem;
-  color: var(--text-muted);
-}
-
-.tooltipCooldown {
-  margin-top: 4px;
-  padding-top: 4px;
-  border-top: 1px solid var(--border-base);
-  /* color: var(--accent) !important; */
-  font-weight: 500;
-}
-
-.tooltipEmpty {
-  font-size: 0.72rem;
-  color: var(--text-muted);
-  font-style: italic;
+  text-align: inherit;
 }
 
 .card.onCooldown .name {
@@ -204,13 +131,4 @@
   background: var(--bg-surface-subtle);
   padding: 1px 5px;
   border-radius: 99px;
-}
-
-.tooltipEffectDetails {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  margin-top: 6px;
-  padding-top: 6px;
-  border-top: 1px solid var(--border-base);
 }

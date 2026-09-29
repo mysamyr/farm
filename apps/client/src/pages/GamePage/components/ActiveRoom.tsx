@@ -163,7 +163,6 @@ function PlayersList({
           key={player.id}
           player={player}
           isSelf={player.id === socketId}
-          isPlayerOwner={player.id === room.ownerId}
           canKick={
             isOwner && player.id !== socketId && player.id !== room.ownerId
           }
@@ -181,7 +180,6 @@ function PlayersList({
 function PlayerRow({
   player,
   isSelf,
-  isPlayerOwner,
   canKick,
   youLabel,
   kickLabel,
@@ -189,7 +187,6 @@ function PlayerRow({
 }: {
   player: BasePlayer;
   isSelf: boolean;
-  isPlayerOwner: boolean;
   canKick: boolean;
   youLabel: string;
   kickLabel: string;
@@ -199,12 +196,11 @@ function PlayerRow({
     <div
       className={classNames(styles.playerItem, isSelf && styles.currentUser)}
     >
-      <span>
+      <span className={styles.playerIdentity}>
         {player.name}
         {isSelf ? ` (${youLabel})` : ''}
       </span>
       <span className={styles.playerActions}>
-        {isPlayerOwner ? '⭐' : null}
         {canKick ? (
           <Button
             variant={ButtonVariant.DANGER}

@@ -1,29 +1,15 @@
-import {
-  memo,
-  type MouseEvent,
-  type ReactElement,
-  useRef,
-  useState,
-} from 'react';
+import { memo, type MouseEvent, type ReactElement } from 'react';
 
+import { Tooltip } from '@game/client-core/components';
 import { classNames } from '@game/client-core/utils';
 
 import { type Skill, type SkillId, SkillType } from '@game/game-arena/shared';
 
-import {
-  getSkillAppliedEffects,
-  getSkillEffects,
-  getSkillIcon,
-  getSkillName,
-  getSkillCooldownText,
-} from '../constants/index.js';
+import { getSkillIcon, getSkillName } from '../constants/index.js';
 import { useArenaTranslation } from '../hooks/useArenaTranslation.js';
 
-import EffectDescription from './EffectDescription.js';
 import styles from './SkillCard.module.css';
-
-type TooltipPosition = 'above' | 'below';
-type TooltipAlign = 'left' | 'center' | 'right';
+import SkillDetails, { SkillTitle } from './SkillDetails.js';
 
 type SkillCardProps = {
   skill: Skill;
@@ -45,34 +31,6 @@ function SkillCard({
   onOpenDetail,
 }: SkillCardProps): ReactElement {
   const t = useArenaTranslation();
-  const [tooltipVisible, setTooltipVisible] = useState(false);
-  const [tooltipPos, setTooltipPos] = useState<TooltipPosition>('above');
-  const [tooltipAlign, setTooltipAlign] = useState<TooltipAlign>('center');
-  const cardRef = useRef<HTMLDivElement>(null);
-
-  const handleMouseEnter = () => {
-    if (window.matchMedia('(hover: none)').matches) return;
-    if (cardRef.current) {
-      const rect = cardRef.current.getBoundingClientRect();
-      setTooltipPos(rect.top > 180 ? 'above' : 'below');
-
-      // If close to left edge, align left. If close to right edge, align right.
-      if (rect.left < 80) {
-        setTooltipAlign('left');
-      } else if (window.innerWidth - rect.right < 80) {
-        setTooltipAlign('right');
-      } else {
-        setTooltipAlign('center');
-      }
-    }
-
-    setTooltipVisible(true);
-  };
-
-  const handleMouseLeave = () => {
-    setTooltipVisible(false);
-  };
-
   const onCooldown = cooldown !== undefined && cooldown > 0;
 
   const handleCardClick = () => {
@@ -85,21 +43,12 @@ function SkillCard({
     onOpenDetail(skill);
   };
 
-  const icon = getSkillIcon(skill.id);
-  const name = getSkillName(skill.id, t.skillNames);
-  const effects = getSkillEffects(
-    skill,
-    t.skillEffectLabels,
-    t.statLabels,
-    t.effectLabels,
-    t.util
-  );
-  const cooldownText = getSkillCooldownText(skill, t.skillEffectLabels);
-  const appliedEffects = getSkillAppliedEffects(skill);
-
   return (
-    <div
-      ref={cardRef}
+    <Tooltip
+      as="div"
+      trigger="hover"
+      minSpaceAbove={180}
+      edgeOffset={80}
       className={classNames(
         styles.card,
         selected && styles.selected,
@@ -109,12 +58,19 @@ function SkillCard({
         disabled && styles.disabled,
         onCooldown && styles.onCooldown
       )}
+      tooltipClassName={styles.tooltip}
+      content={
+        <>
+          <SkillTitle skill={skill} compact />
+          <SkillDetails skill={skill} compact />
+        </>
+      }
       onClick={handleCardClick}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
     >
-      <span className={styles.icon}>{icon}</span>
-      <span className={styles.name}>{name}</span>
+      <span className={styles.icon}>{getSkillIcon(skill.id)}</span>
+      <span className={styles.name}>
+        {getSkillName(skill.id, t.skillNames)}
+      </span>
       {(onCooldown || (alwaysShowCooldown && cooldown !== undefined)) && (
         <span className={styles.cooldownBadge}>⏳ {cooldown}</span>
       )}
@@ -126,45 +82,7 @@ function SkillCard({
       >
         i
       </button>
-
-      {tooltipVisible && (
-        <div
-          className={classNames(
-            styles.tooltip,
-            tooltipPos === 'above' ? styles.tooltipAbove : styles.tooltipBelow,
-            tooltipAlign === 'left' && styles.tooltipAlignLeft,
-            tooltipAlign === 'right' && styles.tooltipAlignRight,
-            tooltipAlign === 'center' && styles.tooltipAlignCenter
-          )}
-        >
-          <div className={styles.tooltipHeader}>
-            <span className={styles.tooltipIcon}>{icon}</span>
-            <span className={styles.tooltipName}>{name}</span>
-          </div>
-          {effects.length > 0 ? (
-            <ul className={styles.tooltipEffects}>
-              {effects.map((e, i) => (
-                <li key={i}>{e}</li>
-              ))}
-              {cooldownText && (
-                <li key="cooldown" className={styles.tooltipCooldown}>
-                  {cooldownText}
-                </li>
-              )}
-            </ul>
-          ) : (
-            <p className={styles.tooltipEmpty}>No effects</p>
-          )}
-          {appliedEffects.length > 0 && (
-            <div className={styles.tooltipEffectDetails}>
-              {appliedEffects.map(effectId => (
-                <EffectDescription key={effectId} effectId={effectId} compact />
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-    </div>
+    </Tooltip>
   );
 }
 

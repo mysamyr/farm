@@ -11,16 +11,17 @@
   border-radius: 4px;
   overflow: hidden;
   animation: 300ms ease-out forwards slide-up;
-  z-index: 10;
+  z-index: var(--z-toast);
 }
 
 .label {
   padding: 12px 8px;
 }
 
-.dismiss {
-  color: var(--status-error);
-  font-weight: bold;
-  margin: 0 8px;
-  padding: 8px;
+.container .dismiss {
+  width: 32px;
+  height: 32px;
+  margin: 0 4px;
+  background-color: transparent;
+  color: inherit;
 }

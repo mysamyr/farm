@@ -58,12 +58,10 @@ function SpectatorSkills({ player }: SpectatorSkillsProps): ReactElement {
           {supportSkills.map(renderSkill)}
         </div>
       </div>
-      {detailSkill && (
-        <SkillDetailSheet
-          skill={detailSkill}
-          onClose={() => setDetailSkill(null)}
-        />
-      )}
+      <SkillDetailSheet
+        skill={detailSkill}
+        onClose={() => setDetailSkill(null)}
+      />
     </>
   );
 }

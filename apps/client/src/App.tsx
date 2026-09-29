@@ -14,7 +14,7 @@ import {
 import { GameSubscriptions } from './components/GameSubscriptions.js';
 import {
   ChangeNameModal,
-  Modal,
+  ModalHost,
   RematchModal,
   Snackbar,
 } from './components/index.js';
@@ -150,11 +150,7 @@ function AppContent() {
       </Routes>
 
       {snackbarOpen && <Snackbar message={message} onClose={closeSnackbar} />}
-      <Modal
-        open={modalOpen}
-        modal={modal}
-        onRequestClose={requestCloseModal}
-      />
+      <ModalHost />
     </>
   );
 }

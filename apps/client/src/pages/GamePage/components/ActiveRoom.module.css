@@ -52,8 +52,8 @@ h3.roomName {
 
 .playersList {
   background: var(--bg-page);
-  border-radius: 12px;
-  padding: 6px;
+  border-radius: 4px;
+  padding: 0 6px;
 }
 
 .playerItem {
@@ -67,6 +67,13 @@ h3.roomName {
 
 .playerItem:last-child {
   border-bottom: none;
+}
+
+.playerIdentity {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .playerActions {

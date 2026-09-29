@@ -1,0 +1,84 @@
+/* ─── Title ────────────────────────────────────────────────── */
+.title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.icon {
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.title.compact {
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.title.compact .icon {
+  font-size: 1.1rem;
+}
+
+.title.compact .name {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* ─── Body ─────────────────────────────────────────────────── */
+.effects {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.effects li {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.compact .effects {
+  gap: 2px;
+}
+
+.compact .effects li {
+  font-size: 0.72rem;
+  padding: 0;
+}
+
+.cooldown {
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 1px solid var(--border-base);
+  font-weight: 500;
+}
+
+.empty {
+  margin: 0;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.effectDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 6px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-base);
+}
+
+.compact .effectDetails {
+  gap: 5px;
+  margin-top: 6px;
+  padding-top: 6px;
+}

@@ -1,7 +1,7 @@
 export { ChatButton } from './ui/ChatButton.js';
 export { ChatPanel } from './ui/ChatPanel.js';
 export { Header } from './ui/Header.js';
-export { Modal } from './ui/Modal.js';
+export { ModalHost } from './ui/ModalHost.js';
 export { Sidebar } from './ui/Sidebar.js';
 export { Snackbar } from './ui/Snackbar.js';
 export { Tag } from './ui/Tag.js';

@@ -226,7 +226,7 @@ const translations: Record<LanguageCode, Translation> = {
         unread > 0 ? `Open chat, ${unread} unread` : 'Open chat',
       placeholder: 'Type a message…',
       send: 'Send',
-      empty: 'No messages yet. Say hi!',
+      empty: 'No messages yet.',
       readOnly: 'Spectators can only read the chat.',
     },
     inGame: {
@@ -434,7 +434,7 @@ const translations: Record<LanguageCode, Translation> = {
         unread > 0 ? `Відкрити чат, непрочитаних: ${unread}` : 'Відкрити чат',
       placeholder: 'Напишіть повідомлення…',
       send: 'Надіслати',
-      empty: 'Повідомлень ще немає. Привітайтесь!',
+      empty: 'Повідомлень ще немає.',
       readOnly: 'Глядачі можуть лише читати чат.',
     },
     inGame: {

@@ -87,7 +87,7 @@ interface ModalSlice {
   closeModal: () => void;
 }
 
-export type ModalCloseReason = 'backdrop' | 'escape' | 'programmatic';
+export type ModalCloseReason = 'escape' | 'programmatic';
 
 export interface ModalConfig<
   T extends Record<string, unknown> = Record<string, unknown>,
@@ -98,16 +98,12 @@ export interface ModalConfig<
   closeOnNavigate?: boolean;
 }
 
-let modalUnmountTimeout: ReturnType<typeof setTimeout> | null = null;
-
+// The modal host keeps rendering the last config while the exit animation
+// runs, so the store can drop it immediately on close.
 export const useModalStore = create<ModalSlice>((set, get) => ({
   open: false,
   modal: null,
   showModal: config => {
-    if (modalUnmountTimeout) {
-      clearTimeout(modalUnmountTimeout);
-      modalUnmountTimeout = null;
-    }
     set({
       open: true,
       modal: config as ModalConfig,
@@ -127,29 +123,6 @@ export const useModalStore = create<ModalSlice>((set, get) => ({
     get().closeModal();
   },
   closeModal: () => {
-    if (modalUnmountTimeout) {
-      clearTimeout(modalUnmountTimeout);
-    }
-    set({ open: false });
-    modalUnmountTimeout = setTimeout(() => {
-      set({ modal: null });
-      modalUnmountTimeout = null;
-    }, 200);
+    set({ open: false, modal: null });
   },
-}));
-
-// ─── Game overlay ────────────────────────────────────────────────────────────
-
-interface GameOverlaySlice {
-  /** Number of game overlays (sheets, popovers) currently mounted. */
-  count: number;
-  openGameOverlay: () => void;
-  closeGameOverlay: () => void;
-}
-
-export const useGameOverlayStore = create<GameOverlaySlice>(set => ({
-  count: 0,
-  openGameOverlay: () => set(state => ({ count: state.count + 1 })),
-  closeGameOverlay: () =>
-    set(state => ({ count: Math.max(0, state.count - 1) })),
 }));

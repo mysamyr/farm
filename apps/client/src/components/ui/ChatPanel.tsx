@@ -1,13 +1,17 @@
 import {
-  type FormEvent,
-  type KeyboardEvent,
+  type SubmitEvent,
   type ReactElement,
   useEffect,
   useRef,
   useState,
 } from 'react';
 
-import { Button, CloseIcon, SendIcon } from '@game/client-core/components';
+import {
+  Button,
+  Modal,
+  ModalHeader,
+  SendIcon,
+} from '@game/client-core/components';
 import { ButtonVariant } from '@game/client-core/constants';
 import { useLanguage, useRoomRole } from '@game/client-core/hooks';
 import { getSocketId } from '@game/client-core/socket';
@@ -46,7 +50,7 @@ export function ChatPanel(): ReactElement {
 
   const close = (): void => setOpen(false);
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>): void => {
+  const handleSubmit = (event: SubmitEvent<HTMLFormElement>): void => {
     event.preventDefault();
     if (!canSend) return;
     setSending(true);
@@ -57,100 +61,88 @@ export function ChatPanel(): ReactElement {
     });
   };
 
-  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>): void => {
-    if (event.key === 'Escape') {
-      event.stopPropagation();
-      close();
-    }
-  };
-
   return (
-    <div className={classNames(styles.root, !isOpen && styles.closed)}>
-      <div className={styles.backdrop} onClick={close} aria-hidden="true" />
-      <div
-        id="room-chat"
-        role="dialog"
-        aria-label={translation.chat.title}
-        className={styles.panel}
-        onKeyDown={handleKeyDown}
-      >
-        <div className={styles.header}>
-          <h3 className={styles.title}>{translation.chat.title}</h3>
-          <Button
-            variant={ButtonVariant.ICON}
-            onClick={close}
-            aria-label={translation.close}
-          >
-            <CloseIcon />
-          </Button>
-        </div>
+    <Modal
+      id="room-chat"
+      open={isOpen}
+      onClose={close}
+      placement="custom"
+      mobilePlacement="bottom"
+      backdrop="mobile"
+      layer="floating"
+      ariaLabel={translation.chat.title}
+      panelClassName={styles.panel}
+    >
+      <ModalHeader
+        className={styles.header}
+        title={translation.chat.title}
+        onClose={close}
+      />
 
-        <ol ref={listRef} className={styles.messages} aria-live="polite">
-          {messages.length === 0 && (
-            <li className={styles.empty}>{translation.chat.empty}</li>
-          )}
-          {messages.map((message, index) => {
-            const isOwn = message.authorId === socketId;
-            const isGrouped =
-              messages[index - 1]?.authorId === message.authorId;
-            return (
-              <li
-                key={message.id}
-                className={classNames(
-                  styles.message,
-                  isOwn && styles.own,
-                  isGrouped && styles.grouped
-                )}
-              >
-                {!isGrouped && (
-                  <span className={styles.author}>
-                    {isOwn ? translation.you : message.authorName}
-                  </span>
-                )}
-                <span className={styles.text}>{message.text}</span>
-              </li>
-            );
-          })}
-        </ol>
-
-        {isSpectator ? (
-          <p className={styles.readOnly}>{translation.chat.readOnly}</p>
-        ) : (
-          <form className={styles.form} onSubmit={handleSubmit}>
-            <input
-              ref={inputRef}
-              className={styles.input}
-              type="text"
-              value={draft}
-              onChange={event => setDraft(event.target.value)}
-              placeholder={translation.chat.placeholder}
-              aria-label={translation.chat.placeholder}
-              maxLength={MAX_LENGTH * 2}
-              autoComplete="off"
-              enterKeyHint="send"
-            />
-            {draftLength > COUNTER_THRESHOLD && (
-              <span
-                className={classNames(
-                  styles.counter,
-                  draftLength > MAX_LENGTH && styles.counterExceeded
-                )}
-              >
-                {MAX_LENGTH - draftLength}
-              </span>
-            )}
-            <Button
-              type="submit"
-              variant={ButtonVariant.ICON}
-              className={styles.send}
-              disabled={!canSend}
-              aria-label={translation.chat.send}
-            >
-              <SendIcon />
-            </Button>
-          </form>
+      <ol ref={listRef} className={styles.messages} aria-live="polite">
+        {messages.length === 0 && (
+          <li className={styles.empty}>{translation.chat.empty}</li>
         )}
-      </div>
-    </div>
+        {messages.map((message, index) => {
+          const isOwn = message.authorId === socketId;
+          const isGrouped = messages[index - 1]?.authorId === message.authorId;
+          return (
+            <li
+              key={message.id}
+              className={classNames(
+                styles.message,
+                isOwn && styles.own,
+                isGrouped && styles.grouped
+              )}
+            >
+              {!isGrouped && (
+                <span className={styles.author}>
+                  {isOwn ? translation.you : message.authorName}
+                </span>
+              )}
+              <span className={styles.text}>{message.text}</span>
+            </li>
+          );
+        })}
+      </ol>
+
+      {isSpectator ? (
+        <p className={styles.readOnly}>{translation.chat.readOnly}</p>
+      ) : (
+        <form className={styles.form} onSubmit={handleSubmit}>
+          <input
+            ref={inputRef}
+            className={styles.input}
+            type="text"
+            value={draft}
+            onChange={event => setDraft(event.target.value)}
+            placeholder={translation.chat.placeholder}
+            aria-label={translation.chat.placeholder}
+            maxLength={MAX_LENGTH * 2}
+            autoComplete="off"
+            enterKeyHint="send"
+          />
+          {draftLength > COUNTER_THRESHOLD && (
+            <span
+              className={classNames(
+                styles.counter,
+                draftLength > MAX_LENGTH && styles.counterExceeded
+              )}
+            >
+              {MAX_LENGTH - draftLength}
+            </span>
+          )}
+          <Button
+            type="submit"
+            variant={ButtonVariant.ICON}
+            className={styles.send}
+            disabled={!canSend}
+            aria-label={translation.chat.send}
+          >
+            <SendIcon />
+          </Button>
+        </form>
+      )}
+    </Modal>
   );
 }

@@ -98,12 +98,10 @@ function PlayerSkills({
         {skillsByType.active.map(renderSkill)}
       </div>
 
-      {detailSkill && (
-        <SkillDetailSheet
-          skill={detailSkill}
-          onClose={() => setDetailSkill(null)}
-        />
-      )}
+      <SkillDetailSheet
+        skill={detailSkill}
+        onClose={() => setDetailSkill(null)}
+      />
     </div>
   );
 }

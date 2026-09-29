@@ -1,6 +1,12 @@
 import { type ReactElement, useEffect, useState } from 'react';
 
-import { Button, CloseIcon, RematchIcon } from '@game/client-core/components';
+import {
+  Button,
+  FloatingButton,
+  Modal,
+  ModalHeader,
+  RematchIcon,
+} from '@game/client-core/components';
 
 import { ButtonVariant } from '@game/client-core/constants';
 import { useLanguage, useRoom, useRoomRole } from '@game/client-core/hooks';
@@ -72,26 +78,6 @@ export function RematchModal(): ReactElement | null {
     mode === 'postGame' || mode === 'midGame' ? t.rematch : t.ready;
   const declineLabel = mode === 'postGame' ? tInGame.lobby : t.decline;
 
-  if (minimized && (mode === 'midGame' || mode === 'postGame')) {
-    const isMidGame = mode === 'midGame';
-    return (
-      <button
-        type="button"
-        className={styles.fab}
-        aria-label={isMidGame ? tInGame.voteTitle : t.expand}
-        title={isMidGame ? tInGame.voteTitle : t.expand}
-        onClick={() => setMinimized(false)}
-      >
-        <RematchIcon />
-        {isMidGame ? (
-          <span className={styles.badge} aria-hidden="true">
-            {readyIds.size}/{currentRoom.players.length}
-          </span>
-        ) : null}
-      </button>
-    );
-  }
-
   const winner =
     mode === 'postGame'
       ? currentRoom.players.find(player => player.id === currentRoom.winner)
@@ -107,24 +93,43 @@ export function RematchModal(): ReactElement | null {
   const showLeave = !isSpectator && mode === 'postGame';
   const showActions = showAccept || showDecline || showLeave;
 
+  const isMidGame = mode === 'midGame';
+  const isMinimized = minimized && showMinimize;
+  const minimize = () => setMinimized(true);
+
   return (
-    <div className={styles.backdrop}>
-      <div className={styles.modal} role="dialog" aria-labelledby="vote-title">
-        <div className={styles.header}>
-          <h3 id="vote-title" className={styles.title}>
-            {title}
-          </h3>
-          {showMinimize ? (
-            <Button
-              variant={ButtonVariant.ICON}
-              aria-label={t.minimize}
-              title={t.minimize}
-              onClick={() => setMinimized(true)}
-            >
-              <CloseIcon />
-            </Button>
-          ) : null}
-        </div>
+    <>
+      {isMinimized ? (
+        <FloatingButton
+          side="right"
+          aria-label={isMidGame ? tInGame.voteTitle : t.expand}
+          title={isMidGame ? tInGame.voteTitle : t.expand}
+          badge={
+            isMidGame
+              ? `${readyIds.size}/${currentRoom.players.length}`
+              : undefined
+          }
+          onClick={() => setMinimized(false)}
+        >
+          <RematchIcon />
+        </FloatingButton>
+      ) : null}
+      <Modal
+        open={!isMinimized}
+        onClose={showMinimize ? minimize : undefined}
+        placement="center"
+        mobilePlacement="bottom"
+        layer="panel"
+        ariaLabelledBy="vote-title"
+        panelClassName={styles.modal}
+      >
+        <ModalHeader
+          className={styles.header}
+          titleId="vote-title"
+          title={title}
+          onClose={showMinimize ? minimize : undefined}
+          closeLabel={t.minimize}
+        />
 
         <div className={styles.body}>
           {winnerName ? (
@@ -165,7 +170,7 @@ export function RematchModal(): ReactElement | null {
             </div>
           ) : null}
         </div>
-      </div>
-    </div>
+      </Modal>
+    </>
   );
 }

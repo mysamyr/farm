@@ -1,0 +1,166 @@
+.root {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-modal);
+  pointer-events: none;
+  visibility: hidden;
+  transition: visibility 0s linear 0.25s;
+}
+
+.root.visible,
+.root.open,
+.root.dragging,
+.root.settling {
+  visibility: visible;
+  transition-delay: 0s;
+}
+
+.layerPanel {
+  z-index: var(--z-panel);
+}
+
+.layerFloating {
+  z-index: var(--z-floating);
+}
+
+.layerSidebar {
+  z-index: var(--z-sidebar);
+}
+
+.layerModal {
+  z-index: var(--z-modal);
+}
+
+/* ─── Backdrop ─────────────────────────────────────────────── */
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  background: var(--overlay-backdrop);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  cursor: default;
+}
+
+.root.dragging .backdrop,
+.root.settling .backdrop {
+  opacity: var(--modal-drag-progress);
+}
+
+.root.open .backdrop {
+  pointer-events: auto;
+  opacity: 1;
+}
+
+/* ─── Panel ────────────────────────────────────────────────── */
+
+.panel {
+  position: fixed;
+  box-sizing: border-box;
+  background: var(--bg-card);
+  color: var(--text-main);
+  box-shadow: var(--shadow-elevation);
+  transition:
+    transform 0.2s ease-out,
+    opacity 0.2s ease-out;
+}
+
+.root.open .panel {
+  pointer-events: auto;
+}
+
+.panel:focus {
+  outline: none;
+}
+
+.panel.center,
+.panel.custom {
+  opacity: 0;
+  transform: translateY(8px) scale(0.98);
+  border: 1px solid var(--border-base);
+  border-radius: var(--radius-lg);
+}
+
+.panel.center {
+  position: relative;
+  max-width: calc(100vw - 32px);
+  max-height: calc(100dvh - 32px);
+  overflow: auto;
+}
+
+.root.open .panel.center,
+.root.open .panel.custom {
+  opacity: 1;
+  transform: none;
+}
+
+.panel.bottom {
+  top: auto;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  max-width: none;
+  max-height: 80dvh;
+  margin: 0;
+  overflow-y: auto;
+  border: 1px solid var(--border-base);
+  border-width: 1px 0 0;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  padding-bottom: env(safe-area-inset-bottom);
+  transform: translateY(100%);
+}
+
+.panel.left,
+.panel.right {
+  top: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.25s ease;
+}
+
+.panel.left {
+  left: 0;
+  transform: translateX(-100%);
+}
+
+.panel.right {
+  right: 0;
+  transform: translateX(100%);
+}
+
+.root.open .panel.bottom,
+.root.open .panel.left,
+.root.open .panel.right {
+  transform: none;
+}
+
+.root.dragging .panel {
+  transition: none;
+}
+
+.root.dragging .panel.right,
+.root.settling .panel.right {
+  transform: translateX(var(--modal-drag-translate));
+}
+
+.root.dragging .panel.left,
+.root.settling .panel.left {
+  transform: translateX(calc(-1 * var(--modal-drag-translate)));
+}
+
+.root.open.settling .panel.right,
+.root.open.settling .panel.left {
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel,
+  .backdrop {
+    transition: none;
+  }
+}

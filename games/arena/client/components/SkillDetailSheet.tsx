@@ -1,23 +1,14 @@
-import { memo, type ReactElement } from 'react';
+import { memo, type ReactElement, useState } from 'react';
 
-import { useGameOverlay } from '@game/client-core/hooks';
+import { Modal, ModalHeader } from '@game/client-core/components';
 
 import type { Skill } from '@game/game-arena/shared';
 
-import {
-  getSkillAppliedEffects,
-  getSkillCooldownText,
-  getSkillEffects,
-  getSkillIcon,
-  getSkillName,
-} from '../constants/index.js';
-import { useArenaTranslation } from '../hooks/useArenaTranslation.js';
-
-import EffectDescription from './EffectDescription.js';
+import SkillDetails, { SkillTitle } from './SkillDetails.js';
 import styles from './SkillDetailSheet.module.css';
 
 type SkillDetailSheetProps = {
-  skill: Skill;
+  skill: Skill | null;
   onClose: () => void;
 };
 
@@ -25,48 +16,30 @@ function SkillDetailSheet({
   skill,
   onClose,
 }: SkillDetailSheetProps): ReactElement {
-  const t = useArenaTranslation();
-  useGameOverlay();
-
-  const icon = getSkillIcon(skill.id);
-  const name = getSkillName(skill.id, t.skillNames);
-  const effects = getSkillEffects(
-    skill,
-    t.skillEffectLabels,
-    t.statLabels,
-    t.effectLabels,
-    t.util
-  );
-  const cooldownText = getSkillCooldownText(skill, t.skillEffectLabels);
-  const appliedEffects = getSkillAppliedEffects(skill);
+  // Keep the last skill rendered while the sheet animates out.
+  const [shownSkill, setShownSkill] = useState(skill);
+  if (skill && skill !== shownSkill) {
+    setShownSkill(skill);
+  }
 
   return (
-    <>
-      <div className={styles.overlay} onClick={onClose} />
-      <div className={styles.sheet}>
-        <div className={styles.sheetHeader}>
-          <span className={styles.sheetIcon}>{icon}</span>
-          <span className={styles.sheetName}>{name}</span>
+    <Modal
+      open={skill !== null}
+      onClose={onClose}
+      placement="bottom"
+      layer="panel"
+    >
+      {shownSkill && (
+        <div className={styles.content}>
+          <ModalHeader
+            className={styles.header}
+            title={<SkillTitle skill={shownSkill} />}
+            onClose={onClose}
+          />
+          <SkillDetails skill={shownSkill} />
         </div>
-        <ul className={styles.sheetEffects}>
-          {effects.map((e, i) => (
-            <li key={i}>{e}</li>
-          ))}
-          {cooldownText && (
-            <li key="cooldown" className={styles.sheetCooldown}>
-              {cooldownText}
-            </li>
-          )}
-        </ul>
-        {appliedEffects.length > 0 && (
-          <div className={styles.sheetEffectDetails}>
-            {appliedEffects.map(effectId => (
-              <EffectDescription key={effectId} effectId={effectId} />
-            ))}
-          </div>
-        )}
-      </div>
-    </>
+      )}
+    </Modal>
   );
 }
 

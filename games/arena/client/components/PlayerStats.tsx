@@ -1,4 +1,4 @@
-import { memo, useEffect, useRef, useState, type ReactElement } from 'react';
+import { memo, type ReactElement } from 'react';
 
 import { classNames } from '@game/client-core/utils';
 
@@ -64,31 +64,6 @@ function PlayerStatsDisplay({
   onSelect,
 }: PlayerStatsProps): ReactElement {
   const t = useArenaTranslation();
-  const [openStatusKey, setOpenStatusKey] = useState<string | null>(null);
-  const statusListRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (openStatusKey === null) return;
-
-    const handlePointerDown = (event: MouseEvent | TouchEvent) => {
-      const target = event.target as Node | null;
-      if (target && statusListRef.current?.contains(target)) return;
-      setOpenStatusKey(null);
-    };
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setOpenStatusKey(null);
-    };
-
-    document.addEventListener('mousedown', handlePointerDown);
-    document.addEventListener('touchstart', handlePointerDown);
-    document.addEventListener('keydown', handleKeyDown);
-    return () => {
-      document.removeEventListener('mousedown', handlePointerDown);
-      document.removeEventListener('touchstart', handlePointerDown);
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [openStatusKey]);
-
   const getStatusLabel = (status: StatusEffect): string => {
     const effectId = status.type as EffectId;
     const label = `${getEffectIcon(effectId)} ${
@@ -187,7 +162,7 @@ function PlayerStatsDisplay({
         ))}
       </div>
       {showStatuses && visibleStatuses.length > 0 && (
-        <div className={styles.statusList} ref={statusListRef}>
+        <div className={styles.statusList}>
           {visibleStatuses.map((status, i) => {
             const key = `${status.type}-${i}`;
             const effectId = status.type as EffectId;
@@ -202,13 +177,7 @@ function PlayerStatsDisplay({
             }
 
             return (
-              <EffectTooltip
-                key={key}
-                effectId={effectId}
-                label={label}
-                open={openStatusKey === key}
-                onOpenChange={next => setOpenStatusKey(next ? key : null)}
-              />
+              <EffectTooltip key={key} effectId={effectId} label={label} />
             );
           })}
         </div>

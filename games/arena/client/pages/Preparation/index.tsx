@@ -469,12 +469,10 @@ function PreparationPlayer({ room }: PreparationProps): ReactElement {
         </div>
       )}
 
-      {detailSkill && (
-        <SkillDetailSheet
-          skill={detailSkill}
-          onClose={() => setDetailSkill(null)}
-        />
-      )}
+      <SkillDetailSheet
+        skill={detailSkill}
+        onClose={() => setDetailSkill(null)}
+      />
     </div>
   );
 }

@@ -6,3 +6,4 @@ export function classNames(
 
 export * from './identity.js';
 export * from './language.js';
+export * from './overlay.js';
