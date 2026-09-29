@@ -1,0 +1,50 @@
+.wrapper {
+  position: relative;
+  display: inline-flex;
+}
+
+.badge {
+  font-family: inherit;
+  font-size: 0.72rem;
+  padding: 2px 7px;
+  border: none;
+  border-radius: 99px;
+  background: var(--bg-surface-subtle);
+  color: var(--text-muted);
+  cursor: help;
+}
+
+.tooltip {
+  position: absolute;
+  z-index: 4;
+  width: max-content;
+  max-width: 200px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-base);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-elevation);
+  padding: 8px 10px;
+  text-align: left;
+  pointer-events: none;
+}
+
+.tooltipAbove {
+  bottom: calc(100% + 6px);
+}
+
+.tooltipBelow {
+  top: calc(100% + 6px);
+}
+
+.tooltipAlignCenter {
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.tooltipAlignLeft {
+  left: -4px;
+}
+
+.tooltipAlignRight {
+  right: -4px;
+}

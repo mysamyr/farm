@@ -115,7 +115,7 @@
   position: absolute;
   z-index: 3;
   width: max-content;
-  max-width: 180px;
+  max-width: 230px;
   background: var(--bg-card);
   border: 1px solid var(--border-base);
   border-radius: var(--radius-sm);
@@ -204,4 +204,13 @@
   background: var(--bg-surface-subtle);
   padding: 1px 5px;
   border-radius: 99px;
+}
+
+.tooltipEffectDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid var(--border-base);
 }

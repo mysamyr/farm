@@ -196,6 +196,19 @@ function formatAction(
   }
 }
 
+export function getSkillAppliedEffects(skill: Skill): EffectId[] {
+  const effects: EffectId[] = [];
+  for (const action of skill.actions) {
+    if (
+      action.type === ActionType.APPLY_STATUS &&
+      !effects.includes(action.status)
+    ) {
+      effects.push(action.status);
+    }
+  }
+  return effects;
+}
+
 export function getSkillCooldownText(
   skill: Skill,
   labels: ArenaSkillEffectLabelsTranslation

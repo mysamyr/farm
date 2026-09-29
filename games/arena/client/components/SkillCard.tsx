@@ -11,6 +11,7 @@ import { classNames } from '@game/client-core/utils';
 import { type Skill, type SkillId, SkillType } from '@game/game-arena/shared';
 
 import {
+  getSkillAppliedEffects,
   getSkillEffects,
   getSkillIcon,
   getSkillName,
@@ -18,6 +19,7 @@ import {
 } from '../constants/index.js';
 import { useArenaTranslation } from '../hooks/useArenaTranslation.js';
 
+import EffectDescription from './EffectDescription.js';
 import styles from './SkillCard.module.css';
 
 type TooltipPosition = 'above' | 'below';
@@ -93,6 +95,7 @@ function SkillCard({
     t.util
   );
   const cooldownText = getSkillCooldownText(skill, t.skillEffectLabels);
+  const appliedEffects = getSkillAppliedEffects(skill);
 
   return (
     <div
@@ -151,6 +154,13 @@ function SkillCard({
             </ul>
           ) : (
             <p className={styles.tooltipEmpty}>No effects</p>
+          )}
+          {appliedEffects.length > 0 && (
+            <div className={styles.tooltipEffectDetails}>
+              {appliedEffects.map(effectId => (
+                <EffectDescription key={effectId} effectId={effectId} compact />
+              ))}
+            </div>
           )}
         </div>
       )}

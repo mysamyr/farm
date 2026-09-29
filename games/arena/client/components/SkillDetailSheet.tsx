@@ -1,8 +1,11 @@
 import { memo, type ReactElement } from 'react';
 
+import { useGameOverlay } from '@game/client-core/hooks';
+
 import type { Skill } from '@game/game-arena/shared';
 
 import {
+  getSkillAppliedEffects,
   getSkillCooldownText,
   getSkillEffects,
   getSkillIcon,
@@ -10,6 +13,7 @@ import {
 } from '../constants/index.js';
 import { useArenaTranslation } from '../hooks/useArenaTranslation.js';
 
+import EffectDescription from './EffectDescription.js';
 import styles from './SkillDetailSheet.module.css';
 
 type SkillDetailSheetProps = {
@@ -22,6 +26,7 @@ function SkillDetailSheet({
   onClose,
 }: SkillDetailSheetProps): ReactElement {
   const t = useArenaTranslation();
+  useGameOverlay();
 
   const icon = getSkillIcon(skill.id);
   const name = getSkillName(skill.id, t.skillNames);
@@ -33,6 +38,7 @@ function SkillDetailSheet({
     t.util
   );
   const cooldownText = getSkillCooldownText(skill, t.skillEffectLabels);
+  const appliedEffects = getSkillAppliedEffects(skill);
 
   return (
     <>
@@ -52,6 +58,13 @@ function SkillDetailSheet({
             </li>
           )}
         </ul>
+        {appliedEffects.length > 0 && (
+          <div className={styles.sheetEffectDetails}>
+            {appliedEffects.map(effectId => (
+              <EffectDescription key={effectId} effectId={effectId} />
+            ))}
+          </div>
+        )}
       </div>
     </>
   );

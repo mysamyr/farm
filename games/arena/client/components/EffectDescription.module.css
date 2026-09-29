@@ -1,0 +1,38 @@
+.effect {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.icon {
+  font-size: 1rem;
+}
+
+.name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.text {
+  margin: 0;
+  font-size: 0.8rem;
+  line-height: 1.35;
+  color: var(--text-muted);
+}
+
+.compact {
+  font-size: 0.72rem;
+  line-height: 1.3;
+}
+
+.compactName {
+  font-weight: 600;
+  color: var(--text-main);
+}

@@ -137,3 +137,19 @@ export const useModalStore = create<ModalSlice>((set, get) => ({
     }, 200);
   },
 }));
+
+// ─── Game overlay ────────────────────────────────────────────────────────────
+
+interface GameOverlaySlice {
+  /** Number of game overlays (sheets, popovers) currently mounted. */
+  count: number;
+  openGameOverlay: () => void;
+  closeGameOverlay: () => void;
+}
+
+export const useGameOverlayStore = create<GameOverlaySlice>(set => ({
+  count: 0,
+  openGameOverlay: () => set(state => ({ count: state.count + 1 })),
+  closeGameOverlay: () =>
+    set(state => ({ count: Math.max(0, state.count - 1) })),
+}));
