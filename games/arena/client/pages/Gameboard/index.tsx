@@ -4,6 +4,7 @@ import { useRoom, useRoomRole } from '@game/client-core/hooks';
 
 import { type Room } from '@game/game-arena/shared';
 
+import { SkillDetailProvider } from '../../components/SkillDetailProvider.js';
 import { isAllPlayersReady } from '../../utils/index.js';
 
 import Fight from '../Fight/index.js';
@@ -11,7 +12,7 @@ import Preparation from '../Preparation/index.js';
 
 import styles from './Gameboard.module.css';
 
-export default function Gameboard(): ReactElement {
+function GameboardContent(): ReactElement {
   const { currentRoom: rawCurrentRoom } = useRoom();
   const { isSpectator } = useRoomRole();
   const currentRoom = rawCurrentRoom as unknown as Room | null;
@@ -30,5 +31,13 @@ export default function Gameboard(): ReactElement {
         <Fight room={currentRoom} isSpectator={isSpectator} />
       )}
     </div>
+  );
+}
+
+export default function Gameboard(): ReactElement {
+  return (
+    <SkillDetailProvider>
+      <GameboardContent />
+    </SkillDetailProvider>
   );
 }

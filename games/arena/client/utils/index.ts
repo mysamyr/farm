@@ -1,7 +1,9 @@
 import { getSocketId } from '@game/client-core/socket';
 
 import {
+  ActionTarget,
   DEFAULT_PLAYER_STATS,
+  LogEffectKind,
   type Player,
   type Room,
   type SkillId,
@@ -32,7 +34,7 @@ export function getActivePlayerId(room: Room): string | undefined {
 }
 
 export function isPlayerEliminated(player: Player): boolean {
-  return player.eliminated === true;
+  return player.eliminated;
 }
 
 /** Players in turn order, skipping ids that are no longer in the room. */
@@ -76,4 +78,47 @@ export function getPreviewPlayer(player: Player, skillIds: SkillId[]): Player {
     hp: DEFAULT_PLAYER_STATS.hp,
     statuses: getStatusesFromSkills(skillIds, player),
   };
+}
+
+/**
+ * Animation keys for a player card. A key changes whenever a new combat step
+ * affects that player, which lets the UI restart the matching CSS animation.
+ */
+export type PlayerFxKeys = {
+  crit?: string;
+  strike?: string;
+  heal?: string;
+};
+
+/**
+ * Derives card animation keys from the latest combat step. Only direct damage
+ * and direct heals are considered; damage-over-time, lifesteal and regeneration
+ * ticks do not animate.
+ */
+export function getPlayerFxKeys(
+  room: Room | undefined,
+  playerId: string
+): PlayerFxKeys | undefined {
+  const lastStep = room?.steps.at(-1);
+  if (!lastStep) return undefined;
+
+  const key = `${lastStep.step}-${playerId}`;
+  const fx: PlayerFxKeys = {};
+
+  for (const effect of lastStep.effects) {
+    const targetId =
+      effect.target === ActionTarget.self
+        ? lastStep.playerId
+        : lastStep.targetId;
+    if (targetId !== playerId) continue;
+
+    if (effect.kind === LogEffectKind.damage) {
+      fx.strike = key;
+      if (effect.isCrit) fx.crit = key;
+    } else if (effect.kind === LogEffectKind.heal) {
+      fx.heal = key;
+    }
+  }
+
+  return fx.crit || fx.strike || fx.heal ? fx : undefined;
 }

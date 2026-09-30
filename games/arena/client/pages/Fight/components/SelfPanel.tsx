@@ -3,7 +3,10 @@ import { memo, type ReactElement } from 'react';
 import { type Player, type SkillId } from '../../../../shared/index.js';
 
 import PlayerStatsDisplay from '../../../components/PlayerStats.js';
-import { isPlayerEliminated } from '../../../utils/index.js';
+import {
+  isPlayerEliminated,
+  type PlayerFxKeys,
+} from '../../../utils/index.js';
 
 import PlayerSkills from './PlayerSkills.js';
 import styles from './SelfPanel.module.css';
@@ -16,7 +19,7 @@ type SelfPanelProps = {
   isStunned: boolean;
   isGameOver: boolean;
   isWinner: boolean;
-  critHitEventKey?: string;
+  fx?: PlayerFxKeys;
   onUseSkill: (skillId: SkillId) => void;
 };
 
@@ -28,7 +31,7 @@ function SelfPanel({
   isStunned,
   isGameOver,
   isWinner,
-  critHitEventKey,
+  fx,
   onUseSkill,
 }: SelfPanelProps): ReactElement {
   const eliminated = isPlayerEliminated(player);
@@ -42,7 +45,7 @@ function SelfPanel({
           isSelf
           isActive={isActive}
           isEliminated={eliminated}
-          critHitEventKey={critHitEventKey}
+          fx={fx}
           isWinner={isWinner}
           isMatchEnded={isGameOver}
         />

@@ -18,15 +18,12 @@ import {
   type PassiveSkill,
   type Player,
   type Room,
-  type Skill,
   type SkillId,
   SkillType,
 } from '@game/game-arena/shared';
 
 import PlayerStatsDisplay from '../../components/PlayerStats.js';
 import SkillCard from '../../components/SkillCard.js';
-import SkillDetailSheet from '../../components/SkillDetailSheet.js';
-import SpectatorSkills from '../../components/SpectatorSkills.js';
 import { getSkillIcon, getSkillName } from '../../constants/index.js';
 import { useArenaTranslation } from '../../hooks/useArenaTranslation.js';
 import { getCurrentPlayer, getPreviewPlayer } from '../../utils/index.js';
@@ -75,8 +72,8 @@ function SpectatorPreparation({ room }: PreparationProps): ReactElement {
                 isActive={false}
                 isEliminated={false}
                 isMatchEnded={false}
+                showSkills={player.ready}
               />
-              {player.ready && <SpectatorSkills player={player} />}
             </section>
           ))}
         </div>
@@ -92,7 +89,6 @@ function PreparationPlayer({ room }: PreparationProps): ReactElement {
   const [selectedActives, setSelectedActives] = useState<SkillId[]>([]);
   const [selectedHealing, setSelectedHealing] = useState<SkillId[]>([]);
   const [selectedPassives, setSelectedPassives] = useState<SkillId[]>([]);
-  const [detailSkill, setDetailSkill] = useState<Skill | null>(null);
 
   const isGameOver =
     !!room && (room.state === ROOM_STATES.FINISHED || Boolean(room.winner));
@@ -394,7 +390,6 @@ function PreparationPlayer({ room }: PreparationProps): ReactElement {
                 (!selectedActives.includes(skill.id) && activeSlotsFull)
               }
               onClick={handleSelectActive}
-              onOpenDetail={setDetailSkill}
             />
           ))}
         </div>
@@ -415,7 +410,6 @@ function PreparationPlayer({ room }: PreparationProps): ReactElement {
                 (!selectedHealing.includes(skill.id) && healingSlotsFull)
               }
               onClick={handleSelectHealing}
-              onOpenDetail={setDetailSkill}
             />
           ))}
         </div>
@@ -436,7 +430,6 @@ function PreparationPlayer({ room }: PreparationProps): ReactElement {
                 (!selectedPassives.includes(skill.id) && passiveSlotsFull)
               }
               onClick={handleSelectPassive}
-              onOpenDetail={setDetailSkill}
             />
           ))}
         </div>
@@ -467,10 +460,6 @@ function PreparationPlayer({ room }: PreparationProps): ReactElement {
         </div>
       )}
 
-      <SkillDetailSheet
-        skill={detailSkill}
-        onClose={() => setDetailSkill(null)}
-      />
     </div>
   );
 }

@@ -1,28 +1,48 @@
-import { memo, type ReactElement } from 'react';
+import {
+  memo,
+  useEffect,
+  useState,
+  type CSSProperties,
+  type ReactElement,
+} from 'react';
 
 import { classNames } from '@game/client-core/utils';
 
 import {
   getPlayerMaxHp,
   type Player,
+  SKILLS,
   StatId,
   type StatusEffect,
   EffectId,
+  SkillType,
 } from '@game/game-arena/shared';
 
 import { formatEffectValue, getEffectIcon } from '../constants/index.js';
 import { useArenaTranslation } from '../hooks/useArenaTranslation.js';
-import { getPlayerStats } from '../utils/index.js';
+import { getPlayerStats, type PlayerFxKeys } from '../utils/index.js';
 
 import EffectTooltip from './EffectTooltip.js';
 import HealthBar from './HealthBar.js';
 import styles from './PlayerStats.module.css';
+import SkillCard from './SkillCard.js';
 
 const GRID_STATS: StatId[] = [
   StatId.attack,
   StatId.armor,
   StatId.crit,
   StatId.dodge,
+];
+
+const STRIKE_ANIMATION_MS = 450;
+
+/** Fixed spread of the floating heal crosses: horizontal %, scale, start delay. */
+const HEAL_CROSSES = [
+  { x: 18, scale: 0.8, delay: 0 },
+  { x: 38, scale: 1.15, delay: 140 },
+  { x: 55, scale: 0.65, delay: 70 },
+  { x: 72, scale: 1, delay: 240 },
+  { x: 88, scale: 0.85, delay: 350 },
 ];
 
 function getStatIcon(label: string): string {
@@ -38,12 +58,13 @@ type PlayerStatsProps = {
   player: Player;
   turnOrder?: number;
   isActive: boolean;
-  critHitEventKey?: string;
+  fx?: PlayerFxKeys;
   isWinner?: boolean;
   isMatchEnded?: boolean;
   isSelf?: boolean;
   isTarget?: boolean;
   isEliminated?: boolean;
+  showSkills?: boolean;
   onSelect?: (playerId: string) => void;
 };
 
@@ -51,12 +72,13 @@ function PlayerStatsDisplay({
   player,
   turnOrder,
   isActive,
-  critHitEventKey,
+  fx,
   isWinner = false,
   isMatchEnded = false,
   isSelf = false,
   isTarget = false,
   isEliminated = false,
+  showSkills = false,
   onSelect,
 }: PlayerStatsProps): ReactElement {
   const t = useArenaTranslation();
@@ -65,6 +87,23 @@ function PlayerStatsDisplay({
     s => !StatId[s.type as StatId]
   );
   const selectable = Boolean(onSelect) && !isEliminated;
+
+  const strikeKey = fx?.strike;
+  const [isShaking, setIsShaking] = useState(false);
+
+  // Re-trigger the shake on every new strike instead of relying on a class
+  // toggle, which would not restart the animation for consecutive hits.
+  useEffect(() => {
+    if (!strikeKey) return;
+
+    setIsShaking(true);
+    const timer = setTimeout(() => setIsShaking(false), STRIKE_ANIMATION_MS);
+
+    return () => {
+      clearTimeout(timer);
+      setIsShaking(false);
+    };
+  }, [strikeKey]);
 
   const getStatusLabel = (status: StatusEffect): string => {
     const effectId = status.type as EffectId;
@@ -91,7 +130,8 @@ function PlayerStatsDisplay({
         isSelf && styles.self,
         isTarget && styles.target,
         isEliminated && styles.eliminated,
-        selectable && styles.selectable
+        selectable && styles.selectable,
+        isShaking && styles.shake
       )}
       onClick={selectable ? handleSelect : undefined}
       role={selectable ? 'button' : undefined}
@@ -107,20 +147,35 @@ function PlayerStatsDisplay({
           : undefined
       }
     >
-      {critHitEventKey && (
+      {fx?.crit && (
         <span
-          key={`${critHitEventKey}-flash`}
+          key={`${fx.crit}-flash`}
           className={styles.critFlash}
           aria-hidden
         />
       )}
-      {critHitEventKey && (
-        <span
-          key={`${critHitEventKey}-text`}
-          className={styles.critText}
-          aria-hidden
-        >
+      {fx?.crit && (
+        <span key={`${fx.crit}-text`} className={styles.critText} aria-hidden>
           CRIT
+        </span>
+      )}
+      {fx?.heal && (
+        <span key={`${fx.heal}-heal`} className={styles.healBurst} aria-hidden>
+          {HEAL_CROSSES.map((cross, index) => (
+            <span
+              key={index}
+              className={styles.healCross}
+              style={
+                {
+                  '--heal-x': `${cross.x}%`,
+                  '--heal-scale': String(cross.scale),
+                  '--heal-delay': `${cross.delay}ms`,
+                } as CSSProperties
+              }
+            >
+              ✚
+            </span>
+          ))}
         </span>
       )}
       <div className={styles.header}>
@@ -183,6 +238,31 @@ function PlayerStatsDisplay({
                 effectId={effectId}
                 label={label}
                 value={status.value}
+              />
+            );
+          })}
+        </div>
+      )}
+      {(showSkills || isEliminated || isMatchEnded) && player.loadout.length > 0 && (
+        <div className={styles.skillsGrid}>
+          {player.loadout.map(skillId => {
+            const skill = SKILLS[skillId];
+            if (!skill) return null;
+
+            const cooldown =
+              skill.type === SkillType.passive
+                ? undefined
+                : player.skills.find(playerSkill => playerSkill.id === skill.id)
+                    ?.cooldown;
+
+            return (
+              <SkillCard
+                key={skill.id}
+                skill={skill}
+                cooldown={cooldown}
+                showCooldown={skill.type !== SkillType.passive}
+                disabled
+                onClick={() => undefined}
               />
             );
           })}

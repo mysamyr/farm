@@ -1,15 +1,15 @@
-import { type ReactElement, memo, useMemo, useState } from 'react';
+import { type ReactElement, memo, useMemo } from 'react';
+
+import { noop } from '@game/client-core/utils';
 
 import {
   type Player,
-  type Skill,
   SkillId,
   SKILLS,
   SkillType,
 } from '../../../../shared/index.js';
 
 import SkillCard from '../../../components/SkillCard.js';
-import SkillDetailSheet from '../../../components/SkillDetailSheet.js';
 import { useArenaTranslation } from '../../../hooks/useArenaTranslation.js';
 
 import styles from './PlayerSkills.module.css';
@@ -23,8 +23,6 @@ type PlayerSkillsProps = {
   onUseSkill?: (skillId: SkillId) => void;
 };
 
-const noopUseSkill = (_skillId: SkillId): void => undefined;
-
 function PlayerSkills({
   player,
   isMyTurn,
@@ -34,7 +32,6 @@ function PlayerSkills({
   onUseSkill,
 }: PlayerSkillsProps): ReactElement {
   const t = useArenaTranslation();
-  const [detailSkill, setDetailSkill] = useState<Skill | null>(null);
 
   const skillsByType = useMemo(() => {
     const baseSkillIds = new Set([SkillId.attack, SkillId.skip]);
@@ -77,8 +74,7 @@ function PlayerSkills({
         skill={skillDef}
         cooldown={playerSkill.cooldown}
         disabled={skillDisabled}
-        onClick={onUseSkill ?? noopUseSkill}
-        onOpenDetail={setDetailSkill}
+        onClick={onUseSkill ?? noop}
       />
     );
   };
@@ -98,10 +94,6 @@ function PlayerSkills({
         {skillsByType.active.map(renderSkill)}
       </div>
 
-      <SkillDetailSheet
-        skill={detailSkill}
-        onClose={() => setDetailSkill(null)}
-      />
     </div>
   );
 }

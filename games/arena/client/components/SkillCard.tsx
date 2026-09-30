@@ -9,6 +9,7 @@ import { getSkillIcon, getSkillName } from '../constants/index.js';
 import { useArenaTranslation } from '../hooks/useArenaTranslation.js';
 
 import styles from './SkillCard.module.css';
+import { useSkillDetails } from './SkillDetailProvider.js';
 import SkillDetails, { SkillTitle } from './SkillDetails.js';
 
 type SkillCardProps = {
@@ -16,9 +17,8 @@ type SkillCardProps = {
   selected?: boolean;
   disabled: boolean;
   cooldown?: number; // active CD in fight phase
-  alwaysShowCooldown?: boolean;
+  showCooldown?: boolean;
   onClick: (skillId: SkillId) => void;
-  onOpenDetail: (skill: Skill) => void;
 };
 
 function SkillCard({
@@ -26,11 +26,11 @@ function SkillCard({
   selected,
   disabled,
   cooldown,
-  alwaysShowCooldown = false,
+  showCooldown = false,
   onClick,
-  onOpenDetail,
 }: SkillCardProps): ReactElement {
-  const t = useArenaTranslation();
+  const { skillNames, skillInfoLabel } = useArenaTranslation();
+  const openSkillDetails = useSkillDetails();
   const onCooldown = cooldown !== undefined && cooldown > 0;
 
   const handleCardClick = () => {
@@ -40,7 +40,7 @@ function SkillCard({
 
   const handleInfoClick = (event: MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
-    onOpenDetail(skill);
+    openSkillDetails(skill);
   };
 
   return (
@@ -69,15 +69,15 @@ function SkillCard({
     >
       <span className={styles.icon}>{getSkillIcon(skill.id)}</span>
       <span className={styles.name}>
-        {getSkillName(skill.id, t.skillNames)}
+        {getSkillName(skill.id, skillNames)}
       </span>
-      {(onCooldown || (alwaysShowCooldown && cooldown !== undefined)) && (
+      {(onCooldown || (showCooldown && cooldown !== undefined)) && (
         <span className={styles.cooldownBadge}>⏳ {cooldown}</span>
       )}
       <button
         type="button"
         className={styles.infoButton}
-        aria-label={t.skillInfoLabel}
+        aria-label={skillInfoLabel}
         onClick={handleInfoClick}
       >
         i

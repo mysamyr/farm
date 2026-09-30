@@ -51,6 +51,33 @@
   cursor: pointer;
 }
 
+.card.shake {
+  animation: cardShake 450ms ease-in-out;
+}
+
+.healBurst {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.healCross {
+  position: absolute;
+  bottom: 12%;
+  left: var(--heal-x);
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--status-success);
+  text-shadow: 0 0 8px
+    color-mix(in srgb, var(--status-success) 60%, transparent);
+  opacity: 0;
+  animation: healFloat 1000ms linear var(--heal-delay) forwards;
+}
+
 @media (hover: hover) {
   .card.selectable:hover {
     transform: translateY(-1px);
@@ -185,6 +212,12 @@
   color: var(--text-muted);
 }
 
+.skillsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
 @keyframes critCardFlash {
   0% {
     opacity: 0;
@@ -222,9 +255,49 @@
   }
 }
 
+@keyframes cardShake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  15% {
+    transform: translateX(-4px) rotate(-0.4deg);
+  }
+  35% {
+    transform: translateX(3px) rotate(0.3deg);
+  }
+  55% {
+    transform: translateX(-2px) rotate(-0.2deg);
+  }
+  80% {
+    transform: translateX(1px);
+  }
+}
+
+/* Transform is declared only at the endpoints so the crosses rise at a constant
+   speed; opacity keyframes handle the fade in/out independently. */
+@keyframes healFloat {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 0) scale(var(--heal-scale));
+  }
+  15% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -68px) scale(var(--heal-scale));
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .critFlash,
-  .critText {
+  .critText,
+  .card.shake,
+  .healCross {
     animation-duration: 1ms;
   }
 }

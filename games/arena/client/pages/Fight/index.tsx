@@ -12,16 +12,9 @@ import { emitGameEvent, getSocketId } from '@game/client-core/socket';
 
 import { EVENTS, ROOM_STATES } from '@game/shared/constants';
 
-import {
-  ActionTarget,
-  EffectId,
-  LogEffectKind,
-  type Player,
-  type Room,
-} from '@game/game-arena/shared';
+import { EffectId, type Player, type Room } from '@game/game-arena/shared';
 
 import PlayerStatsDisplay from '../../components/PlayerStats.js';
-import SpectatorSkills from '../../components/SpectatorSkills.js';
 
 import { useArenaTranslation } from '../../hooks/useArenaTranslation.js';
 
@@ -29,7 +22,9 @@ import {
   getActivePlayerId,
   getDefaultTargetId,
   getOpponentsInTurnOrder,
+  getPlayerFxKeys,
   isPlayerEliminated,
+  type PlayerFxKeys,
 } from '../../utils/index.js';
 
 import BattleLog from './components/BattleLog.js';
@@ -43,6 +38,8 @@ type FightProps = {
 
 function SpectatorFight({ room }: FightProps): ReactElement {
   const activePlayerId = getActivePlayerId(room);
+  const isMatchEnded =
+    room.state === ROOM_STATES.FINISHED || Boolean(room.winner);
   const playersInTurnOrder = room.order
     .map(id => room.players.find(player => player.id === id))
     .filter((player): player is Player => Boolean(player));
@@ -59,9 +56,9 @@ function SpectatorFight({ room }: FightProps): ReactElement {
                 isActive={activePlayerId === player.id}
                 isEliminated={isPlayerEliminated(player)}
                 isWinner={room.winner === player.id}
-                isMatchEnded={Boolean(room.winner)}
+                isMatchEnded={isMatchEnded}
+                showSkills
               />
-              <SpectatorSkills player={player} />
             </section>
           ))}
         </div>
@@ -77,24 +74,18 @@ function FightPlayer({ room }: FightProps): ReactElement {
   const { showSnackbar } = useSnackbar();
   const t = useArenaTranslation();
 
-  const getCritHitEventKey = useCallback(
-    (playerId: string): string | undefined => {
-      const lastStep = room?.steps.at(-1);
-      if (!lastStep) return undefined;
+  // Cached per room update so cards keep a stable `fx` reference and stay memoized.
+  const fxByPlayerId = useMemo(() => {
+    const map = new Map<string, PlayerFxKeys | undefined>();
+    for (const player of room.players) {
+      map.set(player.id, getPlayerFxKeys(room, player.id));
+    }
+    return map;
+  }, [room]);
 
-      const gotCritHit = lastStep.effects.some(effect => {
-        if (effect.kind !== LogEffectKind.damage || !effect.isCrit)
-          return false;
-        const targetId =
-          effect.target === ActionTarget.self
-            ? lastStep.playerId
-            : lastStep.targetId;
-        return targetId === playerId;
-      });
-
-      return gotCritHit ? `${lastStep.step}-${playerId}` : undefined;
-    },
-    [room]
+  const getPlayerFx = useCallback(
+    (playerId: string): PlayerFxKeys | undefined => fxByPlayerId.get(playerId),
+    [fxByPlayerId]
   );
   const hasStun = (player: Player | undefined): boolean =>
     Boolean(
@@ -161,7 +152,10 @@ function FightPlayer({ room }: FightProps): ReactElement {
     !!room && (room.state === ROOM_STATES.FINISHED || Boolean(room.winner));
   const isSelfEliminated = self ? isPlayerEliminated(self) : false;
   const isMyTurn =
-    !isGameOver && !isSelfEliminated && activePlayerId === socketId;
+    room.state === ROOM_STATES.RUNNING &&
+    !isGameOver &&
+    !isSelfEliminated &&
+    activePlayerId === socketId;
 
   const handleUseSkill = useCallback(
     (skillId: string) => {
@@ -203,7 +197,7 @@ function FightPlayer({ room }: FightProps): ReactElement {
             selectedTargetId={selectedTargetId}
             winnerId={room.winner}
             isMatchEnded={isGameOver}
-            getCritHitEventKey={getCritHitEventKey}
+            getPlayerFx={getPlayerFx}
             onSelectTarget={setSelectedTargetId}
           />
 
@@ -216,7 +210,7 @@ function FightPlayer({ room }: FightProps): ReactElement {
               isStunned={hasStun(self)}
               isGameOver={isGameOver}
               isWinner={room.winner === self.id}
-              critHitEventKey={getCritHitEventKey(self.id)}
+              fx={getPlayerFx(self.id)}
               onUseSkill={handleUseSkill}
             />
           )}

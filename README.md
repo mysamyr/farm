@@ -1,8 +1,8 @@
 # Game Hub project
 
-- [ ] currently statistic is purely client-side. move to server once auth will be added for only registered players. Game-specific statistics.
+- [ ] add auth
+  - [ ] move statistics collection to api
+- [ ] game-specific statistics
 - [ ] generate README.md
-- [ ] add password-protected rooms ?
-- [ ] Single player games ?
-
-ARENA - після завершення бою показати вибрані навички всіх гравців (показати одразу для полеглих)
+- [ ] ? add password-protected rooms
+- [ ] ? Single player games

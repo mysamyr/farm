@@ -4,7 +4,10 @@ import { type Player } from '../../../../shared/index.js';
 
 import PlayerStatsDisplay from '../../../components/PlayerStats.js';
 import { useArenaTranslation } from '../../../hooks/useArenaTranslation.js';
-import { isPlayerEliminated } from '../../../utils/index.js';
+import {
+  isPlayerEliminated,
+  type PlayerFxKeys,
+} from '../../../utils/index.js';
 
 import styles from './OpponentsZone.module.css';
 
@@ -15,7 +18,7 @@ type OpponentsZoneProps = {
   selectedTargetId?: string;
   winnerId?: string;
   isMatchEnded: boolean;
-  getCritHitEventKey: (playerId: string) => string | undefined;
+  getPlayerFx: (playerId: string) => PlayerFxKeys | undefined;
   onSelectTarget: (playerId: string) => void;
 };
 
@@ -26,7 +29,7 @@ function OpponentsZone({
   selectedTargetId,
   winnerId,
   isMatchEnded,
-  getCritHitEventKey,
+  getPlayerFx,
   onSelectTarget,
 }: OpponentsZoneProps): ReactElement {
   const t = useArenaTranslation();
@@ -55,7 +58,7 @@ function OpponentsZone({
               isActive={activePlayerId === opponent.id}
               isTarget={isTarget}
               isEliminated={eliminated}
-              critHitEventKey={getCritHitEventKey(opponent.id)}
+              fx={getPlayerFx(opponent.id)}
               isWinner={winnerId === opponent.id}
               isMatchEnded={isMatchEnded}
               onSelect={onSelectTarget}
