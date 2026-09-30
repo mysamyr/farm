@@ -1,24 +1,21 @@
 import { useCallback } from 'react';
 
 import { Button } from '@game/client-core/components';
-import { getCatalogPath } from '@game/client-core/constants';
-import {
-  useActiveGame,
-  useLanguage,
-  useRoom,
-  useSnackbar,
-  useUsername,
-} from '@game/client-core/hooks';
+import { useLanguage, useRoom, useSnackbar } from '@game/client-core/hooks';
 import { emitEvent } from '@game/client-core/socket';
 import { resolveErrorMessage } from '@game/client-core/utils';
 import { ERROR, EVENTS } from '@game/shared/constants';
 import { Link } from 'react-router-dom';
 
+import { getCatalogPath } from '../../../constants/index.js';
+import { useActiveGame, useUsername } from '../../../hooks/index.js';
+import { generateRoomName } from '../../../utils/index.js';
+
 import styles from './ActionBar.module.css';
 
 export default function ActionBar() {
-  const { translation } = useLanguage();
-  const { currentRoom } = useRoom();
+  const { translation, language } = useLanguage();
+  const { rooms, currentRoom } = useRoom();
   const { showSnackbar } = useSnackbar();
   const { activeGame, cleanupCurrentIdleRoom } = useActiveGame();
   const { isValid } = useUsername();
@@ -38,12 +35,25 @@ export default function ActionBar() {
       return;
     }
 
-    emitEvent(EVENTS.ROOM_CREATE, { game: activeGame }, res => {
+    const existingNames = rooms
+      .filter(r => r.game === activeGame)
+      .map(r => r.name);
+    const name = generateRoomName(language, existingNames);
+
+    emitEvent(EVENTS.ROOM_CREATE, { game: activeGame, name }, res => {
       if (!res.ok) {
         showSnackbar(resolveErrorMessage(res.error, translation));
       }
     });
-  }, [activeGame, currentRoom, isValid, showSnackbar, translation]);
+  }, [
+    activeGame,
+    currentRoom,
+    isValid,
+    language,
+    rooms,
+    showSnackbar,
+    translation,
+  ]);
 
   return (
     <section className={styles.container}>

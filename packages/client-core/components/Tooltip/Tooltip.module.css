@@ -1,0 +1,40 @@
+.wrapper {
+  position: relative;
+}
+
+.tooltip {
+  position: absolute;
+  z-index: var(--z-tooltip);
+  display: block;
+  width: max-content;
+  max-width: 200px;
+  box-sizing: border-box;
+  padding: 8px 10px;
+  border: 1px solid var(--border-base);
+  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+  box-shadow: var(--shadow-elevation);
+  text-align: left;
+  pointer-events: none;
+}
+
+.above {
+  bottom: calc(100% + 6px);
+}
+
+.below {
+  top: calc(100% + 6px);
+}
+
+.alignCenter {
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.alignLeft {
+  left: -4px;
+}
+
+.alignRight {
+  right: -4px;
+}

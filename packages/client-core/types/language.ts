@@ -36,9 +36,9 @@ export type Translation = {
   };
   changeName: {
     title: string;
+    description: string;
     placeholder: string;
     save: string;
-    cancel: string;
   };
   header: {
     setName: string;
@@ -53,17 +53,36 @@ export type Translation = {
     rules: string;
     online: (count: number) => string;
   };
+  statistics: {
+    title: string;
+    navigationLabel: string;
+    selectGame: string;
+    recentMatches: string;
+    noMatches: string;
+    win: string;
+    loss: string;
+    autoWin: string;
+    players: (count: number) => string;
+    duration: (ms: number) => string;
+    reset: string;
+    resetConfirmTitle: string;
+    resetConfirmMessage: string;
+    resetConfirm: string;
+    lastMatch: string;
+  };
   dashboard: {
     backToGames: string;
     createRoomBtn: string;
     openRoomsHeader: string;
     noActiveRooms: string;
+    createRoom: string;
     roomRules: string;
     players: string;
   };
   roomButton: {
     full: string;
     join: string;
+    watch: string;
     joined: string;
     enter: string;
     startGame: string;
@@ -75,16 +94,18 @@ export type Translation = {
     confirmTitle: string;
     confirmMessage: (playerName: string) => string;
     confirmButton: string;
-    cancelButton: string;
   };
   you: string;
   owner: string;
   youWin: string;
+  cancel: string;
+  close: string;
   postGame: {
     title: string;
     winner: (winnerName: string) => string;
     rematch: string;
     lobby: string;
+    decline: string;
     leave: string;
     minimize: string;
     expand: string;
@@ -105,5 +126,22 @@ export type Translation = {
     roomClosed: (playerName: string) => string;
     gameFinished: (winnerName: string) => string;
     tradeCancelled: (playerName: string) => string;
+    returnedToLobby: (playerName: string) => string;
+  };
+  chat: {
+    title: string;
+    open: (unread: number) => string;
+    placeholder: string;
+    send: string;
+    empty: string;
+    readOnly: string;
+  };
+  inGame: {
+    lobby: string;
+    lobbyConfirmTitle: string;
+    lobbyConfirmMessage: string;
+    lobbyConfirmButton: string;
+    voteTitle: string;
+    readyTitle: string;
   };
 };

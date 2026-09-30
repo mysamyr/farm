@@ -6,6 +6,7 @@ import type {
   GameActionPayload,
   GameMetadata,
   SocketAck,
+  RoomRole,
 } from '@game/shared/types';
 
 import type { AppServer } from '../types/index.js';
@@ -36,8 +37,11 @@ export interface ServerGameModule<
   /** Initialize room-specific fields when creating a room */
   addRoomFields: () => Pick<TRoom, 'rules'> & Partial<TRoom>;
 
-  /** Handle player removal from room */
-  onPlayerRemoved?: (room: TRoom, playerId: string) => void;
+  /** Return the room state visible to one room member. */
+  projectRoomState?: (room: TRoom, viewerId: string, role: RoomRole) => TRoom;
+
+  /** Handle player removal from room. May return the winner when the removal ends the match. */
+  onPlayerRemoved?: (room: TRoom, playerId: string) => TPlayer | void;
 
   /** Handle player reconnection with new socket ID */
   onPlayerReconnected?: (

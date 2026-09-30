@@ -1,25 +1,7 @@
 import { useEffect } from 'react';
 
-import {
-  ChangeNameModal,
-  Modal,
-  PostGameOverlay,
-  Snackbar,
-} from '@game/client-core/components';
-import { PATHS, getCatalogPath } from '@game/client-core/constants';
-import {
-  useActiveGame,
-  useGames,
-  useGamesLoader,
-  useModal,
-  useRoom,
-  useRoomSubscriptions,
-  useSnackbar,
-  useTheme,
-  useUnloadWarning,
-  useUsername,
-} from '@game/client-core/hooks';
-import { applyAccentColor, applyTheme } from '@game/client-core/utils';
+import { Button } from '@game/client-core/components';
+import { useModal, useRoom, useSnackbar } from '@game/client-core/hooks';
 import { GameColor } from '@game/shared/constants';
 import {
   BrowserRouter,
@@ -30,10 +12,29 @@ import {
 } from 'react-router-dom';
 
 import { GameSubscriptions } from './components/GameSubscriptions.js';
+import {
+  ChangeNameModal,
+  ModalHost,
+  RematchModal,
+  Snackbar,
+} from './components/index.js';
 import { MainLayout } from './components/layout/MainLayout.js';
+import { PATHS, getCatalogPath } from './constants/index.js';
 import { GameContainer } from './games/index.js';
+import {
+  useActiveGame,
+  useChatSubscriptions,
+  useGameStatisticsRecorder,
+  useGames,
+  useGamesLoader,
+  useRoomSubscriptions,
+  useTheme,
+  useUnloadWarning,
+  useUsername,
+} from './hooks/index.js';
 import CatalogPage from './pages/Catalog/index.js';
 import GamePage from './pages/GamePage/index.js';
+import { applyAccentColor, applyTheme } from './utils/index.js';
 
 function GamePlayPage() {
   const { activeGame } = useActiveGame();
@@ -67,6 +68,10 @@ function AppContent() {
 
   useRoomSubscriptions();
 
+  useChatSubscriptions();
+
+  useGameStatisticsRecorder();
+
   useUnloadWarning(currentRoom);
 
   useEffect(() => {
@@ -94,11 +99,9 @@ function AppContent() {
     showModal({
       component: ChangeNameModal,
       props: { required: true },
-      closeOnBackdrop: false,
-      closeOnEscape: false,
       closeOnNavigate: false,
     });
-  }, [hasUsername, modal?.component, modalOpen, showModal]);
+  }, []);
 
   if (gamesLoading && games.length === 0) {
     return (
@@ -128,7 +131,7 @@ function AppContent() {
         }}
       >
         <p>Failed to load games: {gamesError}</p>
-        <button onClick={() => window.location.reload()}>Retry</button>
+        <Button onClick={() => window.location.reload()}>Retry</Button>
       </div>
     );
   }
@@ -136,7 +139,7 @@ function AppContent() {
   return (
     <>
       {activeGame && <GameSubscriptions key={activeGame} gameId={activeGame} />}
-      <PostGameOverlay />
+      <RematchModal />
       <Routes>
         <Route element={<MainLayout />}>
           <Route path={PATHS.CATALOG} element={<CatalogPage />} />
@@ -147,11 +150,7 @@ function AppContent() {
       </Routes>
 
       {snackbarOpen && <Snackbar message={message} onClose={closeSnackbar} />}
-      <Modal
-        open={modalOpen}
-        modal={modal}
-        onRequestClose={requestCloseModal}
-      />
+      <ModalHost />
     </>
   );
 }

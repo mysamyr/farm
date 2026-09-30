@@ -4,7 +4,7 @@ import type { GameMetadata } from '@game/shared/types';
 import type { Skill } from './types.js';
 
 export const DEFAULT_CONFIG = {
-  maxPlayers: 2,
+  maxPlayers: 4,
   minPlayers: 2,
 } as const;
 
@@ -17,7 +17,7 @@ export const GAME_METADATA = {
   maxPlayers: DEFAULT_CONFIG.maxPlayers,
 } satisfies GameMetadata;
 
-export const REQUIRED_ACTIVE_COUNT = 2;
+export const REQUIRED_ACTIVE_COUNT = 3;
 export const REQUIRED_HEALING_COUNT = 1;
 export const REQUIRED_PASSIVE_COUNT = 2;
 
@@ -45,6 +45,7 @@ export enum SkillId {
   // Active buffs
   resistance = 'resistance',
   cleanse = 'cleanse',
+  meditation = 'meditation',
   rage = 'rage',
   spiked_armor = 'spiked_armor',
   reflect = 'reflect',
@@ -62,6 +63,7 @@ export enum SkillId {
   thorns = 'thorns',
   leech = 'leech',
   pierce = 'pierce',
+  berserk = 'berserk',
 }
 
 export enum EffectId {
@@ -79,10 +81,12 @@ export enum EffectId {
   bleed = 'bleed',
   /** Removes possibility to use skills. No cooldown reduction */
   stun = 'stun',
-  /** Ignores some amount of opponent's defense */
+  /** Ignores all opponent armor */
   pierce = 'pierce',
   /** Redirects incoming debuffs to the attacker */
   reflection = 'reflection',
+  /** Increases damage dealt based on current HP */
+  berserk = 'berserk',
 }
 
 export enum SkillType {
@@ -98,6 +102,7 @@ export enum ActionType {
   MODIFY_STAT = 'MODIFY_STAT',
   LIFE_STEAL = 'LIFE_STEAL',
   CLEANSE = 'CLEANSE',
+  REDUCE_COOLDOWNS = 'REDUCE_COOLDOWNS',
 }
 
 export enum ActionTarget {
@@ -107,6 +112,7 @@ export enum ActionTarget {
 
 export enum ActionValueSource {
   raw = 'raw',
+  percent = 'percent',
   currentHp = 'currentHp',
   maxHp = 'maxHp',
   stat = 'stat',
@@ -126,6 +132,7 @@ export enum LogEffectKind {
   apply_status = 'apply_status',
   modify_stat = 'modify_stat',
   cleanse = 'cleanse',
+  reduce_cooldowns = 'reduce_cooldowns',
   resist = 'resist',
   reflect = 'reflect',
 }
@@ -172,7 +179,7 @@ export const SKILLS: Record<SkillId, Skill> = {
         type: ActionType.APPLY_STATUS,
         target: ActionTarget.opponent,
         status: EffectId.bleed,
-        value: { source: ActionValueSource.raw, amount: 15 },
+        value: { source: ActionValueSource.percent, percent: 15 },
         duration: 2,
       },
     ],
@@ -227,7 +234,7 @@ export const SKILLS: Record<SkillId, Skill> = {
         type: ActionType.MODIFY_STAT,
         target: ActionTarget.opponent,
         stat: StatId.attack,
-        value: { source: ActionValueSource.raw, amount: -5 },
+        value: { source: ActionValueSource.raw, amount: -7 },
         duration: 2,
       },
     ],
@@ -235,12 +242,12 @@ export const SKILLS: Record<SkillId, Skill> = {
   [SkillId.knockback]: {
     id: SkillId.knockback,
     type: SkillType.active,
-    cooldown: 3,
+    cooldown: 4,
     actions: [
       {
         type: ActionType.DAMAGE,
         target: ActionTarget.opponent,
-        value: { source: ActionValueSource.raw, amount: 8 },
+        value: { source: ActionValueSource.raw, amount: 10 },
       },
       {
         type: ActionType.APPLY_STATUS,
@@ -273,6 +280,7 @@ export const SKILLS: Record<SkillId, Skill> = {
         type: ActionType.APPLY_STATUS,
         target: ActionTarget.self,
         status: EffectId.resistance,
+        value: { source: ActionValueSource.percent, percent: 30 },
         duration: 3,
       },
     ],
@@ -286,7 +294,7 @@ export const SKILLS: Record<SkillId, Skill> = {
         type: ActionType.MODIFY_STAT,
         target: ActionTarget.self,
         stat: StatId.attack,
-        value: { source: ActionValueSource.raw, amount: 8 },
+        value: { source: ActionValueSource.raw, amount: 10 },
         duration: 3,
       },
     ],
@@ -300,7 +308,7 @@ export const SKILLS: Record<SkillId, Skill> = {
         type: ActionType.APPLY_STATUS,
         target: ActionTarget.self,
         status: EffectId.thorns,
-        value: { source: ActionValueSource.raw, amount: 60 },
+        value: { source: ActionValueSource.percent, percent: 100 },
         duration: 2,
       },
     ],
@@ -353,16 +361,35 @@ export const SKILLS: Record<SkillId, Skill> = {
   [SkillId.cleanse]: {
     id: SkillId.cleanse,
     type: SkillType.healing,
-    cooldown: 3,
+    cooldown: 2,
     actions: [
       {
         type: ActionType.CLEANSE,
         target: ActionTarget.self,
       },
       {
+        type: ActionType.APPLY_STATUS,
+        target: ActionTarget.self,
+        status: EffectId.resistance,
+        value: { source: ActionValueSource.percent, percent: 30 },
+        duration: 1,
+      },
+      {
         type: ActionType.HEAL,
         target: ActionTarget.self,
-        value: { source: ActionValueSource.raw, amount: 5 },
+        value: { source: ActionValueSource.raw, amount: 10 },
+      },
+    ],
+  },
+  [SkillId.meditation]: {
+    id: SkillId.meditation,
+    type: SkillType.active,
+    cooldown: 2,
+    actions: [
+      {
+        type: ActionType.REDUCE_COOLDOWNS,
+        target: ActionTarget.self,
+        amount: 1,
       },
     ],
   },
@@ -471,7 +498,7 @@ export const SKILLS: Record<SkillId, Skill> = {
         type: ActionType.APPLY_STATUS,
         target: ActionTarget.self,
         status: EffectId.thorns,
-        value: { source: ActionValueSource.raw, amount: 40 },
+        value: { source: ActionValueSource.percent, percent: 30 },
       },
     ],
   },
@@ -483,7 +510,7 @@ export const SKILLS: Record<SkillId, Skill> = {
         type: ActionType.APPLY_STATUS,
         target: ActionTarget.self,
         status: EffectId.leech,
-        value: { source: ActionValueSource.raw, amount: 30 },
+        value: { source: ActionValueSource.percent, percent: 40 },
       },
     ],
   },
@@ -495,7 +522,17 @@ export const SKILLS: Record<SkillId, Skill> = {
         type: ActionType.APPLY_STATUS,
         target: ActionTarget.self,
         status: EffectId.pierce,
-        value: { source: ActionValueSource.raw, amount: 5 },
+      },
+    ],
+  },
+  [SkillId.berserk]: {
+    id: SkillId.berserk,
+    type: SkillType.passive,
+    actions: [
+      {
+        type: ActionType.APPLY_STATUS,
+        target: ActionTarget.self,
+        status: EffectId.berserk,
       },
     ],
   },

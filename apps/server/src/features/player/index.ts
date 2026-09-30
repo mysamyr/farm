@@ -5,7 +5,7 @@ import { PlayerRenamePayload } from '@game/shared/types';
 import { LogLevel } from '../../constants/index.js';
 import { log } from '../../services/logger.js';
 import type { AckFunc, AppServer, AppSocket } from '../../types/index.js';
-import { updateRoomsList } from '../room/room.service.js';
+import { getActiveRoom, updateRoomsList } from '../room/room.service.js';
 
 const renamePlayerHandler =
   (io: AppServer, socket: AppSocket) =>
@@ -26,6 +26,11 @@ const renamePlayerHandler =
 
     if (payload.name) {
       socket.data.player.name = payload.name;
+      const room = getActiveRoom(socket.id);
+      const member =
+        room?.players.find(player => player.id === socket.id) ??
+        room?.spectators.find(player => player.id === socket.id);
+      if (member) member.name = payload.name;
       updateRoomsList(io);
     }
     if (ack) ack({ ok: true });

@@ -10,22 +10,20 @@ import {
   useArenaTranslation,
 } from '../hooks/useArenaTranslation.js';
 
-const STAT_IDS = Object.values(StatId);
-const EFFECT_IDS = Object.values(EffectId);
-
 export default function ArenaHelpModal(): ReactElement {
   const help = useArenaHelpTranslation();
-  const { statLabels, effectLabels } = useArenaTranslation();
+  const { statLabels, effects } = useArenaTranslation();
+  const statIds = Object.values(StatId);
+  const effectIds = Object.values(EffectId);
 
   return (
-    <HelpModal>
-      <h2>{help.title}</h2>
+    <HelpModal title={help.title}>
       <p>{help.goal}</p>
 
       <h2>{help.statsHeader}</h2>
       <p>{help.statsIntro}</p>
       <ul>
-        {STAT_IDS.map(id => (
+        {statIds.map(id => (
           <li key={id}>
             {statLabels[id]} — {help.stats[id]}
           </li>
@@ -41,9 +39,9 @@ export default function ArenaHelpModal(): ReactElement {
       <h2>{help.effectsHeader}</h2>
       <p>{help.effectsIntro}</p>
       <ul>
-        {EFFECT_IDS.map(id => (
+        {effectIds.map(id => (
           <li key={id}>
-            {getEffectIcon(id)} {effectLabels[id]} — {help.effects[id]}
+            {getEffectIcon(id)} {effects[id].name} — {effects[id].description}
           </li>
         ))}
       </ul>

@@ -1,0 +1,9 @@
+.page {
+  --arena-space: 16px;
+  --arena-card-padding: 12px;
+  --arena-radius: var(--radius-sm);
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--arena-space);
+}

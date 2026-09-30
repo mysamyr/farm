@@ -17,6 +17,7 @@ export { gameRegistry } from './registry.js';
 
 import { gameRegistry } from './registry.js';
 import './modules.js';
+import { emitGameState } from './state.service.js';
 
 /**
  * Creates a GameHandlerContext adapter that bridges Socket.io to the
@@ -55,6 +56,10 @@ function createHandlerContext(
         event,
         data
       );
+    },
+
+    emitGameState(room, project): void {
+      emitGameState(io, room, project);
     },
 
     getRoomById(roomId: string): BaseRoom | null {
@@ -98,6 +103,17 @@ export function registerAllGameFeatures(
       const room = getRoomById(payload.roomId);
       if (!room) {
         const response = { ok: false, error: ERROR.ROOM_NOT_FOUND } as const;
+        socket.emit(EVENTS.GAME_ERROR, {
+          code: ERROR[response.error] ?? String(response.error),
+        });
+        ack?.(response);
+        return;
+      }
+      if (!room.players.some(player => player.id === socket.id)) {
+        const response = {
+          ok: false,
+          error: ERROR.PLAYER_NOT_FOUND,
+        } as const;
         socket.emit(EVENTS.GAME_ERROR, {
           code: ERROR[response.error] ?? String(response.error),
         });

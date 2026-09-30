@@ -25,6 +25,11 @@ export type RawActionValue = {
   amount: number;
 };
 
+export type PercentActionValue = {
+  source: ActionValueSource.percent;
+  percent: number;
+};
+
 export type CurrentHpActionValue = {
   source: ActionValueSource.currentHp;
   actor: ActionTarget;
@@ -49,8 +54,11 @@ export type DamageDealtActionValue = {
   percent: number;
 };
 
+export type DirectActionValue = RawActionValue | PercentActionValue;
+
 export type InstantActionValue =
   | RawActionValue
+  | PercentActionValue
   | CurrentHpActionValue
   | MaxHpActionValue
   | StatActionValue;
@@ -75,22 +83,22 @@ export type ApplyStatusAction = BaseAction & {
     | {
         status: EffectId.bleed;
         duration: number;
-        value: ReactiveActionValue;
+        value: DirectActionValue;
       }
     | {
         status: EffectId.poison;
         duration: number;
-        value: ReactiveActionValue;
+        value: DirectActionValue;
       }
     | {
         status: EffectId.regeneration;
         duration: number;
-        value: ReactiveActionValue;
+        value: DirectActionValue;
       }
     | {
         status: EffectId.resistance;
         duration: number;
-        value?: never;
+        value: DirectActionValue;
       }
     | {
         status: EffectId.reflection;
@@ -104,15 +112,19 @@ export type ApplyStatusAction = BaseAction & {
       }
     | {
         status: EffectId.thorns;
-        value: InstantActionValue;
+        value: DirectActionValue;
       }
     | {
         status: EffectId.leech;
-        value: ReactiveActionValue;
+        value: DirectActionValue;
       }
     | {
         status: EffectId.pierce;
-        value: ReactiveActionValue;
+        value?: never;
+      }
+    | {
+        status: EffectId.berserk;
+        value?: never;
       }
   );
 
@@ -135,13 +147,20 @@ export type CleanseAction = BaseAction & {
   target: ActionTarget.self;
 };
 
+export type ReduceCooldownsAction = BaseAction & {
+  type: ActionType.REDUCE_COOLDOWNS;
+  target: ActionTarget.self;
+  amount: number;
+};
+
 export type GameAction =
   | DamageAction
   | HealAction
   | ApplyStatusAction
   | ModifyStatAction
   | CleanseAction
-  | LifeStealAction;
+  | LifeStealAction
+  | ReduceCooldownsAction;
 
 // Skills
 
@@ -191,6 +210,7 @@ export type ApplyStatusLogEffect = BaseLogEffect & {
     | {
         status: EffectId.resistance;
         duration: number;
+        value: number;
       }
     | {
         status: EffectId.reflection;
@@ -236,6 +256,7 @@ export type LogEffect =
       duration?: number;
     })
   | (BaseLogEffect & { kind: LogEffectKind.cleanse })
+  | (BaseLogEffect & { kind: LogEffectKind.reduce_cooldowns; value: number })
   | (BaseLogEffect & {
       kind: LogEffectKind.resist;
       status: EffectId.bleed | EffectId.poison;
@@ -248,9 +269,11 @@ export interface LogStep {
   playerName: string;
   skillId: SkillId;
   effects: LogEffect[];
+  /** The player targeted by this skill. Omitted for self-only skills. */
+  targetId?: string;
+  /** Display name of the targeted player, kept for rendering past log entries. */
+  targetName?: string;
 }
-
-// Player
 
 export interface StatusEffect {
   type: StatId | EffectId;
@@ -273,16 +296,18 @@ export interface Player extends BasePlayer {
   statuses: StatusEffect[];
   /** The skills the player currently has. */
   skills: PlayerSkill[];
+  /** The complete selected loadout, including passive skills. */
+  loadout: SkillId[];
   /** Whether the player is ready to take their turn. */
   ready: boolean;
+  /** Whether the player has been knocked out and is no longer part of the fight. */
+  eliminated: boolean;
 }
 
-// Room
 export type Rules = Record<GAME_RULES, boolean>;
 
 export interface Room extends BaseRoom<Player, Rules, GameId.arena> {
   order: string[];
   turn: number;
-  winner?: string;
   steps: LogStep[];
 }

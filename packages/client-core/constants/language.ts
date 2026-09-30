@@ -2,6 +2,29 @@ import { ERROR, VALIDATION } from '@game/shared/constants';
 
 import type { Language, Translation } from '../types/language.js';
 
+function formatStatisticsDuration(
+  ms: number,
+  units: { hour: string; minute: string; second: string }
+): string {
+  const totalSeconds = Math.max(0, Math.round(ms / 1000));
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  const parts: string[] = [];
+
+  if (hours > 0) {
+    parts.push(`${hours}${units.hour}`);
+  }
+  if (minutes > 0) {
+    parts.push(`${minutes}${units.minute}`);
+  }
+  if (seconds > 0 || parts.length === 0) {
+    parts.push(`${seconds}${units.second}`);
+  }
+
+  return parts.join(' ');
+}
+
 export enum LanguageCode {
   EN = 'en',
   UA = 'ua',
@@ -33,6 +56,8 @@ const translations: Record<LanguageCode, Translation> = {
       [ERROR.ROOM_NOT_FOUND]: 'Room not found.',
       [ERROR.GAME_NOT_FOUND]: 'Game not found.',
       [ERROR.ROOM_FULL]: 'Room is full.',
+      [ERROR.ROOM_NAME_TAKEN]:
+        'A room with this name already exists. Please try again.',
       [ERROR.INVALID_ROOM_NAME]: 'Enter room name.',
       [ERROR.NOT_OWNER]: 'You are not the room owner.',
       [ERROR.CANNOT_START]: 'Cannot start the game.',
@@ -51,6 +76,8 @@ const translations: Record<LanguageCode, Translation> = {
       [ERROR.TRADE_NOT_ACTIVE]: 'No active trade.',
       [ERROR.TRADE_NOT_LOCKED]: 'Both players must lock their offers first.',
       [ERROR.INVALID_TRADE_TARGET]: 'Invalid trade target.',
+      [ERROR.CHAT_READ_ONLY]: 'Spectators cannot send messages.',
+      [ERROR.INVALID_CHAT_MESSAGE]: `Message must be 1–${VALIDATION.CHAT_MESSAGE.MAX_LENGTH} characters.`,
       // Client-only validations
       userNameTooShort: `Name must be at least ${VALIDATION.USER_NAME.MIN_LENGTH} characters.`,
       userNameTooLong: `Name must be at most ${VALIDATION.USER_NAME.MAX_LENGTH} characters.`,
@@ -91,9 +118,10 @@ const translations: Record<LanguageCode, Translation> = {
     },
     changeName: {
       title: 'Your name',
+      description:
+        'Please enter a display name. It is required to create rooms and play games with others.',
       placeholder: 'Enter your name',
       save: 'Save',
-      cancel: 'Cancel',
     },
     header: {
       setName: 'Set name',
@@ -108,17 +136,43 @@ const translations: Record<LanguageCode, Translation> = {
       rules: 'Rules',
       online: (count: number): string => `${count} Online`,
     },
+    statistics: {
+      title: 'Statistics',
+      navigationLabel: 'Statistics',
+      selectGame: 'Select game',
+      recentMatches: 'Recent matches',
+      noMatches: 'No matches recorded yet.',
+      win: 'Win',
+      loss: 'Loss',
+      autoWin: 'Auto win',
+      players: (count: number): string =>
+        count === 1 ? '1 player' : `${count} players`,
+      duration: (ms: number): string =>
+        formatStatisticsDuration(ms, {
+          hour: 'h',
+          minute: 'm',
+          second: 's',
+        }),
+      reset: 'Reset Statistics',
+      resetConfirmTitle: 'Reset all statistics?',
+      resetConfirmMessage:
+        'This will permanently remove match history for every game on this browser.',
+      resetConfirm: 'Clear All',
+      lastMatch: 'Last played match',
+    },
     dashboard: {
       backToGames: 'Back to games',
       createRoomBtn: 'Create Room',
-      openRoomsHeader: 'Open Rooms',
-      noActiveRooms: 'No open rooms.',
+      openRoomsHeader: 'Rooms',
+      noActiveRooms: 'No rooms.',
+      createRoom: 'Create a room to start.',
       roomRules: 'Rules',
       players: 'Players',
     },
     roomButton: {
       full: 'Full',
       join: 'Join',
+      watch: 'Watch',
       joined: 'Joined',
       enter: 'Enter',
       startGame: 'Start Game',
@@ -131,7 +185,6 @@ const translations: Record<LanguageCode, Translation> = {
       confirmMessage: (name: string): string =>
         `Are you sure you want to kick ${name}? They will not be able to rejoin this room.`,
       confirmButton: 'Kick',
-      cancelButton: 'Cancel',
     },
     roomState: {
       idle: 'Idle',
@@ -141,11 +194,14 @@ const translations: Record<LanguageCode, Translation> = {
     you: 'You',
     owner: 'by',
     youWin: 'You win!',
+    cancel: 'Cancel',
+    close: 'Close',
     postGame: {
       title: 'Game over',
       winner: (name: string): string => `Winner: ${name}`,
-      rematch: 'Quick rematch',
+      rematch: 'Rematch',
       lobby: 'To lobby',
+      decline: 'Decline',
       leave: 'Leave room',
       minimize: 'Minimize',
       expand: 'Expand',
@@ -161,6 +217,26 @@ const translations: Record<LanguageCode, Translation> = {
       roomClosed: (name: string): string => `${name} closed the room.`,
       gameFinished: (name: string): string => `Game over! Winner: ${name}`,
       tradeCancelled: (name: string): string => `${name} cancelled the trade.`,
+      returnedToLobby: (name: string): string =>
+        `${name} ended the game and returned everyone to the lobby.`,
+    },
+    chat: {
+      title: 'Room chat',
+      open: (unread: number): string =>
+        unread > 0 ? `Open chat, ${unread} unread` : 'Open chat',
+      placeholder: 'Type a message…',
+      send: 'Send',
+      empty: 'No messages yet.',
+      readOnly: 'Spectators can only read the chat.',
+    },
+    inGame: {
+      lobby: 'Return to lobby',
+      lobbyConfirmTitle: 'Return to lobby?',
+      lobbyConfirmMessage:
+        'This will immediately end the current game for all players and move everyone back to the lobby. No winner will be recorded.',
+      lobbyConfirmButton: 'Return to lobby',
+      voteTitle: 'Rematch vote',
+      readyTitle: 'Get ready',
     },
   },
   [LanguageCode.UA]: {
@@ -173,6 +249,8 @@ const translations: Record<LanguageCode, Translation> = {
       [ERROR.ROOM_NOT_FOUND]: 'Кімнату не знайдено.',
       [ERROR.GAME_NOT_FOUND]: 'Гру не знайдено.',
       [ERROR.ROOM_FULL]: 'Кімната переповнена.',
+      [ERROR.ROOM_NAME_TAKEN]:
+        'Кімната з такою назвою вже існує. Спробуйте ще раз.',
       [ERROR.INVALID_ROOM_NAME]: 'Введіть назву кімнати.',
       [ERROR.NOT_OWNER]: 'Ви не власник кімнати.',
       [ERROR.CANNOT_START]: 'Неможливо розпочати.',
@@ -191,6 +269,8 @@ const translations: Record<LanguageCode, Translation> = {
       [ERROR.TRADE_NOT_ACTIVE]: 'Немає активного обміну.',
       [ERROR.TRADE_NOT_LOCKED]: 'Обидва гравці повинні зафіксувати пропозицію.',
       [ERROR.INVALID_TRADE_TARGET]: 'Невірний гравець для обміну.',
+      [ERROR.CHAT_READ_ONLY]: 'Глядачі не можуть надсилати повідомлення.',
+      [ERROR.INVALID_CHAT_MESSAGE]: `Повідомлення має містити 1–${VALIDATION.CHAT_MESSAGE.MAX_LENGTH} символів.`,
       // Client-only validations
       userNameTooShort: `Імʼя має містити щонайменше ${VALIDATION.USER_NAME.MIN_LENGTH} символи.`,
       userNameTooLong: `Імʼя має містити щонайбільше ${VALIDATION.USER_NAME.MAX_LENGTH} символів.`,
@@ -238,9 +318,10 @@ const translations: Record<LanguageCode, Translation> = {
     },
     changeName: {
       title: 'Ваше імʼя',
+      description:
+        'Будь ласка, введіть відображуване імʼя. Воно потрібне, щоб створювати кімнати та грати з іншими.',
       placeholder: 'Введіть ваше імʼя',
       save: 'Зберегти',
-      cancel: 'Скасувати',
     },
     header: {
       setName: 'Вказати імʼя',
@@ -255,17 +336,50 @@ const translations: Record<LanguageCode, Translation> = {
       rules: 'Правила',
       online: (count: number): string => `${count} онлайн`,
     },
+    statistics: {
+      title: 'Статистика',
+      navigationLabel: 'Статистика',
+      selectGame: 'Оберіть гру',
+      recentMatches: 'Останні матчі',
+      noMatches: 'Зіграних матчів ще немає.',
+      win: 'Перемога',
+      loss: 'Поразка',
+      autoWin: 'Авто-виграш',
+      players: (count: number): string => {
+        const n = count % 10;
+        const n100 = count % 100;
+        if (n === 1 && n100 !== 11) return `${count} гравець`;
+        if (n >= 2 && n <= 4 && (n100 < 12 || n100 > 14)) {
+          return `${count} гравці`;
+        }
+        return `${count} гравців`;
+      },
+      duration: (ms: number): string =>
+        formatStatisticsDuration(ms, {
+          hour: ' год',
+          minute: ' хв',
+          second: ' с',
+        }),
+      reset: 'Скинути статистику',
+      resetConfirmTitle: 'Скинути всю статистику?',
+      resetConfirmMessage:
+        'Це назавжди видалить історію матчів усіх ігор у цьому браузері.',
+      resetConfirm: 'Очистити все',
+      lastMatch: 'Останній зіграний матч',
+    },
     dashboard: {
       backToGames: 'Назад до ігор',
       createRoomBtn: 'Створити кімнату',
-      openRoomsHeader: 'Відкриті кімнати',
-      noActiveRooms: 'Немає відкритих кімнат.',
+      openRoomsHeader: 'Кімнати',
+      noActiveRooms: 'Немає кімнат.',
+      createRoom: 'Створіть кімнату щоб розпочати.',
       roomRules: 'Правила',
       players: 'Гравців',
     },
     roomButton: {
       full: 'Повна',
       join: 'Приєднатися',
+      watch: 'Дивитися',
       joined: 'Приєднано',
       enter: 'Увійти',
       startGame: 'Розпочати Гру',
@@ -278,7 +392,6 @@ const translations: Record<LanguageCode, Translation> = {
       confirmMessage: (name: string): string =>
         `Ви впевнені, що хочете вигнати ${name}? Вони не зможуть повернутися до цієї кімнати.`,
       confirmButton: 'Вигнати',
-      cancelButton: 'Скасувати',
     },
     roomState: {
       idle: 'В очікуванні',
@@ -288,11 +401,14 @@ const translations: Record<LanguageCode, Translation> = {
     you: 'Ви',
     owner: 'Власник',
     youWin: 'Ви виграли!',
+    cancel: 'Скасувати',
+    close: 'Закрити',
     postGame: {
       title: 'Гра завершена',
       winner: (name: string): string => `Переможець: ${name}`,
-      rematch: 'Швидкий реванш',
+      rematch: 'Реванш',
       lobby: 'У лобі',
+      decline: 'Відхилити',
       leave: 'Покинути кімнату',
       minimize: 'Згорнути',
       expand: 'Розгорнути',
@@ -309,6 +425,26 @@ const translations: Record<LanguageCode, Translation> = {
       gameFinished: (name: string): string =>
         `Гра закінчена! Переможець: ${name}`,
       tradeCancelled: (name: string): string => `${name} скасував обмін.`,
+      returnedToLobby: (name: string): string =>
+        `${name} завершив гру і повернув усіх у лобі.`,
+    },
+    chat: {
+      title: 'Чат кімнати',
+      open: (unread: number): string =>
+        unread > 0 ? `Відкрити чат, непрочитаних: ${unread}` : 'Відкрити чат',
+      placeholder: 'Напишіть повідомлення…',
+      send: 'Надіслати',
+      empty: 'Повідомлень ще немає.',
+      readOnly: 'Глядачі можуть лише читати чат.',
+    },
+    inGame: {
+      lobby: 'Повернутись у лобі',
+      lobbyConfirmTitle: 'Повернутись у лобі?',
+      lobbyConfirmMessage:
+        'Це негайно завершить поточну гру для всіх гравців і поверне всіх у лобі. Переможець зараховано не буде.',
+      lobbyConfirmButton: 'Повернутись у лобі',
+      voteTitle: 'Голосування за реванш',
+      readyTitle: 'Приготуйтесь',
     },
   },
 };

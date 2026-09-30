@@ -1,8 +1,11 @@
-import type { ReactElement } from 'react';
+import { memo, type ReactElement } from 'react';
 
 import { Button } from '@game/client-core/components';
 import { ButtonVariant } from '@game/client-core/constants';
-import { useLanguage, useRoom, useSnackbar } from '@game/client-core/hooks';
+import {
+  useLanguage,
+  useSnackbar,
+} from '@game/client-core/hooks';
 import { emitGameEvent } from '@game/client-core/socket';
 import { classNames, resolveErrorMessage } from '@game/client-core/utils';
 
@@ -18,17 +21,19 @@ import styles from './DiceSection.module.css';
 import EmoteButton from './EmoteButton.js';
 
 type DiceSectionProps = {
+  room: Room;
   isYourTurn: boolean;
+  isSpectator: boolean;
 };
 
-export default function DiceSection({
+function DiceSection({
+  room,
   isYourTurn,
+  isSpectator,
 }: DiceSectionProps): ReactElement {
   const farmT = useFarmTranslation();
   const { translation } = useLanguage();
   const { showSnackbar } = useSnackbar();
-  const { currentRoom } = useRoom();
-  const room = currentRoom as Room;
 
   const onRoll = () => {
     if (!isYourTurn) {
@@ -42,6 +47,7 @@ export default function DiceSection({
         if (!res.ok) {
           showSnackbar(resolveErrorMessage(res.error, translation));
         }
+
       }
     );
   };
@@ -71,7 +77,7 @@ export default function DiceSection({
         </div>
       </div>
 
-      <div className={styles.actions}>
+      {!isSpectator && <div className={styles.actions}>
         <Button
           variant={ButtonVariant.PRIMARY}
           disabled={!isYourTurn || !!room.trade}
@@ -81,7 +87,9 @@ export default function DiceSection({
         </Button>
 
         <EmoteButton roomId={room.id} />
-      </div>
+      </div>}
     </div>
   );
 }
+
+export default memo(DiceSection);

@@ -43,7 +43,7 @@ input.roomName:focus {
 
 input.roomNameInvalid,
 input.roomNameInvalid:focus {
-  border-bottom-color: var(--error, #e53e3e);
+  border-bottom-color: var(--status-error);
 }
 
 h3.roomName {
@@ -52,8 +52,8 @@ h3.roomName {
 
 .playersList {
   background: var(--bg-page);
-  border-radius: 12px;
-  padding: 6px;
+  border-radius: 4px;
+  padding: 0 6px;
 }
 
 .playerItem {
@@ -67,6 +67,13 @@ h3.roomName {
 
 .playerItem:last-child {
   border-bottom: none;
+}
+
+.playerIdentity {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .playerActions {

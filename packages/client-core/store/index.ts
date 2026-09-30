@@ -1,17 +1,14 @@
-import { ComponentType, Dispatch, SetStateAction } from 'react';
+import { type ComponentType, type Dispatch, type SetStateAction } from 'react';
 
-import { VALIDATION, type GameId } from '@game/shared/constants';
-import type { BaseRoom, GameMetadata } from '@game/shared/types';
+import type { BaseRoom } from '@game/shared/types';
 import { create } from 'zustand';
 
-import { LOCAL_STORAGE_KEY, type Theme } from '../constants/index.js';
 import languageMap, { LanguageCode } from '../constants/language.js';
 import type { Translation } from '../types/index.js';
 import {
   getLanguage,
   setLanguage as setLanguageStorage,
 } from '../utils/language.js';
-import { getTheme, setTheme as setThemeStorage } from '../utils/theme.js';
 
 // ─── Language ────────────────────────────────────────────────────────────────
 
@@ -28,22 +25,6 @@ export const useLanguageStore = create<LanguageSlice>((set, get) => ({
     if (nextLanguage === get().language) return;
     setLanguageStorage(nextLanguage);
     set({ language: nextLanguage, translation: languageMap[nextLanguage] });
-  },
-}));
-
-// ─── Theme ──────────────────────────────────────────────────────────────────
-
-interface ThemeSlice {
-  theme: Theme;
-  setTheme: (nextTheme: Theme) => void;
-}
-
-export const useThemeStore = create<ThemeSlice>((set, get) => ({
-  theme: getTheme(),
-  setTheme: nextTheme => {
-    if (nextTheme === get().theme) return;
-    setThemeStorage(nextTheme);
-    set({ theme: nextTheme });
   },
 }));
 
@@ -106,7 +87,7 @@ interface ModalSlice {
   closeModal: () => void;
 }
 
-export type ModalCloseReason = 'backdrop' | 'escape' | 'programmatic';
+export type ModalCloseReason = 'escape' | 'programmatic';
 
 export interface ModalConfig<
   T extends Record<string, unknown> = Record<string, unknown>,
@@ -114,40 +95,23 @@ export interface ModalConfig<
   component: ComponentType<T>;
   props?: T;
   onClose?: (reason: ModalCloseReason) => boolean | void;
-  closeOnBackdrop?: boolean;
-  closeOnEscape?: boolean;
   closeOnNavigate?: boolean;
 }
 
-let modalUnmountTimeout: ReturnType<typeof setTimeout> | null = null;
-
+// The modal host keeps rendering the last config while the exit animation
+// runs, so the store can drop it immediately on close.
 export const useModalStore = create<ModalSlice>((set, get) => ({
   open: false,
   modal: null,
   showModal: config => {
-    if (modalUnmountTimeout) {
-      clearTimeout(modalUnmountTimeout);
-      modalUnmountTimeout = null;
-    }
     set({
       open: true,
-      modal: {
-        closeOnBackdrop: true,
-        closeOnEscape: true,
-        ...config,
-      } as ModalConfig,
+      modal: config as ModalConfig,
     });
   },
   requestCloseModal: (reason = 'programmatic') => {
     const activeModal = get().modal;
     if (!activeModal) {
-      return;
-    }
-
-    if (reason === 'backdrop' && activeModal.closeOnBackdrop === false) {
-      return;
-    }
-    if (reason === 'escape' && activeModal.closeOnEscape === false) {
       return;
     }
 
@@ -159,70 +123,6 @@ export const useModalStore = create<ModalSlice>((set, get) => ({
     get().closeModal();
   },
   closeModal: () => {
-    if (modalUnmountTimeout) {
-      clearTimeout(modalUnmountTimeout);
-    }
-    set({ open: false });
-    modalUnmountTimeout = setTimeout(() => {
-      set({ modal: null });
-      modalUnmountTimeout = null;
-    }, 200);
+    set({ open: false, modal: null });
   },
-}));
-
-// ─── Connection ──────────────────────────────────────────────────────────────
-
-interface ConnectionSlice {
-  online: number;
-  rejoinSettled: boolean;
-  setOnline: (online: number) => void;
-  setRejoinSettled: (settled: boolean) => void;
-}
-
-export const useConnectionStore = create<ConnectionSlice>(set => ({
-  online: 0,
-  rejoinSettled: false,
-  setOnline: online => set({ online: Math.max(online, 1) }),
-  setRejoinSettled: settled => set({ rejoinSettled: settled }),
-}));
-
-// ─── Username ────────────────────────────────────────────────────────────────
-
-function readStoredUsername(): string {
-  const stored = window.localStorage.getItem(LOCAL_STORAGE_KEY.USERNAME) ?? '';
-  return [...stored].slice(0, VALIDATION.USER_NAME.MAX_LENGTH).join('');
-}
-
-interface UsernameSlice {
-  username: string;
-  setUsername: (username: string) => void;
-}
-
-export const useUsernameStore = create<UsernameSlice>(set => ({
-  username: readStoredUsername(),
-  setUsername: username => set({ username }),
-}));
-
-// ─── Games ───────────────────────────────────────────────────────────────────
-
-interface GamesSlice {
-  games: GameMetadata[];
-  loading: boolean;
-  error: string | null;
-  setGames: (games: GameMetadata[]) => void;
-  setLoading: (loading: boolean) => void;
-  setError: (error: string | null) => void;
-  getGame: (gameId: GameId) => GameMetadata | undefined;
-  getDefaultGameId: () => GameId | null;
-}
-
-export const useGamesStore = create<GamesSlice>((set, get) => ({
-  games: [],
-  loading: true,
-  error: null,
-  setGames: games => set({ games, loading: false, error: null }),
-  setLoading: loading => set({ loading }),
-  setError: error => set({ error, loading: false }),
-  getGame: gameId => get().games.find(g => g.id === gameId),
-  getDefaultGameId: () => get().games[0]?.id ?? null,
 }));

@@ -1,6 +1,6 @@
 import { ERROR, GameId, EVENTS } from '../constants/index.js';
 
-import type { BaseRoom } from './index.js';
+import type { BaseRoom, ChatMessage } from './index.js';
 
 export type SocketAck = {
   ok: boolean;
@@ -8,6 +8,10 @@ export type SocketAck = {
 };
 
 export type RejoinRoomAck = SocketAck & {
+  room?: BaseRoom;
+};
+
+export type SpectateRoomAck = SocketAck & {
   room?: BaseRoom;
 };
 
@@ -26,6 +30,7 @@ export type RoomKickPayload = RoomIdPayload & {
 
 export type RoomCreatePayload = {
   game: GameId;
+  name: string;
 };
 
 export type RoomPayload = {
@@ -45,6 +50,18 @@ export type GameActionPayload<
 
 export type PlayerRenamePayload = {
   name: string;
+};
+
+export type ChatSendPayload = RoomIdPayload & {
+  text: string;
+};
+
+export type ChatMessagePayload = RoomIdPayload & {
+  message: ChatMessage;
+};
+
+export type ChatHistoryAck = SocketAck & {
+  messages?: ChatMessage[];
 };
 
 /**
@@ -67,6 +84,10 @@ export type CoreClientToServerEvents = {
   [EVENTS.ROOM_JOIN]: (
     payload: RoomIdPayload,
     ack?: (response: SocketAck) => void
+  ) => void;
+  [EVENTS.ROOM_SPECTATE]: (
+    payload: RoomIdPayload,
+    ack?: (response: SpectateRoomAck) => void
   ) => void;
   [EVENTS.ROOM_LEAVE]: (
     payload: RoomIdPayload,
@@ -96,9 +117,21 @@ export type CoreClientToServerEvents = {
     payload: RoomIdPayload,
     ack?: (response: SocketAck) => void
   ) => void;
+  [EVENTS.GAME_REMATCH_DECLINE]: (
+    payload: RoomIdPayload,
+    ack?: (response: SocketAck) => void
+  ) => void;
   [EVENTS.GAME_RETURN_TO_LOBBY]: (
     payload: RoomIdPayload,
     ack?: (response: SocketAck) => void
+  ) => void;
+  [EVENTS.CHAT_SEND]: (
+    payload: ChatSendPayload,
+    ack?: (response: SocketAck) => void
+  ) => void;
+  [EVENTS.CHAT_HISTORY]: (
+    payload: RoomIdPayload,
+    ack?: (response: ChatHistoryAck) => void
   ) => void;
 };
 
@@ -124,10 +157,12 @@ export type CoreServerToClientEvents = {
   [EVENTS.CONNECT]: () => void;
   [EVENTS.ROOMS_LIST]: (rooms: BaseRoom[]) => void;
   [EVENTS.ROOM_CLOSED]: () => void;
+  [EVENTS.ROOM_SPECTATE_ENDED]: () => void;
   [EVENTS.NOTIFICATION]: (payload: ServerNotification) => void;
   [EVENTS.ONLINE_COUNT]: (online: number) => void;
   [EVENTS.GAME_STARTED]: (payload: RoomPayload) => void;
   [EVENTS.GAME_STATE_UPDATE]: (payload: GameStateUpdatePayload) => void;
   [EVENTS.GAME_EFFECT]: (payload: GameEffectPayload) => void;
   [EVENTS.GAME_ERROR]: (payload: GameErrorPayload) => void;
+  [EVENTS.CHAT_MESSAGE]: (payload: ChatMessagePayload) => void;
 };

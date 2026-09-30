@@ -1,4 +1,4 @@
-import type { BaseRoom } from '../types/index.js';
+import type { BaseRoom, RoomRole } from '../types/index.js';
 
 /**
  * Context provided to game handlers for socket operations.
@@ -19,6 +19,12 @@ export interface GameHandlerContext {
 
   /** Emit an event to a specific socket */
   emitToSocket(socketId: string, event: string, payload: unknown): void;
+
+  /** Emit an authoritative, optionally viewer-projected game state. */
+  emitGameState(
+    room: BaseRoom,
+    project?: (room: BaseRoom, viewerId: string, role: RoomRole) => BaseRoom
+  ): void;
 
   /** Get a room by ID */
   getRoomById(roomId: string): BaseRoom | null;

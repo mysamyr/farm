@@ -7,15 +7,16 @@ import {
   CUSTOM_SKILLS,
   DamageAction,
   EffectId,
+  getPlayerMaxHp,
   type GameAction,
   HealAction,
   LifeStealAction,
   ModifyStatAction,
+  type ReduceCooldownsAction,
   type Player,
   REQUIRED_ACTIVE_COUNT,
   REQUIRED_HEALING_COUNT,
   REQUIRED_PASSIVE_COUNT,
-  NEGATIVE_EFFECTS,
   type Room,
   type Skill,
   type SkillId,
@@ -72,6 +73,18 @@ export function isPlayerResistant(player: Player): boolean {
   );
 }
 
+export function getResistance(player: Player): number {
+  return player.statuses.reduce((total, status) => {
+    if (
+      status.type === EffectId.resistance &&
+      (status.remainingDuration === undefined || status.remainingDuration > 0)
+    ) {
+      total += status.value ?? 0;
+    }
+    return total;
+  }, 0);
+}
+
 export function isPlayerReflecting(player: Player): boolean {
   return player.statuses.some(
     s =>
@@ -80,29 +93,18 @@ export function isPlayerReflecting(player: Player): boolean {
   );
 }
 
-function isDeferredStatus(status: StatusEffect): boolean {
-  if (status.type === EffectId.regeneration) return true;
-  if (NEGATIVE_EFFECTS.includes(status.type as EffectId)) return true;
-  if (STAT_TYPES.includes(status.type as StatId) && status.value < 0) {
-    return true;
-  }
-  return false;
-}
-
 export function isSameTurnDeferred(
   status: StatusEffect,
   currentTurnId: number
 ): boolean {
-  return status.appliedTurn === currentTurnId && isDeferredStatus(status);
+  return status.appliedTurn === currentTurnId;
 }
 
 export function stampDeferredAppliedTurn(
   status: StatusEffect,
   currentTurnId: number
 ): void {
-  if (isDeferredStatus(status)) {
-    status.appliedTurn = currentTurnId;
-  }
+  status.appliedTurn = currentTurnId;
 }
 
 export function getThorns(player: Player): number {
@@ -129,16 +131,31 @@ export function getLeech(player: Player): number {
   }, 0);
 }
 
-export function getPierce(player: Player): number {
-  return player.statuses.reduce((acc, s) => {
-    if (
-      s.type === EffectId.pierce &&
+export function isPlayerBerserk(player: Player): boolean {
+  return player.statuses.some(
+    s =>
+      s.type === EffectId.berserk &&
       (s.remainingDuration === undefined || s.remainingDuration > 0)
-    ) {
-      acc += s.value ?? 0;
-    }
-    return acc;
-  }, 0);
+  );
+}
+
+export function getBerserk(player: Player): number {
+  if (!isPlayerBerserk(player)) return 0;
+
+  const hpPercent = (getPlayerStats(player).hp / getPlayerMaxHp(player)) * 100;
+  if (hpPercent <= 10) return 30;
+  if (hpPercent <= 25) return 20;
+  if (hpPercent <= 50) return 10;
+  if (hpPercent <= 75) return 5;
+  return 0;
+}
+
+export function isPlayerPiercing(player: Player): boolean {
+  return player.statuses.some(
+    status =>
+      status.type === EffectId.pierce &&
+      (status.remainingDuration === undefined || status.remainingDuration > 0)
+  );
 }
 
 export function isValidSkillSelection(skills: SkillId[]): boolean {
@@ -182,8 +199,53 @@ export function getActivePlayer(room: Room): Player | undefined {
   return room.players.find(p => p.id === playerId);
 }
 
-export function getOpponent(room: Room, playerId: string): Player | undefined {
-  return room.players.find(p => p.id !== playerId);
+export function isEliminated(player: Player): boolean {
+  return player.eliminated === true;
+}
+
+export function getAlivePlayers(room: Room): Player[] {
+  return room.players.filter(p => !isEliminated(p));
+}
+
+/**
+ * Find the next alive opponent walking forward through the turn order.
+ * Used both as the default client target and as the server-side fallback.
+ */
+export function getNextAliveTargetId(
+  room: Room,
+  playerId: string
+): string | undefined {
+  const start = room.order.indexOf(playerId);
+  if (start === -1)
+    return getAlivePlayers(room).find(p => p.id !== playerId)?.id;
+
+  for (let offset = 1; offset <= room.order.length; offset++) {
+    const candidateId = room.order[(start + offset) % room.order.length];
+    if (!candidateId || candidateId === playerId) continue;
+
+    const candidate = room.players.find(p => p.id === candidateId);
+    if (candidate && !isEliminated(candidate)) return candidate.id;
+  }
+
+  return undefined;
+}
+
+/**
+ * Resolve the requested target, falling back to the next alive opponent so a
+ * stale or malicious target id can never wedge a turn.
+ */
+export function resolveTarget(
+  room: Room,
+  actorId: string,
+  targetId?: string
+): Player | undefined {
+  if (targetId && targetId !== actorId) {
+    const requested = room.players.find(p => p.id === targetId);
+    if (requested && !isEliminated(requested)) return requested;
+  }
+
+  const fallbackId = getNextAliveTargetId(room, actorId);
+  return room.players.find(p => p.id === fallbackId);
 }
 
 export function skillTargetsOpponent(actions: GameAction[]): boolean {
@@ -198,11 +260,19 @@ export function calculateDamage(
   value: number,
   attack: number,
   armor: number,
-  isCrit: boolean
+  isCrit: boolean,
+  resistance: number,
+  berserk: number
 ): number {
   let damage = value + attack - armor;
   if (isCrit) damage *= 2;
-  return Math.max(damage, 1);
+  damage = Math.max(damage, 1);
+  damage = Math.floor((damage * (100 + berserk)) / 100);
+  damage = Math.max(
+    Math.floor((damage * Math.max(100 - resistance, 0)) / 100),
+    1
+  );
+  return damage;
 }
 
 export function isDead(player: Player): boolean {
@@ -240,9 +310,21 @@ export function splitOpponentActions(
 
 export function splitSelfActions(
   actions: GameAction[]
-): [ApplyStatusAction[], ModifyStatAction[], HealAction[], CleanseAction[]] {
+): [
+  ApplyStatusAction[],
+  ModifyStatAction[],
+  HealAction[],
+  CleanseAction[],
+  ReduceCooldownsAction[],
+] {
   return actions.reduce<
-    [ApplyStatusAction[], ModifyStatAction[], HealAction[], CleanseAction[]]
+    [
+      ApplyStatusAction[],
+      ModifyStatAction[],
+      HealAction[],
+      CleanseAction[],
+      ReduceCooldownsAction[],
+    ]
   >(
     (acc, action) => {
       if (action.target === ActionTarget.opponent) return acc;
@@ -251,8 +333,9 @@ export function splitSelfActions(
       if (action.type === ActionType.MODIFY_STAT) acc[1].push(action);
       if (action.type === ActionType.HEAL) acc[2].push(action);
       if (action.type === ActionType.CLEANSE) acc[3].push(action);
+      if (action.type === ActionType.REDUCE_COOLDOWNS) acc[4].push(action);
       return acc;
     },
-    [[], [], [], []]
+    [[], [], [], [], []]
   );
 }

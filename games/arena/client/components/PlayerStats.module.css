@@ -1,0 +1,230 @@
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+  border: 1px solid var(--border-base);
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.critFlash {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at 30% 20%,
+    color-mix(in srgb, var(--status-highlight) 38%, transparent),
+    transparent 58%
+  );
+  box-shadow: 0 0 0 0
+    color-mix(in srgb, var(--status-highlight) 75%, transparent) inset;
+  animation: critCardFlash 2000ms ease-out forwards;
+}
+
+.critText {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 2;
+  pointer-events: none;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--status-error);
+  text-shadow: 0 0 10px color-mix(in srgb, var(--status-error) 65%, transparent);
+  animation: critTagPop 2000ms ease-out forwards;
+}
+
+.card.active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-shadow);
+}
+
+.card.selectable {
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .card.selectable:hover {
+    transform: translateY(-1px);
+  }
+}
+
+.card.target {
+  border-color: var(--status-error);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--status-error) 45%, transparent);
+}
+
+.card.self {
+  border-color: var(--accent);
+  background: var(--bg-card);
+}
+
+.card.eliminated {
+  opacity: 0.45;
+  filter: grayscale(85%);
+  cursor: not-allowed;
+}
+
+.card.winner {
+  border-color: var(--status-highlight);
+  box-shadow: 0 0 8px var(--status-highlight);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.targetBadge {
+  font-size: 0.68rem;
+  font-weight: 600;
+  background: color-mix(in srgb, var(--status-error) 20%, transparent);
+  color: var(--status-error);
+  padding: 1px 7px;
+  border-radius: 99px;
+  white-space: nowrap;
+}
+
+.eliminatedBadge {
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: var(--bg-surface-subtle);
+  color: var(--text-muted);
+  padding: 1px 7px;
+  border-radius: 99px;
+}
+
+.playerName {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  flex: 1;
+}
+
+.turnBadge {
+  font-size: 0.72rem;
+  font-weight: 600;
+  background: var(--accent-soft);
+  color: var(--accent);
+  padding: 1px 7px;
+  border-radius: 99px;
+}
+
+.winnerBadge {
+  font-size: 0.72rem;
+  font-weight: 600;
+  background: var(--status-highlight);
+  color: var(--pc-gray-800);
+  padding: 1px 7px;
+  border-radius: 99px;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.statItem {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 0;
+  font-size: 0.8rem;
+  padding: 2px 4px;
+}
+
+.statIcon {
+  line-height: 1;
+}
+
+.statValue {
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+/* Narrow screens: keep icons tight so 4 stats fit in one row. */
+@media (max-width: 767px) {
+  .statItem {
+    padding: 2px;
+    font-size: 0.75rem;
+    gap: 3px;
+  }
+
+  .statsGrid {
+    gap: 4px;
+  }
+}
+
+.statusList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.statusBadge {
+  font-size: 0.72rem;
+  padding: 2px 7px;
+  border-radius: 99px;
+  background: var(--bg-surface-subtle);
+  color: var(--text-muted);
+}
+
+@keyframes critCardFlash {
+  0% {
+    opacity: 0;
+    box-shadow: 0 0 0 0
+      color-mix(in srgb, var(--status-highlight) 80%, transparent) inset;
+  }
+  18% {
+    opacity: 1;
+    box-shadow: 0 0 0 2px
+      color-mix(in srgb, var(--status-highlight) 80%, transparent) inset;
+  }
+  100% {
+    opacity: 0;
+    box-shadow: 0 0 0 0
+      color-mix(in srgb, var(--status-highlight) 0%, transparent) inset;
+  }
+}
+
+@keyframes critTagPop {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% + 8px)) scale(0.9);
+  }
+  20% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.07);
+  }
+  70% {
+    opacity: 0.95;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% - 6px)) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .critFlash,
+  .critText {
+    animation-duration: 1ms;
+  }
+}

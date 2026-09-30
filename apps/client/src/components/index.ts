@@ -1,1 +1,12 @@
+export { ChatButton } from './ui/ChatButton.js';
+export { ChatPanel } from './ui/ChatPanel.js';
 export { Header } from './ui/Header.js';
+export { ModalHost } from './ui/ModalHost.js';
+export { Sidebar } from './ui/Sidebar.js';
+export { Snackbar } from './ui/Snackbar.js';
+export { Tag } from './ui/Tag.js';
+export { WinningAnimation } from './ui/WinningAnimation.js';
+export { RematchModal } from './modals/RematchModal.js';
+export { default as ChangeNameModal } from './modals/ChangeNameModal.js';
+export { default as SiteRulesModal } from './modals/SiteRulesModal.js';
+export { default as StatisticsModal } from './modals/StatisticsModal.js';

@@ -83,9 +83,9 @@ gameRegistry.register(
       maxPlayers: ARENA_CONFIG.maxPlayers,
     },
     addRoomFields: arena.addRoomFields,
-    onPlayerRemoved: (room, playerId) => {
-      arena.removePlayerFromOrder(room, playerId);
-    },
+    projectRoomState: arena.projectRoomState,
+    onPlayerRemoved: (room, playerId) =>
+      arena.removePlayerFromOrder(room, playerId),
     onPlayerReconnected: (room, oldPlayerId, newPlayerId) => {
       arena.updateRoomOrderId(room, oldPlayerId, newPlayerId);
     },

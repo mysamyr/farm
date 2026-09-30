@@ -1,8 +1,9 @@
 import { type ReactElement } from 'react';
 
-import { useGames, useLanguage, useRoom } from '@game/client-core/hooks';
-
+import { useLanguage, useRoom } from '@game/client-core/hooks';
 import { ROOM_STATES } from '@game/shared/constants';
+
+import { useGames } from '../../hooks/index.js';
 
 import styles from './Catalog.module.css';
 import GameCard from './components/GameCard.js';

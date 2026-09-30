@@ -24,6 +24,8 @@ export const EVENTS = {
   ROOM_CREATE: 'room:create',
   ROOM_UPDATE: 'room:update',
   ROOM_JOIN: 'room:join',
+  ROOM_SPECTATE: 'room:spectate',
+  ROOM_SPECTATE_ENDED: 'room:spectate_ended',
   ROOM_LEAVE: 'room:leave',
   ROOM_KICK: 'room:kick',
   ROOM_CLOSE: 'room:close',
@@ -41,8 +43,14 @@ export const EVENTS = {
   GAME_EFFECT: 'game:effect',
   GAME_ERROR: 'game:error',
   GAME_REMATCH: 'game:rematch',
+  GAME_REMATCH_DECLINE: 'game:rematch_decline',
   GAME_RETURN_TO_LOBBY: 'game:return_to_lobby',
+  CHAT_SEND: 'chat:send',
+  CHAT_MESSAGE: 'chat:message',
+  CHAT_HISTORY: 'chat:history',
 } as const;
+
+export const CHAT_HISTORY_LIMIT = 100;
 
 export const REMATCH_TIMEOUT_MS = 20_000;
 
@@ -52,6 +60,7 @@ export const NOTIFICATION_TYPES = {
   PLAYER_KICKED: 'player_kicked',
   CLOSE_ROOM: 'close_room',
   GAME_FINISHED: 'game_finished',
+  RETURN_TO_LOBBY: 'return_to_lobby',
 } as const;
 
 export const VALIDATION = {
@@ -62,5 +71,8 @@ export const VALIDATION = {
   USER_NAME: {
     MAX_LENGTH: 16,
     MIN_LENGTH: 2,
+  },
+  CHAT_MESSAGE: {
+    MAX_LENGTH: 200,
   },
 };

@@ -18,6 +18,17 @@ export interface BasePlayer {
   name: string;
 }
 
+export interface ChatMessage {
+  id: string;
+  /** Socket id of the author (remapped on reconnect) */
+  authorId: string;
+  /** Author name snapshot at send time */
+  authorName: string;
+  text: string;
+}
+
+export type RoomRole = 'player' | 'spectator';
+
 export interface BaseRules {
   /**
    * checkbox, number or dropdown
@@ -25,8 +36,9 @@ export interface BaseRules {
   [key: string]: boolean | number | string;
 }
 
-export interface RematchState {
-  expiresAt: number;
+export interface VoteState {
+  /** Present for mid-game rematch votes; omitted for pre-game / post-game votes. */
+  expiresAt?: number;
   readyPlayerIds: string[];
 }
 
@@ -41,11 +53,15 @@ export interface BaseRoom<
   game: TGame;
   state: ROOM_STATES;
   players: TPlayer[];
+  spectators: BasePlayer[];
   rules: TRules;
   /** Stable userIds that are not allowed to rejoin this room */
   blacklist: string[];
   winner?: string;
-  rematch?: RematchState;
+  /** Epoch ms when the current running match began; omitted when idle */
+  startedAt?: number;
+  /** Pre-game readiness, mid-game rematch, or post-game rematch vote */
+  vote?: VoteState;
 }
 
 export * from './socket.js';

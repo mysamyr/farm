@@ -52,6 +52,8 @@ export function resolveActionValue(
   switch (spec.source) {
     case ActionValueSource.raw:
       return spec.amount;
+    case ActionValueSource.percent:
+      return spec.percent;
     case ActionValueSource.currentHp: {
       const actor = getActor(ctx, spec.actor);
       if (!actor) return 0;

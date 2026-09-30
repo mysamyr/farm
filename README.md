@@ -1,11 +1,8 @@
 # Game Hub project
 
+- [ ] currently statistic is purely client-side. move to server once auth will be added for only registered players. Game-specific statistics.
 - [ ] generate README.md
-- [x] make possible to restart a game after game Finished (is all players agree) - core
-- [x] add kick feature
-- [ ] add password-protected rooms
-- [x] ARENA: add rule for 0 cooldown on start
-- [x] Dashboard redesign (more info about games)
-- [x] Header refactoring
-- [ ] Room Card refactoring
-- [ ] Single player games (based on rule)
+- [ ] add password-protected rooms ?
+- [ ] Single player games ?
+
+ARENA - після завершення бою показати вибрані навички всіх гравців (показати одразу для полеглих)

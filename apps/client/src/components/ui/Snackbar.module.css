@@ -1,0 +1,27 @@
+.container {
+  position: fixed;
+  bottom: 5%;
+  right: 5%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--status-info);
+  color: var(--accent-contrast);
+  padding: 4px;
+  border-radius: 4px;
+  overflow: hidden;
+  animation: 300ms ease-out forwards slide-up;
+  z-index: var(--z-toast);
+}
+
+.label {
+  padding: 12px 8px;
+}
+
+.container .dismiss {
+  width: 32px;
+  height: 32px;
+  margin: 0 4px;
+  background-color: transparent;
+  color: inherit;
+}

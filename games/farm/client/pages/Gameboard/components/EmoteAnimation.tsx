@@ -1,4 +1,4 @@
-import { useEffect, useRef, type ReactElement } from 'react';
+import { memo, useEffect, useRef, type ReactElement } from 'react';
 
 import { EMOTES, type EmoteId } from '@game/game-farm/shared';
 
@@ -9,7 +9,7 @@ interface EmoteAnimationProps {
   onAnimationEnd?: () => void;
 }
 
-export default function EmoteAnimation({
+function EmoteAnimation({
   emoteId,
   onAnimationEnd,
 }: EmoteAnimationProps): ReactElement {
@@ -34,9 +34,12 @@ export default function EmoteAnimation({
     return <></>;
   }
 
+
   return (
     <div className={styles.emote} style={{ left: `${leftRef.current}px` }}>
       {emote.emoji}
     </div>
   );
 }
+
+export default memo(EmoteAnimation);

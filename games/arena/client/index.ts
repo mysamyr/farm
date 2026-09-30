@@ -10,7 +10,7 @@ import Gameboard from './pages/Gameboard/index.js';
 
 export const arenaConfig: GameConfig = {
   id: GameId.arena,
-  maxPlayers: 2,
+  maxPlayers: 4,
   minPlayers: 2,
   color: GameColor.blue,
   emoji: '⚔️',

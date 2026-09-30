@@ -1,8 +1,7 @@
 import type { ReactElement } from 'react';
 
 import { ButtonVariant } from '../../constants/index.js';
-import { useModal } from '../../hooks/useModal.js';
-
+import { useModal } from '../../hooks/index.js';
 import Button from '../Button.js';
 
 import styles from './ConfirmationModal.module.css';
