@@ -20,7 +20,7 @@ type BattleLogProps = {
 
 function BattleLog({ steps }: BattleLogProps): ReactElement {
   const t = useArenaTranslation();
-  const { battleLog, effectLabels, statLabels, skillNames, util } = t;
+  const { battleLog, effects, statLabels, skillNames, util } = t;
   const [isOpen, setIsOpen] = useState(
     () =>
       typeof window !== 'undefined' &&
@@ -28,79 +28,50 @@ function BattleLog({ steps }: BattleLogProps): ReactElement {
   );
 
   const entries = useMemo(() => {
-    const getTargetLabel = (
-      target: ActionTarget,
-      targetName?: string
-    ): string =>
-      target === ActionTarget.self ? util.self : (targetName ?? util.opponent);
     const formatDuration = (duration: number | undefined): string =>
       duration === undefined || !Number.isFinite(duration)
         ? ''
         : battleLog.durationTurns.replace('{turns}', String(duration));
-    const getEffectText = (effect: LogEffect, targetName?: string): string => {
-      const target = (value: ActionTarget): string =>
-        getTargetLabel(value, targetName);
-
-      switch (effect.kind) {
-        case LogEffectKind.damage:
-          return battleLog.damage
-            .replace('{target}', target(effect.target))
-            .replace('{value}', String(effect.value))
-            .replace('{crit}', effect.isCrit ? battleLog.crit : '');
-        case LogEffectKind.dodge:
-          return battleLog.dodge.replace('{target}', target(effect.target));
-        case LogEffectKind.heal:
-          return battleLog.heal.replace('{value}', String(effect.value));
-        case LogEffectKind.lifesteal:
-          return battleLog.lifesteal.replace('{value}', String(effect.value));
-        case LogEffectKind.bleed:
-          return battleLog.bleed.replace('{value}', String(effect.value));
-        case LogEffectKind.poison:
-          return battleLog.poison.replace('{value}', String(effect.value));
-        case LogEffectKind.regeneration:
-          return battleLog.regeneration.replace(
-            '{value}',
-            String(effect.value)
-          );
-        case LogEffectKind.thorns:
-          return battleLog.thorns.replace('{value}', String(effect.value));
-        case LogEffectKind.leech:
-          return battleLog.leech.replace('{value}', String(effect.value));
-        case LogEffectKind.cleanse:
-          return battleLog.cleanse;
-        case LogEffectKind.reduce_cooldowns:
-          return battleLog.reduceCooldowns.replace(
-            '{value}',
-            String(effect.value)
-          );
-        case LogEffectKind.resist:
-          return battleLog.resist
-            .replace('{target}', target(effect.target))
-            .replace('{status}', effectLabels[effect.status]);
-        case LogEffectKind.reflect:
-          return battleLog.reflect.replace('{target}', target(effect.target));
-        case LogEffectKind.apply_status: {
-          const value =
-            'value' in effect && effect.value !== undefined
-              ? ` (${effect.value})`
-              : '';
-          const duration = formatDuration(
-            'duration' in effect ? effect.duration : undefined
-          );
-          return battleLog.applyStatus
-            .replace('{target}', target(effect.target))
-            .replace('{status}', effectLabels[effect.status])
-            .replace('{value}', value)
-            .replace('{duration}', duration);
-        }
-        case LogEffectKind.modify_stat:
-          return battleLog.modifyStat
-            .replace('{target}', target(effect.target))
-            .replace('{sign}', effect.value >= 0 ? '+' : '')
-            .replace('{value}', String(effect.value))
-            .replace('{stat}', getStatLabel(effect.stat, statLabels))
-            .replace('{duration}', formatDuration(effect.duration));
+    const getEffectText = (effect: LogEffect, step: LogStep): string => {
+      let message = battleLog.messages[effect.kind];
+      if (effect.kind === LogEffectKind.apply_status) {
+        const value =
+          'value' in effect &&
+          typeof effect.value === 'number' &&
+          effects[effect.status].value
+            ? ` (${effect.value})`
+            : '';
+        message = message.replace('{value}', value);
+      } else if ('value' in effect && typeof effect.value === 'number') {
+        message = message.replace('{value}', String(effect.value));
       }
+      if ('status' in effect) {
+        message = message.replace('{status}', effects[effect.status].name);
+      }
+      if (effect.kind === LogEffectKind.modify_stat) {
+        message = message
+          .replace('{sign}', effect.value >= 0 ? '+' : '')
+          .replace('{stat}', getStatLabel(effect.stat, statLabels));
+      }
+      if (effect.kind === LogEffectKind.damage) {
+        message = message.replace(
+          '{crit}',
+          effect.isCrit ? battleLog.crit : ''
+        );
+      }
+      const duration =
+        'duration' in effect && typeof effect.duration === 'number'
+          ? effect.duration
+          : undefined;
+      message = message.replace('{duration}', formatDuration(duration));
+
+      const target =
+        effect.target === ActionTarget.self
+          ? step.playerName
+          : (step.targetName ?? util.opponent);
+      return battleLog.row
+        .replace('{target}', target)
+        .replace('{message}', message);
     };
     const getEffectClass = (effect: LogEffect): string | undefined => {
       switch (effect.kind) {
@@ -127,11 +98,11 @@ function BattleLog({ steps }: BattleLogProps): ReactElement {
       step,
       effects: step.effects.map(effect => ({
         effect,
-        text: getEffectText(effect, step.targetName),
+        text: getEffectText(effect, step),
         className: getEffectClass(effect),
       })),
     }));
-  }, [battleLog, effectLabels, statLabels, steps, util]);
+  }, [battleLog, effects, statLabels, steps, util]);
 
   return (
     <div className={classNames(styles.panel, isOpen && styles.expanded)}>

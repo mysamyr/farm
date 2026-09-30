@@ -10,14 +10,19 @@ import styles from './EffectTooltip.module.css';
 type EffectTooltipProps = {
   effectId: EffectId;
   label: string;
+  value: number;
 };
 
-function EffectTooltip({ effectId, label }: EffectTooltipProps): ReactElement {
+function EffectTooltip({
+  effectId,
+  label,
+  value,
+}: EffectTooltipProps): ReactElement {
   return (
     <Tooltip
       trigger="hover-click"
       className={styles.wrapper}
-      content={<EffectDescription effectId={effectId} />}
+      content={<EffectDescription effectId={effectId} value={value} />}
     >
       <button type="button" className={styles.badge}>
         {label}

@@ -12,7 +12,7 @@ import {
 
 export default function ArenaHelpModal(): ReactElement {
   const help = useArenaHelpTranslation();
-  const { statLabels, effectLabels } = useArenaTranslation();
+  const { statLabels, effects } = useArenaTranslation();
   const statIds = Object.values(StatId);
   const effectIds = Object.values(EffectId);
 
@@ -41,7 +41,7 @@ export default function ArenaHelpModal(): ReactElement {
       <ul>
         {effectIds.map(id => (
           <li key={id}>
-            {getEffectIcon(id)} {effectLabels[id]} — {help.effects[id]}
+            {getEffectIcon(id)} {effects[id].name} — {effects[id].description}
           </li>
         ))}
       </ul>

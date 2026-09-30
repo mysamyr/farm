@@ -46,7 +46,7 @@ Used during the fighter's turn and usually have cooldowns.
 
 - **Attack**: Deal 10 damage.
 - **Skip**: Perform no action and end the turn.
-- **Bleed Strike**: Deal 8 damage and apply Bleed for 2 turns, dealing 15% of current HP each tick.
+- **Bleed Strike**: Deal 8 damage and apply Bleed for 2 turns, dealing 15% of current HP each tick (minimum 5 damage).
 - **Viper Strike**: Deal 6 damage and apply Poison for 5 turns, dealing 5 damage each tick.
 - **Vampiric Strike**: Deal 10 damage and heal for 50% of the damage dealt.
 - **Bash Strike**: Deal 8 damage and reduce the opponent's Attack by 5 for 2 turns.
@@ -85,7 +85,7 @@ HP bonuses increase maximum HP and also allow the fighter's current HP to remain
 
 ## Status Effects
 
-- **Bleed**: Deals damage based on the target's current effective HP.
+- **Bleed**: Deals damage based on the target's current effective HP, with a minimum of 5 damage per tick.
 - **Poison**: Deals fixed damage each tick.
 - **Regeneration**: Restores fixed HP each tick.
 - **Resistance**: Prevents new Bleed and Poison from being applied and reduces incoming direct damage by its percentage. It does not remove existing effects.

@@ -17,17 +17,76 @@ export const arenaGameTranslation: ArenaTranslation = {
     crit: '🎯 Crit',
     dodge: '💨 Evade',
   },
-  effectLabels: {
-    regeneration: 'Regeneration',
-    resistance: 'Resistance',
-    thorns: 'Thorns',
-    leech: 'Leech',
-    poison: 'Poison',
-    bleed: 'Bleed',
-    stun: 'Stun',
-    pierce: 'Pierce',
-    reflection: 'Reflection',
-    berserk: 'Berserk',
+  effects: {
+    regeneration: {
+      name: 'Regeneration',
+      description: 'Restore HP at the end of your turn.',
+      value: {
+        badge: '{value}',
+        description: 'Currently restores {value} HP per turn.',
+      },
+    },
+    resistance: {
+      name: 'Resistance',
+      description:
+        'Block new Bleed and Poison, and reduce incoming direct damage. Does not remove effects already applied.',
+      value: {
+        badge: '{value}%',
+        description: 'Currently reduces incoming direct damage by {value}%.',
+      },
+    },
+    thorns: {
+      name: 'Thorns',
+      description: 'Reflect a portion of direct damage back to the attacker.',
+      value: {
+        badge: '{value}%',
+        description: 'Currently reflects {value}% of direct damage.',
+      },
+    },
+    leech: {
+      name: 'Leech',
+      description: 'Heal a portion of the direct damage you deal.',
+      value: {
+        badge: '{value}%',
+        description:
+          'Currently restores {value}% of direct damage dealt as HP.',
+      },
+    },
+    poison: {
+      name: 'Poison',
+      description: 'Take a fixed amount of damage each turn.',
+      value: {
+        badge: '{value}',
+        description: 'Currently deals {value} damage per turn.',
+      },
+    },
+    bleed: {
+      name: 'Bleed',
+      description: 'Damage each turn is based on current HP (minimum 5).',
+      value: {
+        badge: '{value}%',
+        description: 'Deals {value}% of current HP per turn (minimum 5).',
+      },
+    },
+    stun: {
+      name: 'Stun',
+      description:
+        'Cannot use skills (only Skip). Skill cooldowns do not tick down.',
+    },
+    pierce: {
+      name: 'Pierce',
+      description: "Ignore all of the opponent's Armor.",
+    },
+    reflection: {
+      name: 'Reflection',
+      description:
+        'Redirect incoming debuffs (Bleed, Poison, Stun, and stat reductions) to the attacker, with the same values and duration. Does not bounce twice.',
+    },
+    berserk: {
+      name: 'Berserk',
+      description:
+        'Increase total damage dealt based on current HP: 5% at 51-75%, 10% at 26-50%, 20% at 11-25%, and 30% at 10% or less.',
+    },
   },
   skillNames: {
     attack: 'Attack',
@@ -122,22 +181,25 @@ export const arenaGameTranslation: ArenaTranslation = {
     noActionsYet: 'No actions yet.',
     turnLabel: 'Turn',
     used: 'used',
-    damage: '{target}: {value} damage{crit}',
+    row: '{target}: {message}',
+    messages: {
+      damage: '{value} damage{crit}',
+      dodge: 'dodged',
+      heal: '+{value} heal',
+      lifesteal: '+{value} lifesteal',
+      bleed: '-{value} bleed',
+      poison: '-{value} poison',
+      regeneration: '+{value} regeneration',
+      thorns: '-{value} thorns',
+      leech: '+{value} leech',
+      cleanse: 'Cleansed negative effects',
+      reduce_cooldowns: 'Reduced all own cooldowns by {value}',
+      resist: 'resisted {status}',
+      reflect: 'reflected debuffs',
+      apply_status: 'applied {status}{value}{duration}',
+      modify_stat: '{sign}{value} {stat}{duration}',
+    },
     crit: ' (crit)',
-    dodge: '{target}: dodged',
-    heal: '+{value} heal',
-    lifesteal: '+{value} lifesteal',
-    bleed: '-{value} bleed',
-    poison: '-{value} poison',
-    regeneration: '+{value} regeneration',
-    thorns: '-{value} thorns',
-    leech: '+{value} leech',
-    cleanse: 'Cleansed negative effects',
-    reduceCooldowns: 'Reduced all own cooldowns by {value}',
-    resist: '{target}: resisted {status}',
-    reflect: '{target}: reflected debuffs',
-    applyStatus: '{target}: applied {status}{value}{duration}',
-    modifyStat: '{target}: {sign}{value} {stat}{duration}',
     durationTurns: ' for {turns} turns',
   },
   ruleLabels: {
@@ -172,21 +234,6 @@ export const arenaHelpTranslation: ArenaHelpTranslation = {
   effectsHeader: 'Effects',
   effectsIntro:
     'Effects are statuses on a fighter. Some last a number of turns; others stay for the whole fight (passives).',
-  effects: {
-    regeneration: 'Restore HP at the end of your turn.',
-    resistance:
-      'Block new Bleed and Poison, and reduce incoming direct damage by 30%. Does not remove effects already applied.',
-    thorns: 'Reflect a portion of direct damage back to the attacker.',
-    leech: 'Heal a portion of the direct damage you deal.',
-    poison: 'Take a fixed amount of damage each turn.',
-    bleed: 'Take damage each turn based on current HP.',
-    stun: 'Cannot use skills (only Skip). Skill cooldowns do not tick down.',
-    pierce: "Ignore all of the opponent's Armor.",
-    reflection:
-      'Redirect incoming debuffs (Bleed, Poison, Stun, and stat reductions) to the attacker, with the same values and duration. Does not bounce twice.',
-    berserk:
-      'Increase total damage dealt based on current HP: 5% at 51-75%, 10% at 26-50%, 20% at 11-25%, and 30% at 10% or less.',
-  },
   turnHeader: 'Turn processing',
   turnIntro: 'Each turn runs in a fixed order:',
   turnSteps: [

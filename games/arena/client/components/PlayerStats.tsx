@@ -10,7 +10,7 @@ import {
   EffectId,
 } from '@game/game-arena/shared';
 
-import { getEffectIcon } from '../constants/index.js';
+import { formatEffectValue, getEffectIcon } from '../constants/index.js';
 import { useArenaTranslation } from '../hooks/useArenaTranslation.js';
 import { getPlayerStats } from '../utils/index.js';
 
@@ -40,9 +40,7 @@ type PlayerStatsProps = {
   isActive: boolean;
   critHitEventKey?: string;
   isWinner?: boolean;
-  isLoser?: boolean;
   isMatchEnded?: boolean;
-  showStatuses?: boolean;
   isSelf?: boolean;
   isTarget?: boolean;
   isEliminated?: boolean;
@@ -55,29 +53,33 @@ function PlayerStatsDisplay({
   isActive,
   critHitEventKey,
   isWinner = false,
-  isLoser = false,
   isMatchEnded = false,
-  showStatuses = false,
   isSelf = false,
   isTarget = false,
   isEliminated = false,
   onSelect,
 }: PlayerStatsProps): ReactElement {
   const t = useArenaTranslation();
-  const getStatusLabel = (status: StatusEffect): string => {
-    const effectId = status.type as EffectId;
-    const label = `${getEffectIcon(effectId)} ${
-      t.effectLabels[effectId] ?? status.type
-    }`;
-    return status.remainingDuration === undefined
-      ? label
-      : `${label} (${status.remainingDuration})`;
-  };
   const stats = getPlayerStats(player);
   const visibleStatuses = player.statuses.filter(
     s => !StatId[s.type as StatId]
   );
   const selectable = Boolean(onSelect) && !isEliminated;
+
+  const getStatusLabel = (status: StatusEffect): string => {
+    const effectId = status.type as EffectId;
+    const effect = t.effects[effectId];
+    const valueLabel = effect?.value
+      ? formatEffectValue(effect.value.badge, status.value)
+      : undefined;
+    const label = `${getEffectIcon(effectId)} ${
+      effect?.name ?? status.type
+    }${valueLabel ? ` ${valueLabel}` : ''}`;
+    return status.remainingDuration === undefined
+      ? label
+      : `${label} (${status.remainingDuration})`;
+  };
+
   const handleSelect = () => onSelect?.(player.id);
 
   return (
@@ -85,7 +87,6 @@ function PlayerStatsDisplay({
       className={classNames(
         styles.card,
         isActive && styles.active,
-        isLoser && styles.loser,
         isWinner && styles.winner,
         isSelf && styles.self,
         isTarget && styles.target,
@@ -161,7 +162,7 @@ function PlayerStatsDisplay({
           </div>
         ))}
       </div>
-      {showStatuses && visibleStatuses.length > 0 && (
+      {visibleStatuses.length > 0 && (
         <div className={styles.statusList}>
           {visibleStatuses.map((status, i) => {
             const key = `${status.type}-${i}`;
@@ -177,7 +178,12 @@ function PlayerStatsDisplay({
             }
 
             return (
-              <EffectTooltip key={key} effectId={effectId} label={label} />
+              <EffectTooltip
+                key={key}
+                effectId={effectId}
+                label={label}
+                value={status.value}
+              />
             );
           })}
         </div>

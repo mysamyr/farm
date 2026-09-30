@@ -48,7 +48,7 @@ function SkillDetails({
     skill,
     t.skillEffectLabels,
     t.statLabels,
-    t.effectLabels,
+    t.effects,
     t.util
   );
   const cooldownText = getSkillCooldownText(skill, t.skillEffectLabels);
@@ -73,11 +73,7 @@ function SkillDetails({
       {appliedEffects.length > 0 && (
         <div className={styles.effectDetails}>
           {appliedEffects.map(effectId => (
-            <EffectDescription
-              key={effectId}
-              effectId={effectId}
-              compact={compact}
-            />
+            <EffectDescription key={effectId} effectId={effectId} />
           ))}
         </div>
       )}

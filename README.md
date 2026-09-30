@@ -4,3 +4,5 @@
 - [ ] generate README.md
 - [ ] add password-protected rooms ?
 - [ ] Single player games ?
+
+ARENA - після завершення бою показати вибрані навички всіх гравців (показати одразу для полеглих)

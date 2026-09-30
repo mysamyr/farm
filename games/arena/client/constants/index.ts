@@ -12,10 +12,10 @@ import {
 } from '@game/game-arena/shared';
 
 import type {
+  ArenaEffectsTranslation,
   ArenaSkillEffectLabelsTranslation,
   ArenaSkillNamesTranslation,
   ArenaStatLabelsTranslation,
-  ArenaEffectLabelsTranslation,
   UtilTranslation,
 } from '../i18n/index.js';
 
@@ -67,6 +67,10 @@ export const EFFECT_ICONS: Record<EffectId, string> = {
 
 export function getEffectIcon(effectId: EffectId): string {
   return EFFECT_ICONS[effectId] ?? '✨';
+}
+
+export function formatEffectValue(template: string, value: number): string {
+  return template.replace('{value}', String(value));
 }
 
 export function getSkillName(
@@ -141,7 +145,7 @@ function formatAction(
   action: GameAction,
   labels: ArenaSkillEffectLabelsTranslation,
   statLabels: ArenaStatLabelsTranslation,
-  effectLabels: ArenaEffectLabelsTranslation,
+  effects: ArenaEffectsTranslation,
   util: UtilTranslation
 ): string {
   switch (action.type) {
@@ -170,7 +174,7 @@ function formatAction(
           ? ` (${formatActionValue(action.value, labels, statLabels, util)})`
           : '';
       return labels.applyStatus
-        .replace('{status}', effectLabels[action.status])
+        .replace('{status}', effects[action.status].name)
         .replace('{value}', val)
         .replace(
           '{target}',
@@ -223,13 +227,13 @@ export function getSkillEffects(
   skill: Skill,
   labels: ArenaSkillEffectLabelsTranslation,
   statLabels: ArenaStatLabelsTranslation,
-  effectLabels: ArenaEffectLabelsTranslation,
+  effects: ArenaEffectsTranslation,
   util: UtilTranslation
 ): string[] {
   if (skill.actions.length === 0) {
     return [labels.noEffects];
   }
   return skill.actions.map(a =>
-    formatAction(a, labels, statLabels, effectLabels, util)
+    formatAction(a, labels, statLabels, effects, util)
   );
 }

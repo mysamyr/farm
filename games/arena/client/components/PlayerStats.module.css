@@ -78,10 +78,6 @@
   box-shadow: 0 0 8px var(--status-highlight);
 }
 
-.card.loser {
-  opacity: 0.6;
-}
-
 .header {
   display: flex;
   align-items: center;

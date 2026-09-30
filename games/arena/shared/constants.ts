@@ -498,7 +498,7 @@ export const SKILLS: Record<SkillId, Skill> = {
         type: ActionType.APPLY_STATUS,
         target: ActionTarget.self,
         status: EffectId.thorns,
-        value: { source: ActionValueSource.percent, percent: 40 },
+        value: { source: ActionValueSource.percent, percent: 30 },
       },
     ],
   },

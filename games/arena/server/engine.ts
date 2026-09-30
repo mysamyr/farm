@@ -217,7 +217,7 @@ function processStatusEffects(
         break;
       }
       case EffectId.bleed: {
-        const damage = Math.max(Math.floor((playerHp * status.value) / 100), 1);
+        const damage = Math.max(Math.floor((playerHp * status.value) / 100), 5);
         applyDamage(player, damage);
         ctx.addEffect({
           kind: LogEffectKind.bleed,

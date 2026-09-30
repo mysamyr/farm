@@ -17,17 +17,76 @@ export const arenaGameTranslation: ArenaTranslation = {
     crit: '🎯 Крит',
     dodge: '💨 Ухил',
   },
-  effectLabels: {
-    regeneration: 'Регенерація',
-    resistance: 'Стійкість',
-    thorns: 'Шипи',
-    leech: 'Вампірик',
-    poison: 'Отрута',
-    bleed: 'Кровотеча',
-    stun: 'Оніміння',
-    pierce: 'Пробій',
-    reflection: 'Відбиття',
-    berserk: 'Берсерк',
+  effects: {
+    regeneration: {
+      name: 'Регенерація',
+      description: 'Відновлює HP наприкінці вашого ходу.',
+      value: {
+        badge: '{value}',
+        description: 'Зараз відновлює {value} HP за хід.',
+      },
+    },
+    resistance: {
+      name: 'Стійкість',
+      description:
+        'Блокує нові Кровотечу та Отруту і зменшує вхідну пряму шкоду. Не знімає вже накладені ефекти.',
+      value: {
+        badge: '{value}%',
+        description: 'Зараз зменшує отриману пряму шкоду на {value}%.',
+      },
+    },
+    thorns: {
+      name: 'Шипи',
+      description: 'Повертає частину прямої шкоди атакуючому.',
+      value: {
+        badge: '{value}%',
+        description: 'Зараз повертає {value}% прямої шкоди.',
+      },
+    },
+    leech: {
+      name: 'Вампірик',
+      description: 'Лікує частину прямої шкоди, яку ви завдаєте.',
+      value: {
+        badge: '{value}%',
+        description:
+          'Зараз відновлює HP у розмірі {value}% завданої прямої шкоди.',
+      },
+    },
+    poison: {
+      name: 'Отрута',
+      description: 'Фіксована шкода щоходу.',
+      value: {
+        badge: '{value}',
+        description: 'Зараз завдає {value} шкоди за хід.',
+      },
+    },
+    bleed: {
+      name: 'Кровотеча',
+      description: 'Шкода щоходу залежить від поточного HP (мінімум 5).',
+      value: {
+        badge: '{value}%',
+        description: 'Завдає {value}% від поточного HP за хід (мінімум 5).',
+      },
+    },
+    stun: {
+      name: 'Оніміння',
+      description:
+        'Не можна використовувати навички (лише Пропустити). Перезаряджання не зменшується.',
+    },
+    pierce: {
+      name: 'Пробій',
+      description: 'Ігнорує всю Броню суперника.',
+    },
+    reflection: {
+      name: 'Відбиття',
+      description:
+        'Перенаправляє вхідні дебафи (Кровотеча, Отрута, Оніміння та зниження статів) на атакуючого з тими самими значеннями і тривалістю. Не відбивається повторно.',
+    },
+    berserk: {
+      name: 'Берсерк',
+      description:
+        'Збільшує загальну завдану шкоду залежно від поточного HP: 5% при 51-75%, 10% при 26-50%, 20% при 11-25% та 30% при 10% або менше.',
+    },
   },
   skillNames: {
     attack: 'Атака',
@@ -122,22 +181,25 @@ export const arenaGameTranslation: ArenaTranslation = {
     noActionsYet: 'Немає дій.',
     turnLabel: 'Хід',
     used: 'використав',
-    damage: '{target}: {value} шкоди{crit}',
+    row: '{target}: {message}',
+    messages: {
+      damage: '{value} шкоди{crit}',
+      dodge: 'ухилився',
+      heal: '+{value} зцілення',
+      lifesteal: '+{value} вампіризм',
+      bleed: '-{value} кровотеча',
+      poison: '-{value} отрута',
+      regeneration: '+{value} регенерація',
+      thorns: '-{value} шипи',
+      leech: '+{value} вампірик',
+      cleanse: 'Очищено негативні ефекти',
+      reduce_cooldowns: 'Зменшено всі власні кулдауни на {value}',
+      resist: 'відбив {status}',
+      reflect: 'відбив дебафи',
+      apply_status: 'накладено {status}{value}{duration}',
+      modify_stat: '{sign}{value} {stat}{duration}',
+    },
     crit: ' (крит)',
-    dodge: '{target}: ухилився',
-    heal: '+{value} зцілення',
-    lifesteal: '+{value} вампіризм',
-    bleed: '-{value} кровотеча',
-    poison: '-{value} отрута',
-    regeneration: '+{value} регенерація',
-    thorns: '-{value} шипи',
-    leech: '+{value} вампірик',
-    cleanse: 'Очищено негативні ефекти',
-    reduceCooldowns: 'Зменшено всі власні кулдауни на {value}',
-    resist: '{target}: відбив {status}',
-    reflect: '{target}: відбив дебафи',
-    applyStatus: '{target}: накладено {status}{value}{duration}',
-    modifyStat: '{target}: {sign}{value} {stat}{duration}',
     durationTurns: ' на {turns} ходів',
   },
   ruleLabels: {
@@ -172,21 +234,6 @@ export const arenaHelpTranslation: ArenaHelpTranslation = {
   effectsHeader: 'Ефекти',
   effectsIntro:
     'Ефекти — це статуси на бійці. Одні тривають кілька ходів, інші залишаються на весь бій (пасивні).',
-  effects: {
-    regeneration: 'Відновлює HP наприкінці вашого ходу.',
-    resistance:
-      'Блокує нові Кровотечу та Отруту і зменшує вхідну пряму шкоду на 30%. Не знімає вже накладені ефекти.',
-    thorns: 'Повертає частину прямої шкоди атакуючому.',
-    leech: 'Лікує частину прямої шкоди, яку ви завдаєте.',
-    poison: 'Фіксована шкода щоходу.',
-    bleed: 'Шкода щоходу від поточного HP.',
-    stun: 'Не можна використовувати навички (лише Пропустити). Перезаряджання не зменшується.',
-    pierce: 'Ігнорує всю Броню суперника.',
-    reflection:
-      'Перенаправляє вхідні дебафи (Кровотеча, Отрута, Оніміння та зниження статів) на атакуючого з тими самими значеннями і тривалістю. Не відбивається повторно.',
-    berserk:
-      'Збільшує загальну завдану шкоду залежно від поточного HP: 5% при 51-75%, 10% при 26-50%, 20% при 11-25% та 30% при 10% або менше.',
-  },
   turnHeader: 'Обробка ходу',
   turnIntro: 'Кожен хід проходить у фіксованому порядку:',
   turnSteps: [

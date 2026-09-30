@@ -75,7 +75,6 @@ function SpectatorPreparation({ room }: PreparationProps): ReactElement {
                 isActive={false}
                 isEliminated={false}
                 isMatchEnded={false}
-                showStatuses
               />
               {player.ready && <SpectatorSkills player={player} />}
             </section>
@@ -241,7 +240,6 @@ function PreparationPlayer({ room }: PreparationProps): ReactElement {
               player={previewPlayer}
               turnOrder={room.order.indexOf(previewPlayer.id) + 1}
               isActive={false}
-              showStatuses
             />
           </div>
         )}

@@ -57,9 +57,7 @@ function OpponentsZone({
               isEliminated={eliminated}
               critHitEventKey={getCritHitEventKey(opponent.id)}
               isWinner={winnerId === opponent.id}
-              isLoser={isMatchEnded && !!winnerId && winnerId !== opponent.id}
               isMatchEnded={isMatchEnded}
-              showStatuses
               onSelect={onSelectTarget}
             />
           );

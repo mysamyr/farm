@@ -60,7 +60,6 @@ function SpectatorFight({ room }: FightProps): ReactElement {
                 isEliminated={isPlayerEliminated(player)}
                 isWinner={room.winner === player.id}
                 isMatchEnded={Boolean(room.winner)}
-                showStatuses
               />
               <SpectatorSkills player={player} />
             </section>
@@ -217,7 +216,6 @@ function FightPlayer({ room }: FightProps): ReactElement {
               isStunned={hasStun(self)}
               isGameOver={isGameOver}
               isWinner={room.winner === self.id}
-              isLoser={isGameOver && !!room.winner && room.winner !== self.id}
               critHitEventKey={getCritHitEventKey(self.id)}
               onUseSkill={handleUseSkill}
             />

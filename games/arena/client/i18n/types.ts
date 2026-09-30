@@ -1,8 +1,34 @@
-import { SkillId, StatId, EffectId, GAME_RULES } from '../../shared/index.js';
+import type {
+  ApplyStatusAction,
+  DirectActionValue,
+  LogEffectKind,
+  SkillId,
+  StatId,
+  EffectId,
+  GAME_RULES,
+} from '../../shared/index.js';
 
 export type ArenaStatLabelsTranslation = Record<StatId, string>;
 
-export type ArenaEffectLabelsTranslation = Record<EffectId, string>;
+type ValuedEffectId = Extract<
+  ApplyStatusAction,
+  { value: DirectActionValue }
+>['status'];
+type EffectValueTemplate = `${string}{value}${string}`;
+
+export type ArenaEffectsTranslation = {
+  [Id in EffectId]: {
+    name: string;
+    description: string;
+  } & (Id extends ValuedEffectId
+    ? {
+        value: {
+          badge: EffectValueTemplate;
+          description: EffectValueTemplate;
+        };
+      }
+    : { value?: never });
+};
 
 export type ArenaSkillNamesTranslation = Record<SkillId, string>;
 
@@ -73,22 +99,9 @@ export interface ArenaBattleLogTranslation {
   noActionsYet: string;
   turnLabel: string;
   used: string;
-  damage: string;
+  row: `${string}{target}${string}{message}${string}`;
+  messages: Record<LogEffectKind, string>;
   crit: string;
-  dodge: string;
-  heal: string;
-  lifesteal: string;
-  bleed: string;
-  poison: string;
-  regeneration: string;
-  thorns: string;
-  leech: string;
-  cleanse: string;
-  reduceCooldowns: string;
-  resist: string;
-  reflect: string;
-  applyStatus: string;
-  modifyStat: string;
   durationTurns: string;
 }
 
@@ -103,7 +116,7 @@ export interface ArenaTranslation {
   name: string;
   shortDescription: string;
   statLabels: ArenaStatLabelsTranslation;
-  effectLabels: ArenaEffectLabelsTranslation;
+  effects: ArenaEffectsTranslation;
   skillNames: ArenaSkillNamesTranslation;
   skillEffectLabels: ArenaSkillEffectLabelsTranslation;
   skillInfoLabel: string;
@@ -115,8 +128,6 @@ export interface ArenaTranslation {
 }
 
 export type ArenaHelpStatDescriptions = Record<StatId, string>;
-
-export type ArenaHelpEffectDescriptions = Record<EffectId, string>;
 
 export interface ArenaHelpTranslation {
   title: string;
@@ -131,7 +142,6 @@ export interface ArenaHelpTranslation {
   passiveSkills: string;
   effectsHeader: string;
   effectsIntro: string;
-  effects: ArenaHelpEffectDescriptions;
   turnHeader: string;
   turnIntro: string;
   turnSteps: string[];

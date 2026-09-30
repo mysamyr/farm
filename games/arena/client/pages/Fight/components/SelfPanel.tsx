@@ -16,7 +16,6 @@ type SelfPanelProps = {
   isStunned: boolean;
   isGameOver: boolean;
   isWinner: boolean;
-  isLoser: boolean;
   critHitEventKey?: string;
   onUseSkill: (skillId: SkillId) => void;
 };
@@ -29,7 +28,6 @@ function SelfPanel({
   isStunned,
   isGameOver,
   isWinner,
-  isLoser,
   critHitEventKey,
   onUseSkill,
 }: SelfPanelProps): ReactElement {
@@ -46,9 +44,7 @@ function SelfPanel({
           isEliminated={eliminated}
           critHitEventKey={critHitEventKey}
           isWinner={isWinner}
-          isLoser={isLoser}
           isMatchEnded={isGameOver}
-          showStatuses
         />
       </div>
       <div className={styles.skillsSlot}>
