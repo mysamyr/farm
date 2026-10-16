@@ -26,13 +26,15 @@ export const SKILL_ICONS: Record<SkillId, string> = {
   bleed_strike: '🔪',
   viper_strike: '🐍',
   knockback: '💥',
-  corrosion: '🛡️',
+  corrosion: '💧',
+  ignite: '🔥',
   heal: '💚',
   regeneration: '🌿',
   resistance: '🫧',
   cleanse: '✨',
   meditation: '🧘',
   rage: '😡',
+  raise_shield: '🛡️',
   spiked_armor: '✴️',
   reflect: '🪞',
   vampiric_strike: '🧛',
@@ -41,11 +43,12 @@ export const SKILL_ICONS: Record<SkillId, string> = {
   plating: '⚙️',
   assassin: '🥷',
   strong: '💪',
-  fanatic: '🔥',
+  fanatic: '💢',
   thorns: '🌵',
   leech: '🩸',
   pierce: '🗡️',
-  berserk: '🔥',
+  berserk: '🪓',
+  aegis: '✧',
 };
 
 export function getSkillIcon(skillId: SkillId): string {
@@ -54,6 +57,7 @@ export function getSkillIcon(skillId: SkillId): string {
 
 export const EFFECT_ICONS: Record<EffectId, string> = {
   poison: '☠️',
+  ignition: '🔥',
   bleed: '🩸',
   stun: '💫',
   regeneration: '💚',
@@ -62,7 +66,8 @@ export const EFFECT_ICONS: Record<EffectId, string> = {
   leech: '🧛',
   pierce: '🗡️',
   reflection: '🪞',
-  berserk: '🔥',
+  berserk: '🪓',
+  aegis: '✧',
 };
 
 export function getEffectIcon(effectId: EffectId): string {

@@ -78,6 +78,7 @@ function BattleLog({ steps }: BattleLogProps): ReactElement {
         case LogEffectKind.damage:
         case LogEffectKind.bleed:
         case LogEffectKind.poison:
+        case LogEffectKind.ignition:
         case LogEffectKind.thorns:
           return styles.negative;
         case LogEffectKind.heal:

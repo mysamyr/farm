@@ -10,6 +10,7 @@ import { classNames } from '@game/client-core/utils';
 
 import {
   getPlayerMaxHp,
+  getIgnitionDamage,
   type Player,
   SKILLS,
   StatId,
@@ -109,7 +110,12 @@ function PlayerStatsDisplay({
     const effectId = status.type as EffectId;
     const effect = t.effects[effectId];
     const valueLabel = effect?.value
-      ? formatEffectValue(effect.value.badge, status.value)
+      ? formatEffectValue(
+          effect.value.badge,
+          status.type === EffectId.ignition
+            ? getIgnitionDamage(status)
+            : status.value
+        )
       : undefined;
     const label = `${getEffectIcon(effectId)} ${
       effect?.name ?? status.type
@@ -237,37 +243,43 @@ function PlayerStatsDisplay({
                 key={key}
                 effectId={effectId}
                 label={label}
-                value={status.value}
+                value={
+                  status.type === EffectId.ignition
+                    ? getIgnitionDamage(status)
+                    : status.value
+                }
               />
             );
           })}
         </div>
       )}
-      {(showSkills || isEliminated || isMatchEnded) && player.loadout.length > 0 && (
-        <div className={styles.skillsGrid}>
-          {player.loadout.map(skillId => {
-            const skill = SKILLS[skillId];
-            if (!skill) return null;
+      {(showSkills || isEliminated || isMatchEnded) &&
+        player.loadout.length > 0 && (
+          <div className={styles.skillsGrid}>
+            {player.loadout.map(skillId => {
+              const skill = SKILLS[skillId];
+              if (!skill) return null;
 
-            const cooldown =
-              skill.type === SkillType.passive
-                ? undefined
-                : player.skills.find(playerSkill => playerSkill.id === skill.id)
-                    ?.cooldown;
+              const cooldown =
+                skill.type === SkillType.passive
+                  ? undefined
+                  : player.skills.find(
+                      playerSkill => playerSkill.id === skill.id
+                    )?.cooldown;
 
-            return (
-              <SkillCard
-                key={skill.id}
-                skill={skill}
-                cooldown={cooldown}
-                showCooldown={skill.type !== SkillType.passive}
-                disabled
-                onClick={() => undefined}
-              />
-            );
-          })}
-        </div>
-      )}
+              return (
+                <SkillCard
+                  key={skill.id}
+                  skill={skill}
+                  cooldown={cooldown}
+                  showCooldown={skill.type !== SkillType.passive}
+                  disabled
+                  onClick={() => undefined}
+                />
+              );
+            })}
+          </div>
+        )}
     </div>
   );
 }

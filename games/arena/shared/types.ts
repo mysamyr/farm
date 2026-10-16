@@ -91,6 +91,11 @@ export type ApplyStatusAction = BaseAction & {
         value: DirectActionValue;
       }
     | {
+        status: EffectId.ignition;
+        duration: number;
+        value: DirectActionValue;
+      }
+    | {
         status: EffectId.regeneration;
         duration: number;
         value: DirectActionValue;
@@ -124,6 +129,10 @@ export type ApplyStatusAction = BaseAction & {
       }
     | {
         status: EffectId.berserk;
+        value?: never;
+      }
+    | {
+        status: EffectId.aegis;
         value?: never;
       }
   );
@@ -203,6 +212,11 @@ export type ApplyStatusLogEffect = BaseLogEffect & {
         value: number;
       }
     | {
+        status: EffectId.ignition;
+        duration: number;
+        value: number;
+      }
+    | {
         status: EffectId.regeneration;
         duration: number;
         value: number;
@@ -244,6 +258,7 @@ export type LogEffect =
   | (BaseLogEffect & { kind: LogEffectKind.lifesteal; value: number })
   | (BaseLogEffect & { kind: LogEffectKind.bleed; value: number })
   | (BaseLogEffect & { kind: LogEffectKind.poison; value: number })
+  | (BaseLogEffect & { kind: LogEffectKind.ignition; value: number })
   | (BaseLogEffect & { kind: LogEffectKind.regeneration; value: number })
   | (BaseLogEffect & { kind: LogEffectKind.thorns; value: number })
   | (BaseLogEffect & { kind: LogEffectKind.leech; value: number })
@@ -259,7 +274,7 @@ export type LogEffect =
   | (BaseLogEffect & { kind: LogEffectKind.reduce_cooldowns; value: number })
   | (BaseLogEffect & {
       kind: LogEffectKind.resist;
-      status: EffectId.bleed | EffectId.poison;
+      status: EffectId.bleed | EffectId.poison | EffectId.ignition;
     })
   | (BaseLogEffect & { kind: LogEffectKind.reflect });
 
@@ -282,6 +297,7 @@ export interface StatusEffect {
   remainingDuration?: number;
   /** Combat step index when this status was applied; used to skip same-turn ticks. */
   appliedTurn?: number;
+  ignitionMultiplier?: number;
 }
 
 export interface PlayerSkill {

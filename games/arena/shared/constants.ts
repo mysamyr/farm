@@ -42,11 +42,13 @@ export enum SkillId {
   // Active debuffs
   knockback = 'knockback',
   corrosion = 'corrosion',
+  ignite = 'ignite',
   // Active buffs
   resistance = 'resistance',
   cleanse = 'cleanse',
   meditation = 'meditation',
   rage = 'rage',
+  raise_shield = 'raise_shield',
   spiked_armor = 'spiked_armor',
   reflect = 'reflect',
 
@@ -64,12 +66,13 @@ export enum SkillId {
   leech = 'leech',
   pierce = 'pierce',
   berserk = 'berserk',
+  aegis = 'aegis',
 }
 
 export enum EffectId {
   /** Adds hp over time */
   regeneration = 'regeneration',
-  /** Prevents from getting bleed or poison. Doesn't remove active effects */
+  /** Prevents new bleed, poison, or ignition. Doesn't remove active effects */
   resistance = 'resistance',
   /** Returns part of direct damage back to attacker */
   thorns = 'thorns',
@@ -77,6 +80,7 @@ export enum EffectId {
   leech = 'leech',
   /** Applies constant damage over time */
   poison = 'poison',
+  ignition = 'ignition',
   /** Applies damage over time based on player's current hp */
   bleed = 'bleed',
   /** Removes possibility to use skills. No cooldown reduction */
@@ -87,6 +91,7 @@ export enum EffectId {
   reflection = 'reflection',
   /** Increases damage dealt based on current HP */
   berserk = 'berserk',
+  aegis = 'aegis',
 }
 
 export enum SkillType {
@@ -126,6 +131,7 @@ export enum LogEffectKind {
   bleed = 'bleed',
   poison = 'poison',
   regeneration = 'regeneration',
+  ignition = 'ignition',
   thorns = 'thorns',
   leech = 'leech',
   dodge = 'dodge',
@@ -257,6 +263,20 @@ export const SKILLS: Record<SkillId, Skill> = {
       },
     ],
   },
+  [SkillId.ignite]: {
+    id: SkillId.ignite,
+    type: SkillType.active,
+    cooldown: 3,
+    actions: [
+      {
+        type: ActionType.APPLY_STATUS,
+        target: ActionTarget.opponent,
+        status: EffectId.ignition,
+        value: { source: ActionValueSource.raw, amount: 2 },
+        duration: 4,
+      },
+    ],
+  },
   [SkillId.corrosion]: {
     id: SkillId.corrosion,
     type: SkillType.active,
@@ -295,6 +315,20 @@ export const SKILLS: Record<SkillId, Skill> = {
         target: ActionTarget.self,
         stat: StatId.attack,
         value: { source: ActionValueSource.raw, amount: 10 },
+        duration: 3,
+      },
+    ],
+  },
+  [SkillId.raise_shield]: {
+    id: SkillId.raise_shield,
+    type: SkillType.active,
+    cooldown: 3,
+    actions: [
+      {
+        type: ActionType.MODIFY_STAT,
+        target: ActionTarget.self,
+        stat: StatId.armor,
+        value: { source: ActionValueSource.raw, amount: 6 },
         duration: 3,
       },
     ],
@@ -536,6 +570,17 @@ export const SKILLS: Record<SkillId, Skill> = {
       },
     ],
   },
+  [SkillId.aegis]: {
+    id: SkillId.aegis,
+    type: SkillType.passive,
+    actions: [
+      {
+        type: ActionType.APPLY_STATUS,
+        target: ActionTarget.self,
+        status: EffectId.aegis,
+      },
+    ],
+  },
 };
 
 export const BASE_SKILLS: SkillId[] = [SkillId.attack, SkillId.skip];
@@ -548,6 +593,7 @@ export const NEGATIVE_EFFECTS: EffectId[] = [
   EffectId.poison,
   EffectId.bleed,
   EffectId.stun,
+  EffectId.ignition,
 ];
 
 export enum GAME_RULES {

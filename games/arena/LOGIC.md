@@ -52,8 +52,10 @@ Used during the fighter's turn and usually have cooldowns.
 - **Bash Strike**: Deal 8 damage and reduce the opponent's Attack by 5 for 2 turns.
 - **Knockback**: Deal 10 damage and Stun the opponent for 1 turn.
 - **Corrosion**: Reduce the opponent's Armor by 5 for 3 turns.
+- **Ignite**: Apply Ignition for 3 turns with no immediate damage. Cooldown: 3 turns.
 - **Magic Shield**: Grant Resistance for 3 turns, blocking Bleed and Poison and reducing direct damage by 30%.
 - **Rage**: Increase Attack by 8 for 3 turns.
+- **Raise Shield**: Increase Armor by 6 for 3 turns. Cooldown: 3 turns.
 - **Spiked Armor**: Reflect 60% of direct damage received for 2 turns.
 - **Reflect**: Redirect incoming debuffs for 2 turns.
 - **Meditation**: Reduce the fighter's cooldowns by 1.
@@ -79,7 +81,8 @@ Passives are active for the entire fight.
 - **Fanatic**: +4 Attack, +15 maximum HP, and +5% Dodge.
 - **Thorns**: Reflect 40% of direct damage received.
 - **Leech**: Heal for 30% of direct damage dealt.
-- **Pierce**: Ignore all Armor when dealing damage.
+- **Pierce**: Ignore all Armor when dealing damage and reduce Thorns retaliation damage received by 50%.
+- **Aegis**: Newly applied debuffs last 1 turn less (minimum 1), and newly applied buffs last 1 turn longer. Includes timed stat changes; existing and permanent effects are unchanged.
 
 HP bonuses increase maximum HP and also allow the fighter's current HP to remain above the normal 0 boundary until the bonus is exhausted.
 
@@ -88,12 +91,14 @@ HP bonuses increase maximum HP and also allow the fighter's current HP to remain
 - **Bleed**: Deals damage based on the target's current effective HP, with a minimum of 5 damage per tick.
 - **Poison**: Deals fixed damage each tick.
 - **Regeneration**: Restores fixed HP each tick.
-- **Resistance**: Prevents new Bleed and Poison from being applied and reduces incoming direct damage by its percentage. It does not remove existing effects.
+- **Resistance**: Prevents new Bleed, Poison, and Ignition from being applied and reduces incoming direct damage by its percentage. It does not remove existing effects.
 - **Stun**: The fighter may only use `Skip`. Their skill cooldowns do not decrease while stunned.
 - **Thorns**: Reflects a percentage of direct damage to the attacker.
 - **Leech**: Heals the owner for a percentage of direct damage dealt.
-- **Pierce**: Ignores all of the opponent's Armor.
-- **Reflection**: Redirects incoming Bleed, Poison, Stun, and negative stat modifications to the attacker. Reflected effects do not bounce back again.
+- **Pierce**: Ignores all of the opponent's Armor and reduces Thorns retaliation damage received by 50%, rounded down with a minimum of 1 damage.
+- **Reflection**: Redirects incoming Bleed, Poison, Ignition, Stun, and negative stat modifications to the attacker. Reflected effects do not bounce back again.
+- **Ignition**: Deals fire damage at the end of the affected fighter's turn, increasing by its base damage each tick up to 20 damage. With the standard base damage of 2, ticks deal 2, 4, 6, 8, 10, 12, 14, 16, 18, then 20 damage. Refreshing an active Ignition preserves its progression; only actual ticks advance it. Removal or expiry resets progression. Stun does not stop it, Resistance blocks new applications or refreshes, and Aegis reduces its applied duration to 2 turns. Its progression lives on the status, independently for each fighter.
+- **Aegis**: Adjusts new timed effects on its owner: -1 turn for debuffs (minimum 1), +1 turn for buffs. Reflected debuffs use the final recipient's Aegis. Reapplications use the adjusted duration; unrelated existing effects and permanent passives remain unchanged.
 
 Timed effects are tracked in turns. Effects applied during the current turn do not tick or expire until a later turn.
 

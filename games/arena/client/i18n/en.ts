@@ -29,7 +29,7 @@ export const arenaGameTranslation: ArenaTranslation = {
     resistance: {
       name: 'Resistance',
       description:
-        'Block new Bleed and Poison, and reduce incoming direct damage. Does not remove effects already applied.',
+        'Block new Bleed, Poison, and Ignition, and reduce incoming direct damage. Does not remove effects already applied.',
       value: {
         badge: '{value}%',
         description: 'Currently reduces incoming direct damage by {value}%.',
@@ -60,6 +60,15 @@ export const arenaGameTranslation: ArenaTranslation = {
         description: 'Currently deals {value} damage per turn.',
       },
     },
+    ignition: {
+      name: 'Ignition',
+      description:
+        'Take fire damage at the end of your turn. Damage increases by its base amount each consecutive tick, up to 20. Reapplication refreshes duration without resetting progression. Removal or expiry resets it.',
+      value: {
+        badge: '{value}',
+        description: 'Next tick deals {value} fire damage.',
+      },
+    },
     bleed: {
       name: 'Bleed',
       description: 'Damage each turn is based on current HP (minimum 5).',
@@ -75,17 +84,23 @@ export const arenaGameTranslation: ArenaTranslation = {
     },
     pierce: {
       name: 'Pierce',
-      description: "Ignore all of the opponent's Armor.",
+      description:
+        "Ignore all of the opponent's Armor and reduce Thorns damage received in return by 50%.",
     },
     reflection: {
       name: 'Reflection',
       description:
-        'Redirect incoming debuffs (Bleed, Poison, Stun, and stat reductions) to the attacker, with the same values and duration. Does not bounce twice.',
+        'Redirect incoming debuffs (Bleed, Poison, Ignition, Stun, and stat reductions) to the attacker, with the same values and duration. Does not bounce twice.',
     },
     berserk: {
       name: 'Berserk',
       description:
         'Increase total damage dealt based on current HP: 5% at 51-75%, 10% at 26-50%, 20% at 11-25%, and 30% at 10% or less.',
+    },
+    aegis: {
+      name: 'Aegis',
+      description:
+        'Reduce the duration of newly applied debuffs by 1 turn (minimum 1) and increase the duration of newly applied buffs by 1 turn.',
     },
   },
   skillNames: {
@@ -95,12 +110,14 @@ export const arenaGameTranslation: ArenaTranslation = {
     viper_strike: 'Viper Strike',
     knockback: 'Knockback',
     corrosion: 'Corrosion',
+    ignite: 'Ignite',
     heal: 'Heal',
     regeneration: 'Regeneration',
     resistance: 'Magic Shield',
     cleanse: 'Cleanse',
     meditation: 'Meditation',
     rage: 'Rage',
+    raise_shield: 'Raise Shield',
     spiked_armor: 'Spiked Armor',
     reflect: 'Reflect',
     vampiric_strike: 'Vampiric Strike',
@@ -114,6 +131,7 @@ export const arenaGameTranslation: ArenaTranslation = {
     leech: 'Leech',
     pierce: 'Pierce',
     berserk: 'Berserk',
+    aegis: 'Aegis',
   },
   skillEffectLabels: {
     damage: 'Deal {value} damage',
@@ -189,6 +207,7 @@ export const arenaGameTranslation: ArenaTranslation = {
       lifesteal: '+{value} lifesteal',
       bleed: '-{value} bleed',
       poison: '-{value} poison',
+      ignition: '-{value} fire damage',
       regeneration: '+{value} regeneration',
       thorns: '-{value} thorns',
       leech: '+{value} leech',
@@ -249,12 +268,12 @@ export const arenaHelpTranslation: ArenaHelpTranslation = {
     'Apply effects to the opponent',
     'Apply stat changes to the opponent',
     'Death check',
-    'Process your active effects (DoT / Regeneration) — skip Bleed, Poison, and Regeneration applied this turn',
+    'Process your active effects (DoT / Regeneration) — skip Bleed, Poison, Ignition, and Regeneration applied this turn. Ignition increases by its base damage each tick, up to 20 damage',
     'Death check',
     'Reset the cooldown of the skill you used',
     'Reduce other skill cooldowns (skipped if you are stunned)',
     'Apply end-of-turn cooldown reduction effects on self (for example, Meditation)',
-    'Reduce duration of active effects (skipped for Bleed, Poison, Stun, Regeneration, and stat reductions applied this turn)',
+    'Reduce duration of active effects (skipped for Bleed, Poison, Ignition, Stun, Regeneration, and stat reductions applied this turn)',
     'Next turn',
   ],
 };

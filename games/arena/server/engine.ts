@@ -12,6 +12,7 @@ import {
   EffectId,
   GAME_RULES,
   type GameAction,
+  getIgnitionDamage,
   getPlayerMaxHp,
   getStatusesFromSkills,
   HealAction,
@@ -216,6 +217,21 @@ function processStatusEffects(
         if (player.hp === 0) return;
         break;
       }
+      case EffectId.ignition: {
+        const damage = getIgnitionDamage(status);
+        applyDamage(player, damage);
+        status.ignitionMultiplier = Math.min(
+          (status.ignitionMultiplier ?? 1) + 1,
+          10
+        );
+        ctx.addEffect({
+          kind: LogEffectKind.ignition,
+          value: damage,
+          target: ActionTarget.self,
+        });
+        if (player.hp === 0) return;
+        break;
+      }
       case EffectId.bleed: {
         const damage = Math.max(Math.floor((playerHp * status.value) / 100), 5);
         applyDamage(player, damage);
@@ -263,6 +279,21 @@ function applyHealActions(
   }
 }
 
+function resolveEffectDuration(
+  player: Player,
+  duration: number,
+  negative: boolean
+): number {
+  if (!Number.isFinite(duration)) return duration;
+  const hasAegis = player.statuses.some(
+    status =>
+      status.type === EffectId.aegis &&
+      (status.remainingDuration === undefined || status.remainingDuration > 0)
+  );
+  if (!hasAegis) return duration;
+  return negative ? Math.max(duration - 1, 1) : duration + 1;
+}
+
 function applyStatusEffectsToSelf(
   player: Player,
   actions: ApplyStatusAction[],
@@ -272,10 +303,15 @@ function applyStatusEffectsToSelf(
 ): void {
   for (const action of actions) {
     const value = action.value ? resolveActionValue(action.value, valueCtx) : 0;
+    const duration = resolveEffectDuration(
+      player,
+      action.duration ?? Infinity,
+      NEGATIVE_EFFECTS.includes(action.status)
+    );
     const status: StatusEffect = {
       type: action.status,
       value,
-      remainingDuration: action.duration ?? Infinity,
+      remainingDuration: duration ?? Infinity,
     };
     stampDeferredAppliedTurn(status, currentTurnId);
     player.statuses.push(status);
@@ -283,7 +319,7 @@ function applyStatusEffectsToSelf(
       kind: LogEffectKind.apply_status,
       target: ActionTarget.self,
       status: action.status,
-      duration: action.duration ?? Infinity,
+      duration: duration ?? Infinity,
       value,
     } as LogEffect);
   }
@@ -315,8 +351,11 @@ function applyThorns(
   ctx: TurnContext = NO_CONTEXT
 ): void {
   if (totalDamageDealt <= 0 || thorns <= 0) return;
-  // Thorns: reflect % of direct damage back to attacker
-  const reflected = Math.max(Math.floor((totalDamageDealt * thorns) / 100), 1);
+  const multiplier = isPlayerPiercing(attacker) ? 0.5 : 1;
+  const reflected = Math.max(
+    Math.floor((totalDamageDealt * thorns * multiplier) / 100),
+    1
+  );
   applyDamage(attacker, reflected);
   ctx.addEffect({
     kind: LogEffectKind.thorns,
@@ -517,6 +556,11 @@ function applyStatusEffectsToTarget(
 ): void {
   const hasResistance = isPlayerResistant(target);
   for (const action of actions) {
+    const duration = resolveEffectDuration(
+      target,
+      action.duration ?? Infinity,
+      NEGATIVE_EFFECTS.includes(action.status)
+    );
     switch (action.status) {
       case EffectId.bleed: {
         if (hasResistance) {
@@ -530,13 +574,13 @@ function applyStatusEffectsToTarget(
         const value = resolveActionValue(action.value, valueCtx);
         const existing = target.statuses.find(s => s.type === action.status);
         if (existing) {
-          existing.remainingDuration = action.duration;
+          existing.remainingDuration = duration;
           stampDeferredAppliedTurn(existing, currentTurnId);
         } else {
           const status: StatusEffect = {
             type: action.status,
             value,
-            remainingDuration: action.duration,
+            remainingDuration: duration,
           };
           stampDeferredAppliedTurn(status, currentTurnId);
           target.statuses.push(status);
@@ -545,7 +589,7 @@ function applyStatusEffectsToTarget(
           kind: LogEffectKind.apply_status,
           target: logTarget,
           status: action.status,
-          duration: action.duration,
+          duration,
           value,
         });
         break;
@@ -562,13 +606,13 @@ function applyStatusEffectsToTarget(
         const value = resolveActionValue(action.value, valueCtx);
         const existing = target.statuses.find(s => s.type === action.status);
         if (existing) {
-          existing.remainingDuration = action.duration;
+          existing.remainingDuration = duration;
           stampDeferredAppliedTurn(existing, currentTurnId);
         } else {
           const status: StatusEffect = {
             type: action.status,
             value,
-            remainingDuration: action.duration,
+            remainingDuration: duration,
           };
           stampDeferredAppliedTurn(status, currentTurnId);
           target.statuses.push(status);
@@ -577,7 +621,47 @@ function applyStatusEffectsToTarget(
           kind: LogEffectKind.apply_status,
           target: logTarget,
           status: action.status,
-          duration: action.duration,
+          duration,
+          value,
+        });
+        break;
+      }
+      case EffectId.ignition: {
+        if (hasResistance) {
+          ctx.addEffect({
+            kind: LogEffectKind.resist,
+            status: action.status,
+            target: logTarget,
+          });
+          break;
+        }
+        const value = resolveActionValue(action.value, valueCtx);
+        const existing = target.statuses.find(s => s.type === action.status);
+        if (existing) {
+          if (
+            existing.remainingDuration !== undefined &&
+            existing.remainingDuration <= 0
+          ) {
+            existing.value = value;
+            existing.ignitionMultiplier = 1;
+          }
+          existing.remainingDuration = duration;
+          stampDeferredAppliedTurn(existing, currentTurnId);
+        } else {
+          const status: StatusEffect = {
+            type: action.status,
+            value,
+            remainingDuration: duration,
+            ignitionMultiplier: 1,
+          };
+          stampDeferredAppliedTurn(status, currentTurnId);
+          target.statuses.push(status);
+        }
+        ctx.addEffect({
+          kind: LogEffectKind.apply_status,
+          target: logTarget,
+          status: action.status,
+          duration,
           value,
         });
         break;
@@ -586,7 +670,7 @@ function applyStatusEffectsToTarget(
         const status: StatusEffect = {
           type: action.status,
           value: 0,
-          remainingDuration: action.duration,
+          remainingDuration: duration,
         };
         stampDeferredAppliedTurn(status, currentTurnId);
         target.statuses.push(status);
@@ -594,7 +678,7 @@ function applyStatusEffectsToTarget(
           kind: LogEffectKind.apply_status,
           target: logTarget,
           status: action.status,
-          duration: action.duration,
+          duration,
         });
         break;
       }
@@ -605,7 +689,7 @@ function applyStatusEffectsToTarget(
         const status: StatusEffect = {
           type: action.status,
           value,
-          remainingDuration: action.duration ?? Infinity,
+          remainingDuration: duration ?? Infinity,
         };
         stampDeferredAppliedTurn(status, currentTurnId);
         target.statuses.push(status);
@@ -613,7 +697,7 @@ function applyStatusEffectsToTarget(
           kind: LogEffectKind.apply_status,
           target: logTarget,
           status: action.status,
-          duration: action.duration ?? Infinity,
+          duration: duration ?? Infinity,
           value,
         } as LogEffect);
       }
@@ -631,10 +715,14 @@ function applyModifyStats(
 ): void {
   for (const action of actions) {
     const value = resolveActionValue(action.value, valueCtx);
+    const duration =
+      action.duration === undefined
+        ? undefined
+        : resolveEffectDuration(player, action.duration, value < 0);
     const status: StatusEffect = {
       type: action.stat,
       value,
-      remainingDuration: (action.duration ?? Infinity) + 1,
+      remainingDuration: (duration ?? Infinity) + 1,
     };
     stampDeferredAppliedTurn(status, currentTurnId);
     player.statuses.push(status);
@@ -643,7 +731,7 @@ function applyModifyStats(
       target: logTarget ?? action.target,
       stat: action.stat,
       value,
-      duration: action.duration,
+      duration,
     });
   }
 }

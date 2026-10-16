@@ -21,6 +21,10 @@ export type ValueContext = {
   damageDealt?: number;
 };
 
+export function getIgnitionDamage(status: StatusEffect): number {
+  return Math.min(status.value * (status.ignitionMultiplier ?? 1), 20);
+}
+
 /**
  * Get the maximum HP of a player based on their statuses.
  * @param player The player whose maximum HP is being calculated.

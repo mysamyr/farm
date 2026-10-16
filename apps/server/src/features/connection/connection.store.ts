@@ -27,10 +27,10 @@ export function removePendingDisconnect(userId: string): boolean {
 
 export function findPendingDisconnectBySocketId(
   socketId: string
-): { userId: string; pending: PendingDisconnect } | undefined {
+): string | undefined {
   for (const [userId, pending] of pendingDisconnects) {
     if (pending.oldSocketId === socketId) {
-      return { userId, pending };
+      return userId;
     }
   }
   return undefined;

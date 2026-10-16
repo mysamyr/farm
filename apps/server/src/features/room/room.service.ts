@@ -105,21 +105,27 @@ export function removePlayerFromRoom(
     Boolean(room.vote);
 
   room.players.splice(idx, 1);
+
   leaveRoom(io, room.id, socket.id);
+
+  if (room.ownerId === socket.id) {
+    assignNewOwner(room);
+  }
+
   const gameModule = gameRegistry.get(room.game);
   const winnerAfterRemoval = gameModule.onPlayerRemoved?.(room, socket.id);
   if (shouldAutowin(room)) {
     gameModule.onPlayerWin?.(io, room, room.players[0]!);
   } else if (winnerAfterRemoval) {
     gameModule.onPlayerWin?.(io, room, winnerAfterRemoval);
-  } else if (shouldDeleteRoom(room, socket.id)) {
+  }
+
+  if (shouldDeleteRoom(room, socket.id)) {
     deleteRoom(room.id);
     log(LogLevel.INFO, 'room:deleted', {
       roomId: room.id,
       reason: 'playerLeft',
     });
-  } else if (room.ownerId === socket.id) {
-    assignNewOwner(room);
   }
 
   if (wasInRematch && getRoomById(room.id)) {
@@ -166,8 +172,8 @@ export function kickPlayerFromRoom(
   let userId = targetSocket?.data.userId;
 
   if (!userId) {
-    const pending = findPendingDisconnectBySocketId(playerId);
-    userId = pending?.userId;
+    const pendingUserId = findPendingDisconnectBySocketId(playerId);
+    userId = pendingUserId;
   }
 
   if (userId && !room.blacklist.includes(userId)) {
@@ -190,21 +196,25 @@ export function kickPlayerFromRoom(
           room.state === ROOM_STATES.RUNNING ||
           room.state === ROOM_STATES.IDLE) &&
         Boolean(room.vote);
+
       room.players.splice(idx, 1);
+
       const gameModule = gameRegistry.get(room.game);
       const winnerAfterRemoval = gameModule.onPlayerRemoved?.(room, playerId);
       if (shouldAutowin(room)) {
         gameModule.onPlayerWin?.(io, room, room.players[0]!);
       } else if (winnerAfterRemoval) {
         gameModule.onPlayerWin?.(io, room, winnerAfterRemoval);
-      } else if (shouldDeleteRoom(room, playerId)) {
-        deleteRoom(room.id);
-      } else if (room.ownerId === playerId) {
-        assignNewOwner(room);
       }
+
+      if (shouldDeleteRoom(room, playerId)) {
+        deleteRoom(room.id);
+      }
+
       if (wasInRematch && getRoomById(room.id)) {
         onPlayerLeftDuringRematch(io, room, playerId);
       }
+
       updateRoomsList(io);
     }
   }
