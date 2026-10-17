@@ -105,6 +105,23 @@ h3.roomName {
   gap: 5px;
 }
 
+.ruleSetting {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--text-main);
+}
+
+.ruleNumber {
+  min-width: 64px;
+  padding: 5px 8px;
+  border: 1px solid var(--bg-surface-subtle);
+  border-radius: 6px;
+  background: var(--surface-input-bg);
+  color: var(--surface-input-text);
+}
+
 .rulesTags {
   display: flex;
   flex-wrap: wrap;

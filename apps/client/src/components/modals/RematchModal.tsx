@@ -74,8 +74,7 @@ export function RematchModal(): ReactElement | null {
         ? tInGame.voteTitle
         : t.title;
 
-  const acceptLabel =
-    mode === 'postGame' || mode === 'midGame' ? t.rematch : t.ready;
+  const acceptLabel = mode === 'preGame' ? t.ready : t.rematch;
   const declineLabel = mode === 'postGame' ? tInGame.lobby : t.decline;
 
   const winner =
@@ -85,7 +84,7 @@ export function RematchModal(): ReactElement | null {
   const winnerName =
     mode === 'postGame' ? (winner?.name ?? currentRoom.winner ?? '') : '';
 
-  const showMinimize = mode === 'midGame' || mode === 'postGame';
+  const showMinimize = mode !== 'preGame';
   const showTimer = mode === 'midGame' && Boolean(currentRoom.vote?.expiresAt);
   const showAccept = !isSpectator && canRematch && !iAmReady;
   // Mid-game: hide actions once you've voted. Pre/post-game: always allow decline.
@@ -94,6 +93,10 @@ export function RematchModal(): ReactElement | null {
   const showActions = showAccept || showDecline || showLeave;
 
   const isMidGame = mode === 'midGame';
+  const readyCount = currentRoom.players.filter(player =>
+    readyIds.has(player.id)
+  ).length;
+  const showBadge = isMidGame || readyCount > 0;
   const isMinimized = minimized && showMinimize;
   const minimize = () => setMinimized(true);
 
@@ -105,10 +108,11 @@ export function RematchModal(): ReactElement | null {
           aria-label={isMidGame ? tInGame.voteTitle : t.expand}
           title={isMidGame ? tInGame.voteTitle : t.expand}
           badge={
-            isMidGame
-              ? `${readyIds.size}/${currentRoom.players.length}`
+            showBadge
+              ? `${readyCount}/${currentRoom.players.length}`
               : undefined
           }
+          badgeTone={isMidGame ? 'accent' : 'success'}
           onClick={() => setMinimized(false)}
         >
           <RematchIcon />

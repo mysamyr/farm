@@ -11,6 +11,7 @@ import type { GameActionPayload, SocketAck } from '@game/shared/types';
 import {
   type ArenaGameActionPayload,
   DEFAULT_PLAYER_STATS,
+  GAME_RULES,
   type Player,
   type Room,
   SkillId,
@@ -80,7 +81,12 @@ const playerUpdateHandler = (
   }
 
   if (req.ready) {
-    if (!isValidSkillSelection(req.skills)) {
+    if (
+      !isValidSkillSelection(
+        req.skills,
+        room.rules[GAME_RULES.PASSIVE_SKILL_COUNT]
+      )
+    ) {
       ack?.({ ok: false });
       return;
     }

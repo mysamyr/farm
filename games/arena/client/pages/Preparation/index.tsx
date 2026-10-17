@@ -11,7 +11,7 @@ import {
   BASE_SKILLS,
   REQUIRED_ACTIVE_COUNT,
   REQUIRED_HEALING_COUNT,
-  REQUIRED_PASSIVE_COUNT,
+  GAME_RULES,
   SKILLS,
   type ActiveSkill,
   type HealingSkill,
@@ -94,6 +94,7 @@ function PreparationPlayer({ room }: PreparationProps): ReactElement {
     !!room && (room.state === ROOM_STATES.FINISHED || Boolean(room.winner));
   const currentPlayer = room ? getCurrentPlayer(room) : null;
   const isLocked = isGameOver || Boolean(currentPlayer?.ready);
+  const passiveSkillCount = room.rules[GAME_RULES.PASSIVE_SKILL_COUNT];
 
   const { activeSkills, healingSkills, passiveSkills } = useMemo(() => {
     const baseSkillIds = new Set(BASE_SKILLS);
@@ -131,7 +132,7 @@ function PreparationPlayer({ room }: PreparationProps): ReactElement {
       if (isLocked) return;
       setSelectedPassives(prev => {
         if (prev.includes(skillId)) return prev.filter(id => id !== skillId);
-        if (prev.length >= REQUIRED_PASSIVE_COUNT) {
+        if (prev.length >= passiveSkillCount) {
           if (window.matchMedia('(pointer: coarse)').matches)
             showSnackbar(t.preparation.passiveSkillsFull);
           return prev;
@@ -139,7 +140,7 @@ function PreparationPlayer({ room }: PreparationProps): ReactElement {
         return [...prev, skillId];
       });
     },
-    [isLocked, showSnackbar, t.preparation.passiveSkillsFull]
+    [isLocked, passiveSkillCount, showSnackbar, t.preparation.passiveSkillsFull]
   );
 
   const handleSelectHealing = useCallback(
@@ -161,7 +162,7 @@ function PreparationPlayer({ room }: PreparationProps): ReactElement {
   const isSelectionComplete =
     selectedActives.length === REQUIRED_ACTIVE_COUNT &&
     selectedHealing.length === REQUIRED_HEALING_COUNT &&
-    selectedPassives.length === REQUIRED_PASSIVE_COUNT;
+    selectedPassives.length === passiveSkillCount;
 
   const handleReset = useCallback(() => {
     if (!room || isGameOver) return;
@@ -225,7 +226,7 @@ function PreparationPlayer({ room }: PreparationProps): ReactElement {
 
   const activeSlotsFull = selectedActives.length >= REQUIRED_ACTIVE_COUNT;
   const healingSlotsFull = selectedHealing.length >= REQUIRED_HEALING_COUNT;
-  const passiveSlotsFull = selectedPassives.length >= REQUIRED_PASSIVE_COUNT;
+  const passiveSlotsFull = selectedPassives.length >= passiveSkillCount;
 
   return (
     <div className={styles.container}>
@@ -329,49 +330,51 @@ function PreparationPlayer({ room }: PreparationProps): ReactElement {
             </div>
           </div>
 
-          <div className={styles.slotGroup}>
-            <div className={styles.slotGroupHeader}>
-              <span className={styles.slotGroupLabel}>
-                {t.preparation.passiveSkillsLabel}
-              </span>
-              <span className={styles.slotCounter}>
-                {selectedPassives.length}/{REQUIRED_PASSIVE_COUNT}
-              </span>
+          {passiveSkillCount > 0 && (
+            <div className={styles.slotGroup}>
+              <div className={styles.slotGroupHeader}>
+                <span className={styles.slotGroupLabel}>
+                  {t.preparation.passiveSkillsLabel}
+                </span>
+                <span className={styles.slotCounter}>
+                  {selectedPassives.length}/{passiveSkillCount}
+                </span>
+              </div>
+              <div className={styles.passiveSlots}>
+                {Array.from({ length: passiveSkillCount }).map((_, i) => {
+                  const skillId = selectedPassives[i];
+                  return (
+                    <div
+                      key={`passive-${i}`}
+                      className={`${styles.slot} ${styles.equippedSlot} ${styles.passiveSlot} ${skillId ? styles.slotFilled : ''} ${isLocked ? styles.slotLocked : ''}`}
+                      onClick={() => {
+                        if (isLocked || !skillId) return;
+                        setSelectedPassives(prev =>
+                          prev.filter((_, idx) => idx !== i)
+                        );
+                      }}
+                    >
+                      {skillId ? (
+                        <>
+                          <span className={styles.slotIcon}>
+                            {getSkillIcon(skillId)}
+                          </span>
+                          <span className={styles.slotName}>
+                            {getSkillName(skillId, t.skillNames)}
+                          </span>
+                          {!isLocked && (
+                            <span className={styles.slotRemove}>×</span>
+                          )}
+                        </>
+                      ) : (
+                        <span className={styles.slotPlus}>+</span>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-            <div className={styles.passiveSlots}>
-              {Array.from({ length: REQUIRED_PASSIVE_COUNT }).map((_, i) => {
-                const skillId = selectedPassives[i];
-                return (
-                  <div
-                    key={`passive-${i}`}
-                    className={`${styles.slot} ${styles.equippedSlot} ${styles.passiveSlot} ${skillId ? styles.slotFilled : ''} ${isLocked ? styles.slotLocked : ''}`}
-                    onClick={() => {
-                      if (isLocked || !skillId) return;
-                      setSelectedPassives(prev =>
-                        prev.filter((_, idx) => idx !== i)
-                      );
-                    }}
-                  >
-                    {skillId ? (
-                      <>
-                        <span className={styles.slotIcon}>
-                          {getSkillIcon(skillId)}
-                        </span>
-                        <span className={styles.slotName}>
-                          {getSkillName(skillId, t.skillNames)}
-                        </span>
-                        {!isLocked && (
-                          <span className={styles.slotRemove}>×</span>
-                        )}
-                      </>
-                    ) : (
-                      <span className={styles.slotPlus}>+</span>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+          )}
         </div>
       </div>
 
@@ -415,25 +418,27 @@ function PreparationPlayer({ room }: PreparationProps): ReactElement {
         </div>
       </div>
 
-      <div className={styles.section}>
-        <h3 className={styles.sectionTitle}>
-          {t.preparation.passiveSkillsLabel}
-        </h3>
-        <div className={styles.skillGrid}>
-          {passiveSkills.map((skill: PassiveSkill) => (
-            <SkillCard
-              key={skill.id}
-              skill={skill}
-              selected={selectedPassives.includes(skill.id)}
-              disabled={
-                isLocked ||
-                (!selectedPassives.includes(skill.id) && passiveSlotsFull)
-              }
-              onClick={handleSelectPassive}
-            />
-          ))}
+      {passiveSkillCount > 0 && (
+        <div className={styles.section}>
+          <h3 className={styles.sectionTitle}>
+            {t.preparation.passiveSkillsLabel}
+          </h3>
+          <div className={styles.skillGrid}>
+            {passiveSkills.map((skill: PassiveSkill) => (
+              <SkillCard
+                key={skill.id}
+                skill={skill}
+                selected={selectedPassives.includes(skill.id)}
+                disabled={
+                  isLocked ||
+                  (!selectedPassives.includes(skill.id) && passiveSlotsFull)
+                }
+                onClick={handleSelectPassive}
+              />
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {!isGameOver && (
         <div className={styles.actions}>
@@ -459,7 +464,6 @@ function PreparationPlayer({ room }: PreparationProps): ReactElement {
           </div>
         </div>
       )}
-
     </div>
   );
 }

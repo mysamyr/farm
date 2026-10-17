@@ -3,6 +3,7 @@ import type { GameHandlerContext } from '@game/shared/engine';
 import type {
   BasePlayer,
   BaseRoom,
+  BaseRules,
   GameActionPayload,
   GameMetadata,
   SocketAck,
@@ -36,6 +37,9 @@ export interface ServerGameModule<
 
   /** Initialize room-specific fields when creating a room */
   addRoomFields: () => Pick<TRoom, 'rules'> & Partial<TRoom>;
+
+  /** Validate an incoming partial room-rule update */
+  validateRules?: (rules: BaseRules) => boolean;
 
   /** Return the room state visible to one room member. */
   projectRoomState?: (room: TRoom, viewerId: string, role: RoomRole) => TRoom;

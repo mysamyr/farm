@@ -39,7 +39,7 @@ export type RoomPayload = {
 
 export type RoomUpdatePayload = RoomIdPayload & {
   name?: string;
-  rules?: Record<string, boolean>;
+  rules?: Record<string, boolean | number | string>;
 };
 
 export type GameActionPayload<

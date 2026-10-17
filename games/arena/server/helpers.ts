@@ -12,11 +12,12 @@ import {
   HealAction,
   LifeStealAction,
   ModifyStatAction,
+  MIN_PASSIVE_COUNT,
+  MAX_PASSIVE_COUNT,
   type ReduceCooldownsAction,
   type Player,
   REQUIRED_ACTIVE_COUNT,
   REQUIRED_HEALING_COUNT,
-  REQUIRED_PASSIVE_COUNT,
   type Room,
   type Skill,
   type SkillId,
@@ -158,7 +159,10 @@ export function isPlayerPiercing(player: Player): boolean {
   );
 }
 
-export function isValidSkillSelection(skills: SkillId[]): boolean {
+export function isValidSkillSelection(
+  skills: SkillId[],
+  passiveSkillCount: number
+): boolean {
   const uniqueSkills = new Set(skills);
   if (uniqueSkills.size !== skills.length) return false;
 
@@ -184,9 +188,12 @@ export function isValidSkillSelection(skills: SkillId[]): boolean {
   ).length;
 
   return (
+    Number.isInteger(passiveSkillCount) &&
+    passiveSkillCount >= MIN_PASSIVE_COUNT &&
+    passiveSkillCount <= MAX_PASSIVE_COUNT &&
     activeCount === REQUIRED_ACTIVE_COUNT &&
     healingCount === REQUIRED_HEALING_COUNT &&
-    passiveCount === REQUIRED_PASSIVE_COUNT
+    passiveCount === passiveSkillCount
   );
 }
 

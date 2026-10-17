@@ -9,6 +9,7 @@ import {
   CleanseAction,
   DamageAction,
   DEFAULT_PLAYER_STATS,
+  DEFAULT_PASSIVE_COUNT,
   EffectId,
   GAME_RULES,
   type GameAction,
@@ -67,13 +68,10 @@ export function addRoomFields(): Pick<
 > {
   return {
     order: [],
-    rules: Object.values(GAME_RULES).reduce(
-      (acc, rule) => {
-        acc[rule] = false;
-        return acc;
-      },
-      {} as Record<GAME_RULES, boolean>
-    ),
+    rules: {
+      [GAME_RULES.ZERO_COOLDOWN]: false,
+      [GAME_RULES.PASSIVE_SKILL_COUNT]: DEFAULT_PASSIVE_COUNT,
+    },
     turn: TURN_START_INDEX,
     steps: [],
   };

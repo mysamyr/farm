@@ -10,7 +10,7 @@ Arena is a turn-based 1v1 duel. Each player drafts a fighter loadout, then alter
 - Players must select:
   - 3 active skills
   - 1 healing skill
-  - 2 passive skills
+  - The number of passive skills set by the room rule (0–4, default 2)
 - `Attack` and `Skip` are always available.
 - Players can reset their selection before confirming readiness.
 - Combat begins once both players are ready.

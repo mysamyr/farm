@@ -75,6 +75,11 @@
   color: var(--pc-white);
 }
 
+.badgeSuccess {
+  background: var(--status-success);
+  color: var(--pc-white);
+}
+
 .attention {
   animation: nudge 2.4s ease-in-out infinite;
 }

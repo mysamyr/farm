@@ -1,7 +1,12 @@
 import type { GameConfig } from '@game/client-core/types';
 import { GameId, GameColor } from '@game/shared/constants';
 
-import { GAME_RULES } from '../shared/index.js';
+import {
+  DEFAULT_PASSIVE_COUNT,
+  GAME_RULES,
+  MAX_PASSIVE_COUNT,
+  MIN_PASSIVE_COUNT,
+} from '../shared/index.js';
 
 import ArenaHelpModal from './components/ArenaHelpModal.js';
 import { useGameSubscriptions } from './hooks/useGameSubscriptions.js';
@@ -22,6 +27,18 @@ export const arenaConfig: GameConfig = {
       key: GAME_RULES.ZERO_COOLDOWN,
       label: lang =>
         getArenaTranslations(lang).game.ruleLabels[GAME_RULES.ZERO_COOLDOWN],
+    },
+    {
+      key: GAME_RULES.PASSIVE_SKILL_COUNT,
+      type: 'number',
+      min: MIN_PASSIVE_COUNT,
+      max: MAX_PASSIVE_COUNT,
+      step: 1,
+      default: DEFAULT_PASSIVE_COUNT,
+      label: lang =>
+        getArenaTranslations(lang).game.ruleLabels[
+          GAME_RULES.PASSIVE_SKILL_COUNT
+        ],
     },
   ],
   GameboardPage: Gameboard,

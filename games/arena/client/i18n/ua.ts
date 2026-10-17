@@ -2,7 +2,6 @@ import {
   GAME_RULES,
   REQUIRED_ACTIVE_COUNT,
   REQUIRED_HEALING_COUNT,
-  REQUIRED_PASSIVE_COUNT,
 } from '../../shared/index.js';
 
 import type { ArenaHelpTranslation, ArenaTranslation } from './types.js';
@@ -223,6 +222,7 @@ export const arenaGameTranslation: ArenaTranslation = {
   },
   ruleLabels: {
     [GAME_RULES.ZERO_COOLDOWN]: 'Немає перезаряджання на початку',
+    [GAME_RULES.PASSIVE_SKILL_COUNT]: 'Кількість пасивних навичок',
   },
   util: {
     self: 'собі',
@@ -243,7 +243,7 @@ export const arenaHelpTranslation: ArenaHelpTranslation = {
     crit: 'Шанс подвоїти загальну шкоду.',
   },
   skillsHeader: 'Навички',
-  skillsIntro: `Перед боєм оберіть ${REQUIRED_ACTIVE_COUNT} активні навички, ${REQUIRED_HEALING_COUNT} лікувальну та ${REQUIRED_PASSIVE_COUNT} пасивні. Атака і Пропустити доступні завжди.`,
+  skillsIntro: `Перед боєм оберіть ${REQUIRED_ACTIVE_COUNT} активні навички, ${REQUIRED_HEALING_COUNT} лікувальну навичку та кількість пасивних навичок, задану правилом кімнати. Атака і Пропустити доступні завжди.`,
   activeSkills:
     'Активні навички використовуються у ваш хід і мають перезаряджання. Вони завдають шкоди, накладають ефекти, підсилюють вас або послаблюють суперника.',
   healingSkills:

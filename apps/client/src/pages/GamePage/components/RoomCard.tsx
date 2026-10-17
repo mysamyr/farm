@@ -32,7 +32,7 @@ export default function RoomCard({ room }: RoomCardProps): ReactElement {
   const gameMetadata = getGame(room.game);
   const maxPlayers = gameMetadata?.maxPlayers ?? 4;
   const activeRules = (gameConfig?.rules ?? []).filter(
-    rule => room.rules[rule.key]
+    rule => rule.type === 'number' || room.rules[rule.key]
   );
 
   const isFull = room.players.length >= maxPlayers;
@@ -124,7 +124,10 @@ export default function RoomCard({ room }: RoomCardProps): ReactElement {
       {activeRules.length > 0 ? (
         <ul className={styles.rules}>
           {activeRules.map(rule => {
-            const label = rule.label(language);
+            const label =
+              typeof room.rules[rule.key] === 'number'
+                ? `${rule.label(language)}: ${room.rules[rule.key]}`
+                : rule.label(language);
             return (
               <li key={rule.key}>
                 <Tag title={label}>{label}</Tag>

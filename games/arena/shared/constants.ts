@@ -19,7 +19,9 @@ export const GAME_METADATA = {
 
 export const REQUIRED_ACTIVE_COUNT = 3;
 export const REQUIRED_HEALING_COUNT = 1;
-export const REQUIRED_PASSIVE_COUNT = 2;
+export const MIN_PASSIVE_COUNT = 0;
+export const MAX_PASSIVE_COUNT = 4;
+export const DEFAULT_PASSIVE_COUNT = 2;
 
 export enum StatId {
   hp = 'hp',
@@ -598,4 +600,5 @@ export const NEGATIVE_EFFECTS: EffectId[] = [
 
 export enum GAME_RULES {
   ZERO_COOLDOWN = 'zero_cooldown',
+  PASSIVE_SKILL_COUNT = 'passive_skill_count',
 }

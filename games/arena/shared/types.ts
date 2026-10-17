@@ -320,7 +320,10 @@ export interface Player extends BasePlayer {
   eliminated: boolean;
 }
 
-export type Rules = Record<GAME_RULES, boolean>;
+export type Rules = {
+  [GAME_RULES.ZERO_COOLDOWN]: boolean;
+  [GAME_RULES.PASSIVE_SKILL_COUNT]: number;
+};
 
 export interface Room extends BaseRoom<Player, Rules, GameId.arena> {
   order: string[];

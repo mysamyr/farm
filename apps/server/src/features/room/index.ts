@@ -147,6 +147,11 @@ const updateRoomHandler =
       room.name = nextName;
     }
     if (req.rules) {
+      const validateRules = gameRegistry.get(room.game).validateRules;
+      if (validateRules && !validateRules(req.rules)) {
+        ack?.({ ok: false });
+        return;
+      }
       room.rules = { ...room.rules, ...req.rules };
     }
     log(LogLevel.INFO, 'room:updated', {

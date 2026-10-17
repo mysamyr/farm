@@ -1,5 +1,4 @@
 import {
-  type ChangeEvent,
   type ReactElement,
   useCallback,
   useState,
@@ -59,7 +58,9 @@ export default function ActiveRoom(): ReactElement | null {
     !currentRoom.vote;
   const canEnterGame = currentRoom.state === ROOM_STATES.RUNNING;
   const rules = gameConfig?.rules ?? [];
-  const enabledRules = rules.filter(rule => currentRoom.rules[rule.key]);
+  const enabledRules = rules.filter(
+    rule => rule.type === 'number' || currentRoom.rules[rule.key]
+  );
 
   return (
     <aside className={styles.activeRoom}>
@@ -237,11 +238,11 @@ function RulesSection({
 
   const onRuleChange = (
     key: string,
-    event: ChangeEvent<HTMLInputElement>
+    value: boolean | number
   ): void => {
     emitEvent(
       EVENTS.ROOM_UPDATE,
-      { roomId: room.id, rules: { [key]: event.target.checked } },
+      { roomId: room.id, rules: { [key]: value } },
       onAck
     );
   };
@@ -251,21 +252,49 @@ function RulesSection({
       <h4>{translation.dashboard.roomRules}</h4>
       {isOwner ? (
         <div className={styles.rulesToggles}>
-          {rules.map(rule => (
-            <Slider
-              key={rule.key}
-              label={rule.label(language)}
-              checked={!!room.rules[rule.key]}
-              onChange={event => {
-                onRuleChange(rule.key, event);
-              }}
-            />
-          ))}
+          {rules.map(rule =>
+            rule.type === 'number' ? (
+              <label key={rule.key} className={styles.ruleSetting}>
+                <span>{rule.label(language)}</span>
+                <select
+                  className={styles.ruleNumber}
+                  value={String(room.rules[rule.key])}
+                  onChange={event => {
+                    onRuleChange(rule.key, Number(event.currentTarget.value));
+                  }}
+                >
+                  {Array.from(
+                    {
+                      length:
+                        Math.floor((rule.max - rule.min) / rule.step) + 1,
+                    },
+                    (_, index) => rule.min + index * rule.step
+                  ).map(value => (
+                    <option key={value} value={value}>
+                      {value}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            ) : (
+              <Slider
+                key={rule.key}
+                label={rule.label(language)}
+                checked={!!room.rules[rule.key]}
+                onChange={event => {
+                  onRuleChange(rule.key, event.currentTarget.checked);
+                }}
+              />
+            )
+          )}
         </div>
       ) : (
         <ul className={styles.rulesTags}>
           {enabledRules.map(rule => {
-            const label = rule.label(language);
+            const label =
+              typeof room.rules[rule.key] === 'number'
+                ? `${rule.label(language)}: ${room.rules[rule.key]}`
+                : rule.label(language);
             return (
               <li key={rule.key}>
                 <Tag title={label}>{label}</Tag>

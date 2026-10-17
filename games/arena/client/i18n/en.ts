@@ -2,7 +2,6 @@ import {
   GAME_RULES,
   REQUIRED_ACTIVE_COUNT,
   REQUIRED_HEALING_COUNT,
-  REQUIRED_PASSIVE_COUNT,
 } from '../../shared/index.js';
 
 import type { ArenaHelpTranslation, ArenaTranslation } from './types.js';
@@ -223,6 +222,7 @@ export const arenaGameTranslation: ArenaTranslation = {
   },
   ruleLabels: {
     [GAME_RULES.ZERO_COOLDOWN]: 'Zero Cooldown at start',
+    [GAME_RULES.PASSIVE_SKILL_COUNT]: 'Passive skills to select',
   },
   util: {
     self: 'Self',
@@ -243,7 +243,7 @@ export const arenaHelpTranslation: ArenaHelpTranslation = {
     crit: 'Chance to double the total damage.',
   },
   skillsHeader: 'Skills',
-  skillsIntro: `Before the fight, choose ${REQUIRED_ACTIVE_COUNT} active skills, ${REQUIRED_HEALING_COUNT} healing skill, and ${REQUIRED_PASSIVE_COUNT} passive skills. Attack and Skip are always available.`,
+  skillsIntro: `Before the fight, choose ${REQUIRED_ACTIVE_COUNT} active skills, ${REQUIRED_HEALING_COUNT} healing skill, and the number of passive skills set by the room rule. Attack and Skip are always available.`,
   activeSkills:
     'Active skills are used on your turn and have a cooldown. They can deal damage, apply effects, buff you, or weaken the opponent.',
   healingSkills:
