@@ -133,7 +133,7 @@ Do **not** add a slice to client-core unless a game board (or a primitive games 
 
 **UI components: what lives where**
 
-Generic, game-agnostic primitives stay in `packages/client-core/components` so plugins can reuse them (now or later): `Button`, `Dropdown`, `Slider`, `Modal` (the dialog host for `useModal`), `Snackbar`, `ConfirmationModal`, `HelpModal`, `WinningAnimation`, and `icons/*`.
+Generic, game-agnostic primitives stay in `packages/client-core/components` so plugins can reuse them (now or later): `Button`, `Dropdown`, `SplitButton`, `Slider`, `Modal` (the dialog host for `useModal`), `Snackbar`, `ConfirmationModal`, `HelpModal`, `WinningAnimation`, and `icons/*`.
 
 Components tied to shell features live in `apps/client/src/components`, grouped by UI kind (not product feature): `layout/` (`MainLayout`), `modals/` (`ChangeNameModal`, `SiteRulesModal`, `StatisticsModal`, `RematchModal`), `ui/` (`Header`, `Sidebar`, `Tag`, `RematchPlayerList`, `MatchDetails`). Page-only widgets stay under `pages/<Page>/components` (e.g. `LastMatchSummary`). App wiring such as `GameSubscriptions` stays at the components root. A component belongs in the shell as soon as it reads shell state (games catalog, theme, username, connection), routing, or shell-only copy.
 

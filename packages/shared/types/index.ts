@@ -57,6 +57,8 @@ export interface BaseRoom<
   rules: TRules;
   /** Stable userIds that are not allowed to rejoin this room */
   blacklist: string[];
+  /** Joining requires a password (the password itself is kept server-side only) */
+  isProtected: boolean;
   winner?: string;
   /** Epoch ms when the current running match began; omitted when idle */
   startedAt?: number;

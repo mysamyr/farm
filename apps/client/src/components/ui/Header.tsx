@@ -5,6 +5,7 @@ import {
   Button,
   ConfirmationModal,
   Dropdown,
+  EyeIcon,
 } from '@game/client-core/components';
 import { ButtonVariant, LANGUAGES_CONFIG } from '@game/client-core/constants';
 import {
@@ -63,6 +64,7 @@ export function Header({ additionalActions }: HeaderProps): ReactElement {
   const isOnPlayRoute = isGameBoardPathname(location.pathname);
   const isInRoom = isOnPlayRoute && !!currentRoom;
   const isRunningGame = isInRoom && currentRoom?.state === ROOM_STATES.RUNNING;
+  const spectatorCount = currentRoom?.spectators.length ?? 0;
   const displayName = username.trim() || headerT.setName;
   const isLightTheme = theme === Theme.LIGHT;
   const isRoomOwner = currentRoom?.ownerId === getSocketId();
@@ -230,19 +232,28 @@ export function Header({ additionalActions }: HeaderProps): ReactElement {
         </div>
       </div>
 
-      <Button
-        variant={ButtonVariant.ICON}
-        title={headerT.openMenu}
-        onClick={openSidebar}
-      >
-        <BurgerIcon />
-      </Button>
+      <div className={styles.actions}>
+        {isRunningGame && spectatorCount > 0 && (
+          <span
+            className={styles.spectatorCount}
+            role="img"
+            aria-label={headerT.spectators(spectatorCount)}
+            title={headerT.spectators(spectatorCount)}
+          >
+            <EyeIcon />
+            {spectatorCount}
+          </span>
+        )}
+        <Button
+          variant={ButtonVariant.ICON}
+          title={headerT.openMenu}
+          onClick={openSidebar}
+        >
+          <BurgerIcon />
+        </Button>
+      </div>
 
-      <Sidebar
-        open={sidebarOpen}
-        onOpen={openSidebar}
-        onClose={closeSidebar}
-      >
+      <Sidebar open={sidebarOpen} onOpen={openSidebar} onClose={closeSidebar}>
         <div className={styles.sidebarContent}>
           <div className={styles.sidebarSection}>
             <Button

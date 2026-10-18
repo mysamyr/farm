@@ -28,3 +28,5 @@ export function isValidRoomName(name: string): boolean {
     VALIDATION.ROOM_NAME.MAX_LENGTH
   );
 }
+
+export { isValidRoomPassword } from '@game/shared/utils';

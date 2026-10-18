@@ -11,6 +11,7 @@ import type {
   BasePlayer,
   BaseRoom,
   RoomCreatePayload,
+  RoomJoinPayload,
 } from '@game/shared/types';
 import type {
   RejoinRoomAck,
@@ -19,6 +20,8 @@ import type {
   RoomUpdatePayload,
   SpectateRoomAck,
 } from '@game/shared/types';
+
+import { isValidRoomPassword } from '@game/shared/utils';
 
 import { LogLevel } from '../../constants/index.js';
 import { gameRegistry } from '../../games/index.js';
@@ -35,7 +38,6 @@ import {
   voteRematch,
 } from './rematch.service.js';
 import { canStartGame } from './room.helpers.js';
-
 import {
   createRoom,
   deleteRoom,
@@ -49,6 +51,7 @@ import {
   removeSpectatorFromRoom,
   updateRoomsList,
 } from './room.service.js';
+import { getRoomPassword } from './room.store.js';
 
 function createRoomPlayer(player: BasePlayer): BasePlayer {
   return {
@@ -95,7 +98,25 @@ const createRoomHandler =
       return;
     }
 
-    if (listRooms().some(r => r.game === req.game && r.name === req.name)) {
+    const isProtected = req.password !== undefined;
+    const name = isProtected ? String(req.name ?? '').trim() : req.name;
+
+    if (isProtected) {
+      const nameLength = [...name].length;
+      if (
+        nameLength < VALIDATION.ROOM_NAME.MIN_LENGTH ||
+        nameLength > VALIDATION.ROOM_NAME.MAX_LENGTH
+      ) {
+        ack?.({ ok: false, error: ERROR.INVALID_ROOM_NAME });
+        return;
+      }
+      if (!isValidRoomPassword(req.password)) {
+        ack?.({ ok: false, error: ERROR.INVALID_ROOM_PASSWORD });
+        return;
+      }
+    }
+
+    if (listRooms().some(r => r.game === req.game && r.name === name)) {
       if (ack) {
         ack({
           ok: false,
@@ -105,7 +126,7 @@ const createRoomHandler =
       return;
     }
 
-    const room: BaseRoom = createRoom(socket.id, req.game, req.name);
+    const room: BaseRoom = createRoom(socket.id, req.game, name, req.password);
     room.players.push(createRoomPlayer(socket.data.player));
     void socket.join(room.id);
     updateRoomsList(io);
@@ -166,7 +187,7 @@ const updateRoomHandler =
 
 const joinRoomHandler =
   (io: AppServer, socket: AppSocket) =>
-  (req: RoomIdPayload, ack?: AckFunc): void => {
+  (req: RoomJoinPayload, ack?: AckFunc): void => {
     log(LogLevel.DEBUG, 'event:room:join', {
       socketId: socket.id,
       roomId: req.roomId,
@@ -187,6 +208,10 @@ const joinRoomHandler =
     }
     if (room.blacklist.includes(socket.data.userId)) {
       if (ack) ack({ ok: false, error: ERROR.PLAYER_KICKED });
+      return;
+    }
+    if (room.isProtected && req.password !== getRoomPassword(room.id)) {
+      ack?.({ ok: false, error: ERROR.WRONG_ROOM_PASSWORD });
       return;
     }
     const gameConfig = gameRegistry.getConfig(room.game);

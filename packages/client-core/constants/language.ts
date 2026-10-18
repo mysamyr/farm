@@ -59,6 +59,8 @@ const translations: Record<LanguageCode, Translation> = {
       [ERROR.ROOM_NAME_TAKEN]:
         'A room with this name already exists. Please try again.',
       [ERROR.INVALID_ROOM_NAME]: 'Enter room name.',
+      [ERROR.INVALID_ROOM_PASSWORD]: `Password must be ${VALIDATION.ROOM_PASSWORD.MIN_LENGTH}–${VALIDATION.ROOM_PASSWORD.MAX_LENGTH} characters.`,
+      [ERROR.WRONG_ROOM_PASSWORD]: 'Wrong password.',
       [ERROR.NOT_OWNER]: 'You are not the room owner.',
       [ERROR.CANNOT_START]: 'Cannot start the game.',
       [ERROR.CANNOT_KICK]: 'Cannot kick this player.',
@@ -81,6 +83,10 @@ const translations: Record<LanguageCode, Translation> = {
       // Client-only validations
       userNameTooShort: `Name must be at least ${VALIDATION.USER_NAME.MIN_LENGTH} characters.`,
       userNameTooLong: `Name must be at most ${VALIDATION.USER_NAME.MAX_LENGTH} characters.`,
+      roomNameTooShort: `Room name must be at least ${VALIDATION.ROOM_NAME.MIN_LENGTH} characters.`,
+      roomNameTooLong: `Room name must be at most ${VALIDATION.ROOM_NAME.MAX_LENGTH} characters.`,
+      roomPasswordTooShort: `Password must be at least ${VALIDATION.ROOM_PASSWORD.MIN_LENGTH} characters.`,
+      roomPasswordTooLong: `Password must be at most ${VALIDATION.ROOM_PASSWORD.MAX_LENGTH} characters.`,
       cannotJoin: 'Cannot join.',
       cannotJoinKicked: 'You have been kicked from this room.',
       apiErrorOnCreatingRoom: 'Error creating room: ',
@@ -135,6 +141,7 @@ const translations: Record<LanguageCode, Translation> = {
       lightMode: 'Light mode',
       rules: 'Rules',
       online: (count: number): string => `${count} Online`,
+      spectators: (count: number): string => `Spectators: ${count}`,
     },
     statistics: {
       title: 'Statistics',
@@ -161,13 +168,29 @@ const translations: Record<LanguageCode, Translation> = {
       lastMatch: 'Last played match',
     },
     dashboard: {
-      backToGames: 'Back to games',
+      backToGames: 'Back',
       createRoomBtn: 'Create Room',
+      createProtectedRoomBtn: 'Create Protected Room',
+      createRoomOptions: 'Room type',
+      protectedRoom: 'Password protected',
       openRoomsHeader: 'Rooms',
       noActiveRooms: 'No rooms.',
       createRoom: 'Create a room to start.',
       roomRules: 'Rules',
       players: 'Players',
+    },
+    protectedRoom: {
+      createTitle: 'Protected room',
+      createDescription:
+        'Only players who know the password can join. The password cannot be changed later.',
+      nameLabel: 'Room name',
+      passwordLabel: 'Password',
+      passwordPlaceholder: 'Enter password',
+      create: 'Create',
+      joinTitle: 'Enter password',
+      joinDescription: (roomName: string): string =>
+        `Room "${roomName}" is password protected.`,
+      join: 'Join',
     },
     roomButton: {
       full: 'Full',
@@ -252,6 +275,8 @@ const translations: Record<LanguageCode, Translation> = {
       [ERROR.ROOM_NAME_TAKEN]:
         'Кімната з такою назвою вже існує. Спробуйте ще раз.',
       [ERROR.INVALID_ROOM_NAME]: 'Введіть назву кімнати.',
+      [ERROR.INVALID_ROOM_PASSWORD]: `Пароль має містити ${VALIDATION.ROOM_PASSWORD.MIN_LENGTH}–${VALIDATION.ROOM_PASSWORD.MAX_LENGTH} символів.`,
+      [ERROR.WRONG_ROOM_PASSWORD]: 'Невірний пароль.',
       [ERROR.NOT_OWNER]: 'Ви не власник кімнати.',
       [ERROR.CANNOT_START]: 'Неможливо розпочати.',
       [ERROR.CANNOT_KICK]: 'Неможливо вигнати цього гравця.',
@@ -274,6 +299,10 @@ const translations: Record<LanguageCode, Translation> = {
       // Client-only validations
       userNameTooShort: `Імʼя має містити щонайменше ${VALIDATION.USER_NAME.MIN_LENGTH} символи.`,
       userNameTooLong: `Імʼя має містити щонайбільше ${VALIDATION.USER_NAME.MAX_LENGTH} символів.`,
+      roomNameTooShort: `Назва кімнати має містити щонайменше ${VALIDATION.ROOM_NAME.MIN_LENGTH} символи.`,
+      roomNameTooLong: `Назва кімнати має містити щонайбільше ${VALIDATION.ROOM_NAME.MAX_LENGTH} символів.`,
+      roomPasswordTooShort: `Пароль має містити щонайменше ${VALIDATION.ROOM_PASSWORD.MIN_LENGTH} символи.`,
+      roomPasswordTooLong: `Пароль має містити щонайбільше ${VALIDATION.ROOM_PASSWORD.MAX_LENGTH} символів.`,
       cannotJoin: 'Неможливо приєднатися.',
       cannotJoinKicked: 'Вас вигнали з цієї кімнати.',
       apiErrorOnCreatingRoom: 'Помилка при створенні кімнати: ',
@@ -335,6 +364,7 @@ const translations: Record<LanguageCode, Translation> = {
       lightMode: 'Світла тема',
       rules: 'Правила',
       online: (count: number): string => `${count} онлайн`,
+      spectators: (count: number): string => `Глядачі: ${count}`,
     },
     statistics: {
       title: 'Статистика',
@@ -368,13 +398,29 @@ const translations: Record<LanguageCode, Translation> = {
       lastMatch: 'Останній зіграний матч',
     },
     dashboard: {
-      backToGames: 'Назад до ігор',
+      backToGames: 'Назад',
       createRoomBtn: 'Створити кімнату',
+      createProtectedRoomBtn: 'Створити захищену кімнату',
+      createRoomOptions: 'Тип кімнати',
+      protectedRoom: 'Захищено паролем',
       openRoomsHeader: 'Кімнати',
       noActiveRooms: 'Немає кімнат.',
       createRoom: 'Створіть кімнату щоб розпочати.',
       roomRules: 'Правила',
       players: 'Гравців',
+    },
+    protectedRoom: {
+      createTitle: 'Захищена кімната',
+      createDescription:
+        'Приєднатися зможуть лише гравці, які знають пароль. Пароль не можна буде змінити.',
+      nameLabel: 'Назва кімнати',
+      passwordLabel: 'Пароль',
+      passwordPlaceholder: 'Введіть пароль',
+      create: 'Створити',
+      joinTitle: 'Введіть пароль',
+      joinDescription: (roomName: string): string =>
+        `Кімната «${roomName}» захищена паролем.`,
+      join: 'Приєднатися',
     },
     roomButton: {
       full: 'Повна',

@@ -29,6 +29,7 @@ import {
   listRooms as listRoomsFromStore,
   removeRoom,
   setRoom,
+  setRoomPassword,
 } from './room.store.js';
 
 export { updateRoomsList } from './room.broadcast.js';
@@ -49,7 +50,8 @@ export function deleteRoom(roomId: string): void {
 export function createRoom(
   ownerId: string,
   game: GameId,
-  name: string
+  name: string,
+  password?: string
 ): BaseRoom {
   const id = uuid();
   const roomFields = gameRegistry.get(game).addRoomFields();
@@ -62,14 +64,19 @@ export function createRoom(
     players: [],
     spectators: [],
     blacklist: [],
+    isProtected: password !== undefined,
     ...roomFields,
   };
   setRoom(room);
+  if (password !== undefined) {
+    setRoomPassword(id, password);
+  }
   log(LogLevel.INFO, 'room:create', {
     roomId: id,
     ownerId,
     name: room.name,
     game,
+    isProtected: room.isProtected,
   });
   return room;
 }

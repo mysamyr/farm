@@ -2,6 +2,7 @@ export const LOCAL_STORAGE_KEY = {
   LANGUAGE: 'farm:language',
   USERNAME: 'farm:username',
   USER_ID: 'farm:userId',
+  CREATE_ROOM_MODE: 'farm:createRoomMode',
 } as const;
 
 export enum ButtonVariant {

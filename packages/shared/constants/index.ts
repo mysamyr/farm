@@ -68,6 +68,10 @@ export const VALIDATION = {
     MAX_LENGTH: 25,
     MIN_LENGTH: 3,
   },
+  ROOM_PASSWORD: {
+    MAX_LENGTH: 20,
+    MIN_LENGTH: 4,
+  },
   USER_NAME: {
     MAX_LENGTH: 16,
     MIN_LENGTH: 2,

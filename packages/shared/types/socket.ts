@@ -28,9 +28,15 @@ export type RoomKickPayload = RoomIdPayload & {
   playerId: string;
 };
 
+export type RoomJoinPayload = RoomIdPayload & {
+  password?: string;
+};
+
 export type RoomCreatePayload = {
   game: GameId;
   name: string;
+  /** Present only for password-protected rooms */
+  password?: string;
 };
 
 export type RoomPayload = {
@@ -82,7 +88,7 @@ export type CoreClientToServerEvents = {
     ack?: (response: SocketAck) => void
   ) => void;
   [EVENTS.ROOM_JOIN]: (
-    payload: RoomIdPayload,
+    payload: RoomJoinPayload,
     ack?: (response: SocketAck) => void
   ) => void;
   [EVENTS.ROOM_SPECTATE]: (

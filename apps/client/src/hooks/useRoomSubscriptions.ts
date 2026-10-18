@@ -129,7 +129,7 @@ export function useRoomSubscriptions(): void {
           prev &&
           prev.id === updatedCurrentRoom.id &&
           updatedCurrentRoom.state !== ROOM_STATES.IDLE
-            ? prev
+            ? { ...prev, spectators: updatedCurrentRoom.spectators }
             : updatedCurrentRoom
         );
         navigateToLobbyIfNeeded(

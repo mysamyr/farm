@@ -1,0 +1,65 @@
+.container {
+  position: relative;
+  display: inline-flex;
+  align-items: stretch;
+}
+
+.main {
+  flex: 1 1 auto;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.toggle {
+  flex: 0 0 auto;
+  padding-left: 12px;
+  padding-right: 12px;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-left: 1px solid currentColor;
+}
+
+.main:hover,
+.toggle:hover {
+  transform: none;
+  opacity: 0.9;
+}
+
+.arrow {
+  display: inline-block;
+  transition: transform 0.15s;
+}
+
+.arrowOpen {
+  transform: rotate(180deg);
+}
+
+.menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  min-width: 100%;
+  background: var(--bg-card);
+  border: 1px solid var(--text-muted);
+  box-shadow: var(--shadow-elevation);
+  z-index: 9;
+}
+
+.item {
+  width: 100%;
+  border: none;
+  background: transparent;
+  text-align: left;
+  padding: 10px 16px;
+  cursor: pointer;
+  color: var(--text-main);
+  white-space: nowrap;
+}
+
+.item:hover {
+  background-color: var(--accent-soft);
+}
+
+.itemSelected {
+  font-weight: 600;
+}

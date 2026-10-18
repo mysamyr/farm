@@ -12,6 +12,10 @@ type ClientErrorKeys = {
   cannotJoinKicked: string;
   userNameTooShort: string;
   userNameTooLong: string;
+  roomNameTooShort: string;
+  roomNameTooLong: string;
+  roomPasswordTooShort: string;
+  roomPasswordTooLong: string;
   apiErrorOnCreatingRoom: string;
 };
 
@@ -52,6 +56,7 @@ export type Translation = {
     lightMode: string;
     rules: string;
     online: (count: number) => string;
+    spectators: (count: number) => string;
   };
   statistics: {
     title: string;
@@ -73,11 +78,25 @@ export type Translation = {
   dashboard: {
     backToGames: string;
     createRoomBtn: string;
+    createProtectedRoomBtn: string;
+    createRoomOptions: string;
+    protectedRoom: string;
     openRoomsHeader: string;
     noActiveRooms: string;
     createRoom: string;
     roomRules: string;
     players: string;
+  };
+  protectedRoom: {
+    createTitle: string;
+    createDescription: string;
+    nameLabel: string;
+    passwordLabel: string;
+    passwordPlaceholder: string;
+    create: string;
+    joinTitle: string;
+    joinDescription: (roomName: string) => string;
+    join: string;
   };
   roomButton: {
     full: string;

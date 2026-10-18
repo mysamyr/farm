@@ -29,6 +29,13 @@
   line-height: 1.25;
 }
 
+.lock {
+  display: inline-flex;
+  vertical-align: -2px;
+  margin-right: 6px;
+  color: var(--text-muted);
+}
+
 .roomOwner {
   font-size: 0.8rem;
   color: var(--text-muted);

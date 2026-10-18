@@ -16,6 +16,7 @@ export function updateRoomsList(io: AppServer): void {
     spectators: room.spectators.map(({ id, name }) => ({ id, name })),
     rules: room.rules,
     blacklist: room.blacklist,
+    isProtected: room.isProtected,
     winner: room.winner,
     startedAt: room.startedAt,
     vote: room.vote,

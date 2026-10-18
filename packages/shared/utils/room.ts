@@ -1,4 +1,15 @@
+import { VALIDATION } from '../constants/index.js';
 import type { BaseRoom, RoomRole } from '../types/index.js';
+
+/** Passwords are not trimmed: spaces and any other characters count. */
+export function isValidRoomPassword(password: unknown): password is string {
+  if (typeof password !== 'string') return false;
+  const length = [...password].length;
+  return (
+    length >= VALIDATION.ROOM_PASSWORD.MIN_LENGTH &&
+    length <= VALIDATION.ROOM_PASSWORD.MAX_LENGTH
+  );
+}
 
 export function getRoomRole(
   room: BaseRoom | null | undefined,

@@ -1,15 +1,20 @@
 import { ReactElement } from 'react';
 
-import { Button } from '@game/client-core/components';
+import { Button, LockIcon } from '@game/client-core/components';
 import { ButtonVariant } from '@game/client-core/constants';
-import { useLanguage, useRoom, useSnackbar } from '@game/client-core/hooks';
+import {
+  useLanguage,
+  useModal,
+  useRoom,
+  useSnackbar,
+} from '@game/client-core/hooks';
 import { emitEvent } from '@game/client-core/socket';
 import { getUserId, resolveErrorMessage } from '@game/client-core/utils';
 import { EVENTS, ROOM_STATES } from '@game/shared/constants';
 import type { BaseRoom, SpectateRoomAck } from '@game/shared/types';
 import { useNavigate } from 'react-router-dom';
 
-import { Tag } from '../../../components/index.js';
+import { RoomPasswordModal, Tag } from '../../../components/index.js';
 import { getGameBoardPath } from '../../../constants/index.js';
 import { useGameConfig, useGames, useUsername } from '../../../hooks/index.js';
 import { getOwnerName } from '../../../utils/index.js';
@@ -25,6 +30,7 @@ export default function RoomCard({ room }: RoomCardProps): ReactElement {
   const { currentRoom, setCurrentRoom } = useRoom();
   const navigate = useNavigate();
   const { showSnackbar } = useSnackbar();
+  const { showModal } = useModal();
   const { getGame } = useGames();
   const { isValid: hasUsername } = useUsername();
   const { config: gameConfig } = useGameConfig(room.game);
@@ -50,7 +56,19 @@ export default function RoomCard({ room }: RoomCardProps): ReactElement {
     <div className={styles.container}>
       <div className={styles.header}>
         <div className={styles.identity}>
-          <h3 className={styles.roomName}>{room.name}</h3>
+          <h3 className={styles.roomName}>
+            {room.isProtected ? (
+              <span
+                className={styles.lock}
+                title={translation.dashboard.protectedRoom}
+                aria-label={translation.dashboard.protectedRoom}
+                role="img"
+              >
+                <LockIcon />
+              </span>
+            ) : null}
+            {room.name}
+          </h3>
           <span className={styles.roomOwner}>
             {translation.owner} {getOwnerName(room)}
           </span>
@@ -74,6 +92,14 @@ export default function RoomCard({ room }: RoomCardProps): ReactElement {
                       ? translation.errors.cannotJoinKicked
                       : translation.errors.cannotJoin
                   );
+                  return;
+                }
+
+                if (room.isProtected) {
+                  showModal({
+                    component: RoomPasswordModal,
+                    props: { roomId: room.id, roomName: room.name },
+                  });
                   return;
                 }
 
