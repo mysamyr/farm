@@ -18,6 +18,18 @@
   transition-delay: 0s;
 }
 
+.root.viewport {
+  inset: auto;
+  top: var(--modal-viewport-top, 0px);
+  left: var(--modal-viewport-left, 0px);
+  width: var(--modal-viewport-width, 100%);
+  height: var(--modal-viewport-height, 100%);
+}
+
+.viewport .panel {
+  position: absolute;
+}
+
 .layerPanel {
   z-index: var(--z-panel);
 }

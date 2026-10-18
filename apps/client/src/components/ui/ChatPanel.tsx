@@ -69,6 +69,7 @@ export function ChatPanel(): ReactElement {
       placement="custom"
       mobilePlacement="bottom"
       backdrop="mobile"
+      fitVisualViewport
       layer="floating"
       ariaLabel={translation.chat.title}
       panelClassName={styles.panel}

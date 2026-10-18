@@ -3,18 +3,21 @@
   bottom: 84px;
   width: min(360px, calc(100vw - 40px));
   height: min(480px, calc(100vh - 160px));
+  max-height: max(0px, calc(var(--modal-viewport-height, 100dvh) - 100px));
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
 
 .header {
+  flex-shrink: 0;
   padding: 12px 12px 12px 16px;
   border-bottom: 1px solid var(--border-base);
 }
 
 .messages {
   flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -33,6 +36,7 @@
 }
 
 .message {
+  flex-shrink: 0;
   align-self: flex-start;
   max-width: 85%;
   display: flex;
@@ -68,6 +72,7 @@
 }
 
 .readOnly {
+  flex-shrink: 0;
   margin: 0;
   padding: 14px 16px;
   border-top: 1px solid var(--border-base);
@@ -77,6 +82,7 @@
 }
 
 .form {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -120,6 +126,9 @@
 
 @media (max-width: 767px) {
   .panel {
-    height: 80dvh;
+    height: min(
+      80dvh,
+      max(0px, calc(var(--modal-viewport-height, 100dvh) - 16px))
+    );
   }
 }

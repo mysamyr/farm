@@ -44,6 +44,7 @@ export type ModalProps = {
   closeOnBackdrop?: boolean;
   closeOnEscape?: boolean;
   lockScroll?: boolean;
+  fitVisualViewport?: boolean;
   layer?: ModalLayer;
   /** Keep content mounted while closed (required for drag-to-open). */
   keepMounted?: boolean;
@@ -86,6 +87,7 @@ export default function Modal({
   closeOnBackdrop = false,
   closeOnEscape = true,
   lockScroll = false,
+  fitVisualViewport = false,
   layer = 'modal',
   keepMounted = false,
   drag,
@@ -135,6 +137,42 @@ export default function Modal({
     if (!open || !lockScroll) return;
     return lockBodyScroll();
   }, [open, lockScroll]);
+
+  useLayoutEffect(() => {
+    if (!open || !fitVisualViewport) return;
+    const root = rootRef.current;
+    const viewport = window.visualViewport;
+    if (!root || !viewport) return;
+
+    let frame: number | undefined;
+    const updateViewport = () => {
+      frame = undefined;
+      root.style.setProperty('--modal-viewport-top', `${viewport.offsetTop}px`);
+      root.style.setProperty(
+        '--modal-viewport-left',
+        `${viewport.offsetLeft}px`
+      );
+      root.style.setProperty('--modal-viewport-height', `${viewport.height}px`);
+      root.style.setProperty('--modal-viewport-width', `${viewport.width}px`);
+    };
+    const scheduleUpdate = () => {
+      if (frame === undefined) frame = requestAnimationFrame(updateViewport);
+    };
+
+    updateViewport();
+    viewport.addEventListener('resize', scheduleUpdate);
+    viewport.addEventListener('scroll', scheduleUpdate);
+
+    return () => {
+      viewport.removeEventListener('resize', scheduleUpdate);
+      viewport.removeEventListener('scroll', scheduleUpdate);
+      if (frame !== undefined) cancelAnimationFrame(frame);
+      root.style.removeProperty('--modal-viewport-top');
+      root.style.removeProperty('--modal-viewport-left');
+      root.style.removeProperty('--modal-viewport-height');
+      root.style.removeProperty('--modal-viewport-width');
+    };
+  }, [open, present, fitVisualViewport]);
 
   useLayoutEffect(() => {
     if (!open) return;
@@ -211,6 +249,7 @@ export default function Modal({
       className={classNames(
         styles.root,
         layerClassMap[layer],
+        fitVisualViewport && styles.viewport,
         // Visible immediately so content can take focus; `open` drives the
         // enter transition one frame later.
         open && styles.visible,
