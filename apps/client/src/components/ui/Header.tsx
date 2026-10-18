@@ -229,29 +229,27 @@ export function Header({ additionalActions }: HeaderProps): ReactElement {
         <div className={styles.onlineIndicator}>
           <span className={styles.dot} />
           <span>{headerT.online(online)}</span>
+          {isRunningGame && spectatorCount > 0 && (
+            <span
+              className={styles.spectatorCount}
+              role="img"
+              aria-label={headerT.spectators(spectatorCount)}
+              title={headerT.spectators(spectatorCount)}
+            >
+              <EyeIcon />
+              {spectatorCount}
+            </span>
+          )}
         </div>
       </div>
 
-      <div className={styles.actions}>
-        {isRunningGame && spectatorCount > 0 && (
-          <span
-            className={styles.spectatorCount}
-            role="img"
-            aria-label={headerT.spectators(spectatorCount)}
-            title={headerT.spectators(spectatorCount)}
-          >
-            <EyeIcon />
-            {spectatorCount}
-          </span>
-        )}
-        <Button
-          variant={ButtonVariant.ICON}
-          title={headerT.openMenu}
-          onClick={openSidebar}
-        >
-          <BurgerIcon />
-        </Button>
-      </div>
+      <Button
+        variant={ButtonVariant.ICON}
+        title={headerT.openMenu}
+        onClick={openSidebar}
+      >
+        <BurgerIcon />
+      </Button>
 
       <Sidebar open={sidebarOpen} onOpen={openSidebar} onClose={closeSidebar}>
         <div className={styles.sidebarContent}>

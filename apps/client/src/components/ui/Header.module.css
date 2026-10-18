@@ -47,19 +47,18 @@
   flex-shrink: 0;
 }
 
-.actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-shrink: 0;
-}
-
 .spectatorCount {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
+  margin-left: 4px;
   color: var(--text-muted);
-  font-size: 0.8rem;
+  font-size: 0.75rem;
+}
+
+.spectatorCount svg {
+  width: 14px;
+  height: 14px;
 }
 
 .sidebarContent {
