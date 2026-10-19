@@ -1,4 +1,8 @@
-import { GAME_RULES } from '../../shared/index.js';
+import {
+  GAME_RULES,
+  REQUIRED_ACTIVE_COUNT,
+  REQUIRED_HEALING_COUNT,
+} from '../../shared/index.js';
 
 import type { ArenaHelpTranslation, ArenaTranslation } from './types.js';
 
@@ -12,16 +16,91 @@ export const arenaGameTranslation: ArenaTranslation = {
     crit: '🎯 Крит',
     dodge: '💨 Ухил',
   },
-  effectLabels: {
-    regeneration: 'Регенерація',
-    resistance: 'Стійкість',
-    thorns: 'Шипи',
-    leech: 'Вампірик',
-    poison: 'Отрута',
-    bleed: 'Кровотеча',
-    stun: 'Оніміння',
-    pierce: 'Пробій',
-    reflection: 'Відбиття',
+  effects: {
+    regeneration: {
+      name: 'Регенерація',
+      description: 'Відновлює HP наприкінці вашого ходу.',
+      value: {
+        badge: '{value}',
+        description: 'Зараз відновлює {value} HP за хід.',
+      },
+    },
+    resistance: {
+      name: 'Стійкість',
+      description:
+        'Блокує нові Кровотечу, Отруту та Займання і зменшує вхідну пряму шкоду. Не знімає вже накладені ефекти.',
+      value: {
+        badge: '{value}%',
+        description: 'Зараз зменшує отриману пряму шкоду на {value}%.',
+      },
+    },
+    thorns: {
+      name: 'Шипи',
+      description: 'Повертає частину прямої шкоди атакуючому.',
+      value: {
+        badge: '{value}%',
+        description: 'Зараз повертає {value}% прямої шкоди.',
+      },
+    },
+    leech: {
+      name: 'Вампірик',
+      description: 'Лікує частину прямої шкоди, яку ви завдаєте.',
+      value: {
+        badge: '{value}%',
+        description:
+          'Зараз відновлює HP у розмірі {value}% завданої прямої шкоди.',
+      },
+    },
+    poison: {
+      name: 'Отрута',
+      description: 'Фіксована шкода щоходу.',
+      value: {
+        badge: '{value}',
+        description: 'Зараз завдає {value} шкоди за хід.',
+      },
+    },
+    ignition: {
+      name: 'Займання',
+      description:
+        'Завдає шкоди вогнем наприкінці вашого ходу. Шкода збільшується на базове значення з кожним спрацюванням, максимум до 20. Повторне накладання оновлює тривалість без скидання прогресії. Зняття або завершення ефекту скидає її.',
+      value: {
+        badge: '{value}',
+        description: 'Наступне спрацювання завдасть {value} шкоди вогнем.',
+      },
+    },
+    bleed: {
+      name: 'Кровотеча',
+      description: 'Шкода щоходу залежить від поточного HP (мінімум 5).',
+      value: {
+        badge: '{value}%',
+        description: 'Завдає {value}% від поточного HP за хід (мінімум 5).',
+      },
+    },
+    stun: {
+      name: 'Оніміння',
+      description:
+        'Не можна використовувати навички (лише Пропустити). Перезаряджання не зменшується.',
+    },
+    pierce: {
+      name: 'Пробій',
+      description:
+        'Ігнорує всю Броню суперника та зменшує отриману у відповідь шкоду від Шипів на 50%.',
+    },
+    reflection: {
+      name: 'Відбиття',
+      description:
+        'Перенаправляє вхідні дебафи (Кровотеча, Отрута, Займання, Оніміння та зниження статів) на атакуючого з тими самими значеннями і тривалістю. Не відбивається повторно.',
+    },
+    berserk: {
+      name: 'Берсерк',
+      description:
+        'Збільшує загальну завдану шкоду залежно від поточного HP: 5% при 51-75%, 10% при 26-50%, 20% при 11-25% та 30% при 10% або менше.',
+    },
+    aegis: {
+      name: 'Егіда',
+      description:
+        'Зменшує тривалість нових негативних ефектів на 1 хід (мінімум 1) і збільшує тривалість нових позитивних ефектів на 1 хід.',
+    },
   },
   skillNames: {
     attack: 'Атака',
@@ -30,11 +109,14 @@ export const arenaGameTranslation: ArenaTranslation = {
     viper_strike: 'Укус гадюки',
     knockback: 'Відкидання',
     corrosion: 'Корозія',
+    ignite: 'Підпалити',
     heal: 'Зцілення',
     regeneration: 'Регенерація',
     resistance: 'Магічний щит',
     cleanse: 'Очищення',
+    meditation: 'Медитація',
     rage: 'Лють',
+    raise_shield: 'Підняти щит',
     spiked_armor: 'Шипована броня',
     reflect: 'Відбиття',
     vampiric_strike: 'Удар вампіра',
@@ -47,12 +129,15 @@ export const arenaGameTranslation: ArenaTranslation = {
     thorns: 'Шипи',
     leech: 'Вампірик',
     pierce: 'Пробій',
+    berserk: 'Берсерк',
+    aegis: 'Егіда',
   },
   skillEffectLabels: {
     damage: 'Завдати {value} шкоди',
     heal: 'Зцілити на {value}',
     lifesteal: 'Вкрасти {value}',
     cleanse: 'Очистити негативні ефекти',
+    reduceCooldowns: 'Зменшити всі свої кулдауни на {amount}',
     applyStatus: 'Накласти {status}{value} {target} {duration}',
     modifyStat: '{sign}{value} {stat} {target}{duration}',
     durationTurns: 'на {turns} ходів',
@@ -73,9 +158,15 @@ export const arenaGameTranslation: ArenaTranslation = {
     healingSkillFull: 'Слот лікувальної навички заповнений',
     passiveSkillsFull: 'Слоти пасивних навичок заповнені',
     waitingForOpponent: 'Очікуємо вибір навичок суперника...',
+    waitingForPlayers: 'Очікуємо гравців... {ready}/{total} готові',
     failedToReady: 'Неможливо підтвердити готовність',
     readyButton: 'Готово',
     resetButton: 'Скинути',
+    spectatorTitle: 'Підготовка бійців',
+    spectatorDescription:
+      'Гравці обирають активні, лікувальні та пасивні навички. Обраний набір з’явиться, щойно боєць підтвердить готовність.',
+    readyStatus: 'Готовий',
+    selectingStatus: 'Обирає навички',
     victoryTitle: '🎉 Перемога!',
     victoryMessage: 'Суперник покинув кімнату. Ви перемогли!',
     opponentLeftTitle: '😞 Суперник пішов',
@@ -86,33 +177,52 @@ export const arenaGameTranslation: ArenaTranslation = {
     opponentTurnBadge: 'Хід суперника',
     gameOverBadge: 'Матч завершено',
     failedToUseSkill: 'Неможливо використати навичку',
-    turnBadge: 'Ваш хід',
+    turnBadge: 'Хід',
     winnerBadge: 'Переможець 🏆',
+    targetBadge: '🎯 Ціль',
+    eliminatedBadge: 'Вибув',
+    yourTurnPrompt: 'Ваш хід — ціль {target}. Оберіть навичку.',
+    yourTurnNoTargetPrompt: 'Ваш хід — оберіть навичку.',
+    stunnedPrompt: 'Вас оглушено — доступний лише Пропуск.',
+    otherTurnPrompt: 'Хід гравця {name}...',
+    eliminatedPrompt: 'Ви вибули — режим спостереження.',
+    winnerPrompt: '{name} перемагає!',
+    selectTargetHint: 'Торкніться суперника, щоб обрати ціль',
+    opponentsLabel: 'Суперники',
+    playerEliminated: '{name} вибув з бою',
+    battleLogShow: 'Показати журнал бою',
+    battleLogHide: 'Сховати журнал бою',
   },
   battleLog: {
     title: 'Журнал бою',
     noActionsYet: 'Немає дій.',
     turnLabel: 'Хід',
     used: 'використав',
-    damage: '{target}: {value} шкоди{crit}',
+    row: '{target}: {message}',
+    messages: {
+      damage: '{value} шкоди{crit}',
+      dodge: 'ухилився',
+      heal: '+{value} зцілення',
+      lifesteal: '+{value} вампіризм',
+      bleed: '-{value} кровотеча',
+      poison: '-{value} отрута',
+      ignition: '-{value} шкода вогнем',
+      regeneration: '+{value} регенерація',
+      thorns: '-{value} шипи',
+      leech: '+{value} вампірик',
+      cleanse: 'Очищено негативні ефекти',
+      reduce_cooldowns: 'Зменшено всі власні кулдауни на {value}',
+      resist: 'відбив {status}',
+      reflect: 'відбив дебафи',
+      apply_status: 'накладено {status}{value}{duration}',
+      modify_stat: '{sign}{value} {stat}{duration}',
+    },
     crit: ' (крит)',
-    dodge: '{target}: ухилився',
-    heal: '+{value} зцілення',
-    lifesteal: '+{value} вампіризм',
-    bleed: '-{value} кровотеча',
-    poison: '-{value} отрута',
-    regeneration: '+{value} регенерація',
-    thorns: '-{value} шипи',
-    leech: '+{value} вампірик',
-    cleanse: 'Очищено негативні ефекти',
-    resist: '{target}: відбив {status}',
-    reflect: '{target}: відбив дебафи',
-    applyStatus: '{target}: накладено {status}{value}{duration}',
-    modifyStat: '{target}: {sign}{value} {stat}{duration}',
     durationTurns: ' на {turns} ходів',
   },
   ruleLabels: {
     [GAME_RULES.ZERO_COOLDOWN]: 'Немає перезаряджання на початку',
+    [GAME_RULES.PASSIVE_SKILL_COUNT]: 'Кількість пасивних навичок',
   },
   util: {
     self: 'собі',
@@ -133,8 +243,7 @@ export const arenaHelpTranslation: ArenaHelpTranslation = {
     crit: 'Шанс подвоїти загальну шкоду.',
   },
   skillsHeader: 'Навички',
-  skillsIntro:
-    'Перед боєм оберіть 2 активні навички, 1 лікувальну та 2 пасивні. Атака і Пропустити доступні завжди.',
+  skillsIntro: `Перед боєм оберіть ${REQUIRED_ACTIVE_COUNT} активні навички, ${REQUIRED_HEALING_COUNT} лікувальну навичку та кількість пасивних навичок, задану правилом кімнати. Атака і Пропустити доступні завжди.`,
   activeSkills:
     'Активні навички використовуються у ваш хід і мають перезаряджання. Вони завдають шкоди, накладають ефекти, підсилюють вас або послаблюють суперника.',
   healingSkills:
@@ -144,19 +253,6 @@ export const arenaHelpTranslation: ArenaHelpTranslation = {
   effectsHeader: 'Ефекти',
   effectsIntro:
     'Ефекти — це статуси на бійці. Одні тривають кілька ходів, інші залишаються на весь бій (пасивні).',
-  effects: {
-    regeneration: 'Відновлює HP наприкінці вашого ходу.',
-    resistance:
-      'Блокує нові Кровотечу та Отруту. Не знімає вже накладені ефекти.',
-    thorns: 'Повертає частину прямої шкоди атакуючому.',
-    leech: 'Лікує частину прямої шкоди, яку ви завдаєте.',
-    poison: 'Фіксована шкода щоходу.',
-    bleed: 'Шкода щоходу від поточного HP.',
-    stun: 'Не можна використовувати навички (лише Пропустити). Перезаряджання не зменшується.',
-    pierce: 'Ігнорує частину Броні суперника.',
-    reflection:
-      'Перенаправляє вхідні дебафи (Кровотеча, Отрута, Оніміння та зниження статів) на атакуючого з тими самими значеннями і тривалістю. Не відбивається повторно.',
-  },
   turnHeader: 'Обробка ходу',
   turnIntro: 'Кожен хід проходить у фіксованому порядку:',
   turnSteps: [
@@ -165,18 +261,19 @@ export const arenaHelpTranslation: ArenaHelpTranslation = {
     'Накладання ефектів на себе',
     'Накладання зміни статів на себе',
     'Перевірка на ухилення — якщо суперник ухилився, решта атаки пропускається',
-    'Нанесення шкоди (може бути крит)',
+    'Нанесення шкоди: мінімум 1, потім множник криту, множник Берсерка та зменшення опором',
     'Застосування шипів',
     'Застосування крадіжки здоровʼя / вампірика',
     'Якщо в захисника є Відбиття, вхідні дебафи (негативні статуси та зниження статів) перенаправляються на атакуючого',
     'Накладання ефектів на противника',
     'Накладання зміни статів на противника',
     'Перевірка смерті',
-    'Обробити активні ефекти на собі (DoT / Регенерація) — пропустити Кровотечу, Отруту та Регенерацію, накладені в цей хід',
+    'Обробити активні ефекти на собі (DoT / Регенерація) — пропустити Кровотечу, Отруту, Займання та Регенерацію, накладені в цей хід. Шкода від Займання збільшується на базове значення після кожного спрацювання до максимуму 20',
     'Перевірка смерті',
     'Скинути кулдаун навички, що оброблялася',
     'Зменшити кулдауни навичок (якщо не застанений)',
-    'Зменшити тривалість активних ефектів (пропустити Кровотечу, Отруту, Оніміння, Регенерацію та зниження статів, накладені в цей хід)',
+    'Застосувати наприкінці ходу ефекти зменшення кулдаунів на собі (наприклад, Медитація)',
+    'Зменшити тривалість активних ефектів (пропустити Кровотечу, Отруту, Займання, Оніміння, Регенерацію та зниження статів, накладені в цей хід)',
     'Наступний хід',
   ],
 };

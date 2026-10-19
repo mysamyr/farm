@@ -55,10 +55,10 @@ export function gracefulDisconnect(
   setPendingDisconnect(userId, { timeout, oldSocketId: socket.id, player });
 }
 
-export function assignPlayer(socket: AppSocket): void {
+export function assignPlayer(socket: AppSocket, userName?: string): void {
   socket.data.player = {
     id: socket.id,
-    name: getDefaultPlayerName(socket),
+    name: userName ?? getDefaultPlayerName(socket),
   };
 }
 

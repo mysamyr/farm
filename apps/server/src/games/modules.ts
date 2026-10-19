@@ -1,7 +1,10 @@
 import * as arena from '@game/game-arena/server';
 import {
   DEFAULT_CONFIG as ARENA_CONFIG,
+  GAME_RULES as ARENA_RULES,
   GAME_METADATA as ARENA_METADATA,
+  MAX_PASSIVE_COUNT as ARENA_MAX_PASSIVE_COUNT,
+  MIN_PASSIVE_COUNT as ARENA_MIN_PASSIVE_COUNT,
   type Player as ArenaPlayer,
   type Room as ArenaRoom,
 } from '@game/game-arena/shared';
@@ -82,10 +85,20 @@ gameRegistry.register(
       minPlayers: ARENA_CONFIG.minPlayers,
       maxPlayers: ARENA_CONFIG.maxPlayers,
     },
-    addRoomFields: arena.addRoomFields,
-    onPlayerRemoved: (room, playerId) => {
-      arena.removePlayerFromOrder(room, playerId);
+    validateRules: rules => {
+      const passiveSkillCount = rules[ARENA_RULES.PASSIVE_SKILL_COUNT];
+      return (
+        passiveSkillCount === undefined ||
+        (typeof passiveSkillCount === 'number' &&
+          Number.isInteger(passiveSkillCount) &&
+          passiveSkillCount >= ARENA_MIN_PASSIVE_COUNT &&
+          passiveSkillCount <= ARENA_MAX_PASSIVE_COUNT)
+      );
     },
+    addRoomFields: arena.addRoomFields,
+    projectRoomState: arena.projectRoomState,
+    onPlayerRemoved: (room, playerId) =>
+      arena.removePlayerFromOrder(room, playerId),
     onPlayerReconnected: (room, oldPlayerId, newPlayerId) => {
       arena.updateRoomOrderId(room, oldPlayerId, newPlayerId);
     },

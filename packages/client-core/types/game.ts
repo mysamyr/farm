@@ -4,10 +4,24 @@ import type { GameId, GameColor } from '@game/shared/constants';
 
 import type { LanguageCode } from '../constants/index.js';
 
-export interface RuleConfig {
+interface BaseRuleConfig {
   key: string;
   label: (language: LanguageCode) => string;
 }
+
+export interface BooleanRuleConfig extends BaseRuleConfig {
+  type?: 'boolean';
+}
+
+export interface NumberRuleConfig extends BaseRuleConfig {
+  type: 'number';
+  min: number;
+  max: number;
+  step: number;
+  default: number;
+}
+
+export type RuleConfig = BooleanRuleConfig | NumberRuleConfig;
 
 export interface GameConfig {
   id: GameId;

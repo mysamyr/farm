@@ -20,6 +20,8 @@ const io: AppServer = new Server(server, {
   connectionStateRecovery: {
     maxDisconnectionDuration: 60 * 1000,
   },
+  perMessageDeflate: false,
+  maxHttpBufferSize: 200 * 1024,
 });
 
 app.use(loggingMiddleware);

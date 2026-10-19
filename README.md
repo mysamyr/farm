@@ -1,11 +1,9 @@
 # Game Hub project
 
+- [ ] add auth
+  - [ ] move statistics collection to api
+- [ ] game-specific statistics
 - [ ] generate README.md
-- [x] make possible to restart a game after game Finished (is all players agree) - core
-- [x] add kick feature
-- [ ] add password-protected rooms
-- [x] ARENA: add rule for 0 cooldown on start
-- [x] Dashboard redesign (more info about games)
-- [x] Header refactoring
-- [ ] Room Card refactoring
-- [ ] Single player games (based on rule)
+- [ ] ? add password-protected rooms
+- [ ] ? Single player games
+- [ ] ARENA. Add tournament mode for 4 players where they can select team. team that defeated all players from opposite team wins, player cannot attack allies. 2 players are winners, 2 loose.

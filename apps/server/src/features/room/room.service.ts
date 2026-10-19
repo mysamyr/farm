@@ -5,7 +5,7 @@ import {
 } from '@game/shared/constants';
 
 import type { GameId } from '@game/shared/constants';
-import type { BaseRoom } from '@game/shared/types';
+import type { BaseRoom, RoomRole } from '@game/shared/types';
 
 import { uuid } from '@game/shared/utils';
 
@@ -13,6 +13,7 @@ import { LogLevel } from '../../constants/index.js';
 import { gameRegistry } from '../../games/registry.js';
 import { log } from '../../services/logger.js';
 import type { AppServer, AppSocket } from '../../types/index.js';
+import { clearChat, remapChatAuthor } from '../chat/chat.store.js';
 import { findPendingDisconnectBySocketId } from '../connection/connection.store.js';
 
 import {
@@ -20,18 +21,18 @@ import {
   onPlayerLeftDuringRematch,
   remapRematchPlayerId,
 } from './rematch.service.js';
-import {
-  generateRoomName,
-  shouldAutowin,
-  shouldDeleteRoom,
-} from './room.helpers.js';
+import { updateRoomsList } from './room.broadcast.js';
+import { shouldAutowin, shouldDeleteRoom } from './room.helpers.js';
 import {
   getRoomById as getRoomByIdFromStore,
   getRoomsMap,
   listRooms as listRoomsFromStore,
   removeRoom,
   setRoom,
+  setRoomPassword,
 } from './room.store.js';
+
+export { updateRoomsList } from './room.broadcast.js';
 
 const rooms = getRoomsMap();
 
@@ -40,30 +41,42 @@ export const listRooms = listRoomsFromStore;
 
 export function deleteRoom(roomId: string): void {
   clearRematchTimer(roomId);
+  clearChat(roomId);
   if (removeRoom(roomId)) {
     log(LogLevel.INFO, 'room:delete', { roomId });
   }
 }
 
-export function createRoom(ownerId: string, game: GameId): BaseRoom {
+export function createRoom(
+  ownerId: string,
+  game: GameId,
+  name: string,
+  password?: string
+): BaseRoom {
   const id = uuid();
   const roomFields = gameRegistry.get(game).addRoomFields();
   const room: BaseRoom = {
     id,
-    name: generateRoomName(rooms),
+    name,
     ownerId,
     game,
     state: ROOM_STATES.IDLE,
     players: [],
+    spectators: [],
     blacklist: [],
+    isProtected: password !== undefined,
     ...roomFields,
   };
   setRoom(room);
+  if (password !== undefined) {
+    setRoomPassword(id, password);
+  }
   log(LogLevel.INFO, 'room:create', {
     roomId: id,
     ownerId,
     name: room.name,
     game,
+    isProtected: room.isProtected,
   });
   return room;
 }
@@ -75,10 +88,6 @@ export function leaveRoom(
 ): void {
   const s = io.sockets.sockets.get(socketId);
   if (s) void s.leave(roomId);
-}
-
-export function updateRoomsList(io: AppServer): void {
-  io.emit(EVENTS.ROOMS_LIST, listRooms());
 }
 
 export function assignNewOwner(room: BaseRoom): void {
@@ -97,22 +106,33 @@ export function removePlayerFromRoom(
   if (idx === -1) return;
 
   const wasInRematch =
-    room.state === ROOM_STATES.FINISHED && Boolean(room.rematch);
+    (room.state === ROOM_STATES.FINISHED ||
+      room.state === ROOM_STATES.RUNNING ||
+      room.state === ROOM_STATES.IDLE) &&
+    Boolean(room.vote);
 
   room.players.splice(idx, 1);
+
   leaveRoom(io, room.id, socket.id);
+
+  if (room.ownerId === socket.id) {
+    assignNewOwner(room);
+  }
+
   const gameModule = gameRegistry.get(room.game);
-  gameModule.onPlayerRemoved?.(room, socket.id);
+  const winnerAfterRemoval = gameModule.onPlayerRemoved?.(room, socket.id);
   if (shouldAutowin(room)) {
     gameModule.onPlayerWin?.(io, room, room.players[0]!);
-  } else if (shouldDeleteRoom(room, socket.id)) {
+  } else if (winnerAfterRemoval) {
+    gameModule.onPlayerWin?.(io, room, winnerAfterRemoval);
+  }
+
+  if (shouldDeleteRoom(room, socket.id)) {
     deleteRoom(room.id);
     log(LogLevel.INFO, 'room:deleted', {
       roomId: room.id,
       reason: 'playerLeft',
     });
-  } else if (room.ownerId === socket.id) {
-    assignNewOwner(room);
   }
 
   if (wasInRematch && getRoomById(room.id)) {
@@ -122,6 +142,23 @@ export function removePlayerFromRoom(
   updateRoomsList(io);
 
   log(LogLevel.INFO, 'room:left', { roomId: room.id, socketId: socket.id });
+}
+
+export function removeSpectatorFromRoom(
+  io: AppServer,
+  room: BaseRoom,
+  socketId: string
+): boolean {
+  const idx = room.spectators.findIndex(spectator => spectator.id === socketId);
+  if (idx === -1) return false;
+  room.spectators.splice(idx, 1);
+  leaveRoom(io, room.id, socketId);
+  updateRoomsList(io);
+  log(LogLevel.INFO, 'room:spectator-left', {
+    roomId: room.id,
+    socketId,
+  });
+  return true;
 }
 
 /**
@@ -142,8 +179,8 @@ export function kickPlayerFromRoom(
   let userId = targetSocket?.data.userId;
 
   if (!userId) {
-    const pending = findPendingDisconnectBySocketId(playerId);
-    userId = pending?.userId;
+    const pendingUserId = findPendingDisconnectBySocketId(playerId);
+    userId = pendingUserId;
   }
 
   if (userId && !room.blacklist.includes(userId)) {
@@ -162,20 +199,29 @@ export function kickPlayerFromRoom(
     const idx = room.players.findIndex(p => p.id === playerId);
     if (idx !== -1) {
       const wasInRematch =
-        room.state === ROOM_STATES.FINISHED && Boolean(room.rematch);
+        (room.state === ROOM_STATES.FINISHED ||
+          room.state === ROOM_STATES.RUNNING ||
+          room.state === ROOM_STATES.IDLE) &&
+        Boolean(room.vote);
+
       room.players.splice(idx, 1);
+
       const gameModule = gameRegistry.get(room.game);
-      gameModule.onPlayerRemoved?.(room, playerId);
+      const winnerAfterRemoval = gameModule.onPlayerRemoved?.(room, playerId);
       if (shouldAutowin(room)) {
         gameModule.onPlayerWin?.(io, room, room.players[0]!);
-      } else if (shouldDeleteRoom(room, playerId)) {
-        deleteRoom(room.id);
-      } else if (room.ownerId === playerId) {
-        assignNewOwner(room);
+      } else if (winnerAfterRemoval) {
+        gameModule.onPlayerWin?.(io, room, winnerAfterRemoval);
       }
+
+      if (shouldDeleteRoom(room, playerId)) {
+        deleteRoom(room.id);
+      }
+
       if (wasInRematch && getRoomById(room.id)) {
         onPlayerLeftDuringRematch(io, room, playerId);
       }
+
       updateRoomsList(io);
     }
   }
@@ -199,13 +245,28 @@ export function removePlayerFromAllRooms(io: AppServer, socket: AppSocket) {
         type: NOTIFICATION_TYPES.PLAYER_LEFT,
         data: socket.data.player.name,
       });
+    } else if (room.spectators.some(p => p.id === socket.id)) {
+      removeSpectatorFromRoom(io, room, socket.id);
     }
   }
 }
 
 export function getActiveRoom(playerId: string): BaseRoom | null {
   for (const room of rooms.values()) {
-    if (room.players.some(p => p.id === playerId)) return room;
+    if (
+      room.players.some(p => p.id === playerId) ||
+      room.spectators.some(p => p.id === playerId)
+    ) {
+      return room;
+    }
+  }
+  return null;
+}
+
+export function getRoomRole(room: BaseRoom, socketId: string): RoomRole | null {
+  if (room.players.some(player => player.id === socketId)) return 'player';
+  if (room.spectators.some(spectator => spectator.id === socketId)) {
+    return 'spectator';
   }
   return null;
 }
@@ -228,10 +289,25 @@ export function reassignPlayerInRooms(
         .get(room.game)
         .onPlayerReconnected?.(room, oldSocketId, newSocket.id);
       remapRematchPlayerId(room, oldSocketId, newSocket.id);
+      remapChatAuthor(room.id, oldSocketId, newSocket.id);
 
       void newSocket.join(room.id);
 
       log(LogLevel.INFO, 'room:player-reassigned', {
+        roomId: room.id,
+        oldSocketId,
+        newSocketId: newSocket.id,
+      });
+      continue;
+    }
+
+    const spectator = room.spectators.find(p => p.id === oldSocketId);
+    if (spectator) {
+      room.spectators = room.spectators.map(p =>
+        p.id === oldSocketId ? { ...p, id: newSocket.id } : p
+      );
+      void newSocket.join(room.id);
+      log(LogLevel.INFO, 'room:spectator-reassigned', {
         roomId: room.id,
         oldSocketId,
         newSocketId: newSocket.id,

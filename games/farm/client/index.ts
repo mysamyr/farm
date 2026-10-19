@@ -1,4 +1,5 @@
 import type { GameConfig } from '@game/client-core/types';
+
 import { GameId, GameColor } from '@game/shared/constants';
 
 import { DEFAULT_CONFIG, GAME_RULES } from '@game/game-farm/shared';

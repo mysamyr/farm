@@ -68,7 +68,10 @@ const reconnectHandler = (
 
 export function registerConnection(io: AppServer, socket: AppSocket): void {
   const ip = getIpAddress(socket);
-  const userId = (socket.handshake.auth as { userId?: string }).userId;
+  const { userId, userName } = socket.handshake.auth as {
+    userId?: string;
+    userName?: string;
+  };
 
   if (!userId) {
     log(LogLevel.WARN, 'socket:rejected', {
@@ -89,7 +92,7 @@ export function registerConnection(io: AppServer, socket: AppSocket): void {
   }
 
   socket.data.userId = userId;
-  assignPlayer(socket);
+  assignPlayer(socket, userName);
   broadcastOnlineCount(io);
   updateRoomsList(io);
 

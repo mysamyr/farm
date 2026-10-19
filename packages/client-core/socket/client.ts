@@ -4,7 +4,7 @@ import type {
 } from '@game/shared/types';
 import { io, Socket } from 'socket.io-client';
 
-import { getUserId } from '../utils/index.js';
+import { getUserId, readStoredUsername } from '../utils/index.js';
 
 // Base socket with core events only.
 // Game-specific events are handled via type assertions in game packages.
@@ -12,7 +12,7 @@ type ClientToServerEvents = CoreClientToServerEvents;
 type ServerToClientEvents = CoreServerToClientEvents;
 
 const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io({
-  auth: { userId: getUserId() },
+  auth: { userId: getUserId(), userName: readStoredUsername() },
 });
 
 export function getSocketId(): string | null {

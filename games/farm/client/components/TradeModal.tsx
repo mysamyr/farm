@@ -1,4 +1,5 @@
 import {
+  memo,
   type ReactElement,
   useCallback,
   useEffect,
@@ -33,7 +34,7 @@ const TRADE_ANIMALS: FarmAnimals[] = [
   ANIMALS.COW,
 ];
 
-export default function TradeModal(): ReactElement {
+function TradeModal(): ReactElement {
   const { currentRoom } = useRoom();
   const room = currentRoom as unknown as Room;
   const farmT = useFarmTranslation();
@@ -71,6 +72,7 @@ export default function TradeModal(): ReactElement {
     if (serverOffer && !pendingUpdate.current) {
       setMyOffer(serverOffer);
     }
+
     pendingUpdate.current = false;
   }, [trade?.offers, myId]);
 
@@ -86,6 +88,7 @@ export default function TradeModal(): ReactElement {
             pendingUpdate.current = false;
             showSnackbar(resolveErrorMessage(ack.error, translation));
           }
+
         }
       );
     },
@@ -121,6 +124,7 @@ export default function TradeModal(): ReactElement {
       }
     );
   }
+
 
   function handleConfirm(): void {
     if (!room || !isParticipant) return;
@@ -271,3 +275,5 @@ export default function TradeModal(): ReactElement {
     </div>
   );
 }
+
+export default memo(TradeModal);

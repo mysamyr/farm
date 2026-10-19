@@ -12,10 +12,10 @@ import {
 } from '@game/game-arena/shared';
 
 import type {
+  ArenaEffectsTranslation,
   ArenaSkillEffectLabelsTranslation,
   ArenaSkillNamesTranslation,
   ArenaStatLabelsTranslation,
-  ArenaEffectLabelsTranslation,
   UtilTranslation,
 } from '../i18n/index.js';
 
@@ -26,12 +26,15 @@ export const SKILL_ICONS: Record<SkillId, string> = {
   bleed_strike: '🔪',
   viper_strike: '🐍',
   knockback: '💥',
-  corrosion: '🛡️',
+  corrosion: '💧',
+  ignite: '🔥',
   heal: '💚',
   regeneration: '🌿',
   resistance: '🫧',
   cleanse: '✨',
+  meditation: '🧘',
   rage: '😡',
+  raise_shield: '🛡️',
   spiked_armor: '✴️',
   reflect: '🪞',
   vampiric_strike: '🧛',
@@ -40,10 +43,12 @@ export const SKILL_ICONS: Record<SkillId, string> = {
   plating: '⚙️',
   assassin: '🥷',
   strong: '💪',
-  fanatic: '🔥',
+  fanatic: '💢',
   thorns: '🌵',
   leech: '🩸',
   pierce: '🗡️',
+  berserk: '🪓',
+  aegis: '✧',
 };
 
 export function getSkillIcon(skillId: SkillId): string {
@@ -52,6 +57,7 @@ export function getSkillIcon(skillId: SkillId): string {
 
 export const EFFECT_ICONS: Record<EffectId, string> = {
   poison: '☠️',
+  ignition: '🔥',
   bleed: '🩸',
   stun: '💫',
   regeneration: '💚',
@@ -60,10 +66,16 @@ export const EFFECT_ICONS: Record<EffectId, string> = {
   leech: '🧛',
   pierce: '🗡️',
   reflection: '🪞',
+  berserk: '🪓',
+  aegis: '✧',
 };
 
 export function getEffectIcon(effectId: EffectId): string {
   return EFFECT_ICONS[effectId] ?? '✨';
+}
+
+export function formatEffectValue(template: string, value: number): string {
+  return template.replace('{value}', String(value));
 }
 
 export function getSkillName(
@@ -89,6 +101,8 @@ function formatActionValue(
   switch (value.source) {
     case ActionValueSource.raw:
       return String(value.amount);
+    case ActionValueSource.percent:
+      return String(value.percent) + '%';
     case ActionValueSource.currentHp:
       return labels.valueCurrentHp
         .replace('{percent}', String(value.percent))
@@ -136,7 +150,7 @@ function formatAction(
   action: GameAction,
   labels: ArenaSkillEffectLabelsTranslation,
   statLabels: ArenaStatLabelsTranslation,
-  effectLabels: ArenaEffectLabelsTranslation,
+  effects: ArenaEffectsTranslation,
   util: UtilTranslation
 ): string {
   switch (action.type) {
@@ -157,13 +171,15 @@ function formatAction(
       );
     case ActionType.CLEANSE:
       return labels.cleanse;
+    case ActionType.REDUCE_COOLDOWNS:
+      return labels.reduceCooldowns.replace('{amount}', String(action.amount));
     case ActionType.APPLY_STATUS: {
       const val =
         action.value !== undefined
           ? ` (${formatActionValue(action.value, labels, statLabels, util)})`
           : '';
       return labels.applyStatus
-        .replace('{status}', effectLabels[action.status])
+        .replace('{status}', effects[action.status].name)
         .replace('{value}', val)
         .replace(
           '{target}',
@@ -189,6 +205,19 @@ function formatAction(
   }
 }
 
+export function getSkillAppliedEffects(skill: Skill): EffectId[] {
+  const effects: EffectId[] = [];
+  for (const action of skill.actions) {
+    if (
+      action.type === ActionType.APPLY_STATUS &&
+      !effects.includes(action.status)
+    ) {
+      effects.push(action.status);
+    }
+  }
+  return effects;
+}
+
 export function getSkillCooldownText(
   skill: Skill,
   labels: ArenaSkillEffectLabelsTranslation
@@ -203,13 +232,13 @@ export function getSkillEffects(
   skill: Skill,
   labels: ArenaSkillEffectLabelsTranslation,
   statLabels: ArenaStatLabelsTranslation,
-  effectLabels: ArenaEffectLabelsTranslation,
+  effects: ArenaEffectsTranslation,
   util: UtilTranslation
 ): string[] {
   if (skill.actions.length === 0) {
     return [labels.noEffects];
   }
   return skill.actions.map(a =>
-    formatAction(a, labels, statLabels, effectLabels, util)
+    formatAction(a, labels, statLabels, effects, util)
   );
 }

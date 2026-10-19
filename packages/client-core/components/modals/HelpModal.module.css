@@ -13,3 +13,13 @@
 .container::-webkit-scrollbar {
   display: none;
 }
+
+.header {
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+.header .title {
+  font-size: 1.5em;
+  color: var(--text-muted);
+}

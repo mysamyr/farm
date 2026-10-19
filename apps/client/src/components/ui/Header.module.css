@@ -1,7 +1,7 @@
 .container {
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: var(--z-header);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -29,10 +29,6 @@
   cursor: pointer;
 }
 
-.username {
-  max-width: 160px;
-}
-
 .onlineIndicator {
   display: flex;
   align-items: center;
@@ -51,33 +47,18 @@
   flex-shrink: 0;
 }
 
-.desktopTools {
-  display: flex;
+.spectatorCount {
+  display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 4px;
+  margin-left: 4px;
+  color: var(--text-muted);
+  font-size: 0.75rem;
 }
 
-.rightSlot {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.additionalActions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.burger {
-  display: none;
-  align-items: center;
-  justify-content: center;
-}
-
-.burgerGlyph {
-  display: block;
-  line-height: 1;
+.spectatorCount svg {
+  width: 14px;
+  height: 14px;
 }
 
 .sidebarContent {
@@ -93,29 +74,9 @@
   gap: 8px;
 }
 
-.sidebarSlot {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
 .sidebarControl {
   width: 100%;
   max-width: none;
   text-align: left;
   justify-content: flex-start;
-}
-
-@media (max-width: 1023px) {
-  .desktopTools {
-    display: none;
-  }
-
-  .burger {
-    display: flex;
-  }
-
-  .logo {
-    font-size: 1.2rem;
-  }
 }

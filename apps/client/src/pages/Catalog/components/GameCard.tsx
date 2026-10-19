@@ -1,10 +1,10 @@
 import { type ReactElement } from 'react';
 
-import { getGamePath } from '@game/client-core/constants';
 import { useLanguage } from '@game/client-core/hooks';
 import type { GameMetadata } from '@game/shared/types';
 import { useNavigate } from 'react-router-dom';
 
+import { getGamePath } from '../../../constants/index.js';
 import { useGameConfig } from '../../../hooks/index.js';
 
 import styles from './GameCard.module.css';

@@ -1,0 +1,29 @@
+.panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--accent);
+  border-left-width: 4px;
+  background: var(--bg-surface-subtle);
+}
+
+.statsSlot,
+.skillsSlot {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.skillsSlot > * {
+  flex: 1;
+}
+
+/* Desktop: fixed-width stats card, skills take the remaining space. */
+@media (min-width: 768px) {
+  .panel {
+    grid-template-columns: 260px minmax(0, 1fr);
+    align-items: start;
+  }
+}

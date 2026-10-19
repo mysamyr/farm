@@ -1,15 +1,18 @@
 import {
+  memo,
   ReactElement,
   ReactNode,
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 
 import { Dropdown } from '@game/client-core/components';
 import { ButtonVariant } from '@game/client-core/constants';
 import { emitGameEvent } from '@game/client-core/socket';
+
 import { EVENTS } from '@game/shared/constants';
 
 import { EMOTES, type EmoteId } from '@game/game-farm/shared';
@@ -27,26 +30,20 @@ interface EmoteButtonProps {
   roomId: string;
 }
 
-export default function EmoteButton({
+function EmoteButton({
   roomId,
 }: EmoteButtonProps): ReactElement {
-  const [lastEmoteSendTime, setLastEmoteSendTime] = useState<number | null>(
-    null
-  );
-  const [now, setNow] = useState<number>(Date.now());
+  const [isThrottled, setIsThrottled] = useState(false);
+  const cooldownTimer = useRef<number | undefined>(undefined);
 
   useEffect(() => {
-    const intervalId = window.setInterval(() => {
-      setNow(Date.now());
-    }, 250);
-
     return () => {
-      window.clearInterval(intervalId);
+      if (cooldownTimer.current !== undefined) {
+        window.clearTimeout(cooldownTimer.current);
+      }
+
     };
   }, []);
-
-  const isThrottled =
-    lastEmoteSendTime !== null && now - lastEmoteSendTime < 5000;
 
   const handleEmoteSelect = useCallback(
     (emoteId: EmoteId): void => {
@@ -54,12 +51,16 @@ export default function EmoteButton({
         return;
       }
 
+
       emitGameEvent(
         EVENTS.GAME_ACTION,
         { roomId, action: { type: 'SEND_EMOTE', emoteId } },
         (res: { ok: boolean }) => {
           if (res.ok) {
-            setLastEmoteSendTime(Date.now());
+            setIsThrottled(true);
+            cooldownTimer.current = window.setTimeout(() => {
+              setIsThrottled(false);
+            }, 5000);
           }
         }
       );
@@ -94,3 +95,5 @@ export default function EmoteButton({
     </div>
   );
 }
+
+export default memo(EmoteButton);

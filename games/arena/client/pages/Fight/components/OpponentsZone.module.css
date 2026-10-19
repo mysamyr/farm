@@ -1,0 +1,37 @@
+.zone {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(var(--opponent-columns, 1), minmax(0, 1fr));
+  align-items: start;
+  gap: 12px;
+}
+
+/* A lone opponent should mirror the self panel instead of stretching wide. */
+.grid[data-count='1'] {
+  grid-template-columns: minmax(0, 420px);
+  justify-content: center;
+}
+
+@media (max-width: 767px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .grid[data-count='1'] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

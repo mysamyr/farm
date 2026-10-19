@@ -1,4 +1,4 @@
-import { type ReactElement } from 'react';
+import { memo, type ReactElement } from 'react';
 
 import { useEmoteSubscription } from '../../../hooks/useEmoteSubscription.js';
 
@@ -6,7 +6,7 @@ import EmoteAnimation from './EmoteAnimation.js';
 
 import styles from './EmoteFloatingContainer.module.css';
 
-export default function EmoteFloatingContainer(): ReactElement {
+function EmoteFloatingContainer(): ReactElement {
   const { activeEmotes, handleAnimationEnd } = useEmoteSubscription();
 
   return (
@@ -21,3 +21,5 @@ export default function EmoteFloatingContainer(): ReactElement {
     </div>
   );
 }
+
+export default memo(EmoteFloatingContainer);

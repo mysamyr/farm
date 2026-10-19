@@ -1,4 +1,8 @@
-import { GAME_RULES } from '../../shared/index.js';
+import {
+  GAME_RULES,
+  REQUIRED_ACTIVE_COUNT,
+  REQUIRED_HEALING_COUNT,
+} from '../../shared/index.js';
 
 import type { ArenaHelpTranslation, ArenaTranslation } from './types.js';
 
@@ -12,16 +16,91 @@ export const arenaGameTranslation: ArenaTranslation = {
     crit: '🎯 Crit',
     dodge: '💨 Evade',
   },
-  effectLabels: {
-    regeneration: 'Regeneration',
-    resistance: 'Resistance',
-    thorns: 'Thorns',
-    leech: 'Leech',
-    poison: 'Poison',
-    bleed: 'Bleed',
-    stun: 'Stun',
-    pierce: 'Pierce',
-    reflection: 'Reflection',
+  effects: {
+    regeneration: {
+      name: 'Regeneration',
+      description: 'Restore HP at the end of your turn.',
+      value: {
+        badge: '{value}',
+        description: 'Currently restores {value} HP per turn.',
+      },
+    },
+    resistance: {
+      name: 'Resistance',
+      description:
+        'Block new Bleed, Poison, and Ignition, and reduce incoming direct damage. Does not remove effects already applied.',
+      value: {
+        badge: '{value}%',
+        description: 'Currently reduces incoming direct damage by {value}%.',
+      },
+    },
+    thorns: {
+      name: 'Thorns',
+      description: 'Reflect a portion of direct damage back to the attacker.',
+      value: {
+        badge: '{value}%',
+        description: 'Currently reflects {value}% of direct damage.',
+      },
+    },
+    leech: {
+      name: 'Leech',
+      description: 'Heal a portion of the direct damage you deal.',
+      value: {
+        badge: '{value}%',
+        description:
+          'Currently restores {value}% of direct damage dealt as HP.',
+      },
+    },
+    poison: {
+      name: 'Poison',
+      description: 'Take a fixed amount of damage each turn.',
+      value: {
+        badge: '{value}',
+        description: 'Currently deals {value} damage per turn.',
+      },
+    },
+    ignition: {
+      name: 'Ignition',
+      description:
+        'Take fire damage at the end of your turn. Damage increases by its base amount each consecutive tick, up to 20. Reapplication refreshes duration without resetting progression. Removal or expiry resets it.',
+      value: {
+        badge: '{value}',
+        description: 'Next tick deals {value} fire damage.',
+      },
+    },
+    bleed: {
+      name: 'Bleed',
+      description: 'Damage each turn is based on current HP (minimum 5).',
+      value: {
+        badge: '{value}%',
+        description: 'Deals {value}% of current HP per turn (minimum 5).',
+      },
+    },
+    stun: {
+      name: 'Stun',
+      description:
+        'Cannot use skills (only Skip). Skill cooldowns do not tick down.',
+    },
+    pierce: {
+      name: 'Pierce',
+      description:
+        "Ignore all of the opponent's Armor and reduce Thorns damage received in return by 50%.",
+    },
+    reflection: {
+      name: 'Reflection',
+      description:
+        'Redirect incoming debuffs (Bleed, Poison, Ignition, Stun, and stat reductions) to the attacker, with the same values and duration. Does not bounce twice.',
+    },
+    berserk: {
+      name: 'Berserk',
+      description:
+        'Increase total damage dealt based on current HP: 5% at 51-75%, 10% at 26-50%, 20% at 11-25%, and 30% at 10% or less.',
+    },
+    aegis: {
+      name: 'Aegis',
+      description:
+        'Reduce the duration of newly applied debuffs by 1 turn (minimum 1) and increase the duration of newly applied buffs by 1 turn.',
+    },
   },
   skillNames: {
     attack: 'Attack',
@@ -30,11 +109,14 @@ export const arenaGameTranslation: ArenaTranslation = {
     viper_strike: 'Viper Strike',
     knockback: 'Knockback',
     corrosion: 'Corrosion',
+    ignite: 'Ignite',
     heal: 'Heal',
     regeneration: 'Regeneration',
     resistance: 'Magic Shield',
     cleanse: 'Cleanse',
+    meditation: 'Meditation',
     rage: 'Rage',
+    raise_shield: 'Raise Shield',
     spiked_armor: 'Spiked Armor',
     reflect: 'Reflect',
     vampiric_strike: 'Vampiric Strike',
@@ -47,12 +129,15 @@ export const arenaGameTranslation: ArenaTranslation = {
     thorns: 'Thorns',
     leech: 'Leech',
     pierce: 'Pierce',
+    berserk: 'Berserk',
+    aegis: 'Aegis',
   },
   skillEffectLabels: {
     damage: 'Deal {value} damage',
     heal: 'Heal for {value}',
     lifesteal: 'Lifesteal {value}',
     cleanse: 'Cleanse all negative effects',
+    reduceCooldowns: 'Reduce all your cooldowns by {amount}',
     applyStatus: 'Apply {status}{value}{duration}',
     modifyStat: '{sign}{value} {stat} to {target}{duration}',
     durationTurns: 'for {turns} turns',
@@ -73,9 +158,15 @@ export const arenaGameTranslation: ArenaTranslation = {
     healingSkillFull: 'Healing skill slot is full',
     passiveSkillsFull: 'Passive skill slots are full',
     waitingForOpponent: 'Waiting for opponent to select skills...',
+    waitingForPlayers: 'Waiting for players... {ready}/{total} ready',
     failedToReady: 'Failed to ready up',
     readyButton: 'Ready',
     resetButton: 'Reset',
+    spectatorTitle: 'Fighter preparation',
+    spectatorDescription:
+      'Players are choosing their active, healing, and passive skills. Ready loadouts appear as soon as each fighter confirms their selection.',
+    readyStatus: 'Ready',
+    selectingStatus: 'Selecting skills',
     victoryTitle: '🎉 Victory!',
     victoryMessage: 'Opponent left the room. You win by default!',
     opponentLeftTitle: '😞 Opponent Left',
@@ -88,31 +179,50 @@ export const arenaGameTranslation: ArenaTranslation = {
     failedToUseSkill: 'Failed to use skill',
     turnBadge: 'Turn',
     winnerBadge: 'Winner 🏆',
+    targetBadge: '🎯 Target',
+    eliminatedBadge: 'Eliminated',
+    yourTurnPrompt: 'Your turn — attacking {target}. Pick a skill.',
+    yourTurnNoTargetPrompt: 'Your turn — pick a skill.',
+    stunnedPrompt: 'You are stunned — you can only Skip.',
+    otherTurnPrompt: "{name}'s turn...",
+    eliminatedPrompt: 'You were eliminated — spectating.',
+    winnerPrompt: '{name} wins!',
+    selectTargetHint: 'Tap an opponent to target them',
+    opponentsLabel: 'Opponents',
+    playerEliminated: '{name} was eliminated',
+    battleLogShow: 'Show battle log',
+    battleLogHide: 'Hide battle log',
   },
   battleLog: {
     title: 'Battle Log',
     noActionsYet: 'No actions yet.',
     turnLabel: 'Turn',
     used: 'used',
-    damage: '{target}: {value} damage{crit}',
+    row: '{target}: {message}',
+    messages: {
+      damage: '{value} damage{crit}',
+      dodge: 'dodged',
+      heal: '+{value} heal',
+      lifesteal: '+{value} lifesteal',
+      bleed: '-{value} bleed',
+      poison: '-{value} poison',
+      ignition: '-{value} fire damage',
+      regeneration: '+{value} regeneration',
+      thorns: '-{value} thorns',
+      leech: '+{value} leech',
+      cleanse: 'Cleansed negative effects',
+      reduce_cooldowns: 'Reduced all own cooldowns by {value}',
+      resist: 'resisted {status}',
+      reflect: 'reflected debuffs',
+      apply_status: 'applied {status}{value}{duration}',
+      modify_stat: '{sign}{value} {stat}{duration}',
+    },
     crit: ' (crit)',
-    dodge: '{target}: dodged',
-    heal: '+{value} heal',
-    lifesteal: '+{value} lifesteal',
-    bleed: '-{value} bleed',
-    poison: '-{value} poison',
-    regeneration: '+{value} regeneration',
-    thorns: '-{value} thorns',
-    leech: '+{value} leech',
-    cleanse: 'Cleansed negative effects',
-    resist: '{target}: resisted {status}',
-    reflect: '{target}: reflected debuffs',
-    applyStatus: '{target}: applied {status}{value}{duration}',
-    modifyStat: '{target}: {sign}{value} {stat}{duration}',
     durationTurns: ' for {turns} turns',
   },
   ruleLabels: {
     [GAME_RULES.ZERO_COOLDOWN]: 'Zero Cooldown at start',
+    [GAME_RULES.PASSIVE_SKILL_COUNT]: 'Passive skills to select',
   },
   util: {
     self: 'Self',
@@ -133,8 +243,7 @@ export const arenaHelpTranslation: ArenaHelpTranslation = {
     crit: 'Chance to double the total damage.',
   },
   skillsHeader: 'Skills',
-  skillsIntro:
-    'Before the fight, choose 2 active skills, 1 healing skill, and 2 passive skills. Attack and Skip are always available.',
+  skillsIntro: `Before the fight, choose ${REQUIRED_ACTIVE_COUNT} active skills, ${REQUIRED_HEALING_COUNT} healing skill, and the number of passive skills set by the room rule. Attack and Skip are always available.`,
   activeSkills:
     'Active skills are used on your turn and have a cooldown. They can deal damage, apply effects, buff you, or weaken the opponent.',
   healingSkills:
@@ -144,19 +253,6 @@ export const arenaHelpTranslation: ArenaHelpTranslation = {
   effectsHeader: 'Effects',
   effectsIntro:
     'Effects are statuses on a fighter. Some last a number of turns; others stay for the whole fight (passives).',
-  effects: {
-    regeneration: 'Restore HP at the end of your turn.',
-    resistance:
-      'Block new Bleed and Poison. Does not remove effects already applied.',
-    thorns: 'Reflect a portion of direct damage back to the attacker.',
-    leech: 'Heal a portion of the direct damage you deal.',
-    poison: 'Take a fixed amount of damage each turn.',
-    bleed: 'Take damage each turn based on current HP.',
-    stun: 'Cannot use skills (only Skip). Skill cooldowns do not tick down.',
-    pierce: "Ignore part of the opponent's Armor.",
-    reflection:
-      'Redirect incoming debuffs (Bleed, Poison, Stun, and stat reductions) to the attacker, with the same values and duration. Does not bounce twice.',
-  },
   turnHeader: 'Turn processing',
   turnIntro: 'Each turn runs in a fixed order:',
   turnSteps: [
@@ -165,18 +261,19 @@ export const arenaHelpTranslation: ArenaHelpTranslation = {
     'Apply effects to yourself',
     'Apply stat changes to yourself',
     'Dodge check — if the opponent dodges, skip the rest of the attack',
-    'Deal damage (can crit)',
+    'Deal damage: minimum 1, then critical multiplier, Berserk multiplier, and resistance reduction',
     'Apply Thorns',
     'Apply lifesteal / Leech',
     'If the defender has Reflection, incoming debuffs (negative statuses and stat reductions) are redirected to the attacker',
     'Apply effects to the opponent',
     'Apply stat changes to the opponent',
     'Death check',
-    'Process your active effects (DoT / Regeneration) — skip Bleed, Poison, and Regeneration applied this turn',
+    'Process your active effects (DoT / Regeneration) — skip Bleed, Poison, Ignition, and Regeneration applied this turn. Ignition increases by its base damage each tick, up to 20 damage',
     'Death check',
     'Reset the cooldown of the skill you used',
     'Reduce other skill cooldowns (skipped if you are stunned)',
-    'Reduce duration of active effects (skipped for Bleed, Poison, Stun, Regeneration, and stat reductions applied this turn)',
+    'Apply end-of-turn cooldown reduction effects on self (for example, Meditation)',
+    'Reduce duration of active effects (skipped for Bleed, Poison, Ignition, Stun, Regeneration, and stat reductions applied this turn)',
     'Next turn',
   ],
 };

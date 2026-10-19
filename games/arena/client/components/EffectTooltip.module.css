@@ -1,0 +1,14 @@
+.wrapper {
+  display: inline-flex;
+}
+
+.badge {
+  font-family: inherit;
+  font-size: 0.72rem;
+  padding: 2px 7px;
+  border: none;
+  border-radius: 99px;
+  background: var(--bg-surface-subtle);
+  color: var(--text-muted);
+  cursor: help;
+}

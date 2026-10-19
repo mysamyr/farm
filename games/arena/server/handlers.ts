@@ -11,6 +11,7 @@ import type { GameActionPayload, SocketAck } from '@game/shared/types';
 import {
   type ArenaGameActionPayload,
   DEFAULT_PLAYER_STATS,
+  GAME_RULES,
   type Player,
   type Room,
   SkillId,
@@ -24,8 +25,8 @@ import {
 } from './engine.js';
 import {
   getActivePlayer,
-  getOpponent,
   getSkillById,
+  isEliminated,
   isStunned,
   isValidSkillSelection,
 } from './helpers.js';
@@ -80,22 +81,30 @@ const playerUpdateHandler = (
   }
 
   if (req.ready) {
-    if (!isValidSkillSelection(req.skills)) {
+    if (
+      !isValidSkillSelection(
+        req.skills,
+        room.rules[GAME_RULES.PASSIVE_SKILL_COUNT]
+      )
+    ) {
       ack?.({ ok: false });
       return;
     }
 
     player.ready = true;
     player.hp = DEFAULT_PLAYER_STATS.hp;
+    player.eliminated = false;
     applySkillSelection(player, req.skills, room.rules.zero_cooldown);
   } else {
     player.ready = false;
     player.hp = DEFAULT_PLAYER_STATS.hp;
+    player.eliminated = false;
     player.skills = [];
+    player.loadout = [];
     player.statuses = [];
   }
 
-  ctx.emitToRoom(room.id, EVENTS.GAME_STATE_UPDATE, { state: room });
+  ctx.emitGameState(room);
   ack?.({ ok: true });
 };
 
@@ -128,6 +137,11 @@ const useSkillHandler = (
     return;
   }
 
+  if (isEliminated(player)) {
+    ack?.({ ok: false });
+    return;
+  }
+
   if (isStunned(player) && skillId !== SkillId.skip) {
     ack?.({ ok: false });
     return;
@@ -148,16 +162,14 @@ const useSkillHandler = (
     return;
   }
 
-  const { dead } = processPlayerTurn(room, skillId);
+  const { winnerId } = processPlayerTurn(room, skillId, req.target);
 
-  if (dead === 'attacker') {
-    const opponent = getOpponent(room, player.id)!;
-    winnerHandler(ctx, room, opponent);
-  } else if (dead === 'defender') {
-    winnerHandler(ctx, room, player);
+  if (winnerId) {
+    const winner = room.players.find(p => p.id === winnerId);
+    if (winner) winnerHandler(ctx, room, winner);
   }
 
-  ctx.emitToRoom(room.id, EVENTS.GAME_STATE_UPDATE, { state: room });
+  ctx.emitGameState(room);
   ack?.({ ok: true });
 };
 

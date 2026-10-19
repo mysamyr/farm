@@ -7,3 +7,4 @@ export {
 } from './engine.js';
 
 export { handleAction } from './handlers.js';
+export { projectRoomState } from './visibility.js';

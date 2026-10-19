@@ -3,6 +3,10 @@
   display: inline-block;
 }
 
+.triggerLabel {
+  text-align: left;
+}
+
 .dropdown {
   position: absolute;
   top: calc(100% + 4px);
@@ -10,7 +14,7 @@
   background: var(--bg-card);
   border: 1px solid var(--text-muted);
   box-shadow: var(--shadow-elevation);
-  z-index: 2;
+  z-index: 9;
 }
 
 .alignRight {
@@ -23,7 +27,7 @@
   border: none;
   background: transparent;
   text-align: left;
-  padding: 8px 16px;
+  padding: 10px 16px;
   cursor: pointer;
   color: var(--text-main);
 }
