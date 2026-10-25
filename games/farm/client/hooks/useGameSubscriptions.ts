@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { LOCAL_STORAGE_KEY } from '@game/client-core/constants';
 import { useLanguage, useRoom, useSnackbar } from '@game/client-core/hooks';
@@ -22,6 +22,15 @@ export function useGameSubscriptions({
   const { currentRoom, setCurrentRoom } = useRoom();
   const { showSnackbar } = useSnackbar();
   const { translation } = useLanguage();
+  const currentRoomRef = useRef(currentRoom);
+  const onCurrentUserWonRef = useRef(onCurrentUserWon);
+  const showSnackbarRef = useRef(showSnackbar);
+  const translationRef = useRef(translation);
+
+  currentRoomRef.current = currentRoom;
+  onCurrentUserWonRef.current = onCurrentUserWon;
+  showSnackbarRef.current = showSnackbar;
+  translationRef.current = translation;
 
   useEffect(() => {
     const handleGameUpdate = ({ state }: GameStateUpdatePayload): void => {
@@ -29,7 +38,7 @@ export function useGameSubscriptions({
     };
 
     const handleNotification = ({ type, data }: ServerNotification): void => {
-      if (currentRoom?.game !== GameId.farm) {
+      if (currentRoomRef.current?.game !== GameId.farm) {
         return;
       }
 
@@ -38,13 +47,15 @@ export function useGameSubscriptions({
         const isCurrentUser = name === data;
 
         if (isCurrentUser) {
-          onCurrentUserWon();
+          onCurrentUserWonRef.current();
         }
         return;
       }
 
       if (type === FARM_NOTIFICATION_TYPES.TRADE_CANCELLED) {
-        showSnackbar(translation.notifications.tradeCancelled(data));
+        showSnackbarRef.current(
+          translationRef.current.notifications.tradeCancelled(data)
+        );
       }
     };
 
@@ -55,11 +66,5 @@ export function useGameSubscriptions({
       unsubscribe(EVENTS.GAME_STATE_UPDATE, handleGameUpdate);
       unsubscribe(EVENTS.NOTIFICATION, handleNotification);
     };
-  }, [
-    currentRoom?.game,
-    onCurrentUserWon,
-    setCurrentRoom,
-    showSnackbar,
-    translation.notifications,
-  ]);
+  }, [setCurrentRoom]);
 }

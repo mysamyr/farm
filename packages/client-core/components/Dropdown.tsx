@@ -1,6 +1,7 @@
-import { ReactElement, ReactNode, useEffect, useRef, useState } from 'react';
+import { type ReactElement, type ReactNode, useRef, useState } from 'react';
 
 import { ButtonVariant } from '../constants/index.js';
+import { useClickOutside, useEscapeKey } from '../hooks/index.js';
 import { classNames } from '../utils/index.js';
 
 import Button from './Button.js';
@@ -38,32 +39,10 @@ export default function Dropdown({
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    function handleOutsideClick(event: MouseEvent) {
-      const target = event.target;
-      if (!(target instanceof Node)) {
-        return;
-      }
+  const close = () => setIsOpen(false);
 
-      if (!containerRef.current?.contains(target)) {
-        setIsOpen(false);
-      }
-    }
-
-    function handleEscape(event: KeyboardEvent) {
-      if (event.key === 'Escape') {
-        setIsOpen(false);
-      }
-    }
-
-    document.addEventListener('mousedown', handleOutsideClick);
-    document.addEventListener('keydown', handleEscape);
-
-    return () => {
-      document.removeEventListener('mousedown', handleOutsideClick);
-      document.removeEventListener('keydown', handleEscape);
-    };
-  }, []);
+  useClickOutside(containerRef, isOpen, close);
+  useEscapeKey(isOpen, close);
 
   return (
     <div ref={containerRef} className={styles.container}>
@@ -76,7 +55,7 @@ export default function Dropdown({
         disabled={disabled}
         onClick={() => setIsOpen(open => !open)}
       >
-        {trigger}
+        <span className={styles.triggerLabel}>{trigger}</span>
       </Button>
 
       {isOpen ? (

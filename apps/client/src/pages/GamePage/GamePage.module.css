@@ -6,7 +6,7 @@
 
 .dashboardGrid {
   display: grid;
-  grid-template-columns: 1fr 350px;
+  grid-template-columns: 1fr 360px;
   gap: 30px;
   align-items: start;
 }

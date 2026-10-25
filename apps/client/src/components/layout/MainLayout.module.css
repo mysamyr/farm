@@ -9,3 +9,7 @@
 .main {
   min-width: 0;
 }
+
+.withChat {
+  padding-bottom: calc(72px + env(safe-area-inset-bottom));
+}

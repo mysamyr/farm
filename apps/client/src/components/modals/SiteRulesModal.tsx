@@ -1,0 +1,25 @@
+import type { ReactElement } from 'react';
+
+import { HelpModal } from '@game/client-core/components';
+import { useLanguage } from '@game/client-core/hooks';
+
+import styles from './SiteRulesModal.module.css';
+
+function SiteRulesModal(): ReactElement {
+  const { translation } = useLanguage();
+  const { title, intro, sections } = translation.siteRules;
+
+  return (
+    <HelpModal title={title}>
+      <p className={styles.intro}>{intro}</p>
+      {sections.map(section => (
+        <section key={section.heading} className={styles.section}>
+          <h3>{section.heading}</h3>
+          <p>{section.body}</p>
+        </section>
+      ))}
+    </HelpModal>
+  );
+}
+
+export default SiteRulesModal;

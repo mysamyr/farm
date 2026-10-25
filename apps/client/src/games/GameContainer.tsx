@@ -1,9 +1,12 @@
 import { Component, type ErrorInfo, type ReactNode, Suspense } from 'react';
 
-import { getGamePath } from '@game/client-core/constants';
-import { useConnection, useRoom } from '@game/client-core/hooks';
-import type { GameId } from '@game/shared/constants';
+import { useRoom } from '@game/client-core/hooks';
+import { ROOM_STATES, type GameId } from '@game/shared/constants';
 import { Navigate } from 'react-router-dom';
+
+import { WinningAnimation } from '../components/index.js';
+import { getGamePath } from '../constants/index.js';
+import { useConnection } from '../hooks/index.js';
 
 import styles from './GameContainer.module.css';
 import { gameRegistry } from './registry.js';
@@ -116,6 +119,10 @@ export function GameContainer({ gameId }: GameContainerProps) {
     );
   }
 
+  if (currentRoom.state === ROOM_STATES.IDLE) {
+    return <Navigate to={getGamePath(gameId)} replace />;
+  }
+
   const LazyGameboard = gameRegistry.getLazyGameboard(gameId);
 
   return (
@@ -123,6 +130,7 @@ export function GameContainer({ gameId }: GameContainerProps) {
       <Suspense fallback={<GameLoadingFallback />}>
         <LazyGameboard />
       </Suspense>
+      <WinningAnimation />
     </GameErrorBoundary>
   );
 }

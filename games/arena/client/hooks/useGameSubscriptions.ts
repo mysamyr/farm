@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { LOCAL_STORAGE_KEY } from '@game/client-core/constants';
 import { useRoom } from '@game/client-core/hooks';
@@ -18,6 +18,10 @@ export function useGameSubscriptions({
   onCurrentUserWon,
 }: UseGameSubscriptionsArgs): void {
   const { currentRoom, setCurrentRoom } = useRoom();
+  const currentRoomRef = useRef(currentRoom);
+  const onCurrentUserWonRef = useRef(onCurrentUserWon);
+  currentRoomRef.current = currentRoom;
+  onCurrentUserWonRef.current = onCurrentUserWon;
 
   useEffect(() => {
     const handleGameUpdate = ({ state }: GameStateUpdatePayload): void => {
@@ -25,7 +29,7 @@ export function useGameSubscriptions({
     };
 
     const handleNotification = ({ type, data }: ServerNotification): void => {
-      if (currentRoom?.game !== GameId.arena) {
+      if (currentRoomRef.current?.game !== GameId.arena) {
         return;
       }
 
@@ -34,7 +38,7 @@ export function useGameSubscriptions({
         const isCurrentUser = name === data;
 
         if (isCurrentUser) {
-          onCurrentUserWon();
+          onCurrentUserWonRef.current();
         }
         return;
       }
@@ -47,5 +51,5 @@ export function useGameSubscriptions({
       unsubscribe(EVENTS.GAME_STATE_UPDATE, handleGameUpdate);
       unsubscribe(EVENTS.NOTIFICATION, handleNotification);
     };
-  }, [onCurrentUserWon, setCurrentRoom]);
+  }, [setCurrentRoom]);
 }

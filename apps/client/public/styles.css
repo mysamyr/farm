@@ -39,6 +39,16 @@
     0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.3);
   --overlay-backdrop-soft: hsla(0, 0%, 0%, 0.5);
   --overlay-backdrop-strong: hsla(0, 0%, 0%, 0.8);
+
+  /* Stacking layers (low → high) */
+  --z-header: 5;
+  --z-floating-button: 6;
+  --z-panel: 7;
+  --z-floating: 8;
+  --z-sidebar: 9;
+  --z-tooltip: 9;
+  --z-modal: 10;
+  --z-toast: 11;
 }
 
 /* Layer 2: Semantic Light (default + explicit light) */
@@ -180,21 +190,4 @@ ul {
 ol {
   margin: 8px 0 0;
   padding-left: 20px;
-}
-
-/* --- Dialog --- */
-dialog:modal {
-  margin: auto;
-  width: min(80vw, 640px);
-  max-width: 80vw;
-  box-sizing: border-box;
-  padding: 0;
-  border: 1px solid var(--border-base);
-  border-radius: var(--radius-lg);
-  color: var(--text-main);
-  background-color: var(--bg-card);
-}
-
-dialog::backdrop {
-  background-color: var(--overlay-backdrop);
 }

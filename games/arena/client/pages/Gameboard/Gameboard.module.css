@@ -1,5 +1,3 @@
 .container {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  composes: page from '../../styles/Arena.module.css';
 }

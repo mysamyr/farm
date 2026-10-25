@@ -1,24 +1,23 @@
 import { ReactElement } from 'react';
 
-import { Button, Tag } from '@game/client-core/components';
+import { Button, LockIcon } from '@game/client-core/components';
 import { ButtonVariant } from '@game/client-core/constants';
 import {
-  useGames,
   useLanguage,
+  useModal,
   useRoom,
   useSnackbar,
-  useUsername,
 } from '@game/client-core/hooks';
 import { emitEvent } from '@game/client-core/socket';
-import {
-  getOwnerName,
-  getUserId,
-  resolveErrorMessage,
-} from '@game/client-core/utils';
-import { EVENTS } from '@game/shared/constants';
-import type { BaseRoom } from '@game/shared/types';
+import { getUserId, resolveErrorMessage } from '@game/client-core/utils';
+import { EVENTS, ROOM_STATES } from '@game/shared/constants';
+import type { BaseRoom, SpectateRoomAck } from '@game/shared/types';
+import { useNavigate } from 'react-router-dom';
 
-import { useGameConfig } from '../../../hooks/index.js';
+import { RoomPasswordModal, Tag } from '../../../components/index.js';
+import { getGameBoardPath } from '../../../constants/index.js';
+import { useGameConfig, useGames, useUsername } from '../../../hooks/index.js';
+import { getOwnerName } from '../../../utils/index.js';
 
 import styles from './RoomCard.module.css';
 
@@ -28,8 +27,10 @@ type RoomCardProps = {
 
 export default function RoomCard({ room }: RoomCardProps): ReactElement {
   const { language, translation } = useLanguage();
-  const { currentRoom } = useRoom();
+  const { currentRoom, setCurrentRoom } = useRoom();
+  const navigate = useNavigate();
   const { showSnackbar } = useSnackbar();
+  const { showModal } = useModal();
   const { getGame } = useGames();
   const { isValid: hasUsername } = useUsername();
   const { config: gameConfig } = useGameConfig(room.game);
@@ -37,14 +38,17 @@ export default function RoomCard({ room }: RoomCardProps): ReactElement {
   const gameMetadata = getGame(room.game);
   const maxPlayers = gameMetadata?.maxPlayers ?? 4;
   const activeRules = (gameConfig?.rules ?? []).filter(
-    rule => room.rules[rule.key]
+    rule => rule.type === 'number' || room.rules[rule.key]
   );
 
   const isFull = room.players.length >= maxPlayers;
+  const isRunning = room.state === ROOM_STATES.RUNNING;
   const isAlreadyInRoom = !!currentRoom;
   const isKicked = (room.blacklist ?? []).includes(getUserId());
-  const canJoin = hasUsername && !isAlreadyInRoom && !isFull && !isKicked;
-  const disabledTitle = isKicked
+  const canJoin =
+    hasUsername && !isAlreadyInRoom && !isKicked && !isRunning && !isFull;
+  const canWatch = hasUsername && !isAlreadyInRoom && !isKicked && isRunning;
+  const joinDisabledTitle = isKicked
     ? translation.errors.cannotJoinKicked
     : undefined;
 
@@ -52,7 +56,19 @@ export default function RoomCard({ room }: RoomCardProps): ReactElement {
     <div className={styles.container}>
       <div className={styles.header}>
         <div className={styles.identity}>
-          <h3 className={styles.roomName}>{room.name}</h3>
+          <h3 className={styles.roomName}>
+            {room.isProtected ? (
+              <span
+                className={styles.lock}
+                title={translation.dashboard.protectedRoom}
+                aria-label={translation.dashboard.protectedRoom}
+                role="img"
+              >
+                <LockIcon />
+              </span>
+            ) : null}
+            {room.name}
+          </h3>
           <span className={styles.roomOwner}>
             {translation.owner} {getOwnerName(room)}
           </span>
@@ -60,9 +76,9 @@ export default function RoomCard({ room }: RoomCardProps): ReactElement {
 
         <div className={styles.actions}>
           <span className={styles.online}>
-            👥 {room.players.length}/{maxPlayers}
+            👥 {room.players.length}/{maxPlayers} · 👁 {room.spectators.length}
           </span>
-          <span title={disabledTitle} className={styles.joinButtonWrap}>
+          <span title={joinDisabledTitle} className={styles.joinButtonWrap}>
             <Button
               className={styles.cta}
               variant={
@@ -79,6 +95,14 @@ export default function RoomCard({ room }: RoomCardProps): ReactElement {
                   return;
                 }
 
+                if (room.isProtected) {
+                  showModal({
+                    component: RoomPasswordModal,
+                    props: { roomId: room.id, roomName: room.name },
+                  });
+                  return;
+                }
+
                 emitEvent(EVENTS.ROOM_JOIN, { roomId: room.id }, res => {
                   if (!res.ok) {
                     showSnackbar(resolveErrorMessage(res.error, translation));
@@ -90,6 +114,35 @@ export default function RoomCard({ room }: RoomCardProps): ReactElement {
                 ? translation.roomButton.full
                 : translation.roomButton.join}
             </Button>
+            <Button
+              className={styles.cta}
+              variant={
+                canWatch ? ButtonVariant.PRIMARY : ButtonVariant.SECONDARY
+              }
+              disabled={!canWatch}
+              onClick={() => {
+                if (!canWatch) {
+                  return;
+                }
+
+                emitEvent(
+                  EVENTS.ROOM_SPECTATE,
+                  { roomId: room.id },
+                  (res: SpectateRoomAck) => {
+                    if (!res.ok) {
+                      showSnackbar(resolveErrorMessage(res.error, translation));
+                      return;
+                    }
+                    if (res.room) {
+                      setCurrentRoom(res.room);
+                      void navigate(getGameBoardPath(room.game));
+                    }
+                  }
+                );
+              }}
+            >
+              {translation.roomButton.watch}
+            </Button>
           </span>
         </div>
       </div>
@@ -97,7 +150,10 @@ export default function RoomCard({ room }: RoomCardProps): ReactElement {
       {activeRules.length > 0 ? (
         <ul className={styles.rules}>
           {activeRules.map(rule => {
-            const label = rule.label(language);
+            const label =
+              typeof room.rules[rule.key] === 'number'
+                ? `${rule.label(language)}: ${room.rules[rule.key]}`
+                : rule.label(language);
             return (
               <li key={rule.key}>
                 <Tag title={label}>{label}</Tag>
