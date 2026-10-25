@@ -66,11 +66,15 @@ export function getAddedAnimalsCount(
   return Math.min(expectedAddCount, availableToAdd);
 }
 
-export function areLimitedCards(room: Room, to: TradableAnimals): boolean {
-  const maxAnimals = ANIMALS_DEFAULT_QUANTITY[to];
+export function areLimitedCards(
+  room: Room,
+  from: TradableAnimals,
+  to: TradableAnimals
+): boolean {
+  const expectedAddCount = Math.max(1, ANIMALS_WAGES[from] / ANIMALS_WAGES[to]);
   return (
-    !room.rules[GAME_RULES.UNLIMITED_CARDS] &&
-    getUsedAnimalsCount(room.players, to) >= maxAnimals
+    getAddedAnimalsCount(room.players, room.rules, to, expectedAddCount) <
+    expectedAddCount
   );
 }
 

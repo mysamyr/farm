@@ -123,7 +123,7 @@ const exchangeHandler =
       ack?.({ ok: false, error: ERROR.NOT_ENOUGH_CARDS });
       return;
     }
-    if (areLimitedCards(activeRoom, to)) {
+    if (areLimitedCards(activeRoom, from, to)) {
       ack?.({ ok: false, error: ERROR.LIMITED_CARDS_EXCEEDED });
       return;
     }
